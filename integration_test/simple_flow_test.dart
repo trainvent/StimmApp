@@ -55,7 +55,9 @@ void main() {
     await $(l10n.login).tap();
     await $(l10n.signIn).waitUntilVisible();
     await $(keys.loginPage.emailTextField).enterText(IConst.testMail);
-    await $(keys.loginPage.passwordTextField).enterText(IConst.securePassword);
+    await $(
+      keys.loginPage.passwordTextField,
+    ).enterText(IConst.testSecurePassword);
     await $(keys.loginPage.signInButton).tap();
     await $(keys.widgetTree.profileButton).tap();
     await $(keys.profilePage.logoutListTile).scrollTo().tap();

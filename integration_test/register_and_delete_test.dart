@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -52,6 +51,10 @@ void main() {
     }
 
     await $.pumpWidget(const MyApp());
+    await Future.delayed(const Duration(seconds: 1));
+    $.log(const String.fromEnvironment('EMAIL'));
+    $.log(const String.fromEnvironment('PASSWORD'));
+    await Future.delayed(const Duration(seconds: 1));
     await $(l10n.theWelcomePhrase).waitUntilVisible();
     await $(l10n.getStarted).tap();
     await $(l10n.registerHere).waitUntilVisible();
@@ -60,21 +63,27 @@ void main() {
     ).enterText(const String.fromEnvironment('EMAIL'));
     await $(
       keys.onboardingPage.passwordTextField,
-    ).enterText(const String.fromEnvironment('PASSWORD'));
+    ).enterText(IConst.testSecurePassword);
     await $(keys.onboardingPage.registerButton).tap();
+    await $(
+      keys.emailConfirmationPage.verificationCodeTextField,
+    ).waitUntilVisible();
+    $.log("fetching API");
     //read email data
-    // IMPORTANT: Use the credentials of the user you just registered (EMAIL/PASSWORD env vars)
     final mailApi = MailApi(
-      email: const String.fromEnvironment('EMAIL_NOREPLY'), // No
-      password: const String.fromEnvironment(
-        'PASSWORD_NOREPLY',
-      ), // Note: Fixed typo from PASWWORD
+      email: const String.fromEnvironment('EMAIL'),
+      password: const String.fromEnvironment('PASSWORD'),
+      logger: $.log,
     );
-    log("read mail api");
+    $.log("extract code from mail api");
     // Wait for the code
+    await Future.delayed(const Duration(seconds: 5));
     final code = await mailApi.getVerificationCode();
-    log("received code");
-    log(code!);
+    $.log("received code: $code");
+    if (code == null) {
+      $.log("Code is null, failing test");
+      throw Exception("Verification code not found");
+    }
     await $(
       keys.emailConfirmationPage.verificationCodeTextField,
     ).waitUntilVisible();

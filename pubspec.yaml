@@ -89,6 +89,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
   test_api: any
   enough_mail: ^2.1.7
+  meta: ^1.17.0
 flutter:
   generate: true
   # The following line ensures that the Material Icons font is
