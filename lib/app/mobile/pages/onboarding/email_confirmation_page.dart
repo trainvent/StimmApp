@@ -1,0 +1,131 @@
+import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/integration_test_constants.dart';
+import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/theme/app_text_styles.dart';
+
+class EmailConfirmationPage extends StatefulWidget {
+  const EmailConfirmationPage({super.key});
+
+  @override
+  State<EmailConfirmationPage> createState() => _EmailConfirmationPageState();
+}
+
+class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
+  final TextEditingController _codeController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verifyCode() async {
+    final code = _codeController.text.trim();
+    if (code.length != 6) {
+      showErrorSnackBar('Please enter a valid 6-digit code');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await authService.verifyCode(code);
+      if (!mounted) return;
+      showSuccessSnackBar('Email verified successfully!');
+      // No need to navigate manually; AuthLayout will rebuild and show the next page
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(e.message ?? 'Verification failed');
+    } catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar('An unexpected error occurred');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _resendCode() async {
+    setState(() => _isLoading = true);
+    try {
+      await authService.sendVerificationCode();
+      if (!mounted) return;
+      showSuccessSnackBar('Verification code resent!');
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(e.message ?? 'Failed to resend code');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(context.l10n.emailVerification)),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Enter Verification Code',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'We have sent a 6-digit code to your email. Please enter it below.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.descriptionText,
+            ),
+            const SizedBox(height: 32),
+            TextField(
+              key: keys.emailConfirmationPage.verificationCodeTextField,
+              controller: _codeController,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 24, letterSpacing: 8),
+              decoration: const InputDecoration(
+                hintText: '000000',
+                counterText: '',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 32),
+            if (_isLoading)
+              const CircularProgressIndicator()
+            else
+              Column(
+                children: [
+                  ButtonWidget(
+                    key: keys.emailConfirmationPage.verifyButton,
+                    callback: _verifyCode,
+                    label: 'Verify',
+                    isFilled: true,
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    key: keys.emailConfirmationPage.resendCodeButton,
+                    onPressed: _resendCode,
+                    child: Text(context.l10n.resendEmail),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    key: keys.emailConfirmationPage.backButton,
+                    onPressed: () {
+                      authService.signOut();
+                    },
+                    child: Text(context.l10n.backToLogin),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
