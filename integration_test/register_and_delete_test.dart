@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +51,7 @@ void main() {
       await authService.setSettings(appVerificationDisabledForTesting: true);
     }
 
-    await $.pumpWidgetAndSettle(const MyApp());
+    await $.pumpWidget(const MyApp());
     await $(l10n.theWelcomePhrase).waitUntilVisible();
     await $(l10n.getStarted).tap();
     await $(l10n.registerHere).waitUntilVisible();
@@ -59,26 +60,28 @@ void main() {
     ).enterText(const String.fromEnvironment('EMAIL'));
     await $(
       keys.onboardingPage.passwordTextField,
-    ).enterText(const String.fromEnvironment('PASWWORD'));
+    ).enterText(const String.fromEnvironment('PASSWORD'));
     await $(keys.onboardingPage.registerButton).tap();
     //read email data
     // IMPORTANT: Use the credentials of the user you just registered (EMAIL/PASSWORD env vars)
     final mailApi = MailApi(
-      email: const String.fromEnvironment('EMAIL'),
+      email: const String.fromEnvironment('EMAIL_NOREPLY'), // No
       password: const String.fromEnvironment(
-        'PASSWORD',
+        'PASSWORD_NOREPLY',
       ), // Note: Fixed typo from PASWWORD
     );
-
+    log("read mail api");
     // Wait for the code
     final code = await mailApi.getVerificationCode();
-
+    log("received code");
+    log(code!);
     await $(
       keys.emailConfirmationPage.verificationCodeTextField,
     ).waitUntilVisible();
     await $(
       keys.emailConfirmationPage.verificationCodeTextField,
-    ).enterText('the code from the email');
+    ).enterText(code);
+    await $(keys.emailConfirmationPage.verifyButton).tap();
     await Future.delayed(const Duration(seconds: 2));
   });
 }
