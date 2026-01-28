@@ -5,16 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0c6c051-a91e-427e-837d-d47ff1cdf585" name="Changes" comment="shit">
-      <change beforePath="$PROJECT_DIR$/.idea/stimmapp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/stimmapp.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/app_entry.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.patrol.env" beforeDir="false" afterPath="$PROJECT_DIR$/.patrol.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/helpers/mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/helpers/mail_api.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebase.json" beforeDir="false" afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/src/auth_code.ts" beforeDir="false" afterPath="$PROJECT_DIR$/functions/src/auth_code.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/helpers/test_helper_tests/test_mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/helpers/test_helper_tests/test_mail_api.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/internal_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/internal_constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/data/firebase/firebase_options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/data/firebase/firebase_options_prod.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_dev.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main_dev.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playwright-report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/playwright-report/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_mail_api.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_flow_test/visual_flow_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/user_flow_test/visual_flow_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +101,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/lmarquar/Code/stimmapp/functions/node_modules/typescript/lib&quot;,
@@ -104,11 +110,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/integration_test/helpers/test_helper_tests" />
+      <recent name="$PROJECT_DIR$/integration_test/helpers" />
       <recent name="$PROJECT_DIR$/integration_test" />
-      <recent name="$PROJECT_DIR$/lib/app/mobile/pages" />
-      <recent name="$PROJECT_DIR$/userFlowTest" />
-      <recent name="$PROJECT_DIR$/test/userflow" />
+      <recent name="$PROJECT_DIR$/tmp" />
+      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">
@@ -206,7 +212,13 @@
       <workItem from="1769527734604" duration="11137000" />
       <workItem from="1769539778602" duration="320000" />
       <workItem from="1769540387531" duration="134000" />
-      <workItem from="1769540588002" duration="938000" />
+      <workItem from="1769540588002" duration="2239000" />
+      <workItem from="1769583032296" duration="1806000" />
+      <workItem from="1769585658092" duration="5679000" />
+      <workItem from="1769591543397" duration="2472000" />
+      <workItem from="1769594991373" duration="1000" />
+      <workItem from="1769597973781" duration="981000" />
+      <workItem from="1769604338288" duration="1862000" />
     </task>
     <task id="LOCAL-00001" summary="shit">
       <option name="closed" value="true" />

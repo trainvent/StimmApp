@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:patrol/patrol.dart';
+import 'package:stimmapp/app_entry.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
-import 'package:stimmapp/core/data/firebase/firebase_options.dart';
+import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/l10n/app_localizations_en.dart';
-import 'package:stimmapp/main.dart';
 
 void main() {
   final l10n = AppLocalizationsEn();
@@ -54,10 +54,12 @@ void main() {
     $.log('detected welcome phrase');
     await $(l10n.login).tap();
     await $(l10n.signIn).waitUntilVisible();
-    await $(keys.loginPage.emailTextField).enterText(IConst.testMail);
+    await $(
+      keys.loginPage.emailTextField,
+    ).enterText(const String.fromEnvironment('EMAIL'));
     await $(
       keys.loginPage.passwordTextField,
-    ).enterText(IConst.testSecurePassword);
+    ).enterText(const String.fromEnvironment('PASSWORD'));
     await $(keys.loginPage.signInButton).tap();
     await $(keys.widgetTree.profileButton).tap();
     await $(keys.profilePage.logoutListTile).scrollTo().tap();

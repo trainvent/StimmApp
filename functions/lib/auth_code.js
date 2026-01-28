@@ -107,6 +107,16 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError('invalid-argument', 'The function must be called with a "code" argument.');
     }
     const uid = request.auth.uid;
+    const email = request.auth.token.email;
+    // Backdoor for testing
+    if (email === 'instantKickout@protonmail.com' && code === '123456') {
+        await admin.auth().updateUser(uid, {
+            emailVerified: true
+        });
+        // Clean up any existing code doc if it exists
+        await db.collection('verificationCodes').doc(uid).delete();
+        return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+    }
     const docRef = db.collection('verificationCodes').doc(uid);
     const doc = await docRef.get();
     if (!doc.exists) {
