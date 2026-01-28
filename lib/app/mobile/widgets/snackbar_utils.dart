@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app_entry.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
-import 'package:stimmapp/main.dart'; // to access navigatorKey
 
 /// Show a floating success snackbar. [message] is optional.
 void showSuccessSnackBar([String? message]) {

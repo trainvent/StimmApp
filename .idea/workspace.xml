@@ -5,22 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0c6c051-a91e-427e-837d-d47ff1cdf585" name="Changes" comment="shit">
-      <change afterPath="$PROJECT_DIR$/lib/app_entry.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.patrol.env" beforeDir="false" afterPath="$PROJECT_DIR$/.patrol.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/google-services.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firebase.json" beforeDir="false" afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/src/auth_code.ts" beforeDir="false" afterPath="$PROJECT_DIR$/functions/src/auth_code.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/helpers/test_helper_tests/test_mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/helpers/test_helper_tests/test_mail_api.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/data/firebase/firebase_options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/data/firebase/firebase_options_prod.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_dev.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main_dev.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playwright-report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/playwright-report/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_flow_test/visual_flow_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/user_flow_test/visual_flow_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/prod/google-services.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,7 +203,7 @@
       <workItem from="1769591543397" duration="2472000" />
       <workItem from="1769594991373" duration="1000" />
       <workItem from="1769597973781" duration="981000" />
-      <workItem from="1769604338288" duration="1862000" />
+      <workItem from="1769604338288" duration="2498000" />
     </task>
     <task id="LOCAL-00001" summary="shit">
       <option name="closed" value="true" />

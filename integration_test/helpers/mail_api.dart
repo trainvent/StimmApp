@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:enough_mail/enough_mail.dart';
 
 class MailApi {
@@ -17,7 +19,7 @@ class MailApi {
        _password = password,
        _imapServer = imapServer,
        _imapPort = imapPort,
-       _logger = logger ?? ((String msg) => print(msg));
+       _logger = logger ?? ((String msg) => log(msg));
 
   Future<String?> getVerificationCode({
     int maxAttempts = 20,
