@@ -5,7 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0c6c051-a91e-427e-837d-d47ff1cdf585" name="Changes" comment="shit">
-      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/prod/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.patrol.env" beforeDir="false" afterPath="$PROJECT_DIR$/.patrol.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/index.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/index.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/providers/dataconnect.mjs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/providers/dataconnect.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/providers/dataconnect.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions/src/auth_code.ts" beforeDir="false" afterPath="$PROJECT_DIR$/functions/src/auth_code.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playwright-report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/playwright-report/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +93,7 @@
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/usr/bin/python3.12&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/lmarquar/Code/stimmapp/android/app/src/dev&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -94,12 +110,15 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/android/app/src/dev" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/android/app/src/prod" />
       <recent name="$PROJECT_DIR$/integration_test/helpers/test_helper_tests" />
       <recent name="$PROJECT_DIR$/integration_test/helpers" />
       <recent name="$PROJECT_DIR$/integration_test" />
       <recent name="$PROJECT_DIR$/tmp" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">
@@ -203,7 +222,9 @@
       <workItem from="1769591543397" duration="2472000" />
       <workItem from="1769594991373" duration="1000" />
       <workItem from="1769597973781" duration="981000" />
-      <workItem from="1769604338288" duration="2498000" />
+      <workItem from="1769604338288" duration="6653000" />
+      <workItem from="1769611036374" duration="7000" />
+      <workItem from="1769611057034" duration="2135000" />
     </task>
     <task id="LOCAL-00001" summary="shit">
       <option name="closed" value="true" />
@@ -251,7 +272,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/integration_test/helpers/mail_api.dart</url>
-          <line>37</line>
+          <line>39</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>

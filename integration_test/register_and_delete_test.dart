@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:patrol/patrol.dart';
-import 'package:stimmapp/app_entry.dart';
+import 'package:stimmapp/app_entry.dart'; // Import app_entry for MyApp
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
-import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart';
+import 'package:stimmapp/core/data/firebase/firebase_options_dev.dart' as dev;
+// Import both configurations
+import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart' as prod;
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -37,9 +40,21 @@ void main() {
     };
 
     SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+
+    // Determine Flavor
+    const flavor = String.fromEnvironment('FLAVOR');
+    final isDev = flavor == 'dev';
+
+    // Initialize Environment
+    Environment.init(isDev ? EnvironmentType.dev : EnvironmentType.prod);
+
+    // Select Firebase Options
+    final firebaseOptions = isDev
+        ? dev.DefaultFirebaseOptions.currentPlatform
+        : prod.DefaultFirebaseOptions.currentPlatform;
+
+    await Firebase.initializeApp(options: firebaseOptions);
+
     locator.init();
     await PurchasesService.instance.init(
       apiKey: IConst.revenueCatApiKey,
@@ -49,44 +64,45 @@ void main() {
     if (!kIsWeb && kDebugMode) {
       await authService.setSettings(appVerificationDisabledForTesting: true);
     }
+
     await $.pumpWidget(const MyApp());
-    String email, password;
-    if (!kIsWeb) {
-      email = const String.fromEnvironment('EMAIL_MOB');
-      password = const String.fromEnvironment('PASSWORD_MOB');
-    } else {
-      email = const String.fromEnvironment('EMAIL_WEB');
-      password = const String.fromEnvironment('PASSWORD_WEB');
-    }
-    $.log(email);
-    $.log(password);
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Read variables passed via --dart-define
+    const email = String.fromEnvironment('EMAIL');
+    const password = String.fromEnvironment('PASSWORD');
+    const testCode = String.fromEnvironment('TEST_CODE');
+
+    $.log("Flavor: $flavor");
+    $.log("Email: $email");
+
+    await Future.delayed(const Duration(seconds: 1));
     await $(l10n.theWelcomePhrase).waitUntilVisible();
     await $(l10n.getStarted).tap();
     await $(l10n.registerHere).waitUntilVisible();
     await $(keys.onboardingPage.emailTextField).enterText(email);
     await $(
       keys.onboardingPage.passwordTextField,
-    ).enterText(IConst.testSecurePassword);
+    ).enterText(password.isNotEmpty ? password : IConst.testSecurePassword);
     await $(keys.onboardingPage.registerButton).tap();
     await $(
       keys.emailConfirmationPage.verificationCodeTextField,
     ).waitUntilVisible();
 
     String? code;
-    if (kIsWeb) {
-      $.log("Using hardcoded verification code for test email");
-      code = '123456';
+    if (testCode.isNotEmpty) {
+      $.log("Using provided test code via --dart-define");
+      code = testCode;
     } else {
       $.log("fetching API");
-      MailApi mailApi = MailApi(
-        email: const String.fromEnvironment('EMAIL'),
-        password: const String.fromEnvironment('PASSWORD'),
-      );
       //read email data
+      final mailApi = MailApi(email: email, password: password, logger: $.log);
       $.log("extract code from mail api");
-      code = await mailApi.getVerificationCode();
       // Wait for the code
+      await Future.delayed(const Duration(seconds: 5));
+      code = await mailApi.getVerificationCode();
     }
+
     $.log("received code: $code");
     if (code == null) {
       $.log("Code is null, failing test");
@@ -99,7 +115,6 @@ void main() {
       keys.emailConfirmationPage.verificationCodeTextField,
     ).enterText(code);
     await $(keys.emailConfirmationPage.verifyButton).tap();
-    await $(keys.widgetTree.profileButton).tap();
     await Future.delayed(const Duration(seconds: 2));
   });
 }

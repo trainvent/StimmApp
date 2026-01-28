@@ -140,3 +140,6 @@ playwright-report/
 
 # Firebase cache
 /.firebase/
+
+# Patrol
+.patrol.env

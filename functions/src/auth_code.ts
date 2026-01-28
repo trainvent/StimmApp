@@ -73,7 +73,7 @@ export const sendVerificationCode = onCall({ secrets: ["SMTP_PASSWORD"] }, async
  * Verifies the code entered by the user.
  * If correct, marks the email as verified in Firebase Auth.
  */
-export const verifyCode = onCall(async (request) => {
+export const verifyCode = onCall({ secrets: ["TEST_EMAIL", "TEST_CODE"] }, async (request) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -85,9 +85,13 @@ export const verifyCode = onCall(async (request) => {
 
     const uid = request.auth.uid;
     const email = request.auth.token.email;
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    
+    const testEmail = process.env.TEST_EMAIL;
+    const testCode = process.env.TEST_CODE;
 
-    // Backdoor for testing
-    if (email === 'instantkickout@protonmail.com' && code === '123456') {
+    // Backdoor for testing, ONLY in Dev environment
+    if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
         await admin.auth().updateUser(uid, {
             emailVerified: true
         });
