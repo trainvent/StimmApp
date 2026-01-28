@@ -1,4 +1,4 @@
-import '../integration_test/helpers/mail_api.dart';
+import '../tmp/mail_api.dart';
 
 // Copied from IConst to avoid Flutter dependency in pure Dart script
 const String testMail = "leon.marquardt@mail.de";

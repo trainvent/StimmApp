@@ -69,9 +69,24 @@ android {
         }
     }
 
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "StimmApp Dev")
+        }
+        create("prod") {
+            dimension = "env"
+            resValue("string", "app_name", "StimmApp")
+        }
     }
+
+    // Orchestrator disabled to simplify debugging
+    // testOptions {
+    //     execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    // }
 }
 
 flutter {
@@ -79,9 +94,9 @@ flutter {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-ads:24.9.0")
-    implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.fragment:fragment-ktx:1.8.9")
-    androidTestUtil("androidx.test:orchestrator:1.5.1")
+    implementation("com.google.android.gms:play-services-ads:23.0.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    // androidTestUtil("androidx.test:orchestrator:1.4.2") // Disabled
 }
