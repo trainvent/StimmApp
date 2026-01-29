@@ -14,6 +14,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String get areYouSureYouWantToDeleteYourAccount =>
+      'Sind Sie sicher, dass Sie Ihr Konto löschen möchten?';
+
+  @override
   String get enterYourAddress => 'gib deine Wohnanschrift ein';
 
   @override

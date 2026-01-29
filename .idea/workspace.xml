@@ -5,22 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0c6c051-a91e-427e-837d-d47ff1cdf585" name="Changes" comment="shit">
+      <change afterPath="$PROJECT_DIR$/functions/.env.stimmapp-dev" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.patrol.env" beforeDir="false" afterPath="$PROJECT_DIR$/.patrol.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions/lib/auth_code.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/functions/lib/auth_code.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/index.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/index.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/esm/v2/providers/dataconnect.mjs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/providers/dataconnect.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/lib/v2/providers/dataconnect.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/node_modules/firebase-functions/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/node_modules/firebase-functions/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/functions/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions/src/auth_code.ts" beforeDir="false" afterPath="$PROJECT_DIR$/functions/src/auth_code.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/mobile/pages/main/profile/profile_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/mobile/pages/main/profile/profile_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/integration_test_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/integration_test_constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_de.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_de.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_en.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_de.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_de.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/l10n/app_localizations_en.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playwright-report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/playwright-report/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +97,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
@@ -224,7 +222,9 @@
       <workItem from="1769597973781" duration="981000" />
       <workItem from="1769604338288" duration="6653000" />
       <workItem from="1769611036374" duration="7000" />
-      <workItem from="1769611057034" duration="2135000" />
+      <workItem from="1769611057034" duration="8073000" />
+      <workItem from="1769621015187" duration="5208000" />
+      <workItem from="1769677546140" duration="2104000" />
     </task>
     <task id="LOCAL-00001" summary="shit">
       <option name="closed" value="true" />

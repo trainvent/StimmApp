@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'Welcome {firstName} {lastName}!'**
   String helloAndWelcome(String firstName, String lastName);
 
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @areYouSureYouWantToDeleteYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get areYouSureYouWantToDeleteYourAccount;
+
   /// No description provided for @enterYourAddress.
   ///
   /// In en, this message translates to:

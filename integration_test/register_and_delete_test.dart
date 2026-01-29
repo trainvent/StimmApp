@@ -115,6 +115,10 @@ void main() {
       keys.emailConfirmationPage.verificationCodeTextField,
     ).enterText(code);
     await $(keys.emailConfirmationPage.verifyButton).tap();
+    await $(keys.widgetTree.profileButton).tap();
+    await $(keys.profilePage.deleteAccountListTile).scrollTo().tap();
+    await $(keys.profilePage.confirmDeleteButton).tap();
+    await $(l10n.theWelcomePhrase).waitUntilVisible();
     await Future.delayed(const Duration(seconds: 2));
   });
 }

@@ -39,6 +39,8 @@ class ProfilePageKeys {
   final logoutListTile = const Key('logoutListTile');
   final confirmLogoutButton = const Key('confirmLogoutButton');
   final cancelLogoutButton = const Key('cancelLogoutButton');
+  final confirmDeleteButton = const Key('confirmDeleteButton');
+  final cancelDeleteButton = const Key('cancelDeleteButton');
 }
 
 class Keys {

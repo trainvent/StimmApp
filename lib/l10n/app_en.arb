@@ -13,6 +13,8 @@
 			}
 		}
 	},
+	"deleteAccount": "delete Account",
+	"areYouSureYouWantToDeleteYourAccount": "Are you sure you want to delete your account?",
 	"enterYourAddress": "enter Your Address",
 	"vote": "Vote",
 	"result": "Result",

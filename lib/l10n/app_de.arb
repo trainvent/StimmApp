@@ -24,6 +24,9 @@
 			}
 		}
 	},
+	"deleteAccount": "Konto löschen",
+	"areYouSureYouWantToDeleteYourAccount": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+
 	"paywallTitle": "Werde Premium-Mitglied",
 	"paywallSubtitle": "Unbegrenzter Zugang zu allen Funktionen",
 	"paywallDescription": "Genieße eine entspanntere und vielfätigere Oberfläche",

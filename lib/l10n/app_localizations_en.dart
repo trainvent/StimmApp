@@ -14,6 +14,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get deleteAccount => 'delete Account';
+
+  @override
+  String get areYouSureYouWantToDeleteYourAccount =>
+      'Are you sure you want to delete your account?';
+
+  @override
   String get enterYourAddress => 'enter Your Address';
 
   @override

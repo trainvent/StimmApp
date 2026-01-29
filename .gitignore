@@ -143,3 +143,6 @@ playwright-report/
 
 # Patrol
 .patrol.env
+
+# Functions env files
+functions/.env.*

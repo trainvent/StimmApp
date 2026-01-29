@@ -324,13 +324,42 @@ class ProfilePage extends StatelessWidget {
                       style: AppTextStyles.red,
                     ),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const DeleteAccountPage();
-                          },
-                        ),
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return AlertDialog(
+                            title: Text(dialogContext.l10n.deleteAccount),
+                            content: Text(
+                              dialogContext
+                                  .l10n
+                                  .areYouSureYouWantToDeleteYourAccount,
+                              style: AppTextStyles.m,
+                            ),
+                            actions: [
+                              FilledButton(
+                                key: keys.profilePage.confirmDeleteButton,
+                                onPressed: () {
+                                  // Pop the dialog before calling logout.
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DeleteAccountPage(),
+                                    ),
+                                  );
+                                },
+                                child: Text(dialogContext.l10n.confirm),
+                              ),
+                              TextButton(
+                                key: keys.profilePage.cancelDeleteButton,
+                                onPressed: () {
+                                  Navigator.pop(dialogContext);
+                                },
+                                child: Text(dialogContext.l10n.cancel),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
                   ),

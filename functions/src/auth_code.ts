@@ -4,6 +4,13 @@ import * as nodemailer from 'nodemailer';
 
 const db = admin.firestore();
 
+const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
+const smtpPassword = process.env.SMTP_PASSWORD;
+
+if (!smtpPassword) {
+    console.warn("SMTP_PASSWORD is not set in environment variables.");
+}
+
 // This configuration matches the successful `swaks` test.
 const transporter = nodemailer.createTransport({
     host: "smtp.ionos.de",
@@ -11,8 +18,8 @@ const transporter = nodemailer.createTransport({
     secure: false, // Explicitly false for STARTTLS
     requireTLS: true, // Enforce STARTTLS
     auth: {
-        user: "noreply@stimmapp.org",
-        pass: process.env.SMTP_PASSWORD,
+        user: smtpMail,
+        pass: smtpPassword,
     },
 });
 
@@ -23,7 +30,7 @@ function generateCode(): string {
 
 async function sendEmail(email: string, code: string) {
     const mailOptions = {
-        from: '"StimmApp Team" <noreply@stimmapp.org>',
+        from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
         subject: 'Your Verification Code',
         text: `Welcome to StimmApp!\n\nYour verification code is: ${code}\n\nThis code will expire in 15 minutes.`,
@@ -43,7 +50,7 @@ async function sendEmail(email: string, code: string) {
  * Sends a verification code to the user's email.
  * Call this after creating the account or when requesting a new code.
  */
-export const sendVerificationCode = onCall({ secrets: ["SMTP_PASSWORD"] }, async (request) => {
+export const sendVerificationCode = onCall(async (request) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -73,7 +80,7 @@ export const sendVerificationCode = onCall({ secrets: ["SMTP_PASSWORD"] }, async
  * Verifies the code entered by the user.
  * If correct, marks the email as verified in Firebase Auth.
  */
-export const verifyCode = onCall({ secrets: ["TEST_EMAIL", "TEST_CODE"] }, async (request) => {
+export const verifyCode = onCall(async (request) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
