@@ -36,7 +36,12 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       await authService.verifyCode(code);
       if (!mounted) return;
       showSuccessSnackBar('Email verified successfully!');
-      // No need to navigate manually; AuthLayout will rebuild and show the next page
+
+      // If this page was pushed onto the stack (e.g. from OnboardingPage),
+      // popping it might reveal the AuthLayout underneath which has now updated.
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     } on AuthException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(e.message ?? 'Verification failed');

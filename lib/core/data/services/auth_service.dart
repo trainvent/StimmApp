@@ -134,6 +134,8 @@ class AuthService {
       await functions.httpsCallable('verifyCode').call({'code': code});
       // Reload user to update emailVerified status
       await currentUser?.reload();
+      // Force refresh the token to ensure all claims are updated
+      await currentUser?.getIdToken(true);
     } on FirebaseFunctionsException catch (e) {
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),

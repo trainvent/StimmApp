@@ -150,6 +150,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
+                      key: const Key('surnameTextField'),
                       controller: controllerSurname,
                       decoration: InputDecoration(
                         labelText: context.l10n.surname,
@@ -163,6 +164,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
+                      key: const Key('givenNameTextField'),
                       controller: controllerGivenName,
                       decoration: InputDecoration(
                         labelText: context.l10n.givenName,
@@ -176,6 +178,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
+                      key: const Key('dateOfBirthTextField'),
                       controller: controllerDateOfBirth,
                       readOnly: true,
                       decoration: InputDecoration(
@@ -210,6 +213,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     Text(_selectedState ?? context.l10n.state),
                     const SizedBox(height: 10),
                     GooglePlacesAddressWidget(
+                      key: const Key('addressTextField'),
                       controller: _textController,
                       onStateChanged: (state) {
                         if (state != null) {
@@ -226,6 +230,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
             ),
             buttons: [
               ButtonWidget(
+                key: const Key('saveButton'),
                 isFilled: true,
                 label: context.l10n.save,
                 callback: () {

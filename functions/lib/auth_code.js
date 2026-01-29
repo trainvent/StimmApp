@@ -116,6 +116,16 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
     const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
+    console.log("DEBUG VERIFY:", {
+        project: process.env.GCLOUD_PROJECT,
+        isDev: isDevEnvironment,
+        email: email,
+        code: code,
+        testEmail: testEmail,
+        testCode: testCode,
+        matchEmail: email === testEmail,
+        matchCode: code === testCode
+    });
     // Backdoor for testing, ONLY in Dev environment
     if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
         await admin.auth().updateUser(uid, {

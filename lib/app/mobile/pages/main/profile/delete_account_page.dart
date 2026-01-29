@@ -49,6 +49,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
           _emailController.clear();
           _passwordController.clear();
         });
+
+        if (mounted) {
+          // Pop all routes until the first one (which should be the AuthLayout/WelcomePage)
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -65,9 +70,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         _statusMessage = 'An unexpected error occurred.';
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -104,6 +111,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
+                    key: const Key('deleteAccountEmailField'),
                     controller: _emailController,
                     decoration: const InputDecoration(
                       labelText: "Email",
@@ -117,6 +125,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
+                    key: const Key('deleteAccountPasswordField'),
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       labelText: "Password",
@@ -144,6 +153,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                       ),
                     ),
                   ElevatedButton(
+                    key: const Key('deleteAccountButton'),
                     onPressed: _isLoading ? null : _deleteAccount,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,

@@ -97,6 +97,17 @@ export const verifyCode = onCall(async (request) => {
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
 
+    console.log("DEBUG VERIFY:", {
+        project: process.env.GCLOUD_PROJECT,
+        isDev: isDevEnvironment,
+        email: email,
+        code: code,
+        testEmail: testEmail,
+        testCode: testCode,
+        matchEmail: email === testEmail,
+        matchCode: code === testCode
+    });
+
     // Backdoor for testing, ONLY in Dev environment
     if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
         await admin.auth().updateUser(uid, {

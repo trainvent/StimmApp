@@ -43,12 +43,21 @@ class ProfilePageKeys {
   final cancelDeleteButton = const Key('cancelDeleteButton');
 }
 
+class SetUserDetailsPageKeys {
+  final saveButton = const Key('saveButton');
+  final surnameTextField = const Key('surnameTextField');
+  final givenNameTextField = const Key('givenNameTextField');
+  final dateOfBirthTextField = const Key('dateOfBirthTextField');
+  final addressTextField = const Key('addressTextField');
+}
+
 class Keys {
   final loginPage = LoginPageKeys();
   final emailConfirmationPage = EmailConfirmationPageKeys();
   final onboardingPage = OnboardingPageKeys();
   final widgetTree = WidgetTreeKeys();
   final profilePage = ProfilePageKeys();
+  final setUserDetailsPageKeys = SetUserDetailsPageKeys();
 }
 
 final keys = Keys();

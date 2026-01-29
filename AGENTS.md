@@ -116,4 +116,5 @@ patrol test -t integration_test/simple_flow_test.dart
 *   [ ] Ensure `IConst.appName` is correct ("StimmApp").
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
+*   [ ] check with lightroom.
 *   [ ] Build App Bundle: `flutter build appbundle`.

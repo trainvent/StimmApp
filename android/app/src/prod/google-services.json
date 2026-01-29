@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:25072489020:android:5458fefbdaad572623a939",
         "android_client_info": {
-          "package_name": "de.lemarq.stimmapp.dev"
+          "package_name": "de.lemarq.stimmapp"
         }
       },
       "oauth_client": [],
