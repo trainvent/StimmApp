@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 class OnboardingPageKeys {
   final emailTextField = const Key('emailTestField');
   final passwordTextField = const Key('passwordTestField');
+  final repeatPasswordTextField = const Key('repeatPasswordTextField');
   final registerButton = const Key('registerButton');
 }
 

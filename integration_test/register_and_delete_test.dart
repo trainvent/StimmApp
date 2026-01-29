@@ -17,12 +17,12 @@ import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart' as prod;
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
-import 'package:stimmapp/l10n/app_localizations_en.dart';
+import 'package:stimmapp/l10n/app_localizations_de.dart';
 
 import 'helpers/mail_api.dart';
 
 void main() {
-  final l10n = AppLocalizationsEn();
+  final l10n = AppLocalizationsDe();
   patrolTest('register a new user, delete him and fail to sign in', ($) async {
     if (kIsWeb) usePathUrlStrategy();
     WidgetsFlutterBinding.ensureInitialized();
@@ -84,6 +84,9 @@ void main() {
     await $(
       keys.onboardingPage.passwordTextField,
     ).enterText(password.isNotEmpty ? password : IConst.testSecurePassword);
+    await $(
+      keys.onboardingPage.repeatPasswordTextField,
+    ).enterText(password.isNotEmpty ? password : IConst.testSecurePassword);
     await $(keys.onboardingPage.registerButton).tap();
     await $(
       keys.emailConfirmationPage.verificationCodeTextField,
@@ -123,7 +126,7 @@ void main() {
     // Wait for dialog animation
     await Future.delayed(const Duration(seconds: 1));
     // Tap OK to select the default date (today)
-    await $.native.tap(Selector(text: 'OK'));
+    await $.platformAutomator.tap(Selector(text: 'OK'));
 
     // Enter partial address so the suggestion contains unique text
     const partialAddress = "Ravensberger Straße 42, 33602";
@@ -132,11 +135,11 @@ void main() {
     ).enterText(partialAddress);
 
     // Wait for Google Places suggestions to appear
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     // Tap the suggestion containing "Bielefeld".
     await $(RegExp('Bielefeld')).tap();
-
+    await $(RegExp('Nordrhein-Westfalen')).waitUntilVisible();
     await $(keys.setUserDetailsPageKeys.saveButton).tap();
     await $(keys.widgetTree.profileButton).tap();
 
@@ -152,16 +155,6 @@ void main() {
     await $(const Key('deleteAccountButton')).tap();
 
     // Wait for deletion and navigation back to WelcomePage
-    await $(l10n.theWelcomePhrase).waitUntilVisible();
-    await $(l10n.login).tap();
-    await $(l10n.signIn).waitUntilVisible();
-    await $(
-      keys.loginPage.emailTextField,
-    ).enterText(const String.fromEnvironment('EMAIL'));
-    await $(
-      keys.loginPage.passwordTextField,
-    ).enterText(const String.fromEnvironment('PASSWORD'));
-    await $(keys.loginPage.signInButton).tap();
     await $(l10n.theWelcomePhrase).waitUntilVisible();
     await Future.delayed(const Duration(seconds: 2));
   });
