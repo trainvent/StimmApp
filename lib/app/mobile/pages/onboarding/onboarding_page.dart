@@ -21,6 +21,7 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   static const platform = MethodChannel('de.lemarq.stimmapp/eid');
   final TextEditingController controllerPw = TextEditingController();
+  final TextEditingController controllerConfirmPw = TextEditingController();
   final TextEditingController controllerEm = TextEditingController();
 
   String errorMessage = 'Error message';
@@ -28,11 +29,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   void dispose() {
     controllerPw.dispose();
+    controllerConfirmPw.dispose();
     controllerEm.dispose();
     super.dispose();
   }
 
   Future<void> register() async {
+    if (controllerPw.text != controllerConfirmPw.text) {
+      showErrorSnackBar(context.l10n.passwordsDoNotMatch);
+      return;
+    }
+
     try {
       await authService.createAccount(
         email: controllerEm.text,
@@ -138,6 +145,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 }
                                 if (value.trim().isEmpty) {
                                   return context.l10n.enterSomething;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              key: const Key('confirmPasswordTextField'),
+                              obscureText: true,
+                              controller: controllerConfirmPw,
+                              decoration: InputDecoration(
+                                labelText: context.l10n.confirmPassword,
+                              ),
+                              validator: (String? value) {
+                                if (value == null) {
+                                  return context.l10n.enterSomething;
+                                }
+                                if (value.trim().isEmpty) {
+                                  return context.l10n.enterSomething;
+                                }
+                                if (value != controllerPw.text) {
+                                  return context.l10n.passwordsDoNotMatch;
                                 }
                                 return null;
                               },

@@ -307,5 +307,14 @@
 	"subscriptionCancelledAccessWillRemainUntilExpiry": "Abo gekündigt. Zugriff bleibt bis zum Ablauf erhalten.",
 	"failedToUploadImage": "Bild konnte nicht hochgeladen werden",
 	"selectFromGallery": "Aus Galerie wählen",
-	"selectFromCamera": "Mit Kamera aufnehmen"
+	"selectFromCamera": "Mit Kamera aufnehmen",
+	"passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+	"confirmPassword": "Passwort bestätigen",
+	"deleteAccountTitle": "Konto löschen",
+	"deleteAccountDescription": "Bitte melden Sie sich an, um Ihre Identität zu bestätigen. Diese Aktion löscht Ihr Konto und alle zugehörigen Daten unwiderruflich.",
+	"deleteAccountSuccess": "Konto erfolgreich gelöscht.",
+	"deleteAccountUserNotFound": "Kein Benutzer mit dieser E-Mail gefunden.",
+	"deleteAccountWrongPassword": "Falsches Passwort.",
+	"deleteAccountUnexpectedError": "Ein unerwarteter Fehler ist aufgetreten.",
+	"deleteAccountButton": "KONTO ENDGÜLTIG LÖSCHEN"
 }

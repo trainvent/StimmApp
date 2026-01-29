@@ -302,5 +302,14 @@
 	"isProMember": "Ist Pro-Mitglied",
 	"yes": "Ja",
 	"noProMember": "Nein, kein Pro-Mitglied",
-	"imagePreviewDescription": "This is a preview of your new profile picture."
+	"imagePreviewDescription": "This is a preview of your new profile picture.",
+	"passwordsDoNotMatch": "Passwords do not match",
+	"confirmPassword": "Confirm Password",
+	"deleteAccountTitle": "Delete Your Account",
+	"deleteAccountDescription": "Please sign in to confirm your identity. This action will permanently delete your account and all associated data.",
+	"deleteAccountSuccess": "Account deleted successfully.",
+	"deleteAccountUserNotFound": "No user found for that email.",
+	"deleteAccountWrongPassword": "Wrong password provided.",
+	"deleteAccountUnexpectedError": "An unexpected error occurred.",
+	"deleteAccountButton": "PERMANENTLY DELETE ACCOUNT"
 }

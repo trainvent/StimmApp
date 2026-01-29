@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   const DeleteAccountPage({super.key});
@@ -45,7 +46,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         await userCredential.user!.delete();
 
         setState(() {
-          _statusMessage = "Account deleted successfully.";
+          _statusMessage = context.l10n.deleteAccountSuccess;
           _emailController.clear();
           _passwordController.clear();
         });
@@ -58,16 +59,16 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         if (e.code == 'user-not-found') {
-          _statusMessage = 'No user found for that email.';
+          _statusMessage = context.l10n.deleteAccountUserNotFound;
         } else if (e.code == 'wrong-password') {
-          _statusMessage = 'Wrong password provided.';
+          _statusMessage = context.l10n.deleteAccountWrongPassword;
         } else {
-          _statusMessage = 'Error: ${e.message}';
+          _statusMessage = '${context.l10n.error}${e.message}';
         }
       });
     } catch (e) {
       setState(() {
-        _statusMessage = 'An unexpected error occurred.';
+        _statusMessage = context.l10n.deleteAccountUnexpectedError;
       });
     } finally {
       if (mounted) {
@@ -81,7 +82,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Delete Account")),
+      appBar: AppBar(title: Text(context.l10n.deleteAccountTitle)),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -99,42 +100,45 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     color: Colors.red,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    "Delete Your Account",
+                  Text(
+                    context.l10n.deleteAccountTitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    "Please sign in to confirm your identity. This action will permanently delete your account and all associated data.",
+                  Text(
+                    context.l10n.deleteAccountDescription,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
                     key: const Key('deleteAccountEmailField'),
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.email,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => (value == null || value.isEmpty)
-                        ? "Please enter your email"
+                        ? context.l10n.enterYourEmail
                         : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     key: const Key('deleteAccountPasswordField'),
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: "Password",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.password,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
                     ),
                     obscureText: true,
                     validator: (value) => (value == null || value.isEmpty)
-                        ? "Please enter your password"
+                        ? context.l10n.enterSomething
                         : null,
                   ),
                   const SizedBox(height: 24),
@@ -169,7 +173,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text("PERMANENTLY DELETE ACCOUNT"),
+                        : Text(context.l10n.deleteAccountButton),
                   ),
                 ],
               ),

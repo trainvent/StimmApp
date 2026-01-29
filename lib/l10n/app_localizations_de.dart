@@ -831,4 +831,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get imagePreviewDescription => 'Bildvorschau';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwörter stimmen nicht überein';
+
+  @override
+  String get confirmPassword => 'Passwort bestätigen';
+
+  @override
+  String get deleteAccountTitle => 'Konto löschen';
+
+  @override
+  String get deleteAccountDescription =>
+      'Bitte melden Sie sich an, um Ihre Identität zu bestätigen. Diese Aktion löscht Ihr Konto und alle zugehörigen Daten unwiderruflich.';
+
+  @override
+  String get deleteAccountSuccess => 'Konto erfolgreich gelöscht.';
+
+  @override
+  String get deleteAccountUserNotFound =>
+      'Kein Benutzer mit dieser E-Mail gefunden.';
+
+  @override
+  String get deleteAccountWrongPassword => 'Falsches Passwort.';
+
+  @override
+  String get deleteAccountUnexpectedError =>
+      'Ein unerwarteter Fehler ist aufgetreten.';
+
+  @override
+  String get deleteAccountButton => 'KONTO ENDGÜLTIG LÖSCHEN';
 }

@@ -76,6 +76,7 @@ The app follows a clean architecture approach, separated into layers:
 ### Testing
 *   **Integration:** Patrol is used for UI/Integration testing (`integration_test/`).
 *   **Note:** Patrol requires specific setup in `build.gradle`.
+*   **Clean Code in Tests:** Production code should **NOT** contain test-specific logic or flags (e.g., `if (isTest) ...`). Tests must interact with the app as a real user would (e.g., tapping native dialogs, finding widgets by text/key).
 
 ## 4. Common Workflows
 

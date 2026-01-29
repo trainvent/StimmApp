@@ -825,4 +825,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get imagePreviewDescription =>
       'This is a preview of your new profile picture.';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get deleteAccountTitle => 'Delete Your Account';
+
+  @override
+  String get deleteAccountDescription =>
+      'Please sign in to confirm your identity. This action will permanently delete your account and all associated data.';
+
+  @override
+  String get deleteAccountSuccess => 'Account deleted successfully.';
+
+  @override
+  String get deleteAccountUserNotFound => 'No user found for that email.';
+
+  @override
+  String get deleteAccountWrongPassword => 'Wrong password provided.';
+
+  @override
+  String get deleteAccountUnexpectedError => 'An unexpected error occurred.';
+
+  @override
+  String get deleteAccountButton => 'PERMANENTLY DELETE ACCOUNT';
 }
