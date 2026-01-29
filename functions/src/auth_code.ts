@@ -5,23 +5,6 @@ import * as nodemailer from 'nodemailer';
 const db = admin.firestore();
 
 const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
-const smtpPassword = process.env.SMTP_PASSWORD;
-
-if (!smtpPassword) {
-    console.warn("SMTP_PASSWORD is not set in environment variables.");
-}
-
-// This configuration matches the successful `swaks` test.
-const transporter = nodemailer.createTransport({
-    host: "smtp.ionos.de",
-    port: 587,
-    secure: false, // Explicitly false for STARTTLS
-    requireTLS: true, // Enforce STARTTLS
-    auth: {
-        user: smtpMail,
-        pass: smtpPassword,
-    },
-});
 
 // Generate a random 6-digit code
 function generateCode(): string {
@@ -29,6 +12,26 @@ function generateCode(): string {
 }
 
 async function sendEmail(email: string, code: string) {
+    const smtpPassword = process.env.SMTP_PASSWORD;
+    
+    if (!smtpPassword) {
+        console.error("SMTP_PASSWORD is not set in environment variables.");
+        throw new HttpsError('internal', 'Email configuration error.');
+    }
+
+    // This configuration matches the successful `swaks` test.
+    // Initialize transporter here to ensure env vars are loaded
+    const transporter = nodemailer.createTransport({
+        host: "smtp.ionos.de",
+        port: 587,
+        secure: false, // Explicitly false for STARTTLS
+        requireTLS: true, // Enforce STARTTLS
+        auth: {
+            user: smtpMail,
+            pass: smtpPassword,
+        },
+    });
+
     const mailOptions = {
         from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
