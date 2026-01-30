@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
@@ -94,21 +96,24 @@ class AboutPage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.email_outlined),
               onPressed: () {
-                // TODO: Implement email launch (e.g. using url_launcher)
+                Clipboard.setData(ClipboardData(text: contributor.email!));
+                showSuccessSnackBar('Email copied to clipboard');
               },
             ),
           if (contributor.github != null)
             IconButton(
               icon: const Icon(Icons.code),
               onPressed: () {
-                // TODO: Implement URL launch
+                Clipboard.setData(ClipboardData(text: contributor.github!));
+                showSuccessSnackBar('GitHub link copied to clipboard');
               },
             ),
           if (contributor.linkedin != null)
             IconButton(
               icon: const Icon(Icons.business),
               onPressed: () {
-                // TODO: Implement URL launch
+                Clipboard.setData(ClipboardData(text: contributor.linkedin!));
+                showSuccessSnackBar('LinkedIn link copied to clipboard');
               },
             ),
         ],

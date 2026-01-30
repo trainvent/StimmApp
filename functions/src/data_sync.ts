@@ -5,8 +5,18 @@ import { defineSecret } from "firebase-functions/params";
 // Define the secret that will hold the Production Service Account Key
 const prodServiceAccountKey = defineSecret("PROD_SERVICE_ACCOUNT_KEY");
 
+interface CollectionSyncConfig {
+    name: string;
+    subcollections?: string[];
+}
+
 // List of Firestore collections to sync from Prod to Dev
-const COLLECTIONS_TO_SYNC = ['users', 'petitions', 'polls', 'verificationCodes']; 
+const COLLECTIONS_TO_SYNC: CollectionSyncConfig[] = [
+    { name: 'users' },
+    { name: 'petitions', subcollections: ['signatures'] },
+    { name: 'polls', subcollections: ['votes'] },
+    { name: 'verificationCodes' }
+];
 
 /**
  * A scheduled function that runs once a day to copy data from the Production
@@ -21,6 +31,12 @@ export const syncProdToDev = onSchedule({
     memory: "1GiB",
     secrets: [prodServiceAccountKey]
 }, async (event) => {
+    // Ensure we are NOT running in Production to prevent accidents
+    if (process.env.GCLOUD_PROJECT === 'stimmapp-f0141') {
+        console.error("CRITICAL: Attempted to run syncProdToDev IN PRODUCTION. Aborting.");
+        return;
+    }
+
     // Initialize access to the local (Dev) environment
     const devDb = admin.firestore();
     const devBucket = admin.storage().bucket();
@@ -39,12 +55,14 @@ export const syncProdToDev = onSchedule({
     console.log("Starting Sync: Production -> Development");
 
     // --- 1. Sync Firestore ---
-    for (const colName of COLLECTIONS_TO_SYNC) {
+    for (const config of COLLECTIONS_TO_SYNC) {
+        const colName = config.name;
         console.log(`Syncing collection: ${colName}`);
         
-        // A. Delete all documents in the Dev collection
-        await deleteCollection(devDb, colName, 200);
-        console.log(`Deleted all documents from Dev collection: ${colName}`);
+        // A. Delete all documents in the Dev collection (including subcollections)
+        // recursiveDelete is available in firebase-admin v11+
+        await devDb.recursiveDelete(devDb.collection(colName));
+        console.log(`Deleted all documents and subcollections from Dev: ${colName}`);
 
         // B. Copy all documents from Prod to Dev
         const snapshot = await prodDb.collection(colName).get();
@@ -53,41 +71,50 @@ export const syncProdToDev = onSchedule({
             continue;
         }
 
-        const batchSize = 400;
-        let batch = devDb.batch();
-        let count = 0;
+        const batchManager = new BatchManager(devDb);
 
         for (const doc of snapshot.docs) {
-            batch.set(devDb.collection(colName).doc(doc.id), doc.data());
-            count++;
-            if (count >= batchSize) {
-                await batch.commit();
-                batch = devDb.batch();
-                count = 0;
+            await batchManager.set(devDb.collection(colName).doc(doc.id), doc.data());
+
+            // C. Sync Subcollections if configured
+            if (config.subcollections) {
+                for (const subName of config.subcollections) {
+                    const subSnapshot = await prodDb.collection(colName).doc(doc.id).collection(subName).get();
+                    for (const subDoc of subSnapshot.docs) {
+                        await batchManager.set(
+                            devDb.collection(colName).doc(doc.id).collection(subName).doc(subDoc.id),
+                            subDoc.data()
+                        );
+                    }
+                }
             }
         }
-        if (count > 0) await batch.commit();
-        console.log(`Synced ${snapshot.size} documents for ${colName}`);
+        await batchManager.commit();
+        console.log(`Synced documents (and subcollections) for ${colName}`);
     }
 
     // --- 2. Sync Firebase Storage ---
     console.log("Syncing Firebase Storage...");
     
-    // A. Delete all files in the Dev bucket
-    await devBucket.deleteFiles({ force: true });
-    console.log("Deleted all files from Dev Storage bucket.");
+    try {
+        // A. Delete all files in the Dev bucket
+        await devBucket.deleteFiles({ force: true });
+        console.log("Deleted all files from Dev Storage bucket.");
 
-    // B. Copy all files from Prod to Dev
-    const [prodFiles] = await prodBucket.getFiles();
-    if (prodFiles.length > 0) {
-        let copiedCount = 0;
-        for (const file of prodFiles) {
-            await file.copy(devBucket.file(file.name));
-            copiedCount++;
+        // B. Copy all files from Prod to Dev
+        const [prodFiles] = await prodBucket.getFiles();
+        if (prodFiles.length > 0) {
+            let copiedCount = 0;
+            for (const file of prodFiles) {
+                await file.copy(devBucket.file(file.name));
+                copiedCount++;
+            }
+            console.log(`Synced ${copiedCount} files from Storage.`);
+        } else {
+            console.log("No files to sync from Storage.");
         }
-        console.log(`Synced ${copiedCount} files from Storage.`);
-    } else {
-        console.log("No files to sync from Storage.");
+    } catch (error) {
+        console.error("Error syncing storage:", error);
     }
 
     // Clean up the temporary prod app instance
@@ -97,35 +124,31 @@ export const syncProdToDev = onSchedule({
 });
 
 /**
- * Deletes all documents in a collection in batches.
+ * Helper class to manage Firestore batches, automatically committing when the limit is reached.
  */
-async function deleteCollection(db: admin.firestore.Firestore, collectionPath: string, batchSize: number) {
-  const collectionRef = db.collection(collectionPath);
-  const query = collectionRef.orderBy('__name__').limit(batchSize);
+class BatchManager {
+    private batch: admin.firestore.WriteBatch;
+    private count = 0;
+    private db: admin.firestore.Firestore;
 
-  return new Promise<void>((resolve, reject) => {
-    deleteQueryBatch(db, query, resolve).catch(reject);
-  });
-}
+    constructor(db: admin.firestore.Firestore) {
+        this.db = db;
+        this.batch = db.batch();
+    }
 
-async function deleteQueryBatch(db: admin.firestore.Firestore, query: admin.firestore.Query, resolve: Function) {
-  const snapshot = await query.get();
+    async set(ref: admin.firestore.DocumentReference, data: any) {
+        this.batch.set(ref, data);
+        this.count++;
+        if (this.count >= 400) {
+            await this.commit();
+        }
+    }
 
-  const batchSize = snapshot.size;
-  if (batchSize === 0) {
-    // When there are no documents left, we are done
-    resolve();
-    return;
-  }
-
-  const batch = db.batch();
-  snapshot.docs.forEach((doc) => {
-    batch.delete(doc.ref);
-  });
-  await batch.commit();
-
-  // Recurse on the next process tick to avoid exploding the stack
-  process.nextTick(() => {
-    deleteQueryBatch(db, query, resolve);
-  });
+    async commit() {
+        if (this.count > 0) {
+            await this.batch.commit();
+            this.batch = this.db.batch();
+            this.count = 0;
+        }
+    }
 }
