@@ -24,6 +24,7 @@
 			}
 		}
 	},
+	"loginCodeSent": "Login Code gesendet",
 	"userProfileVerified": "Konto verifiziert",
 	"deleteAccount": "Konto löschen",
 	"areYouSureYouWantToDeleteYourAccount": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",

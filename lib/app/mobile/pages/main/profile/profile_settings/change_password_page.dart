@@ -5,6 +5,7 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/validate_password.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -42,6 +43,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       );
       if (!mounted) return;
       showSuccessSnackBar(successMessage);
+      Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       if (e is DatabaseException) {
@@ -94,15 +96,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         decoration: InputDecoration(
                           labelText: context.l10n.newPassword,
                         ),
-                        validator: (String? value) {
-                          if (value == null) {
-                            return context.l10n.enterSomething;
-                          }
-                          if (value.trim().isEmpty) {
-                            return context.l10n.enterSomething;
-                          }
-                          return null;
-                        },
+                        validator: (value) => validatePassword(context, value),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -126,8 +120,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           callback: () async {
             if (_formKey.currentState!.validate()) {
               updatePassword();
-              Navigator.of(context).pop();
-              showSuccessSnackBar(context.l10n.passwordChangedSuccessfully);
             }
           },
         ),

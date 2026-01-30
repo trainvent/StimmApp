@@ -14,6 +14,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get loginCodeSent => 'login code sent';
+
+  @override
   String get deleteAccount => 'delete Account';
 
   @override
@@ -865,4 +868,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterCode => 'Enter Code';
+
+  @override
+  String get resetPasswordCodeSent => 'Reset password code sent';
 }

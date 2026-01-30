@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Welcome {firstName} {lastName}!'**
   String helloAndWelcome(String firstName, String lastName);
 
+  /// No description provided for @loginCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'login code sent'**
+  String get loginCodeSent;
+
   /// No description provided for @deleteAccount.
   ///
   /// In en, this message translates to:
@@ -1741,6 +1747,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter Code'**
   String get enterCode;
+
+  /// No description provided for @resetPasswordCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password code sent'**
+  String get resetPasswordCodeSent;
 }
 
 class _AppLocalizationsDelegate

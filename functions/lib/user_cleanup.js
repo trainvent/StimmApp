@@ -33,8 +33,10 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onAccountDelete = void 0;
+exports.cleanupOrphanedUsers = exports.onAccountDelete = void 0;
+exports.cleanupUserData = cleanupUserData;
 const functions = __importStar(require("firebase-functions/v1"));
+const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -80,26 +82,23 @@ function getFilePathFromUrl(url) {
         return null;
     }
 }
-exports.onAccountDelete = functions.auth.user().onDelete(async (user) => {
-    const uid = user.uid;
+/**
+ * Reusable function to clean up all data associated with a user.
+ */
+async function cleanupUserData(uid) {
     const db = admin.firestore();
     const bucket = admin.storage().bucket();
-    console.log(`[onAccountDelete] Cleaning up data for user: ${uid}`);
+    console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
     try {
         // 1. Delete User Profile Document
         await db.collection("users").doc(uid).delete();
         // 2. Delete User Profile Picture from Storage
-        // Assuming path is users/{uid}/profile_picture.jpg or similar.
-        // Since we don't know the exact extension, we might need to list files or just try common ones.
-        // Or if you store the path in the user doc, you should fetch it before deleting the doc.
-        // Here we try a common pattern or just skip if not easily guessable.
-        // A better approach is to list files in the user's folder if you organize storage by user folders.
         try {
             await bucket.deleteFiles({ prefix: `users/${uid}/` });
-            console.log(`[onAccountDelete] Deleted storage files in users/${uid}/`);
+            console.log(`[cleanupUserData] Deleted storage files in users/${uid}/`);
         }
         catch (e) {
-            console.warn(`[onAccountDelete] Failed to delete storage files for user ${uid}:`, e);
+            console.warn(`[cleanupUserData] Failed to delete storage files for user ${uid}:`, e);
         }
         // 3. Delete Petitions created by the user
         const petitionsSnap = await db.collection("petitions").where("createdBy", "==", uid).get();
@@ -113,7 +112,7 @@ exports.onAccountDelete = functions.auth.user().onDelete(async (user) => {
                         await bucket.file(filePath).delete();
                     }
                     catch (e) {
-                        console.warn(`[onAccountDelete] Failed to delete petition image ${filePath}:`, e);
+                        console.warn(`[cleanupUserData] Failed to delete petition image ${filePath}:`, e);
                     }
                 }
             }
@@ -131,24 +130,61 @@ exports.onAccountDelete = functions.auth.user().onDelete(async (user) => {
             await doc.ref.delete();
         }
         // 5. Delete Signatures made by this user on OTHER petitions
-        // This requires a collectionGroup query.
-        // Note: You might need an index for this query: signatures where signerId == uid
         const signaturesSnap = await db.collectionGroup("signatures").where("signerId", "==", uid).get();
         const sigBatch = db.batch();
         signaturesSnap.docs.forEach(doc => sigBatch.delete(doc.ref));
         await sigBatch.commit();
         // 6. Delete Votes made by this user on OTHER polls
-        // Note: You might need an index for this query: votes where voterId == uid
         const votesSnap = await db.collectionGroup("votes").where("voterId", "==", uid).get();
         const voteBatch = db.batch();
         votesSnap.docs.forEach(doc => voteBatch.delete(doc.ref));
         await voteBatch.commit();
         // 7. Delete Verification Codes
         await db.collection("verificationCodes").doc(uid).delete();
-        console.log(`[onAccountDelete] Cleanup complete for user: ${uid}`);
+        console.log(`[cleanupUserData] Cleanup complete for user: ${uid}`);
     }
     catch (error) {
-        console.error(`[onAccountDelete] Error cleaning up user ${uid}:`, error);
+        console.error(`[cleanupUserData] Error cleaning up user ${uid}:`, error);
     }
+}
+exports.onAccountDelete = functions.auth.user().onDelete(async (user) => {
+    await cleanupUserData(user.uid);
+});
+/**
+ * Scheduled function to check for orphaned users (exist in Firestore but not in Auth)
+ * and clean them up. Runs every day at 14:00.
+ */
+exports.cleanupOrphanedUsers = (0, scheduler_1.onSchedule)({
+    schedule: "every day 14:00",
+    timeoutSeconds: 540,
+    memory: "1GiB",
+}, async (event) => {
+    const db = admin.firestore();
+    console.log("Starting cleanup of orphaned users...");
+    // Get all user IDs from Firestore
+    // Using select() to fetch only document references (IDs) to save memory
+    const snapshot = await db.collection("users").select().get();
+    const allUserIds = snapshot.docs.map(doc => doc.id);
+    console.log(`Found ${allUserIds.length} users in Firestore. Checking Auth status...`);
+    const BATCH_SIZE = 100;
+    let orphanedCount = 0;
+    for (let i = 0; i < allUserIds.length; i += BATCH_SIZE) {
+        const batchIds = allUserIds.slice(i, i + BATCH_SIZE);
+        const identifiers = batchIds.map(uid => ({ uid }));
+        try {
+            const authResult = await admin.auth().getUsers(identifiers);
+            const foundUids = new Set(authResult.users.map(u => u.uid));
+            const missingUids = batchIds.filter(uid => !foundUids.has(uid));
+            for (const missingUid of missingUids) {
+                console.log(`User ${missingUid} is missing from Auth. Cleaning up...`);
+                await cleanupUserData(missingUid);
+                orphanedCount++;
+            }
+        }
+        catch (error) {
+            console.error(`Error checking auth status for batch starting at index ${i}:`, error);
+        }
+    }
+    console.log(`Cleanup complete. Removed ${orphanedCount} orphaned users.`);
 });
 //# sourceMappingURL=user_cleanup.js.map

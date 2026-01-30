@@ -35,7 +35,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     try {
       await authService.resetPassword(email: controllerEmail.text);
       if (!mounted) return;
-      showSuccessSnackBar(context.l10n.resetPasswordLinkSent);
+      showSuccessSnackBar(context.l10n.resetPasswordCodeSent);
+      if (!mounted) return;
       Navigator.of(context).pop();
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -50,7 +51,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     try {
       await authService.sendLoginCode(controllerEmail.text);
       if (!mounted) return;
-      showSuccessSnackBar(context.l10n.loginLinkSent);
+      showSuccessSnackBar(context.l10n.loginCodeSent);
+      if (!mounted) return;
       _showEnterCodeDialog();
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -65,7 +67,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     final codeController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(context.l10n.enterCode),
           content: TextField(
@@ -80,7 +82,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text(context.l10n.cancel),
             ),
             FilledButton(
@@ -88,16 +90,34 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 final code = codeController.text.trim();
                 if (code.length != 6) return;
 
+                // Capture the parent context before the async gap
+                // We need the parent context to navigate back to root
+                final parentContext = context;
+
                 try {
                   await authService.signInWithCode(controllerEmail.text, code);
-                  if (!mounted) return;
+
+                  // Check if the dialog is still mounted
+                  if (!dialogContext.mounted) return;
                   // Close dialog
-                  Navigator.pop(context);
-                  // Close ResetPasswordPage and go back to root (which will show home)
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                } on AuthException catch (e) {
+                  Navigator.pop(dialogContext);
+
+                  // Check if the parent widget is still mounted
                   if (!mounted) return;
-                  showErrorSnackBar(e.message ?? context.l10n.error);
+                  // Close ResetPasswordPage and go back to root (which will show home)
+                  Navigator.of(
+                    parentContext,
+                  ).popUntil((route) => route.isFirst);
+                } on AuthException catch (e) {
+                  if (!dialogContext.mounted) return;
+                  // We can't use context.l10n here easily if we are inside a static method or builder
+                  // But here we are in a closure that captures 'context' from build method?
+                  // Actually, 'context' in showDialog builder is different.
+                  // Let's use the outer context for l10n if possible, or dialogContext.
+                  // dialogContext is safe to use for UI feedback inside the dialog.
+                  ScaffoldMessenger.of(
+                    dialogContext,
+                  ).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
                 }
               },
               child: Text(context.l10n.confirm),

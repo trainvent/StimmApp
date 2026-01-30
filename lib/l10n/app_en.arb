@@ -13,6 +13,7 @@
 			}
 		}
 	},
+	"loginCodeSent": "login code sent",
 	"deleteAccount": "delete Account",
 	"areYouSureYouWantToDeleteYourAccount": "Are you sure you want to delete your account?",
 	"enterYourAddress": "enter Your Address",
@@ -315,5 +316,6 @@
 	"deleteAccountButton": "PERMANENTLY DELETE ACCOUNT",
 	"sendLoginLink": "Log in with Code",
 	"loginLinkSent": "Code sent!",
-	"enterCode": "Enter Code"
+	"enterCode": "Enter Code",
+	"resetPasswordCodeSent": "Reset password code sent"
 }
