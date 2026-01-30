@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0c6c051-a91e-427e-837d-d47ff1cdf585" name="Changes" comment="shit">
-      <change beforePath="$PROJECT_DIR$/.idea/stimmapp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/stimmapp.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.patrol.env" beforeDir="false" afterPath="$PROJECT_DIR$/.patrol.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/helpers/mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/helpers/mail_api.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/register_and_delete_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/simple_flow_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/internal_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/internal_constants.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playwright-report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/playwright-report/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_mail_api.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_mail_api.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,9 +21,13 @@
   <component name="DartProblemsView" group-by-severity="false" />
   <component name="EmbeddingIndexingInfo">
     <option name="cachedIndexableFilesCount" value="2131" />
-    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/home/lmarquar/.android/avd/Medium_Phone.avd)]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/android">
+      <ProjectState />
+    </projectState>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -40,6 +38,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$/android" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-8.14-all/c2qonpi39x1mddn7hk5gh9iqj/gradle-8.14" javaHome="/usr/lib/jvm/java-17-openjdk-amd64" gradleVersion="8.14" />
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/lib/main.dart" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -76,6 +75,7 @@
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;android.gradle.sync.needed&quot;: &quot;true&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
@@ -86,16 +86,16 @@
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/usr/bin/python3.12&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/seva/.jdks/.openjdk-25.0.2.intellij&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/lmarquar/Code/stimmapp/functions/node_modules/typescript/lib&quot;,
@@ -207,6 +207,16 @@
       <workItem from="1769539778602" duration="320000" />
       <workItem from="1769540387531" duration="134000" />
       <workItem from="1769540588002" duration="938000" />
+      <workItem from="1769544672873" duration="36000" />
+      <workItem from="1769544722208" duration="10000" />
+      <workItem from="1769617861998" duration="612000" />
+      <workItem from="1769619026307" duration="10000" />
+      <workItem from="1769623357836" duration="72000" />
+      <workItem from="1769623456975" duration="578000" />
+      <workItem from="1769625257269" duration="306000" />
+      <workItem from="1769625576231" duration="1199000" />
+      <workItem from="1769626852882" duration="992000" />
+      <workItem from="1769774186349" duration="89000" />
     </task>
     <task id="LOCAL-00001" summary="shit">
       <option name="closed" value="true" />
@@ -248,16 +258,11 @@
           </properties>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/app/mobile/pages/onboarding/email_confirmation_page.dart</url>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/helpers/mail_api.dart</url>
-          <line>37</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
