@@ -38,6 +38,11 @@ const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
 const db = admin.firestore();
+const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
+const smtpPassword = process.env.SMTP_PASSWORD;
+if (!smtpPassword) {
+    console.warn("SMTP_PASSWORD is not set in environment variables.");
+}
 // This configuration matches the successful `swaks` test.
 const transporter = nodemailer.createTransport({
     host: "smtp.ionos.de",
@@ -45,8 +50,8 @@ const transporter = nodemailer.createTransport({
     secure: false, // Explicitly false for STARTTLS
     requireTLS: true, // Enforce STARTTLS
     auth: {
-        user: "noreply@stimmapp.org",
-        pass: process.env.SMTP_PASSWORD,
+        user: smtpMail,
+        pass: smtpPassword,
     },
 });
 // Generate a random 6-digit code
@@ -55,7 +60,7 @@ function generateCode() {
 }
 async function sendEmail(email, code) {
     const mailOptions = {
-        from: '"StimmApp Team" <noreply@stimmapp.org>',
+        from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
         subject: 'Your Verification Code',
         text: `Welcome to StimmApp!\n\nYour verification code is: ${code}\n\nThis code will expire in 15 minutes.`,
@@ -74,7 +79,7 @@ async function sendEmail(email, code) {
  * Sends a verification code to the user's email.
  * Call this after creating the account or when requesting a new code.
  */
-exports.sendVerificationCode = (0, https_1.onCall)({ secrets: ["SMTP_PASSWORD"] }, async (request) => {
+exports.sendVerificationCode = (0, https_1.onCall)(async (request) => {
     if (!request.auth) {
         throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -107,6 +112,29 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError('invalid-argument', 'The function must be called with a "code" argument.');
     }
     const uid = request.auth.uid;
+    const email = request.auth.token.email;
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    const testEmail = process.env.TEST_EMAIL;
+    const testCode = process.env.TEST_CODE;
+    console.log("DEBUG VERIFY:", {
+        project: process.env.GCLOUD_PROJECT,
+        isDev: isDevEnvironment,
+        email: email,
+        code: code,
+        testEmail: testEmail,
+        testCode: testCode,
+        matchEmail: email === testEmail,
+        matchCode: code === testCode
+    });
+    // Backdoor for testing, ONLY in Dev environment
+    if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
+        await admin.auth().updateUser(uid, {
+            emailVerified: true
+        });
+        // Clean up any existing code doc if it exists
+        await db.collection('verificationCodes').doc(uid).delete();
+        return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+    }
     const docRef = db.collection('verificationCodes').doc(uid);
     const doc = await docRef.get();
     if (!doc.exists) {

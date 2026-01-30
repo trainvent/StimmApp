@@ -20,16 +20,33 @@ class AuthLayout extends StatefulWidget {
 }
 
 class _AuthLayoutState extends State<AuthLayout> {
+  Stream<UserProfile?>? _profileStream;
+  String? _profileStreamUid;
+
+  Stream<UserProfile?> _getProfileStream(String uid) {
+    // Only create a new stream if the UID has changed or we don't have one yet.
+    // This prevents the StreamBuilder from resetting to 'waiting' when the
+    // outer widget rebuilds (e.g. due to token refresh).
+    if (_profileStream == null || _profileStreamUid != uid) {
+      _profileStreamUid = uid;
+      _profileStream = UserRepository.create().watchById(uid);
+    }
+    return _profileStream!;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Using idTokenChanges ensures we catch the token refresh event
+    // triggered after email verification.
     return StreamBuilder<User?>(
-      stream: authService.authStateChanges,
+      stream: authService.firebaseAuth.idTokenChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const AppLoadingPage();
         }
 
         final user = snapshot.data;
+
         if (user != null) {
           if (!user.emailVerified) {
             // If user is logged in but email is not verified, show confirmation page
@@ -38,7 +55,7 @@ class _AuthLayoutState extends State<AuthLayout> {
 
           // If email is verified, proceed to check user profile
           return StreamBuilder<UserProfile?>(
-            stream: UserRepository.create().watchById(user.uid),
+            stream: _getProfileStream(user.uid),
             builder: (context, profileSnapshot) {
               if (profileSnapshot.connectionState == ConnectionState.waiting) {
                 return const AppLoadingPage();
@@ -51,6 +68,10 @@ class _AuthLayoutState extends State<AuthLayout> {
             },
           );
         }
+
+        // Reset stream cache when user logs out
+        _profileStream = null;
+        _profileStreamUid = null;
 
         return widget.pageIfNotConnected ?? const WelcomePage();
       },

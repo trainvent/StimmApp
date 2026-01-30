@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
@@ -19,8 +20,8 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  static const platform = MethodChannel('de.lemarq.stimmapp/eid');
   final TextEditingController controllerPw = TextEditingController();
+  final TextEditingController controllerConfirmPw = TextEditingController();
   final TextEditingController controllerEm = TextEditingController();
 
   String errorMessage = 'Error message';
@@ -28,11 +29,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   void dispose() {
     controllerPw.dispose();
+    controllerConfirmPw.dispose();
     controllerEm.dispose();
     super.dispose();
   }
 
   Future<void> register() async {
+    if (controllerPw.text != controllerConfirmPw.text) {
+      showErrorSnackBar(context.l10n.passwordsDoNotMatch);
+      return;
+    }
+
     try {
       await authService.createAccount(
         email: controllerEm.text,
@@ -74,17 +81,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (kIsWeb) {
       showSuccessSnackBar(context.l10n.pleaseUsePhoneToRegister);
     } else {
-      final Map<dynamic, dynamic> callResult = await platform.invokeMethod(
-        'passDataToNative',
-        [
-          {"text": "HANA"},
-        ],
-      );
-      result = callResult['userName'] ?? "defaultUser";
-      if (result == randomName) {
-        showSuccessSnackBar(result);
-      } else {
-        showErrorSnackBar("expected: $randomName, got: $result");
+      // Dynamically construct the channel name based on the package name
+      // This ensures it matches the Android side for both dev and prod flavors.
+      final packageInfo = await PackageInfo.fromPlatform();
+      final channelName = '${packageInfo.packageName}/eid';
+      final platform = MethodChannel(channelName);
+
+      try {
+        final Map<dynamic, dynamic> callResult = await platform.invokeMethod(
+          'passDataToNative',
+          [
+            {"text": "HANA"},
+          ],
+        );
+        result = callResult['userName'] ?? "defaultUser";
+        if (result == randomName) {
+          showSuccessSnackBar(result);
+        } else {
+          showErrorSnackBar("expected: $randomName, got: $result");
+        }
+      } on PlatformException catch (e) {
+        showErrorSnackBar("Native call failed: ${e.message}");
       }
     }
   }
@@ -138,6 +155,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 }
                                 if (value.trim().isEmpty) {
                                   return context.l10n.enterSomething;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              key: const Key('repeatPasswordTextField'),
+                              obscureText: true,
+                              controller: controllerConfirmPw,
+                              decoration: InputDecoration(
+                                labelText: context.l10n.confirmPassword,
+                              ),
+                              validator: (String? value) {
+                                if (value == null) {
+                                  return context.l10n.enterSomething;
+                                }
+                                if (value.trim().isEmpty) {
+                                  return context.l10n.enterSomething;
+                                }
+                                if (value != controllerPw.text) {
+                                  return context.l10n.passwordsDoNotMatch;
                                 }
                                 return null;
                               },

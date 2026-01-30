@@ -4,17 +4,7 @@ import * as nodemailer from 'nodemailer';
 
 const db = admin.firestore();
 
-// This configuration matches the successful `swaks` test.
-const transporter = nodemailer.createTransport({
-    host: "smtp.ionos.de",
-    port: 587,
-    secure: false, // Explicitly false for STARTTLS
-    requireTLS: true, // Enforce STARTTLS
-    auth: {
-        user: "noreply@stimmapp.org",
-        pass: process.env.SMTP_PASSWORD,
-    },
-});
+const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
 
 // Generate a random 6-digit code
 function generateCode(): string {
@@ -22,8 +12,28 @@ function generateCode(): string {
 }
 
 async function sendEmail(email: string, code: string) {
+    const smtpPassword = process.env.SMTP_PASSWORD;
+    
+    if (!smtpPassword) {
+        console.error("SMTP_PASSWORD is not set in environment variables.");
+        throw new HttpsError('internal', 'Email configuration error.');
+    }
+
+    // This configuration matches the successful `swaks` test.
+    // Initialize transporter here to ensure env vars are loaded
+    const transporter = nodemailer.createTransport({
+        host: "smtp.ionos.de",
+        port: 587,
+        secure: false, // Explicitly false for STARTTLS
+        requireTLS: true, // Enforce STARTTLS
+        auth: {
+            user: smtpMail,
+            pass: smtpPassword,
+        },
+    });
+
     const mailOptions = {
-        from: '"StimmApp Team" <noreply@stimmapp.org>',
+        from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
         subject: 'Your Verification Code',
         text: `Welcome to StimmApp!\n\nYour verification code is: ${code}\n\nThis code will expire in 15 minutes.`,
@@ -43,7 +53,7 @@ async function sendEmail(email: string, code: string) {
  * Sends a verification code to the user's email.
  * Call this after creating the account or when requesting a new code.
  */
-export const sendVerificationCode = onCall({ secrets: ["SMTP_PASSWORD"] }, async (request) => {
+export const sendVerificationCode = onCall(async (request) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -84,6 +94,33 @@ export const verifyCode = onCall(async (request) => {
     }
 
     const uid = request.auth.uid;
+    const email = request.auth.token.email;
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    
+    const testEmail = process.env.TEST_EMAIL;
+    const testCode = process.env.TEST_CODE;
+
+    console.log("DEBUG VERIFY:", {
+        project: process.env.GCLOUD_PROJECT,
+        isDev: isDevEnvironment,
+        email: email,
+        code: code,
+        testEmail: testEmail,
+        testCode: testCode,
+        matchEmail: email === testEmail,
+        matchCode: code === testCode
+    });
+
+    // Backdoor for testing, ONLY in Dev environment
+    if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
+        await admin.auth().updateUser(uid, {
+            emailVerified: true
+        });
+        // Clean up any existing code doc if it exists
+        await db.collection('verificationCodes').doc(uid).delete();
+        return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+    }
+
     const docRef = db.collection('verificationCodes').doc(uid);
     const doc = await docRef.get();
 

@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'Welcome {firstName} {lastName}!'**
   String helloAndWelcome(String firstName, String lastName);
 
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @areYouSureYouWantToDeleteYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get areYouSureYouWantToDeleteYourAccount;
+
   /// No description provided for @enterYourAddress.
   ///
   /// In en, this message translates to:
@@ -1651,6 +1663,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is a preview of your new profile picture.'**
   String get imagePreviewDescription;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Your Account'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to confirm your identity. This action will permanently delete your account and all associated data.'**
+  String get deleteAccountDescription;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found for that email.'**
+  String get deleteAccountUserNotFound;
+
+  /// No description provided for @deleteAccountWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password provided.'**
+  String get deleteAccountWrongPassword;
+
+  /// No description provided for @deleteAccountUnexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get deleteAccountUnexpectedError;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'PERMANENTLY DELETE ACCOUNT'**
+  String get deleteAccountButton;
 }
 
 class _AppLocalizationsDelegate

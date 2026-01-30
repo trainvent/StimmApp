@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "25072489020",
+    "project_id": "stimmapp-dev",
+    "storage_bucket": "stimmapp-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25072489020:android:5458fefbdaad572623a939",
+        "android_client_info": {
+          "package_name": "de.lemarq.stimmapp.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu6sjKqJJEfYtlsIZDD2IGu3DglvzIOLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

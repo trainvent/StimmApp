@@ -70,8 +70,8 @@ class AppBootstrap {
     final String toSave = (loc == null)
         ? ''
         : (loc.countryCode == null || loc.countryCode!.isEmpty)
-            ? loc.languageCode
-            : '${loc.languageCode}_${loc.countryCode}';
+        ? loc.languageCode
+        : '${loc.languageCode}_${loc.countryCode}';
     await prefs.setString(IConst.localeKey, toSave);
     debugPrint('[AppBootstrap] persisted locale: $toSave');
   }
@@ -87,6 +87,9 @@ class AppBootstrap {
     final String? localeStr = prefs.getString(IConst.localeKey);
     if (localeStr != null && localeStr.isNotEmpty) {
       appLocale.value = _localeFromString(localeStr);
+    } else if (kIsWeb) {
+      // Default to German on web if no preference is set
+      appLocale.value = const Locale('de');
     }
   }
 

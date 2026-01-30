@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 class OnboardingPageKeys {
   final emailTextField = const Key('emailTestField');
   final passwordTextField = const Key('passwordTestField');
+  final repeatPasswordTextField = const Key('repeatPasswordTextField');
   final registerButton = const Key('registerButton');
 }
 
@@ -39,6 +40,16 @@ class ProfilePageKeys {
   final logoutListTile = const Key('logoutListTile');
   final confirmLogoutButton = const Key('confirmLogoutButton');
   final cancelLogoutButton = const Key('cancelLogoutButton');
+  final confirmDeleteButton = const Key('confirmDeleteButton');
+  final cancelDeleteButton = const Key('cancelDeleteButton');
+}
+
+class SetUserDetailsPageKeys {
+  final saveButton = const Key('saveButton');
+  final surnameTextField = const Key('surnameTextField');
+  final givenNameTextField = const Key('givenNameTextField');
+  final dateOfBirthTextField = const Key('dateOfBirthTextField');
+  final addressTextField = const Key('addressTextField');
 }
 
 class Keys {
@@ -47,6 +58,7 @@ class Keys {
   final onboardingPage = OnboardingPageKeys();
   final widgetTree = WidgetTreeKeys();
   final profilePage = ProfilePageKeys();
+  final setUserDetailsPageKeys = SetUserDetailsPageKeys();
 }
 
 final keys = Keys();

@@ -15,7 +15,9 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.embedding.android.FlutterFragmentActivity
 
 class MainActivity : FlutterFragmentActivity() {
-	private val channel = "de.lemarq.stimmapp/eid"
+	// Dynamically construct the channel name using the application ID (packageName)
+	// This ensures it matches the Flutter side regardless of the build flavor (dev/prod).
+	private val channel by lazy { "$packageName/eid" }
 
 	override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
 		super.configureFlutterEngine(flutterEngine)

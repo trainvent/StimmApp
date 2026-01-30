@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
-import 'package:stimmapp/core/data/firebase/firebase_options.dart';
+import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 
 void main() async {
