@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_page.dart';
+import 'package:stimmapp/app/mobile/pages/others/about_page.dart';
+import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
-import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -108,6 +109,19 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               ListTile(
                 title: Text(context.l10n.aboutThisApp),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return AboutPage();
+                      },
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(context.l10n.viewLicenses),
                 onTap: () {
                   showDialog(
                     context: context,
