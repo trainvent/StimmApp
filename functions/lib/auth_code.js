@@ -33,47 +33,108 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyCode = exports.sendVerificationCode = void 0;
+exports.verifyLoginCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
 const db = admin.firestore();
 const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
-const smtpPassword = process.env.SMTP_PASSWORD;
-if (!smtpPassword) {
-    console.warn("SMTP_PASSWORD is not set in environment variables.");
-}
-// This configuration matches the successful `swaks` test.
-const transporter = nodemailer.createTransport({
-    host: "smtp.ionos.de",
-    port: 587,
-    secure: false, // Explicitly false for STARTTLS
-    requireTLS: true, // Enforce STARTTLS
-    auth: {
-        user: smtpMail,
-        pass: smtpPassword,
-    },
-});
 // Generate a random 6-digit code
 function generateCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
-async function sendEmail(email, code) {
+async function sendEmail(email, code, type) {
+    const smtpPassword = process.env.SMTP_PASSWORD;
+    console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!smtpPassword}`);
+    if (!smtpPassword) {
+        console.error("SMTP_PASSWORD is not set in environment variables.");
+        throw new https_1.HttpsError('internal', 'Email configuration error.');
+    }
+    const transporter = nodemailer.createTransport({
+        host: "smtp.ionos.de",
+        port: 587,
+        secure: false, // Explicitly false for STARTTLS
+        requireTLS: true, // Enforce STARTTLS
+        auth: {
+            user: smtpMail,
+            pass: smtpPassword,
+        },
+    });
+    const subject = type === 'login' ? 'Your Login Code' : 'Your Verification Code';
+    const actionText = type === 'login' ? 'log in to StimmApp' : 'verify your email';
     const mailOptions = {
         from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
-        subject: 'Your Verification Code',
-        text: `Welcome to StimmApp!\n\nYour verification code is: ${code}\n\nThis code will expire in 15 minutes.`,
-        html: `<p>Welcome to StimmApp!</p><p>Your verification code is: <strong>${code}</strong></p><p>This code will expire in 15 minutes.</p>`,
+        subject: subject,
+        text: `Welcome to StimmApp!\n\nYour code to ${actionText} is: ${code}\n\nThis code will expire in 15 minutes.`,
+        html: `<p>Welcome to StimmApp!</p><p>Your code to ${actionText} is: <strong>${code}</strong></p><p>This code will expire in 15 minutes.</p>`,
     };
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${email}`);
+        console.log(`Email sent to ${email} (${type})`);
     }
     catch (error) {
         console.error('Error sending email:', error);
-        throw new https_1.HttpsError('internal', 'Failed to send verification email.');
+        throw new https_1.HttpsError('internal', `Failed to send email: ${error}`);
     }
+}
+async function storeCode(uid, email, type) {
+    const code = generateCode();
+    const expirationTime = Date.now() + 15 * 60 * 1000; // 15 minutes from now
+    try {
+        await db.collection('verificationCodes').doc(uid).set({
+            code: code,
+            email: email,
+            expiresAt: expirationTime,
+            attempts: 0,
+            type: type
+        });
+    }
+    catch (e) {
+        console.error("Firestore write failed:", e);
+        throw new https_1.HttpsError('internal', 'Database error.');
+    }
+    console.log(`[${type.toUpperCase()}] Code for ${email}: ${code}`);
+    await sendEmail(email, code, type);
+}
+async function verifyCodeLogic(uid, code, email) {
+    console.log(`[VERIFY LOGIC] Verifying code for uid: ${uid}, email: ${email}`);
+    const docRef = db.collection('verificationCodes').doc(uid);
+    let doc;
+    try {
+        doc = await docRef.get();
+    }
+    catch (e) {
+        console.error("Firestore read failed:", e);
+        throw new https_1.HttpsError('internal', 'Database read error.');
+    }
+    if (!doc.exists) {
+        console.warn(`No code found for uid: ${uid}`);
+        throw new https_1.HttpsError('not-found', 'No code found. Please request a new one.');
+    }
+    const data = doc.data();
+    if (!data)
+        throw new https_1.HttpsError('not-found', 'No data found.');
+    // Optional: Verify email matches if provided (crucial for login flow)
+    if (email && data.email !== email) {
+        console.warn(`Email mismatch. Expected: ${email}, Found: ${data.email}`);
+        throw new https_1.HttpsError('invalid-argument', 'Email mismatch.');
+    }
+    if (Date.now() > data.expiresAt) {
+        throw new https_1.HttpsError('deadline-exceeded', 'Code has expired.');
+    }
+    if (data.attempts >= 5) {
+        await docRef.delete();
+        throw new https_1.HttpsError('resource-exhausted', 'Too many failed attempts. Please request a new code.');
+    }
+    if (data.code !== code) {
+        console.warn(`Invalid code entered for ${uid}.`);
+        await docRef.update({ attempts: admin.firestore.FieldValue.increment(1) });
+        throw new https_1.HttpsError('invalid-argument', 'Invalid code.');
+    }
+    // Code is valid. Clean up.
+    await docRef.delete();
+    return true;
 }
 /**
  * Sends a verification code to the user's email.
@@ -87,17 +148,29 @@ exports.sendVerificationCode = (0, https_1.onCall)(async (request) => {
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'User does not have an email address.');
     }
-    const code = generateCode();
-    const expirationTime = Date.now() + 15 * 60 * 1000; // 15 minutes from now
-    await db.collection('verificationCodes').doc(request.auth.uid).set({
-        code: code,
-        email: email,
-        expiresAt: expirationTime,
-        attempts: 0
-    });
-    console.log(`[VERIFICATION] Code for ${email}: ${code}`);
-    await sendEmail(email, code);
+    await storeCode(request.auth.uid, email, 'verification');
     return { success: true, message: 'Verification code sent.' };
+});
+/**
+ * Sends a login code to the user's email (for passwordless login).
+ * Publicly callable.
+ */
+exports.sendLoginCode = (0, https_1.onCall)(async (request) => {
+    const { email } = request.data;
+    if (!email) {
+        throw new https_1.HttpsError('invalid-argument', 'Email is required.');
+    }
+    let uid;
+    try {
+        const userRecord = await admin.auth().getUserByEmail(email);
+        uid = userRecord.uid;
+    }
+    catch (error) {
+        console.error("User lookup failed:", error);
+        throw new https_1.HttpsError('not-found', 'No user found with this email.');
+    }
+    await storeCode(uid, email, 'login');
+    return { success: true, message: 'Login code sent.' };
 });
 /**
  * Verifies the code entered by the user.
@@ -116,48 +189,55 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
     const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
-    console.log("DEBUG VERIFY:", {
-        project: process.env.GCLOUD_PROJECT,
-        isDev: isDevEnvironment,
-        email: email,
-        code: code,
-        testEmail: testEmail,
-        testCode: testCode,
-        matchEmail: email === testEmail,
-        matchCode: code === testCode
-    });
     // Backdoor for testing, ONLY in Dev environment
     if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
-        await admin.auth().updateUser(uid, {
-            emailVerified: true
-        });
-        // Clean up any existing code doc if it exists
+        await admin.auth().updateUser(uid, { emailVerified: true });
         await db.collection('verificationCodes').doc(uid).delete();
         return { success: true, message: 'Email verified successfully (Test Backdoor).' };
     }
-    const docRef = db.collection('verificationCodes').doc(uid);
-    const doc = await docRef.get();
-    if (!doc.exists) {
-        throw new https_1.HttpsError('not-found', 'No verification code found. Please request a new one.');
-    }
-    const data = doc.data();
-    if (!data)
-        return;
-    if (Date.now() > data.expiresAt) {
-        throw new https_1.HttpsError('deadline-exceeded', 'Verification code has expired.');
-    }
-    if (data.attempts >= 5) {
-        await docRef.delete();
-        throw new https_1.HttpsError('resource-exhausted', 'Too many failed attempts. Please request a new code.');
-    }
-    if (data.code !== code) {
-        await docRef.update({ attempts: admin.firestore.FieldValue.increment(1) });
-        throw new https_1.HttpsError('invalid-argument', 'Invalid verification code.');
-    }
+    await verifyCodeLogic(uid, code);
     await admin.auth().updateUser(uid, {
         emailVerified: true
     });
-    await docRef.delete();
     return { success: true, message: 'Email verified successfully.' };
+});
+/**
+ * Verifies the login code and returns a custom auth token.
+ */
+exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
+    const { email, code } = request.data;
+    if (!email || !code) {
+        throw new https_1.HttpsError('invalid-argument', 'Email and code are required.');
+    }
+    let uid;
+    try {
+        const userRecord = await admin.auth().getUserByEmail(email);
+        uid = userRecord.uid;
+    }
+    catch (error) {
+        console.error("User lookup failed in verify:", error);
+        throw new https_1.HttpsError('not-found', 'User not found.');
+    }
+    await verifyCodeLogic(uid, code, email);
+    console.log(`[VERIFY] Code valid for ${email}. Creating custom token...`);
+    // Code is valid. Generate custom token.
+    let token;
+    try {
+        token = await admin.auth().createCustomToken(uid);
+    }
+    catch (e) {
+        console.error("Error creating custom token:", e);
+        throw new https_1.HttpsError('internal', 'Failed to generate login token. Check IAM permissions.');
+    }
+    // Also mark email as verified since they proved ownership
+    try {
+        await admin.auth().updateUser(uid, {
+            emailVerified: true
+        });
+    }
+    catch (e) {
+        console.warn("Failed to update emailVerified (non-fatal):", e);
+    }
+    return { success: true, token: token };
 });
 //# sourceMappingURL=auth_code.js.map

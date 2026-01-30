@@ -20,6 +20,7 @@
 	"result": "Result",
 	"membershipStatus": "Membership Status",
 	"name": "Name",
+	"userProfileVerified": "Userprofile Verified",
 	"paywallTitle": "Become a premium member",
 	"paywallSubtitle": "Unlimited access to all functions",
 	"paywallDescription": "Enjoy a more relaxed and diverse interface",
@@ -311,5 +312,8 @@
 	"deleteAccountUserNotFound": "No user found for that email.",
 	"deleteAccountWrongPassword": "Wrong password provided.",
 	"deleteAccountUnexpectedError": "An unexpected error occurred.",
-	"deleteAccountButton": "PERMANENTLY DELETE ACCOUNT"
+	"deleteAccountButton": "PERMANENTLY DELETE ACCOUNT",
+	"sendLoginLink": "Log in with Code",
+	"loginLinkSent": "Code sent!",
+	"enterCode": "Enter Code"
 }

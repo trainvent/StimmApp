@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Name'**
   String get name;
 
+  /// No description provided for @userProfileVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Userprofile Verified'**
+  String get userProfileVerified;
+
   /// No description provided for @paywallTitle.
   ///
   /// In en, this message translates to:
@@ -1717,6 +1723,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PERMANENTLY DELETE ACCOUNT'**
   String get deleteAccountButton;
+
+  /// No description provided for @sendLoginLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in with Code'**
+  String get sendLoginLink;
+
+  /// No description provided for @loginLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent!'**
+  String get loginLinkSent;
+
+  /// No description provided for @enterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Code'**
+  String get enterCode;
 }
 
 class _AppLocalizationsDelegate

@@ -11,6 +11,8 @@ class UserProfile {
   final bool? isPro;
   final DateTime? wentProAt;
   final bool? subscribedToPro;
+  final bool? isVerified;
+  final DateTime? gotVerifiedAt;
 
   /// Returns the date when the subscription expires (30 days after purchase).
   DateTime? get subscriptionEndsAt {
@@ -50,6 +52,8 @@ class UserProfile {
     this.isPro,
     this.wentProAt,
     this.subscribedToPro,
+    this.isVerified,
+    this.gotVerifiedAt,
   });
 
   UserProfile copyWith({
@@ -71,6 +75,8 @@ class UserProfile {
     bool? isPro,
     DateTime? wentProAt,
     bool? subscribedToPro,
+    bool? isVerified,
+    DateTime? gotVerifiedAt,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -91,6 +97,8 @@ class UserProfile {
       isPro: isPro ?? this.isPro,
       wentProAt: wentProAt ?? this.wentProAt,
       subscribedToPro: subscribedToPro ?? this.subscribedToPro,
+      isVerified: isVerified ?? this.isVerified,
+      gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
     );
   }
 
@@ -114,6 +122,8 @@ class UserProfile {
       isPro: json['isPro'] as bool?,
       wentProAt: (json['wentProAt'] as Timestamp?)?.toDate(),
       subscribedToPro: json['subscribedToPro'] as bool?,
+      isVerified: json['isVerified'] as bool?,
+      gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -138,6 +148,8 @@ class UserProfile {
       'isPro': isPro,
       'wentProAt': wentProAt != null ? Timestamp.fromDate(wentProAt!) : null,
       'subscribedToPro': subscribedToPro,
+      'isVerified': isVerified,
+      'gotVerifiedAt': gotVerifiedAt,
     };
   }
 }

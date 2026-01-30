@@ -34,7 +34,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   void resetPassword() async {
     try {
       await authService.resetPassword(email: controllerEmail.text);
+      if (!mounted) return;
+      showSuccessSnackBar(context.l10n.resetPasswordLinkSent);
+      Navigator.of(context).pop();
     } on AuthException catch (e) {
+      if (!mounted) return;
       setState(() {
         errorMessage = e.message ?? context.l10n.error;
         showErrorSnackBar(errorMessage);
@@ -42,18 +46,73 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
   }
 
+  void sendLoginCode() async {
+    try {
+      await authService.sendLoginCode(controllerEmail.text);
+      if (!mounted) return;
+      showSuccessSnackBar(context.l10n.loginLinkSent);
+      _showEnterCodeDialog();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        errorMessage = e.message ?? context.l10n.error;
+        showErrorSnackBar(errorMessage);
+      });
+    }
+  }
+
+  void _showEnterCodeDialog() {
+    final codeController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(context.l10n.enterCode),
+          content: TextField(
+            controller: codeController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(
+              hintText: '000000',
+              counterText: '',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final code = codeController.text.trim();
+                if (code.length != 6) return;
+
+                try {
+                  await authService.signInWithCode(controllerEmail.text, code);
+                  if (!mounted) return;
+                  // Close dialog
+                  Navigator.pop(context);
+                  // Close ResetPasswordPage and go back to root (which will show home)
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                } on AuthException catch (e) {
+                  if (!mounted) return;
+                  showErrorSnackBar(e.message ?? context.l10n.error);
+                }
+              },
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       child: AppBottomBarButtons(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          ),
-        ),
+        appBar: AppBar(title: Text(context.l10n.resetPassword)),
         body: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Center(
@@ -104,16 +163,27 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         buttons: [
           Builder(
             builder: (context) {
-              return ButtonWidget(
-                isFilled: true,
-                label: context.l10n.resetPassword,
-                callback: () async {
-                  if (Form.of(context).validate()) {
-                    resetPassword();
-                    showSuccessSnackBar(context.l10n.resetPasswordLinkSent);
-                  }
-                  Navigator.of(context).pop();
-                },
+              return Column(
+                children: [
+                  ButtonWidget(
+                    isFilled: true,
+                    label: context.l10n.resetPassword,
+                    callback: () async {
+                      if (Form.of(context).validate()) {
+                        resetPassword();
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      if (Form.of(context).validate()) {
+                        sendLoginCode();
+                      }
+                    },
+                    child: Text(context.l10n.sendLoginLink),
+                  ),
+                ],
               );
             },
           ),

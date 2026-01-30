@@ -24,6 +24,7 @@
 			}
 		}
 	},
+	"userProfileVerified": "Konto verifiziert",
 	"deleteAccount": "Konto löschen",
 	"areYouSureYouWantToDeleteYourAccount": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
 
@@ -316,5 +317,8 @@
 	"deleteAccountUserNotFound": "Kein Benutzer mit dieser E-Mail gefunden.",
 	"deleteAccountWrongPassword": "Falsches Passwort.",
 	"deleteAccountUnexpectedError": "Ein unerwarteter Fehler ist aufgetreten.",
-	"deleteAccountButton": "KONTO ENDGÜLTIG LÖSCHEN"
+	"deleteAccountButton": "KONTO ENDGÜLTIG LÖSCHEN",
+	"sendLoginLink": "Mit Code anmelden",
+	"loginLinkSent": "Code gesendet!",
+	"enterCode": "Code eingeben"
 }

@@ -14,6 +14,10 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 *   **Testing:** `flutter_test`, `patrol` (Integration tests)
 *   **CI/CD:** GitHub Actions (implied by `.github` folder)
 
+### Environments
+*   **Production:** `stimmapp-f0141` (Package: `de.lemarq.stimmapp`)
+*   **Development:** `stimmapp-dev` (Package: `de.lemarq.stimmapp.dev`)
+
 ## 2. Architecture
 
 The app follows a clean architecture approach, separated into layers:

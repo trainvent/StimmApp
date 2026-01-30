@@ -36,6 +36,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get name => 'Name';
 
   @override
+  String get userProfileVerified => 'Konto verifiziert';
+
+  @override
   String get paywallTitle => 'Werde Premium-Mitglied';
 
   @override
@@ -861,4 +864,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deleteAccountButton => 'KONTO ENDGÜLTIG LÖSCHEN';
+
+  @override
+  String get sendLoginLink => 'Mit Code anmelden';
+
+  @override
+  String get loginLinkSent => 'Code gesendet!';
+
+  @override
+  String get enterCode => 'Code eingeben';
 }

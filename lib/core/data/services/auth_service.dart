@@ -142,6 +142,35 @@ class AuthService {
       );
     }
   }
+
+  // --- Login with Code Methods ---
+
+  Future<void> sendLoginCode(String email) async {
+    try {
+      await functions.httpsCallable('sendLoginCode').call({'email': email});
+    } on FirebaseFunctionsException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
+    }
+  }
+
+  Future<UserCredential> signInWithCode(String email, String code) async {
+    try {
+      final result = await functions.httpsCallable('verifyLoginCode').call({
+        'email': email,
+        'code': code,
+      });
+      final token = result.data['token'] as String;
+      return await firebaseAuth.signInWithCustomToken(token);
+    } on FirebaseFunctionsException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e);
+    }
+  }
 }
 
 class AuthException implements Exception {
