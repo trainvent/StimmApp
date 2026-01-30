@@ -91,4 +91,5 @@ exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", asyn
 __exportStar(require("./user_cleanup"), exports);
 __exportStar(require("./admin"), exports);
 __exportStar(require("./auth_code"), exports);
+__exportStar(require("./data_sync"), exports);
 //# sourceMappingURL=index.js.map

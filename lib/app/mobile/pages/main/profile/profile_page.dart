@@ -164,14 +164,7 @@ class ProfilePage extends StatelessWidget {
                             context,
                             context.l10n.email,
                             userProfile.email,
-                            /*onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChangeEmailPage(),
-                                ),
-                              );
-                            },*/
+                            //!TODO: create changeemailpage
                           ),
                           _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
@@ -198,6 +191,15 @@ class ProfilePage extends StatelessWidget {
                             onTap: () {
                               PurchasesService.instance.presentPaywall();
                             },
+                          ),
+                          _buildDetailTile(
+                            key: keys.profilePage.idApprovedListTile,
+                            context,
+                            context.l10n.userProfileVerified,
+                            userProfile.isVerified == true
+                                ? context.l10n.yes
+                                : context.l10n.no,
+                            //TODO: route to verificationPage once Ausweisapp Client is in place
                           ),
                           if (userProfile.isAdmin) ...[
                             const SizedBox(height: 20.0),

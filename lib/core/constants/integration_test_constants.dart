@@ -34,6 +34,7 @@ class ProfilePageKeys {
   final changePasswordListTile = const Key('changePasswordListTile');
   final manageSubscriptionsListTile = const Key('manageSubscriptionsListTile');
   final adminDashboardListTile = const Key('adminDashboardListTile');
+  final idApprovedListTile = const Key('idApprovedListTile');
   final formExportListTile = const Key('formExportListTile');
   final userHistoryPageListTile = const Key('userHistoryPageListTile');
   final deleteAccountListTile = const Key('deleteAccountListTile');

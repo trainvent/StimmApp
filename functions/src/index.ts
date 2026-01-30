@@ -66,3 +66,4 @@ export const checkSubscriptions = onSchedule("every day 00:00", async (event) =>
 export * from './user_cleanup';
 export * from './admin';
 export * from './auth_code';
+export * from './data_sync';
