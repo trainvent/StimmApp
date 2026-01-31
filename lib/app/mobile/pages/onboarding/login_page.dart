@@ -38,12 +38,15 @@ class _LoginPageState extends State<LoginPage> {
       );
       if (!mounted) return;
       showSuccessSnackBar(successMessage);
+      // Only pop if sign in was successful
+      if (mounted) popPage();
     } on AuthException catch (e) {
       errorMessage = e.toString();
       if (!mounted) return;
       showErrorSnackBar(errorMessage);
+      // Clear password field on error, but keep email
+      controllerPw.clear();
     }
-    if (mounted) popPage();
   }
 
   void popPage() {

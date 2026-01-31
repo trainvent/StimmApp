@@ -53,13 +53,38 @@ class SetUserDetailsPageKeys {
   final addressTextField = const Key('addressTextField');
 }
 
+class ResetPasswordPageKeys {
+  final emailTextField = const Key('emailTestField');
+  final sendLoginCodeButton = const Key('sendLoginCodeButton');
+  final verificationCodeTextField = const Key('verificationCodeTextField');
+  final confirmButton = const Key('confirmButton');
+  final cancelButton = const Key('cancelButton');
+  final error = const Key('error');
+  final loading = const Key('loading');
+}
+
+class SetNewPasswordPageKeys {
+  final newPasswordTextField = const Key('newPasswordTextField');
+  final confirmPasswordTextField = const Key('confirmPasswordTextField');
+  final confirmButton = const Key('confirmButton');
+}
+
+class DeleteAccountPageKeys {
+  final emailTextField = const Key('deleteAccountEmailField');
+  final passwordTextField = const Key('deleteAccountPasswordField');
+  final deleteAccountButton = const Key('deleteAccountButton');
+}
+
 class Keys {
+  final resetPasswordPage = ResetPasswordPageKeys();
   final loginPage = LoginPageKeys();
   final emailConfirmationPage = EmailConfirmationPageKeys();
   final onboardingPage = OnboardingPageKeys();
   final widgetTree = WidgetTreeKeys();
   final profilePage = ProfilePageKeys();
-  final setUserDetailsPageKeys = SetUserDetailsPageKeys();
+  final setUserDetailsPage = SetUserDetailsPageKeys();
+  final setNewPasswordPage = SetNewPasswordPageKeys();
+  final deleteAccountPage = DeleteAccountPageKeys();
 }
 
 final keys = Keys();

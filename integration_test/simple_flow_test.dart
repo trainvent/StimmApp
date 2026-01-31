@@ -118,11 +118,11 @@ void main() {
       keys.emailConfirmationPage.verificationCodeTextField,
     ).enterText(code);
     await $(keys.emailConfirmationPage.verifyButton).tap();
-    await $(keys.setUserDetailsPageKeys.givenNameTextField).enterText("Tester");
-    await $(keys.setUserDetailsPageKeys.surnameTextField).enterText("Georg");
+    await $(keys.setUserDetailsPage.givenNameTextField).enterText("Tester");
+    await $(keys.setUserDetailsPage.surnameTextField).enterText("Georg");
 
     // Interact with the Date Picker natively
-    await $(keys.setUserDetailsPageKeys.dateOfBirthTextField).tap();
+    await $(keys.setUserDetailsPage.dateOfBirthTextField).tap();
     // Wait for dialog animation
     await Future.delayed(const Duration(seconds: 1));
     // Tap OK to select the default date (today)
@@ -130,9 +130,7 @@ void main() {
 
     // Enter partial address so the suggestion contains unique text
     const partialAddress = "Ravensberger Straße 42, 33602";
-    await $(
-      keys.setUserDetailsPageKeys.addressTextField,
-    ).enterText(partialAddress);
+    await $(keys.setUserDetailsPage.addressTextField).enterText(partialAddress);
 
     // Wait for Google Places suggestions to appear
     await Future.delayed(const Duration(seconds: 2));
@@ -140,7 +138,7 @@ void main() {
     // Tap the suggestion containing "Bielefeld".
     await $(RegExp('Bielefeld')).tap();
     await $(RegExp('Nordrhein-Westfalen')).waitUntilVisible();
-    await $(keys.setUserDetailsPageKeys.saveButton).tap();
+    await $(keys.setUserDetailsPage.saveButton).tap();
     await $(keys.widgetTree.profileButton).tap();
 
     // Delete Account Flow

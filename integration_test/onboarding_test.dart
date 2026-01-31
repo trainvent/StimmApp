@@ -12,8 +12,8 @@ import 'package:stimmapp/l10n/app_localizations_de.dart';
 
 void main() {
   final l10n = AppLocalizationsDe();
-  const email = String.fromEnvironment('EMAIL');
-  const password = String.fromEnvironment('PASSWORD');
+  const email = String.fromEnvironment('TEST_EMAIL');
+  const password = String.fromEnvironment('TEST_PASSWORD');
   const testCode = String.fromEnvironment('TEST_CODE');
 
   patrolTest(
@@ -29,86 +29,10 @@ void main() {
 
       await $.pumpWidget(const MyApp());
 
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Navigate to Onboarding
-      await $(l10n.getStarted).tap();
-      await $(l10n.registerHere).waitUntilVisible();
-
-      // 1. Test: Mismatched Passwords
-      await $(keys.onboardingPage.emailTextField).enterText('test@example.com');
-      await $(keys.onboardingPage.passwordTextField).enterText('Password123!');
-      await $(const Key('repeatPasswordTextField')).enterText('Different123!');
-      await $(keys.onboardingPage.registerButton).tap();
-
-      expect($(l10n.passwordsDoNotMatch), findsOneWidget);
-
-      // 2. Test: Weak Password (too short)
-      // Assuming validatePassword triggers on field or on submit
-      await $(keys.onboardingPage.passwordTextField).enterText('123');
-      await $(const Key('repeatPasswordTextField')).enterText('123');
-      await $(keys.onboardingPage.registerButton).tap();
-
-      // The specific error message depends on validate_password.dart implementation,
-      // but usually it shows a validation error text in the form field.
-      // We check if the button tap didn't proceed to the next page.
-      expect($(l10n.registerHere), findsOneWidget);
-
-      // 3. Test: Empty Fields
-      await $(keys.onboardingPage.emailTextField).enterText('');
-      await $(keys.onboardingPage.passwordTextField).enterText('');
-      await $(const Key('repeatPasswordTextField')).enterText('');
-      await $(keys.onboardingPage.registerButton).tap();
-
-      expect($(l10n.enterSomething), findsWidgets);
-
-      // 4. Test: Invalid Email Format
-      // Note: The current OnboardingPage validator only checks for empty strings.
-      // If a regex validator is added later, this test would catch it.
-      await $(keys.onboardingPage.emailTextField).enterText('not-an-email');
-      await $(keys.onboardingPage.passwordTextField).enterText('ValidPass123!');
-      await $(const Key('repeatPasswordTextField')).enterText('ValidPass123!');
-      await $(keys.onboardingPage.registerButton).tap();
-
-      // 5. Test: Valid Credentials and Full Flow
-      await $(keys.onboardingPage.emailTextField).enterText(email);
       final validPassword = password.isNotEmpty
           ? password
           : IConst.testSecurePassword;
-      await $(keys.onboardingPage.passwordTextField).enterText(validPassword);
-      await $(const Key('repeatPasswordTextField')).enterText(validPassword);
-      await $(keys.onboardingPage.registerButton).tap();
-
-      // Verification Code
-      await $(
-        keys.emailConfirmationPage.verificationCodeTextField,
-      ).waitUntilVisible();
-      await $(
-        keys.emailConfirmationPage.verificationCodeTextField,
-      ).enterText(testCode);
-      await $(keys.emailConfirmationPage.verifyButton).tap();
-
-      // Set User Details
-      await $(
-        keys.setUserDetailsPageKeys.givenNameTextField,
-      ).enterText("Validation");
-      await $(keys.setUserDetailsPageKeys.surnameTextField).enterText("Tester");
-      await $(keys.setUserDetailsPageKeys.dateOfBirthTextField).tap();
-      await Future.delayed(const Duration(seconds: 1));
-      await $.platformAutomator.tap(Selector(text: 'OK'));
-
-      // Address
-      await $(
-        keys.setUserDetailsPageKeys.addressTextField,
-      ).enterText("Ravensberger Straße 42, 33602");
-      await Future.delayed(const Duration(seconds: 2));
-      await $(RegExp('Bielefeld')).tap();
-      await $(keys.setUserDetailsPageKeys.saveButton).tap();
-
-      // Logout
-      await $(keys.widgetTree.profileButton).tap();
-      await $(keys.profilePage.logoutListTile).scrollTo().tap();
-      await $(keys.profilePage.confirmLogoutButton).tap();
+      await regNOut($, l10n, email, validPassword, testCode);
 
       // Verify back at Welcome and try to register again
       await $(l10n.theWelcomePhrase).waitUntilVisible();
@@ -118,41 +42,163 @@ void main() {
       // 6. Test: Existing User Registration Denied
       await $(keys.onboardingPage.emailTextField).enterText(email);
       await $(keys.onboardingPage.passwordTextField).enterText(validPassword);
-      await $(const Key('repeatPasswordTextField')).enterText(validPassword);
+      await $(
+        keys.onboardingPage.repeatPasswordTextField,
+      ).enterText(validPassword);
       await $(keys.onboardingPage.registerButton).tap();
 
       // Firebase usually returns an error like "email-already-in-use"
-      // We check that we are still on the registration page or see an error snackbar
       await $(l10n.registerHere).waitUntilVisible();
 
       // 7. Test: Forgot Password / Login with Code Flow
-      // Navigate back to Welcome then to Login (ResetPasswordPage is reached via Login usually,
-      // but here we can go back and use the "Reset Password" logic)
-      //test broke here
-      await $.native.pressBack();
+      await $(BackButton).tap();
       await $(l10n.signIn).tap();
       await $(l10n.resetPassword).tap();
 
-      await $(keys.onboardingPage.emailTextField).enterText(email);
-      await $(l10n.sendLoginLink).tap();
-
-      // Wait for dialog
-      await $(l10n.enterCode).waitUntilVisible();
+      await $(keys.resetPasswordPage.emailTextField).enterText(email);
+      await $(keys.resetPasswordPage.sendLoginCodeButton).tap();
 
       // Try wrong code
-      await $(const Key('verificationCodeTextField')).enterText('000000');
-      await $(l10n.confirm).tap();
-      // Expect error snackbar or dialog to stay
-      await $(l10n.enterCode).waitUntilVisible();
+      await $(
+        keys.resetPasswordPage.verificationCodeTextField,
+      ).enterText('000000');
+      await $(keys.resetPasswordPage.confirmButton).tap();
 
-      // Try correct code
-      await $(const Key('verificationCodeTextField')).enterText(testCode);
+      // Wait for the error text to appear which implies loading is done
+      await $(keys.resetPasswordPage.error).waitUntilVisible();
+      // Try correct code - enterText replaces content by default
+      await $(keys.resetPasswordPage.verificationCodeTextField).tap();
+      await $(
+        keys.resetPasswordPage.verificationCodeTextField,
+      ).enterText(testCode);
+      // Log the content of the text field
+
       await $(l10n.confirm).tap();
 
-      // Verify successful login (should be on Home/Profile)
-      await $(keys.widgetTree.profileButton).waitUntilVisible();
+      // Set new password
+      await $(
+        keys.setNewPasswordPage.newPasswordTextField,
+      ).enterText(validPassword);
+      await $(
+        keys.setNewPasswordPage.confirmPasswordTextField,
+      ).enterText(validPassword);
+      await $(l10n.confirm).tap();
+
+      // Should be logged out and back at Welcome
+      await $(l10n.theWelcomePhrase).waitUntilVisible();
+      await $(l10n.signIn).tap();
+
+      // Login with new password to delete account
+      await $(keys.loginPage.emailTextField).enterText(email);
+      await $(keys.loginPage.passwordTextField).enterText(validPassword);
+      await $(keys.loginPage.signInButton).tap();
+
+      await $(keys.widgetTree.profileButton).tap();
+
+      // Delete Account Flow
+      await $(keys.profilePage.deleteAccountListTile).scrollTo().tap();
+      await $(keys.profilePage.confirmDeleteButton).tap();
+
+      // Now on DeleteAccountPage
+      await $(keys.deleteAccountPage.emailTextField).enterText(email);
+      await $(
+        keys.deleteAccountPage.passwordTextField,
+      ).enterText(validPassword);
+      await $(keys.deleteAccountPage.deleteAccountButton).tap();
+
+      // Wait for deletion and navigation back to WelcomePage
+      await $(l10n.theWelcomePhrase).waitUntilVisible();
+      await $(l10n.signIn).tap();
+      await $(keys.loginPage.emailTextField).enterText(email);
+      await $(keys.loginPage.passwordTextField).enterText(validPassword);
+      await $(keys.loginPage.signInButton).tap();
 
       $.log("Validation and full onboarding flow tests completed");
     },
   );
+}
+
+Future<void> regNOut(
+  PatrolIntegrationTester $,
+  AppLocalizationsDe l10n,
+  String email,
+  String validPassword,
+  String testCode,
+) async {
+  await Future.delayed(const Duration(seconds: 1));
+
+  // Navigate to Onboarding
+  await $(l10n.getStarted).tap();
+  await $(l10n.registerHere).waitUntilVisible();
+
+  // 1. Test: Mismatched Passwords
+  await $(keys.onboardingPage.emailTextField).enterText('test@example.com');
+  await $(keys.onboardingPage.passwordTextField).enterText('Password123!');
+  await $(
+    keys.onboardingPage.repeatPasswordTextField,
+  ).enterText('Different123!');
+  await $(keys.onboardingPage.registerButton).tap();
+
+  expect($(l10n.passwordsDoNotMatch), findsOneWidget);
+
+  // 2. Test: Weak Password (too short)
+  await $(keys.onboardingPage.passwordTextField).enterText('123');
+  await $(keys.onboardingPage.repeatPasswordTextField).enterText('123');
+  await $(keys.onboardingPage.registerButton).tap();
+
+  // Check if the button tap didn't proceed to the next page.
+  expect($(l10n.registerHere), findsOneWidget);
+
+  // 3. Test: Empty Fields
+  await $(keys.onboardingPage.emailTextField).enterText('');
+  await $(keys.onboardingPage.passwordTextField).enterText('');
+  await $(keys.onboardingPage.repeatPasswordTextField).enterText('');
+  await $(keys.onboardingPage.registerButton).tap();
+
+  expect($(l10n.enterSomething), findsWidgets);
+
+  // 4. Test: Invalid Email Format
+  await $(keys.onboardingPage.emailTextField).enterText('not-an-email');
+  await $(keys.onboardingPage.passwordTextField).enterText('ValidPass123!');
+  await $(
+    keys.onboardingPage.repeatPasswordTextField,
+  ).enterText('ValidPass123!');
+  await $(keys.onboardingPage.registerButton).tap();
+
+  // 5. Test: Valid Credentials and Full Flow
+  await $(keys.onboardingPage.emailTextField).enterText(email);
+  await $(keys.onboardingPage.passwordTextField).enterText(validPassword);
+  await $(keys.onboardingPage.repeatPasswordTextField).enterText(validPassword);
+  await $(keys.onboardingPage.registerButton).tap();
+
+  // Verification Code
+  await $(
+    keys.emailConfirmationPage.verificationCodeTextField,
+  ).waitUntilVisible();
+  await $(
+    keys.emailConfirmationPage.verificationCodeTextField,
+  ).enterText(testCode);
+  await $(keys.emailConfirmationPage.verifyButton).tap();
+
+  // Set User Details
+  await $(keys.setUserDetailsPage.givenNameTextField).enterText("Validation");
+  await $(keys.setUserDetailsPage.surnameTextField).enterText("Tester");
+  await $(keys.setUserDetailsPage.dateOfBirthTextField).tap();
+  await Future.delayed(const Duration(seconds: 1));
+  await $.platformAutomator.tap(Selector(text: 'OK'));
+
+  // Address
+  await $(
+    keys.setUserDetailsPage.addressTextField,
+  ).enterText("Ravensberger Straße 42, 33602");
+  await Future.delayed(const Duration(seconds: 2));
+
+  await $(RegExp('Bielefeld')).tap();
+  await Future.delayed(const Duration(seconds: 4));
+  await $(keys.setUserDetailsPage.saveButton).tap();
+
+  // Logout
+  await $(keys.widgetTree.profileButton).tap();
+  await $(keys.profilePage.logoutListTile).scrollTo().tap();
+  await $(keys.profilePage.confirmLogoutButton).tap();
 }

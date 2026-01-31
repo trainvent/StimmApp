@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/pages/onboarding/set_new_password_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
-import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -31,22 +31,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
-  void resetPassword() async {
-    try {
-      await authService.resetPassword(email: controllerEmail.text);
-      if (!mounted) return;
-      showSuccessSnackBar(context.l10n.resetPasswordCodeSent);
-      if (!mounted) return;
-      Navigator.of(context).pop();
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        errorMessage = e.message ?? context.l10n.error;
-        showErrorSnackBar(errorMessage);
-      });
-    }
-  }
-
   void sendLoginCode() async {
     try {
       await authService.sendLoginCode(controllerEmail.text);
@@ -65,64 +49,118 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   void _showEnterCodeDialog() {
     final codeController = TextEditingController();
+    // State variable to track loading inside the dialog
+    final ValueNotifier<bool> isLoading = ValueNotifier(false);
+    // State variable to show error message inside the dialog
+    final ValueNotifier<String?> dialogError = ValueNotifier(null);
+
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent closing while loading
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(context.l10n.enterCode),
-          content: TextField(
-            controller: codeController,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration(
-              hintText: '000000',
-              counterText: '',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(context.l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final code = codeController.text.trim();
-                if (code.length != 6) return;
+        return ValueListenableBuilder<bool>(
+          valueListenable: isLoading,
+          builder: (context, loading, child) {
+            return AlertDialog(
+              title: Text(context.l10n.enterCode),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    key: const Key('verificationCodeTextField'),
+                    controller: codeController,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    textAlign: TextAlign.center,
+                    enabled: !loading,
+                    decoration: const InputDecoration(
+                      hintText: '000000',
+                      counterText: '',
+                    ),
+                  ),
+                  ValueListenableBuilder<String?>(
+                    valueListenable: dialogError,
+                    builder: (context, error, _) {
+                      if (error == null) return const SizedBox.shrink();
+                      return Padding(
+                        key: const Key('error'),
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          error,
+                          style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                  ),
+                  if (loading)
+                    const Padding(
+                      key: Key('loading'),
+                      padding: EdgeInsets.only(top: 16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  key: const Key('cancelButton'),
+                  onPressed: loading
+                      ? null
+                      : () => Navigator.pop(dialogContext),
+                  child: Text(context.l10n.cancel),
+                ),
+                FilledButton(
+                  key: const Key('confirmButton'),
+                  onPressed: loading
+                      ? null
+                      : () async {
+                          final code = codeController.text.trim();
+                          if (code.length != 6) return;
 
-                // Capture the parent context before the async gap
-                // We need the parent context to navigate back to root
-                final parentContext = context;
+                          isLoading.value = true;
+                          dialogError.value = null;
 
-                try {
-                  await authService.signInWithCode(controllerEmail.text, code);
+                          // Capture the parent context before the async gap
+                          final parentContext = context;
 
-                  // Check if the dialog is still mounted
-                  if (!dialogContext.mounted) return;
-                  // Close dialog
-                  Navigator.pop(dialogContext);
+                          try {
+                            await authService.signInWithCode(
+                              controllerEmail.text,
+                              code,
+                            );
 
-                  // Check if the parent widget is still mounted
-                  if (!mounted) return;
-                  // Close ResetPasswordPage and go back to root (which will show home)
-                  Navigator.of(
-                    parentContext,
-                  ).popUntil((route) => route.isFirst);
-                } on AuthException catch (e) {
-                  if (!dialogContext.mounted) return;
-                  // We can't use context.l10n here easily if we are inside a static method or builder
-                  // But here we are in a closure that captures 'context' from build method?
-                  // Actually, 'context' in showDialog builder is different.
-                  // Let's use the outer context for l10n if possible, or dialogContext.
-                  // dialogContext is safe to use for UI feedback inside the dialog.
-                  ScaffoldMessenger.of(
-                    dialogContext,
-                  ).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
-                }
-              },
-              child: Text(context.l10n.confirm),
-            ),
-          ],
+                            if (!dialogContext.mounted) return;
+                            Navigator.pop(dialogContext); // Close dialog
+
+                            if (!mounted) return;
+                            Navigator.of(parentContext).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SetNewPasswordPage(),
+                              ),
+                            );
+                          } on AuthException catch (e) {
+                            isLoading.value = false;
+                            // Show error in the dialog UI instead of just a snackbar
+                            dialogError.value = e.message ?? 'Error';
+
+                            // Clear the code field on error
+                            codeController.clear();
+
+                            // Also show snackbar for accessibility/consistency if needed,
+                            // but the text in dialog is better for tests waiting for text.
+                            if (dialogContext.mounted) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(content: Text(e.message ?? 'Error')),
+                              );
+                            }
+                          }
+                        },
+                  child: Text(context.l10n.confirm),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -151,6 +189,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     child: Column(
                       children: [
                         TextFormField(
+                          key: const Key('emailTestField'),
                           controller: controllerEmail,
                           decoration: InputDecoration(
                             labelText: context.l10n.email,
@@ -185,17 +224,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             builder: (context) {
               return Column(
                 children: [
-                  ButtonWidget(
-                    isFilled: true,
-                    label: context.l10n.resetPassword,
-                    callback: () async {
-                      if (Form.of(context).validate()) {
-                        resetPassword();
-                      }
-                    },
-                  ),
                   const SizedBox(height: 10),
                   TextButton(
+                    key: const Key('sendLoginCodeButton'),
                     onPressed: () {
                       if (Form.of(context).validate()) {
                         sendLoginCode();

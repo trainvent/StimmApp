@@ -160,6 +160,14 @@ exports.sendLoginCode = (0, https_1.onCall)(async (request) => {
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'Email is required.');
     }
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    const testEmail = process.env.TEST_EMAIL;
+    // Backdoor for testing: If using test email in dev, skip sending real email
+    // Normalize emails to lowercase for comparison
+    if (isDevEnvironment && testEmail && email.toLowerCase() === testEmail.toLowerCase()) {
+        console.log(`[SEND LOGIN] Test Backdoor used for ${email}. Skipping email send.`);
+        return { success: true, message: 'Login code sent (Test Backdoor).' };
+    }
     let uid;
     try {
         const userRecord = await admin.auth().getUserByEmail(email);
@@ -190,7 +198,8 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
     // Backdoor for testing, ONLY in Dev environment
-    if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
+    // Normalize emails to lowercase for comparison
+    if (isDevEnvironment && testEmail && testCode && email && email.toLowerCase() === testEmail.toLowerCase() && code === testCode) {
         await admin.auth().updateUser(uid, { emailVerified: true });
         await db.collection('verificationCodes').doc(uid).delete();
         return { success: true, message: 'Email verified successfully (Test Backdoor).' };
@@ -218,7 +227,18 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
         console.error("User lookup failed in verify:", error);
         throw new https_1.HttpsError('not-found', 'User not found.');
     }
-    await verifyCodeLogic(uid, code, email);
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    const testEmail = process.env.TEST_EMAIL;
+    const testCode = process.env.TEST_CODE;
+    // Backdoor for testing, ONLY in Dev environment
+    // Normalize emails to lowercase for comparison
+    if (isDevEnvironment && testEmail && testCode && email.toLowerCase() === testEmail.toLowerCase() && code === testCode) {
+        console.log(`[VERIFY] Test Backdoor used for ${email}. Creating custom token...`);
+        // Skip verifyCodeLogic and proceed to token creation
+    }
+    else {
+        await verifyCodeLogic(uid, code, email);
+    }
     console.log(`[VERIFY] Code valid for ${email}. Creating custom token...`);
     // Code is valid. Generate custom token.
     let token;

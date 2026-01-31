@@ -7,7 +7,7 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 import 'login_page.dart';
-import 'onboarding_page.dart';
+import 'register_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -82,7 +82,7 @@ class WelcomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return const OnboardingPage();
+                  return const RegisterPage();
                 },
               ),
             );
