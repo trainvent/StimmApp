@@ -162,11 +162,15 @@ exports.sendLoginCode = (0, https_1.onCall)(async (request) => {
     }
     const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
     const testEmail = process.env.TEST_EMAIL;
-    // Backdoor for testing: If using test email in dev, skip sending real email
-    // Normalize emails to lowercase for comparison
-    if (isDevEnvironment && testEmail && email.toLowerCase() === testEmail.toLowerCase()) {
-        console.log(`[SEND LOGIN] Test Backdoor used for ${email}. Skipping email send.`);
-        return { success: true, message: 'Login code sent (Test Backdoor).' };
+    console.log(`[DEBUG] sendLoginCode: email='${email}'`);
+    if (isDevEnvironment && testEmail) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
+        if (normalizedInput === normalizedTest) {
+            console.log(`[SEND LOGIN] Test Backdoor used for ${email}. Skipping email send.`);
+            return { success: true, message: 'Login code sent (Test Backdoor).' };
+        }
     }
     let uid;
     try {
@@ -198,11 +202,14 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
     // Backdoor for testing, ONLY in Dev environment
-    // Normalize emails to lowercase for comparison
-    if (isDevEnvironment && testEmail && testCode && email && email.toLowerCase() === testEmail.toLowerCase() && code === testCode) {
-        await admin.auth().updateUser(uid, { emailVerified: true });
-        await db.collection('verificationCodes').doc(uid).delete();
-        return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+    if (isDevEnvironment && testEmail && testCode && email) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        if (normalizedInput === normalizedTest && code === testCode) {
+            await admin.auth().updateUser(uid, { emailVerified: true });
+            await db.collection('verificationCodes').doc(uid).delete();
+            return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+        }
     }
     await verifyCodeLogic(uid, code);
     await admin.auth().updateUser(uid, {
@@ -230,9 +237,18 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
     const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
+    console.log(`[DEBUG] verifyLoginCode: email='${email}', code='${code}'`);
+    let isBackdoor = false;
+    if (isDevEnvironment && testEmail && testCode) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
+        if (normalizedInput === normalizedTest && code === testCode) {
+            isBackdoor = true;
+        }
+    }
     // Backdoor for testing, ONLY in Dev environment
-    // Normalize emails to lowercase for comparison
-    if (isDevEnvironment && testEmail && testCode && email.toLowerCase() === testEmail.toLowerCase() && code === testCode) {
+    if (isBackdoor) {
         console.log(`[VERIFY] Test Backdoor used for ${email}. Creating custom token...`);
         // Skip verifyCodeLogic and proceed to token creation
     }
