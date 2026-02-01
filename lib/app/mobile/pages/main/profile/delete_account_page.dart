@@ -33,28 +33,34 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
     });
 
     try {
-      // 1. Sign in to ensure fresh credentials (required for deletion)
-      // This handles cases where the user opens the link in a new browser/device
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        setState(() {
+          _statusMessage = context.l10n.deleteAccountUserNotFound;
+        });
+        return;
+      }
+
+      // 1. Re-authenticate to ensure fresh credentials (required for deletion)
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      await user.reauthenticateWithCredential(credential);
 
       // 2. Delete the user
-      if (userCredential.user != null) {
-        await userCredential.user!.delete();
+      await user.delete();
 
-        setState(() {
-          _statusMessage = context.l10n.deleteAccountSuccess;
-          _emailController.clear();
-          _passwordController.clear();
-        });
+      setState(() {
+        _statusMessage = context.l10n.deleteAccountSuccess;
+        _emailController.clear();
+        _passwordController.clear();
+      });
 
-        if (mounted) {
-          // Pop all routes until the first one (which should be the AuthLayout/WelcomePage)
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
+      if (mounted) {
+        // Pop all routes until the first one (which should be the AuthLayout/WelcomePage)
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } on FirebaseAuthException catch (e) {
       setState(() {

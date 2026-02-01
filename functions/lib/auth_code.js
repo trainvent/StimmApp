@@ -160,6 +160,18 @@ exports.sendLoginCode = (0, https_1.onCall)(async (request) => {
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'Email is required.');
     }
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    const testEmail = process.env.TEST_EMAIL;
+    console.log(`[DEBUG] sendLoginCode: email='${email}'`);
+    if (isDevEnvironment && testEmail) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
+        if (normalizedInput === normalizedTest) {
+            console.log(`[SEND LOGIN] Test Backdoor used for ${email}. Skipping email send.`);
+            return { success: true, message: 'Login code sent (Test Backdoor).' };
+        }
+    }
     let uid;
     try {
         const userRecord = await admin.auth().getUserByEmail(email);
@@ -190,10 +202,14 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
     const testEmail = process.env.TEST_EMAIL;
     const testCode = process.env.TEST_CODE;
     // Backdoor for testing, ONLY in Dev environment
-    if (isDevEnvironment && testEmail && testCode && email === testEmail && code === testCode) {
-        await admin.auth().updateUser(uid, { emailVerified: true });
-        await db.collection('verificationCodes').doc(uid).delete();
-        return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+    if (isDevEnvironment && testEmail && testCode && email) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        if (normalizedInput === normalizedTest && code === testCode) {
+            await admin.auth().updateUser(uid, { emailVerified: true });
+            await db.collection('verificationCodes').doc(uid).delete();
+            return { success: true, message: 'Email verified successfully (Test Backdoor).' };
+        }
     }
     await verifyCodeLogic(uid, code);
     await admin.auth().updateUser(uid, {
@@ -218,7 +234,27 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
         console.error("User lookup failed in verify:", error);
         throw new https_1.HttpsError('not-found', 'User not found.');
     }
-    await verifyCodeLogic(uid, code, email);
+    const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
+    const testEmail = process.env.TEST_EMAIL;
+    const testCode = process.env.TEST_CODE;
+    console.log(`[DEBUG] verifyLoginCode: email='${email}', code='${code}'`);
+    let isBackdoor = false;
+    if (isDevEnvironment && testEmail && testCode) {
+        const normalizedInput = email.trim().toLowerCase();
+        const normalizedTest = testEmail.trim().toLowerCase();
+        console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
+        if (normalizedInput === normalizedTest && code === testCode) {
+            isBackdoor = true;
+        }
+    }
+    // Backdoor for testing, ONLY in Dev environment
+    if (isBackdoor) {
+        console.log(`[VERIFY] Test Backdoor used for ${email}. Creating custom token...`);
+        // Skip verifyCodeLogic and proceed to token creation
+    }
+    else {
+        await verifyCodeLogic(uid, code, email);
+    }
     console.log(`[VERIFY] Code valid for ${email}. Creating custom token...`);
     // Code is valid. Generate custom token.
     let token;

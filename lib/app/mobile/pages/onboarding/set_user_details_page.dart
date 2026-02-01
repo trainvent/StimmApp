@@ -58,7 +58,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       }
 
       if (_selectedState == null) {
-        showErrorSnackBar('Please select a state');
+        showErrorSnackBar('Please enter a valid living address');
         return;
       }
 

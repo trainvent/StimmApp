@@ -10,16 +10,17 @@ import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/validate_password.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
-class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController controllerPw = TextEditingController();
   final TextEditingController controllerConfirmPw = TextEditingController();
   final TextEditingController controllerEm = TextEditingController();
@@ -149,15 +150,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               decoration: InputDecoration(
                                 labelText: context.l10n.password,
                               ),
-                              validator: (String? value) {
-                                if (value == null) {
-                                  return context.l10n.enterSomething;
-                                }
-                                if (value.trim().isEmpty) {
-                                  return context.l10n.enterSomething;
-                                }
-                                return null;
-                              },
+                              validator: (value) =>
+                                  validatePassword(context, value),
                             ),
                             const SizedBox(height: 10),
                             TextFormField(

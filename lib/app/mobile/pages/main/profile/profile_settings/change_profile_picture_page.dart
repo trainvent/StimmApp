@@ -127,26 +127,30 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 64,
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: 128,
-                        height: 128,
-                        child: preview ??
-                            Center(
-                              child: Text(
-                                (authService.currentUser?.displayName ?? '')
-                                        .isNotEmpty
-                                    ? authService.currentUser!.displayName![0]
-                                        .toUpperCase()
-                                    : '?',
-                                style: AppTextStyles.xxlBold,
+                  Hero(
+                    tag: 'hero1',
+                    child: CircleAvatar(
+                      radius: 64,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      child: ClipOval(
+                        child: SizedBox(
+                          width: 128,
+                          height: 128,
+                          child:
+                              preview ??
+                              Center(
+                                child: Text(
+                                  (authService.currentUser?.displayName ?? '')
+                                          .isNotEmpty
+                                      ? authService.currentUser!.displayName![0]
+                                            .toUpperCase()
+                                      : '?',
+                                  style: AppTextStyles.xxlBold,
+                                ),
                               ),
-                            ),
+                        ),
                       ),
                     ),
                   ),
@@ -164,17 +168,20 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
               spacing: 12,
               children: [
                 ElevatedButton.icon(
-                  onPressed:
-                      _uploading ? null : () => _pickImage(ImageSource.gallery),
+                  onPressed: _uploading
+                      ? null
+                      : () => _pickImage(ImageSource.gallery),
                   icon: const Icon(Icons.photo),
                   label: Text(context.l10n.selectFromGallery),
                 ),
-                ElevatedButton.icon(
-                  onPressed:
-                      _uploading ? null : () => _pickImage(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(context.l10n.selectFromCamera),
-                ),
+                if (!kIsWeb)
+                  ElevatedButton.icon(
+                    onPressed: _uploading
+                        ? null
+                        : () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt),
+                    label: Text(context.l10n.selectFromCamera),
+                  ),
                 TextButton(
                   onPressed: _uploading ? null : _removeImage,
                   child: Text(context.l10n.remove),
