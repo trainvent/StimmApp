@@ -128,7 +128,8 @@ void main() {
     // Tap OK to select the default date (today)
     await $.platformAutomator.tap(Selector(text: 'OK'));
 
-    // Enter partial address so the suggestion contains unique text
+    // Enter partial address so the suggestion contains unique texts
+    await $(keys.setUserDetailsPage.addressTextField).tap();
     const partialAddress = "Ravensberger Straße 42, 33602";
     await $(keys.setUserDetailsPage.addressTextField).enterText(partialAddress);
 

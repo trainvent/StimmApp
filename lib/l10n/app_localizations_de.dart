@@ -672,7 +672,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get resetPassword => 'Passwort zurücksetzen';
 
   @override
-  String get resetPasswordCodeSent => 'Reset password code sent';
+  String get resetPasswordCodeSent => 'Code abgeschickt';
 
   @override
   String get resetPasswordLinkSent =>
