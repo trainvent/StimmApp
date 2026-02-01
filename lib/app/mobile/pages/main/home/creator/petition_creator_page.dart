@@ -294,6 +294,15 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
                   if (value == null || value.trim().isEmpty) {
                     return context.l10n.tagsRequired;
                   }
+                  final tags = value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                  if (tags.length > 5) {
+                    return "Too many tags (max 5)";
+                  }
+                  for (final tag in tags) {
+                    if (tag.length > 20) {
+                      return "Tag '$tag' is too long (max 20 chars)";
+                    }
+                  }
                   return null;
                 },
               ),
