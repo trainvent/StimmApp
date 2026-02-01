@@ -90,7 +90,12 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 16),
-                Expanded(child: contentBuilder(context, item)),
+                Expanded(
+                  child: AbsorbPointer(
+                    absorbing: isExpired,
+                    child: contentBuilder(context, item),
+                  ),
+                ),
                 if (!isExpired && bottomAction != null) ...[
                   const SizedBox(height: 16),
                   SizedBox(width: double.infinity, child: bottomAction!),
