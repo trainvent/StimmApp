@@ -1,4 +1,4 @@
-import { onCall } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,7 +13,7 @@ import * as path from 'path';
 export const seedTestData = onCall(async (request) => {
     // 1. Safety Check: Ensure this only runs in the Dev project
     if (process.env.GCLOUD_PROJECT === 'stimmapp-f0141') {
-        throw new admin.functions.https.HttpsError(
+        throw new HttpsError(
             'failed-precondition', 
             'This function can only be run in the development environment.'
         );
@@ -28,7 +28,7 @@ export const seedTestData = onCall(async (request) => {
         const dataPath = path.join(__dirname, 'test_data.json');
         
         if (!fs.existsSync(dataPath)) {
-             throw new admin.functions.https.HttpsError(
+             throw new HttpsError(
                 'not-found',
                 'Test data file (test_data.json) not found on server.'
             );
@@ -101,7 +101,7 @@ export const seedTestData = onCall(async (request) => {
 
     } catch (error) {
         console.error("Error seeding database:", error);
-        throw new admin.functions.https.HttpsError('internal', 'Failed to seed database.', error);
+        throw new HttpsError('internal', 'Failed to seed database.', error);
     }
 });
 
