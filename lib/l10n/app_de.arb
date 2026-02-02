@@ -43,6 +43,7 @@
           }
       }
   },
+  "pleaseEnterYourSurname": "Bitte geben Sie Ihren Nachnamen ein",
   "displayName": "angezeigter Name",
   "about": "Über",
   "aboutThisApp": "Über diese App",

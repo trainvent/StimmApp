@@ -42,6 +42,7 @@
           }
       }
   },
+  "pleaseEnterYourSurname": "Please enter your surname",
   "displayName": "displayed name",
   "about": "About",
   "aboutThisApp": "About this app",

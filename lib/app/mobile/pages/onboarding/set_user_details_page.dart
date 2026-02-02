@@ -16,6 +16,7 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class SetUserDetailsPage extends StatefulWidget {
   const SetUserDetailsPage({super.key});
@@ -25,6 +26,7 @@ class SetUserDetailsPage extends StatefulWidget {
 }
 
 class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
   final TextEditingController controllerNickName = TextEditingController();
@@ -32,7 +34,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final TextEditingController controllerAddress = TextEditingController();
   DateTime? _selectedDateOfBirth;
   String? _selectedState;
-  String errorMessage = 'Error message';
+  String errorMessage = '';
   double _progress = 0.0;
 
   @override
@@ -55,12 +57,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       }
 
       if (controllerAddress.text.trim().isEmpty) {
-        showErrorSnackBar('Please enter your address');
+        showErrorSnackBar(context.l10n.enterSomething);
         return;
       }
 
       if (_selectedState == null) {
-        showErrorSnackBar('Please enter a valid living address');
+        showErrorSnackBar(context.l10n.pleaseSelectState);
         return;
       }
 
@@ -111,7 +113,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         debugPrint('Default avatar upload failed: $e\n$st');
       }
 
-      // Navigate to main app screen after user details
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } on AuthException catch (e) {
       setState(() {
         errorMessage = '${e.code}: ${e.message ?? 'Unknown error'}';
@@ -141,6 +144,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
@@ -159,7 +163,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).pleaseEnterYourSurname;
                         }
                         return null;
                       },
@@ -254,13 +258,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     showErrorSnackBar(context.l10n.enterSomething);
                     return;
                   }
-                  if (!Form.of(context).validate()) {
-                    showErrorSnackBar(errorMessage);
+                  if (!_formKey.currentState!.validate()) {
+                    return;
                   } else {
                     // Update controllerAddress with _textController.text before saving
                     controllerAddress.text = _textController.text;
                     _saveUserDetails();
-                    // Navigator.of(context).popUntil((route) => route.isFirst);
                   }
                 },
               ),
