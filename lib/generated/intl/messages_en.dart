@@ -20,6 +20,512 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(firstName, lastName) => "Welcome ${firstName} ${lastName}!";
+
+  static String m1(newMessages) =>
+      "You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new Messages', other: '${newMessages} new messages')}";
+
+  static String m2(state) => "Related to ${state}";
+
+  static String m3(date) => "Valid until: ${date}";
+
+  static String m4(email) => "A verification email has been sent to ${email}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "about": MessageLookupByLibrary.simpleMessage("About"),
+    "aboutThisApp": MessageLookupByLibrary.simpleMessage("About this app"),
+    "active": MessageLookupByLibrary.simpleMessage("Active"),
+    "activityHistory": MessageLookupByLibrary.simpleMessage("Activity History"),
+    "addComment": MessageLookupByLibrary.simpleMessage("Add a comment"),
+    "addImage": MessageLookupByLibrary.simpleMessage("Add Image"),
+    "addOption": MessageLookupByLibrary.simpleMessage("Add option"),
+    "address": MessageLookupByLibrary.simpleMessage("Address"),
+    "addressUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Address updated successfully",
+    ),
+    "adminDashboard": MessageLookupByLibrary.simpleMessage("Admin Dashboard"),
+    "adminInterface": MessageLookupByLibrary.simpleMessage("Admin Interface"),
+    "alert": MessageLookupByLibrary.simpleMessage("Alert"),
+    "anonymous": MessageLookupByLibrary.simpleMessage("Anonymous"),
+    "areYouSureYouWantToCancelYourProSubscription":
+        MessageLookupByLibrary.simpleMessage(
+          "Are you sure you want to cancel your Pro subscription? You will lose Pro features.",
+        ),
+    "areYouSureYouWantToDeleteThisPetition":
+        MessageLookupByLibrary.simpleMessage(
+          "Are you sure you want to delete this petition?",
+        ),
+    "areYouSureYouWantToDeleteThisPoll": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this poll?",
+    ),
+    "areYouSureYouWantToDeleteThisUser": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this user?",
+    ),
+    "areYouSureYouWantToDeleteYourAccount":
+        MessageLookupByLibrary.simpleMessage(
+          "Are you sure you want to delete your account?",
+        ),
+    "areYouSureYouWantToDeleteYourAccountThisActionIsIrreversible":
+        MessageLookupByLibrary.simpleMessage(
+          "Are you sure you want to delete your account? This action is irreversible",
+        ),
+    "areYouSureYouWantToLogout": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to log out?",
+    ),
+    "backSide": MessageLookupByLibrary.simpleMessage("Back Side"),
+    "backToLogin": MessageLookupByLibrary.simpleMessage("Back to Login"),
+    "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "cancelProSubscription": MessageLookupByLibrary.simpleMessage(
+      "Cancel Pro Subscription",
+    ),
+    "cancelRegistration": MessageLookupByLibrary.simpleMessage(
+      "Cancel registration",
+    ),
+    "cancelSubscription": MessageLookupByLibrary.simpleMessage(
+      "Cancel subscription",
+    ),
+    "changeLanguage": MessageLookupByLibrary.simpleMessage("Change Language"),
+    "changePassword": MessageLookupByLibrary.simpleMessage("Change password"),
+    "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "closed": MessageLookupByLibrary.simpleMessage("Closed"),
+    "colorMode": MessageLookupByLibrary.simpleMessage("Color Mode"),
+    "colorTheme": MessageLookupByLibrary.simpleMessage("Color Theme"),
+    "comments": MessageLookupByLibrary.simpleMessage("Comments"),
+    "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+    "confirmAndFinish": MessageLookupByLibrary.simpleMessage(
+      "Confirm & Finish",
+    ),
+    "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
+    "confirmationEmailSent": MessageLookupByLibrary.simpleMessage(
+      "Confirmation Email Sent",
+    ),
+    "confirmationEmailSentDescription": MessageLookupByLibrary.simpleMessage(
+      "We have sent a confirmation email to your email address. Please check your inbox and follow the instructions to complete your registration.",
+    ),
+    "consumption": MessageLookupByLibrary.simpleMessage("Consumption"),
+    "continueNext": MessageLookupByLibrary.simpleMessage("Continue"),
+    "continueText": MessageLookupByLibrary.simpleMessage("Continue"),
+    "couldNotOpenPaywall": MessageLookupByLibrary.simpleMessage(
+      "Could not open paywall",
+    ),
+    "createNewPetitionDescription": MessageLookupByLibrary.simpleMessage(
+      "Create a new petition",
+    ),
+    "createNewPollDescription": MessageLookupByLibrary.simpleMessage(
+      "Create a new poll",
+    ),
+    "createPetition": MessageLookupByLibrary.simpleMessage("Create Petition"),
+    "createPoll": MessageLookupByLibrary.simpleMessage("Create Poll"),
+    "createdPetition": MessageLookupByLibrary.simpleMessage("Petition created"),
+    "createdPoll": MessageLookupByLibrary.simpleMessage("Poll created"),
+    "creator": MessageLookupByLibrary.simpleMessage("Creator"),
+    "currentPassword": MessageLookupByLibrary.simpleMessage("Current password"),
+    "customPetitionAndPollPictures": MessageLookupByLibrary.simpleMessage(
+      "Custom petition and poll pictures",
+    ),
+    "dailyCreateLimitReached": MessageLookupByLibrary.simpleMessage(
+      "You can only publish one petition and one poll per day.",
+    ),
+    "dailyCreatePetitionLimitReached": MessageLookupByLibrary.simpleMessage(
+      "You can only publish one petition per day.",
+    ),
+    "dailyCreatePollLimitReached": MessageLookupByLibrary.simpleMessage(
+      "You can only publish one poll per day.",
+    ),
+    "dailyHabit": MessageLookupByLibrary.simpleMessage("Daily habit"),
+    "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
+    "dateOfBirth": MessageLookupByLibrary.simpleMessage("Date of Birth"),
+    "daysLeft": MessageLookupByLibrary.simpleMessage("Days Left"),
+    "deleteAccount": MessageLookupByLibrary.simpleMessage("delete Account"),
+    "deleteAccountButton": MessageLookupByLibrary.simpleMessage(
+      "PERMANENTLY DELETE ACCOUNT",
+    ),
+    "deleteAccountDescription": MessageLookupByLibrary.simpleMessage(
+      "Please sign in to confirm your identity. This action will permanently delete your account and all associated data.",
+    ),
+    "deleteAccountSuccess": MessageLookupByLibrary.simpleMessage(
+      "Account deleted successfully.",
+    ),
+    "deleteAccountTitle": MessageLookupByLibrary.simpleMessage(
+      "Delete Your Account",
+    ),
+    "deleteAccountUnexpectedError": MessageLookupByLibrary.simpleMessage(
+      "An unexpected error occurred.",
+    ),
+    "deleteAccountUserNotFound": MessageLookupByLibrary.simpleMessage(
+      "No user found for that email.",
+    ),
+    "deleteAccountWrongPassword": MessageLookupByLibrary.simpleMessage(
+      "Wrong password provided.",
+    ),
+    "deleteMyAccount": MessageLookupByLibrary.simpleMessage(
+      "Delete my account",
+    ),
+    "deletePermanently": MessageLookupByLibrary.simpleMessage(
+      "Delete Permanently",
+    ),
+    "deletePetition": MessageLookupByLibrary.simpleMessage("Delete Petition"),
+    "deletePoll": MessageLookupByLibrary.simpleMessage("Delete Poll"),
+    "deleteUser": MessageLookupByLibrary.simpleMessage("Delete User"),
+    "deleted": MessageLookupByLibrary.simpleMessage("Deleted"),
+    "descriptioRequired": MessageLookupByLibrary.simpleMessage(
+      "Description is required",
+    ),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
+    "descriptionRequired": MessageLookupByLibrary.simpleMessage(
+      "Description is required",
+    ),
+    "descriptionTooShort": MessageLookupByLibrary.simpleMessage(
+      "Description is too short",
+    ),
+    "devContactInformation": MessageLookupByLibrary.simpleMessage(
+      "This app is developed by Team LeEd with help of yannic",
+    ),
+    "developerSandbox": MessageLookupByLibrary.simpleMessage(
+      "Developer Sandbox",
+    ),
+    "displayName": MessageLookupByLibrary.simpleMessage("displayed name"),
+    "editPetition": MessageLookupByLibrary.simpleMessage("Edit Petition"),
+    "email": MessageLookupByLibrary.simpleMessage("Email"),
+    "emailVerification": MessageLookupByLibrary.simpleMessage(
+      "Email verification",
+    ),
+    "energy": MessageLookupByLibrary.simpleMessage("Energy"),
+    "english": MessageLookupByLibrary.simpleMessage("english"),
+    "enterCode": MessageLookupByLibrary.simpleMessage("Enter Code"),
+    "enterDescription": MessageLookupByLibrary.simpleMessage(
+      "Enter description",
+    ),
+    "enterSomething": MessageLookupByLibrary.simpleMessage("Enter something"),
+    "enterTitle": MessageLookupByLibrary.simpleMessage("Enter title"),
+    "enterYourAddress": MessageLookupByLibrary.simpleMessage(
+      "enter Your Address",
+    ),
+    "enterYourEmail": MessageLookupByLibrary.simpleMessage("Enter your email"),
+    "entryNotYetImplemented": MessageLookupByLibrary.simpleMessage(
+      "Lexicon entry not yet implemented",
+    ),
+    "error": MessageLookupByLibrary.simpleMessage("Error: "),
+    "errorCreatingPetition": MessageLookupByLibrary.simpleMessage(
+      "Error creating petition",
+    ),
+    "errorSendingEmail": MessageLookupByLibrary.simpleMessage(
+      "Error sending email",
+    ),
+    "errorUploadingImage": MessageLookupByLibrary.simpleMessage(
+      "Error uploading image",
+    ),
+    "errors": MessageLookupByLibrary.simpleMessage("Errors"),
+    "exercise": MessageLookupByLibrary.simpleMessage("Exercise"),
+    "expiredCreations": MessageLookupByLibrary.simpleMessage(
+      "Expired creations",
+    ),
+    "expiredPetitions": MessageLookupByLibrary.simpleMessage(
+      "Expired petitions",
+    ),
+    "expiredPolls": MessageLookupByLibrary.simpleMessage("Expired polls"),
+    "expiresOn": MessageLookupByLibrary.simpleMessage("Expires on"),
+    "expiryDate": MessageLookupByLibrary.simpleMessage("Expiry Date"),
+    "explore": MessageLookupByLibrary.simpleMessage("Explore"),
+    "exportCsv": MessageLookupByLibrary.simpleMessage("Export CSV"),
+    "exportFailed": MessageLookupByLibrary.simpleMessage("Export failed"),
+    "exportSuccess": MessageLookupByLibrary.simpleMessage("Export created"),
+    "failedToCreatePoll": MessageLookupByLibrary.simpleMessage(
+      "Failed to create poll",
+    ),
+    "failedToUploadImage": MessageLookupByLibrary.simpleMessage(
+      "Failed to upload image: ",
+    ),
+    "finalNotice": MessageLookupByLibrary.simpleMessage("Final notice"),
+    "finishedForms": MessageLookupByLibrary.simpleMessage("Finished forms"),
+    "flutterPro": MessageLookupByLibrary.simpleMessage("Flutter Pro"),
+    "flutterProEmail": MessageLookupByLibrary.simpleMessage("Flutter@pro.com"),
+    "freeMember": MessageLookupByLibrary.simpleMessage("Free Member"),
+    "french": MessageLookupByLibrary.simpleMessage("french"),
+    "frontSide": MessageLookupByLibrary.simpleMessage("Front Side"),
+    "german": MessageLookupByLibrary.simpleMessage("german"),
+    "getStarted": MessageLookupByLibrary.simpleMessage("Get started"),
+    "givenName": MessageLookupByLibrary.simpleMessage("Given Name"),
+    "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
+      "Go pro to access these benefits",
+    ),
+    "goal": MessageLookupByLibrary.simpleMessage("Goal"),
+    "growthStartsWithin": MessageLookupByLibrary.simpleMessage(
+      "Growth starts within",
+    ),
+    "height": MessageLookupByLibrary.simpleMessage("Height"),
+    "helloAndWelcome": m0,
+    "hintTextTags": MessageLookupByLibrary.simpleMessage(
+      "e.g. environment, transport",
+    ),
+    "idNumber": MessageLookupByLibrary.simpleMessage("ID Number"),
+    "idScan": MessageLookupByLibrary.simpleMessage("ID Scan"),
+    "imagePreviewDescription": MessageLookupByLibrary.simpleMessage(
+      "This is a preview of your new profile picture.",
+    ),
+    "inactive": MessageLookupByLibrary.simpleMessage("Inactive"),
+    "invalidEmailEntered": MessageLookupByLibrary.simpleMessage(
+      "Invalid email entered",
+    ),
+    "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
+    "language": MessageLookupByLibrary.simpleMessage("language"),
+    "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
+    "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
+    "livingAddress": MessageLookupByLibrary.simpleMessage("Living Address"),
+    "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "loginCodeSent": MessageLookupByLibrary.simpleMessage("login code sent"),
+    "loginLinkSent": MessageLookupByLibrary.simpleMessage("Code sent!"),
+    "logout": MessageLookupByLibrary.simpleMessage("Logout"),
+    "membershipStatus": MessageLookupByLibrary.simpleMessage(
+      "Membership Status",
+    ),
+    "moreBenefitsToBeAddedLater": MessageLookupByLibrary.simpleMessage(
+      "More benefits to be added later",
+    ),
+    "myPetitions": MessageLookupByLibrary.simpleMessage("My Petitions"),
+    "myProfile": MessageLookupByLibrary.simpleMessage("My Profile"),
+    "name": MessageLookupByLibrary.simpleMessage("Name"),
+    "nameChangeFailed": MessageLookupByLibrary.simpleMessage(
+      "Name change failed",
+    ),
+    "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
+    "newMessages": m1,
+    "newPassword": MessageLookupByLibrary.simpleMessage("New password"),
+    "newUsername": MessageLookupByLibrary.simpleMessage("New username"),
+    "nickname": MessageLookupByLibrary.simpleMessage("Nickname"),
+    "no": MessageLookupByLibrary.simpleMessage("No"),
+    "noActivityFound": MessageLookupByLibrary.simpleMessage(
+      "No activity found yet.",
+    ),
+    "noAdvertisements": MessageLookupByLibrary.simpleMessage(
+      "No advertisements",
+    ),
+    "noData": MessageLookupByLibrary.simpleMessage("No data"),
+    "noExpiredItems": MessageLookupByLibrary.simpleMessage("No expired items"),
+    "noImageSelected": MessageLookupByLibrary.simpleMessage(
+      "No image selected",
+    ),
+    "noOptions": MessageLookupByLibrary.simpleMessage("no options"),
+    "noProMember": MessageLookupByLibrary.simpleMessage(
+      "Nein, kein Pro-Mitglied",
+    ),
+    "noTitle": MessageLookupByLibrary.simpleMessage("No Title"),
+    "noUsernameFound": MessageLookupByLibrary.simpleMessage(
+      "no username found",
+    ),
+    "notAuthenticated": MessageLookupByLibrary.simpleMessage(
+      "Not authenticated",
+    ),
+    "notAvailableOnWebApp": MessageLookupByLibrary.simpleMessage(
+      "Not available on web, use mobile app",
+    ),
+    "notFound": MessageLookupByLibrary.simpleMessage("Not found"),
+    "option": MessageLookupByLibrary.simpleMessage("Option"),
+    "optionRequired": MessageLookupByLibrary.simpleMessage(
+      "Option is required",
+    ),
+    "options": MessageLookupByLibrary.simpleMessage("Options"),
+    "other": MessageLookupByLibrary.simpleMessage("other"),
+    "participants": MessageLookupByLibrary.simpleMessage("Participants"),
+    "participantsList": MessageLookupByLibrary.simpleMessage(
+      "Participants List",
+    ),
+    "password": MessageLookupByLibrary.simpleMessage("Password"),
+    "passwordChangeFailed": MessageLookupByLibrary.simpleMessage(
+      "Password change failed",
+    ),
+    "passwordChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Password changed successfully",
+    ),
+    "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
+      "Passwords do not match",
+    ),
+    "paywallDescription": MessageLookupByLibrary.simpleMessage(
+      "Enjoy a more relaxed and diverse interface",
+    ),
+    "paywallSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Unlimited access to all functions",
+    ),
+    "paywallTitle": MessageLookupByLibrary.simpleMessage(
+      "Become a premium member",
+    ),
+    "petition": MessageLookupByLibrary.simpleMessage("Petition"),
+    "petitionBy": MessageLookupByLibrary.simpleMessage("Petition by"),
+    "petitionDetails": MessageLookupByLibrary.simpleMessage("Petition details"),
+    "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
+      "Petition successfully signed!",
+    ),
+    "petitions": MessageLookupByLibrary.simpleMessage("Petitions"),
+    "placeOfBirth": MessageLookupByLibrary.simpleMessage("Place of Birth"),
+    "pleaseCheckYourEmail": MessageLookupByLibrary.simpleMessage(
+      "Please check your email",
+    ),
+    "pleaseCheckYourInbox": MessageLookupByLibrary.simpleMessage(
+      "Please check your inbox and click the verification link.",
+    ),
+    "pleaseEnterYourSurname": MessageLookupByLibrary.simpleMessage(
+      "Please enter your surname",
+    ),
+    "pleaseSelectState": MessageLookupByLibrary.simpleMessage(
+      "Please select a state",
+    ),
+    "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
+      "Please sign in first",
+    ),
+    "pleaseUsePhoneToRegister": MessageLookupByLibrary.simpleMessage(
+      "Use your phone for registering, please",
+    ),
+    "poll": MessageLookupByLibrary.simpleMessage("Poll"),
+    "pollDetails": MessageLookupByLibrary.simpleMessage("Poll details"),
+    "polls": MessageLookupByLibrary.simpleMessage("Polls"),
+    "popularPetitions": MessageLookupByLibrary.simpleMessage(
+      "Popular Petitions",
+    ),
+    "prioritySupport": MessageLookupByLibrary.simpleMessage("Priority support"),
+    "proMember": MessageLookupByLibrary.simpleMessage("Pro Member"),
+    "processId": MessageLookupByLibrary.simpleMessage("Process ID"),
+    "products": MessageLookupByLibrary.simpleMessage("Products"),
+    "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
+      "Profile picture updated",
+    ),
+    "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
+      "Purchase cancelled.",
+    ),
+    "purchaseFailed": MessageLookupByLibrary.simpleMessage("Purchase failed."),
+    "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
+      "Purchase successful!",
+    ),
+    "reasonsForSigning": MessageLookupByLibrary.simpleMessage(
+      "Reasons for signing",
+    ),
+    "recentPetitions": MessageLookupByLibrary.simpleMessage("Recent Petitions"),
+    "register": MessageLookupByLibrary.simpleMessage("Register"),
+    "registerAccount": MessageLookupByLibrary.simpleMessage("Register Account"),
+    "registerHere": MessageLookupByLibrary.simpleMessage("Register here"),
+    "relatedToState": m2,
+    "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+    "resendEmail": MessageLookupByLibrary.simpleMessage("Resend Email"),
+    "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
+      "Please wait before resending",
+    ),
+    "resendVerificationEmail": MessageLookupByLibrary.simpleMessage(
+      "Resend verification email",
+    ),
+    "resetPassword": MessageLookupByLibrary.simpleMessage("Reset password"),
+    "resetPasswordCodeSent": MessageLookupByLibrary.simpleMessage(
+      "Reset password code sent",
+    ),
+    "resetPasswordLinkSent": MessageLookupByLibrary.simpleMessage(
+      "Reset password link sent",
+    ),
+    "resubscribe": MessageLookupByLibrary.simpleMessage("Resubscribe"),
+    "result": MessageLookupByLibrary.simpleMessage("Result"),
+    "save": MessageLookupByLibrary.simpleMessage("Save"),
+    "scanAgain": MessageLookupByLibrary.simpleMessage("Scan Again"),
+    "scanYourId": MessageLookupByLibrary.simpleMessage(
+      "Please scan your German ID card",
+    ),
+    "scannedData": MessageLookupByLibrary.simpleMessage("Scanned Data"),
+    "searchTextField": MessageLookupByLibrary.simpleMessage("Schlagwort"),
+    "select": MessageLookupByLibrary.simpleMessage("Pick"),
+    "selectFromCamera": MessageLookupByLibrary.simpleMessage(
+      "Select from Camera",
+    ),
+    "selectFromGallery": MessageLookupByLibrary.simpleMessage(
+      "Select from Gallery",
+    ),
+    "sendLoginLink": MessageLookupByLibrary.simpleMessage("Log in with Code"),
+    "setUserDetails": MessageLookupByLibrary.simpleMessage("Set user details"),
+    "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "sharePetition": MessageLookupByLibrary.simpleMessage("Share Petition"),
+    "shareThisPetition": MessageLookupByLibrary.simpleMessage(
+      "Share this petition",
+    ),
+    "sign": MessageLookupByLibrary.simpleMessage("Sign"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
+    "signPetition": MessageLookupByLibrary.simpleMessage("Sign Petition"),
+    "signUpForPro": MessageLookupByLibrary.simpleMessage("Sign up for Pro"),
+    "signatures": MessageLookupByLibrary.simpleMessage("Signatures"),
+    "signed": MessageLookupByLibrary.simpleMessage("Signed"),
+    "signedOn": MessageLookupByLibrary.simpleMessage("Signed on "),
+    "signedPetitions": MessageLookupByLibrary.simpleMessage("Signed Petitions"),
+    "state": MessageLookupByLibrary.simpleMessage("State"),
+    "stateDependent": MessageLookupByLibrary.simpleMessage("State dependent"),
+    "stateUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "State updated successfully",
+    ),
+    "stimmapp": MessageLookupByLibrary.simpleMessage("stimmapp"),
+    "subscriptionCancelledAccessWillRemainUntilExpiry":
+        MessageLookupByLibrary.simpleMessage(
+          "Subscription cancelled — access will remain until expiry",
+        ),
+    "successfullyLoggedIn": MessageLookupByLibrary.simpleMessage(
+      "Successfully logged in",
+    ),
+    "supporters": MessageLookupByLibrary.simpleMessage("Supporters"),
+    "surname": MessageLookupByLibrary.simpleMessage("Surname"),
+    "systemDefault": MessageLookupByLibrary.simpleMessage("System Default"),
+    "tags": MessageLookupByLibrary.simpleMessage("Tags"),
+    "tagsHint": MessageLookupByLibrary.simpleMessage("Comma-separated tags"),
+    "tagsRequired": MessageLookupByLibrary.simpleMessage(
+      "At least one tag is required",
+    ),
+    "testingWidgetsHere": MessageLookupByLibrary.simpleMessage(
+      "Testing widgets here",
+    ),
+    "thankYouForSigning": MessageLookupByLibrary.simpleMessage(
+      "Thank you for signing!",
+    ),
+    "theWelcomePhrase": MessageLookupByLibrary.simpleMessage(
+      "The ultimate way to share your opinion",
+    ),
+    "title": MessageLookupByLibrary.simpleMessage("Title"),
+    "titleRequired": MessageLookupByLibrary.simpleMessage("Title is required"),
+    "titleTooShort": MessageLookupByLibrary.simpleMessage("Title is too short"),
+    "travel": MessageLookupByLibrary.simpleMessage("Travel"),
+    "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
+      "Change address",
+    ),
+    "updateState": MessageLookupByLibrary.simpleMessage("Update state"),
+    "updateUsername": MessageLookupByLibrary.simpleMessage("Update username"),
+    "updates": MessageLookupByLibrary.simpleMessage("Updates"),
+    "userNotAvailable": MessageLookupByLibrary.simpleMessage(
+      "User not available",
+    ),
+    "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
+    "userProfileVerified": MessageLookupByLibrary.simpleMessage(
+      "Userprofile Verified",
+    ),
+    "usernameChangeFailed": MessageLookupByLibrary.simpleMessage(
+      "Username change failed",
+    ),
+    "usernameChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Username changed successfully",
+    ),
+    "users": MessageLookupByLibrary.simpleMessage("Users"),
+    "validUntil": m3,
+    "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
+      "Verification email sent",
+    ),
+    "verificationEmailSentTo": m4,
+    "victory": MessageLookupByLibrary.simpleMessage("Victory!"),
+    "viewLicenses": MessageLookupByLibrary.simpleMessage("View licenses"),
+    "viewParticipants": MessageLookupByLibrary.simpleMessage(
+      "View Participants",
+    ),
+    "vote": MessageLookupByLibrary.simpleMessage("Vote"),
+    "voted": MessageLookupByLibrary.simpleMessage("Voted"),
+    "welcomeBackPleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "Welcome back! Please enter your details.",
+    ),
+    "welcomeTo": MessageLookupByLibrary.simpleMessage("Welcome to "),
+    "welcomeToPro": MessageLookupByLibrary.simpleMessage("Welcome to Pro!"),
+    "yes": MessageLookupByLibrary.simpleMessage("Ja"),
+    "yesCancel": MessageLookupByLibrary.simpleMessage("Yes, cancel"),
+    "youSubscribedToFollowingBenefits": MessageLookupByLibrary.simpleMessage(
+      "You subscribed to following benefits",
+    ),
+  };
 }
