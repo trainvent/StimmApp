@@ -224,7 +224,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                       validator: (String? value) {
                         if (_selectedDateOfBirth == null) {
-                          return context.l10n.enterSomething;
+                          return "Please enter a date of birth";
                         }
                         return null;
                       },

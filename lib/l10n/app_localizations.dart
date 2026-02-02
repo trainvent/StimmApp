@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @pleaseEnterYourSurname.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your surname'**
+  String get pleaseEnterYourSurname;
+
   /// No description provided for @displayName.
   ///
   /// In en, this message translates to:

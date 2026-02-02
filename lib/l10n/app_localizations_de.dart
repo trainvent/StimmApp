@@ -9,6 +9,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get pleaseEnterYourSurname => 'Bitte geben Sie Ihren Nachnamen ein';
+
+  @override
   String get displayName => 'angezeigter Name';
 
   @override
