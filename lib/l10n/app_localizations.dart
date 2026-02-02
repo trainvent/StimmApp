@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @displayName.
+  ///
+  /// In en, this message translates to:
+  /// **'displayed name'**
+  String get displayName;
+
   /// No description provided for @about.
   ///
   /// In en, this message translates to:
@@ -1723,6 +1729,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voted'**
   String get voted;
+
+  /// No description provided for @welcomeBackPleaseEnterYourDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back! Please enter your details.'**
+  String get welcomeBackPleaseEnterYourDetails;
 
   /// No description provided for @welcomeTo.
   ///

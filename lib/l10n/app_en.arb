@@ -42,6 +42,7 @@
           }
       }
   },
+  "displayName": "displayed name",
   "about": "About",
   "aboutThisApp": "About this app",
   "active": "Active",
@@ -313,6 +314,7 @@
   "viewParticipants": "View Participants",
   "vote": "Vote",
   "voted": "Voted",
+  "welcomeBackPleaseEnterYourDetails": "Welcome back! Please enter your details.",
   "welcomeTo": "Welcome to ",
   "welcomeToPro": "Welcome to Pro!",
   "yes": "Ja",

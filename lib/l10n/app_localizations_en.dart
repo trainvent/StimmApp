@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get displayName => 'displayed name';
+
+  @override
   String get about => 'About';
 
   @override
@@ -855,6 +858,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voted => 'Voted';
+
+  @override
+  String get welcomeBackPleaseEnterYourDetails =>
+      'Welcome back! Please enter your details.';
 
   @override
   String get welcomeTo => 'Welcome to ';

@@ -9,6 +9,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get displayName => 'angezeigter Name';
+
+  @override
   String get about => 'Über';
 
   @override
@@ -863,6 +866,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get voted => 'Abgestimmt';
+
+  @override
+  String get welcomeBackPleaseEnterYourDetails =>
+      'Willkommen zurück! Bitte geben Sie Ihre Daten ein.';
 
   @override
   String get welcomeTo => 'Willkommen bei ';

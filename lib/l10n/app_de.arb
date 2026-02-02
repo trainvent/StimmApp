@@ -43,6 +43,7 @@
           }
       }
   },
+  "displayName": "angezeigter Name",
   "about": "Über",
   "aboutThisApp": "Über diese App",
   "active": "Aktiv",
@@ -316,6 +317,7 @@
   "viewParticipants": "Teilnehmer anzeigen",
   "vote": "Abstimmen",
   "voted": "Abgestimmt",
+  "welcomeBackPleaseEnterYourDetails": "Willkommen zurück! Bitte geben Sie Ihre Daten ein.",
   "welcomeTo": "Willkommen bei ",
   "welcomeToPro": "Willkommen als Pro-Mitglied!",
   "yes": "Ja",

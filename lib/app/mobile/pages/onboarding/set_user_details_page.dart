@@ -27,6 +27,7 @@ class SetUserDetailsPage extends StatefulWidget {
 class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
+  final TextEditingController controllerNickName = TextEditingController();
   final TextEditingController controllerDateOfBirth = TextEditingController();
   final TextEditingController controllerAddress = TextEditingController();
   DateTime? _selectedDateOfBirth;
@@ -38,6 +39,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   void dispose() {
     controllerSurname.dispose();
     controllerGivenName.dispose();
+    controllerNickName.dispose();
     controllerDateOfBirth.dispose();
     controllerAddress.dispose();
     super.dispose();
@@ -48,7 +50,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final User? currentUser = authService.currentUser;
 
       if (currentUser == null) {
-        showErrorSnackBar('No authenticated user found.');
+        showErrorSnackBar(context.l10n.notAuthenticated);
         return;
       }
 
@@ -70,7 +72,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: authService.currentUser!.displayName,
+        displayName: controllerNickName.text,
         state: _selectedState,
         createdAt: DateTime.now(),
         surname: controllerSurname.text,
@@ -168,6 +170,20 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       controller: controllerGivenName,
                       decoration: InputDecoration(
                         labelText: context.l10n.givenName,
+                      ),
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return context.l10n.enterSomething;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      key: const Key('nickNameTextField'),
+                      controller: controllerNickName,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.displayName,
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
