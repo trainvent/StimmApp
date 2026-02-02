@@ -243,13 +243,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleted => 'Deleted';
 
   @override
-  String get descriptioRequired => 'Description is required';
+  String get descriptionRequired => 'Description is required';
 
   @override
   String get description => 'Description';
-
-  @override
-  String get descriptionRequired => 'Description is required';
 
   @override
   String get descriptionTooShort => 'Description is too short';

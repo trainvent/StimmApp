@@ -1,5 +1,4 @@
 {
-  "@@context": "HomePage",
   "@@locale": "en",
   "@helloAndWelcome": {
       "description": "Initial welcome message",
@@ -116,7 +115,7 @@
   "deletePoll": "Delete Poll",
   "deleteUser": "Delete User",
   "deleted": "Deleted",
-  "descriptioRequired": "Description is required",
+  "descriptionRequired": "Description is required",
   "description": "Description",
   "descriptionRequired": "Description is required",
   "descriptionTooShort": "Description is too short",

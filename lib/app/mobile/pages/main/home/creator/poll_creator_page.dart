@@ -192,7 +192,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                 ),
                 maxLines: 4,
                 validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.descriptioRequired
+                    ? context.l10n.descriptionRequired
                     : null,
               ),
               const SizedBox(height: 20),

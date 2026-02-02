@@ -1,5 +1,4 @@
 {
-  "@@context": "HomePage",
   "@@locale": "de",
   "@expiresAt": {
       "type": "text",
@@ -117,7 +116,7 @@
   "deletePoll": "Umfrage löschen",
   "deleteUser": "Benutzer löschen",
   "deleted": "Gelöscht",
-  "descriptioRequired": "Beschreibung ist erforderlich",
+  "descriptionRequired": "Beschreibung ist erforderlich",
   "description": "Beschreibung",
   "descriptionRequired": "Beschreibung ist erforderlich",
   "descriptionTooShort": "Beschreibung ist zu kurz",

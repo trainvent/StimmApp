@@ -665,10 +665,10 @@ class S {
   }
 
   /// `Description is required`
-  String get descriptioRequired {
+  String get descriptionRequired {
     return Intl.message(
       'Description is required',
-      name: 'descriptioRequired',
+      name: 'descriptionRequired',
       desc: '',
       args: [],
     );
@@ -677,16 +677,6 @@ class S {
   /// `Description`
   String get description {
     return Intl.message('Description', name: 'description', desc: '', args: []);
-  }
-
-  /// `Description is required`
-  String get descriptionRequired {
-    return Intl.message(
-      'Description is required',
-      name: 'descriptionRequired',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `Description is too short`

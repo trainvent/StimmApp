@@ -542,23 +542,17 @@ abstract class AppLocalizations {
   /// **'Deleted'**
   String get deleted;
 
-  /// No description provided for @descriptioRequired.
+  /// No description provided for @descriptionRequired.
   ///
   /// In en, this message translates to:
   /// **'Description is required'**
-  String get descriptioRequired;
+  String get descriptionRequired;
 
   /// No description provided for @description.
   ///
   /// In en, this message translates to:
   /// **'Description'**
   String get description;
-
-  /// No description provided for @descriptionRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Description is required'**
-  String get descriptionRequired;
 
   /// No description provided for @descriptionTooShort.
   ///

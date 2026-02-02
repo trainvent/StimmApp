@@ -92,5 +92,5 @@ __exportStar(require("./user_cleanup"), exports);
 __exportStar(require("./admin"), exports);
 __exportStar(require("./auth_code"), exports);
 __exportStar(require("./data_sync"), exports);
-__exportStar(require("./test_data_seeder"), exports);
+// export * from './test_data_seeder';
 //# sourceMappingURL=index.js.map

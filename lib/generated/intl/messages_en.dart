@@ -169,9 +169,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "deletePoll": MessageLookupByLibrary.simpleMessage("Delete Poll"),
     "deleteUser": MessageLookupByLibrary.simpleMessage("Delete User"),
     "deleted": MessageLookupByLibrary.simpleMessage("Deleted"),
-    "descriptioRequired": MessageLookupByLibrary.simpleMessage(
-      "Description is required",
-    ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "descriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Description is required",

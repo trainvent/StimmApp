@@ -13,6 +13,7 @@ void main() {
       createdAt: timestamp.toDate(),
       updatedAt: timestamp.toDate(),
       isPro: false,
+      isVerified: false
     );
 
     final userProfileJson = {
@@ -33,6 +34,8 @@ void main() {
       'isPro': false,
       'wentProAt': null,
       'subscribedToPro': null,
+      'isVerified': false,
+      'gotVerifiedAt': null
     };
 
     test('fromJson creates a UserProfile object from a map', () {
@@ -44,6 +47,11 @@ void main() {
       expect(result.updatedAt, userProfile.updatedAt);
       expect(result.state, userProfile.state);
       expect(result.idNumber, userProfile.idNumber);
+      expect(result.isPro, userProfile.isPro);
+      expect(result.wentProAt, userProfile.wentProAt);
+      expect(result.subscribedToPro, userProfile.subscribedToPro);
+      expect(result.isVerified, userProfile.isVerified);
+      expect(result.gotVerifiedAt, userProfile.gotVerifiedAt);
     });
 
     test('toJson returns a map from a UserProfile object', () {
