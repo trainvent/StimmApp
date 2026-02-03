@@ -27,7 +27,7 @@ void main() {
       );
       locator.init();
 
-      await $.pumpWidget(const MyApp());
+      await $.pumpWidgetAndSettle(const MyApp());
 
       final validPassword = password.isNotEmpty
           ? password
@@ -112,7 +112,7 @@ void main() {
       await $(keys.loginPage.emailTextField).enterText(email);
       await $(keys.loginPage.passwordTextField).enterText(validPassword);
       await $(keys.loginPage.signInButton).tap();
-
+      await Future.delayed(const Duration(seconds: 4));
       $.log("Validation and full onboarding flow tests completed");
     },
   );
@@ -192,7 +192,7 @@ Future<void> regNOut(
   await $(
     keys.setUserDetailsPage.addressTextField,
   ).enterText("Ravensberger Straße 42, 33602");
-
+  await $(RegExp('Bielefeld')).waitUntilVisible();
   await $(RegExp('Bielefeld')).tap();
   await $(RegExp('Nordrhein')).waitUntilVisible();
   await $(keys.setUserDetailsPage.saveButton).tap();
@@ -201,4 +201,5 @@ Future<void> regNOut(
   await $(keys.widgetTree.profileButton).tap();
   await $(keys.profilePage.logoutListTile).scrollTo().tap();
   await $(keys.profilePage.confirmLogoutButton).tap();
+
 }

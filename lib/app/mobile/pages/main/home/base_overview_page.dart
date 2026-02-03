@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
@@ -70,21 +71,20 @@ class _BaseOverviewPageState<T extends HomeItem>
             if (items.isEmpty) {
               return Center(child: Text(context.l10n.noData));
             }
-
-            final isPro = userProfile?.isPro ?? false;
-            final standardAdCount = isPro
+            final showAds = userProfile?.isPro ?? false || kIsWeb;
+            final standardAdCount = showAds
                 ? 0
                 : (items.length / _itemsPerAd).floor();
             // Ensure at least one ad is shown if the list is short but not empty.
             final showFallbackAd =
-                !isPro && items.isNotEmpty && standardAdCount == 0;
+                !showAds && items.isNotEmpty && standardAdCount == 0;
             final totalCount =
                 items.length + standardAdCount + (showFallbackAd ? 1 : 0);
 
             return ListView.builder(
               itemCount: totalCount,
               itemBuilder: (context, index) {
-                if (isPro) {
+                if (showAds) {
                   return Column(
                     children: [
                       widget.itemBuilder(context, items[index]),
@@ -95,7 +95,6 @@ class _BaseOverviewPageState<T extends HomeItem>
                 final isAdTile =
                     (index + 1) % (_itemsPerAd + 1) == 0 ||
                     (showFallbackAd && index == totalCount - 1);
-
                 if (isAdTile) {
                   return const BannerAdWidget();
                 } else {
