@@ -1765,6 +1765,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You subscribed to following benefits'**
   String get youSubscribedToFollowingBenefits;
+
+  /// No description provided for @pleaseEnterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'please enter your Email'**
+  String get pleaseEnterYourEmail;
 }
 
 class _AppLocalizationsDelegate

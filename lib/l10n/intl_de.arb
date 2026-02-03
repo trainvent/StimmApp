@@ -323,5 +323,6 @@
   "yes": "Ja",
   "yesCancel": "Ja, kündigen",
   "youSubscribedToFollowingBenefits": "Du hast folgende Vorteile abonniert:",
-  "resetPasswordCodeSent": "Code abgeschickt"
+  "resetPasswordCodeSent": "Code abgeschickt",
+  "pleaseEnterYourEmail": "Bitte die Email eingeben"
 }

@@ -35,24 +35,21 @@ class HeroWidget extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Hero(
-                    tag: 'hero1',
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: (currentUrl != null && currentUrl.isNotEmpty)
-                          ? Image.network(
-                              currentUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            )
-                          : Image.asset(
-                              'assets/images/default_avatar.png',
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                    ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: (currentUrl != null && currentUrl.isNotEmpty)
+                        ? Image.network(
+                            currentUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                        : Image.asset(
+                            'assets/images/default_avatar.png',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
                   ),
                   Text(
                     title != null ? title! : '',

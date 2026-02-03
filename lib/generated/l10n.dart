@@ -2303,6 +2303,16 @@ class S {
       args: [],
     );
   }
+
+  /// `please enter your Email`
+  String get pleaseEnterYourEmail {
+    return Intl.message(
+      'please enter your Email',
+      name: 'pleaseEnterYourEmail',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

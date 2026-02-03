@@ -319,5 +319,6 @@
   "welcomeToPro": "Welcome to Pro!",
   "yes": "Ja",
   "yesCancel": "Yes, cancel",
-  "youSubscribedToFollowingBenefits": "You subscribed to following benefits"
+  "youSubscribedToFollowingBenefits": "You subscribed to following benefits",
+  "pleaseEnterYourEmail": "please enter your Email"
 }

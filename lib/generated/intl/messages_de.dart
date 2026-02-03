@@ -381,6 +381,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseCheckYourInbox": MessageLookupByLibrary.simpleMessage(
       "Bitte prüfe deinen Posteingang und klicke auf den Bestätigungslink.",
     ),
+    "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
+      "Bitte die Email eingeben",
+    ),
     "pleaseEnterYourSurname": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie Ihren Nachnamen ein",
     ),

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
-import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
@@ -28,10 +26,7 @@ class WelcomePage extends StatelessWidget {
                       Theme.of(context).colorScheme.primary,
                       BlendMode.srcATop,
                     ),
-                    child: Lottie.asset(
-                      AppAssets.lottieGrafico,
-                      fit: BoxFit.cover,
-                    ),
+
                   ),
                 ),
               ),

@@ -878,4 +878,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get youSubscribedToFollowingBenefits =>
       'You subscribed to following benefits';
+
+  @override
+  String get pleaseEnterYourEmail => 'please enter your Email';
 }

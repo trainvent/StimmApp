@@ -29,7 +29,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
-  final TextEditingController controllerNickName = TextEditingController();
+  final TextEditingController controllerDisplayName = TextEditingController();
   final TextEditingController controllerDateOfBirth = TextEditingController();
   final TextEditingController controllerAddress = TextEditingController();
   DateTime? _selectedDateOfBirth;
@@ -41,7 +41,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   void dispose() {
     controllerSurname.dispose();
     controllerGivenName.dispose();
-    controllerNickName.dispose();
+    controllerDisplayName.dispose();
     controllerDateOfBirth.dispose();
     controllerAddress.dispose();
     super.dispose();
@@ -74,7 +74,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: controllerNickName.text,
+        displayName: controllerDisplayName.text,
         state: _selectedState,
         createdAt: DateTime.now(),
         surname: controllerSurname.text,
@@ -184,8 +184,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      key: const Key('nickNameTextField'),
-                      controller: controllerNickName,
+                      key: const Key('displayNameTextField'),
+                      controller: controllerDisplayName,
                       decoration: InputDecoration(
                         labelText: context.l10n.displayName,
                       ),

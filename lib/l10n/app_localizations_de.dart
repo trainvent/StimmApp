@@ -886,4 +886,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get youSubscribedToFollowingBenefits =>
       'Du hast folgende Vorteile abonniert:';
+
+  @override
+  String get pleaseEnterYourEmail => 'Bitte die Email eingeben';
 }

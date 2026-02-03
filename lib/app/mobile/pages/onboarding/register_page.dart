@@ -11,7 +11,6 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/validate_password.dart';
-import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -121,7 +120,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('🔑', style: AppTextStyles.icons),
+                      Image.asset(
+                        'assets/images/form_guy.png',
+                        height: 150,
+                      ),
                       const SizedBox(height: 50),
                       Center(
                         child: Column(
@@ -148,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               obscureText: true,
                               controller: controllerPw,
                               decoration: InputDecoration(
-                                labelText: context.l10n.password,
+                                labelText: context.l10n.confirmPassword,
                               ),
                               validator: (value) =>
                                   validatePassword(context, value),

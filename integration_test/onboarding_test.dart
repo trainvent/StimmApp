@@ -183,6 +183,7 @@ Future<void> regNOut(
   // Set User Details
   await $(keys.setUserDetailsPage.givenNameTextField).enterText("Validation");
   await $(keys.setUserDetailsPage.surnameTextField).enterText("Tester");
+  await $(keys.setUserDetailsPage.displayNameTextField).enterText("valtester");
   await $(keys.setUserDetailsPage.dateOfBirthTextField).tap();
   await Future.delayed(const Duration(seconds: 1));
   await $.platformAutomator.tap(Selector(text: 'OK'));
@@ -191,10 +192,9 @@ Future<void> regNOut(
   await $(
     keys.setUserDetailsPage.addressTextField,
   ).enterText("Ravensberger Straße 42, 33602");
-  await Future.delayed(const Duration(seconds: 2));
 
   await $(RegExp('Bielefeld')).tap();
-  await Future.delayed(const Duration(seconds: 4));
+  await $(RegExp('Nordrhein')).waitUntilVisible();
   await $(keys.setUserDetailsPage.saveButton).tap();
 
   // Logout
