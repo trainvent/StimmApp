@@ -68,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       showErrorSnackBar(errorMessage);
     } catch (e, st) {
-      // Fallback for any other exception
+      // Fallback for any other exceptiFon
       setState(() {
         errorMessage = 'Unexpected error: $e';
       });

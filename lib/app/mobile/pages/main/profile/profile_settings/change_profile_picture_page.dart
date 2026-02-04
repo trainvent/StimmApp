@@ -127,27 +127,30 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 64,
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: 128,
-                        height: 128,
-                        child:
-                            preview ??
-                            Center(
-                              child: Text(
-                                (authService.currentUser?.displayName ?? '')
-                                        .isNotEmpty
-                                    ? authService.currentUser!.displayName![0]
-                                          .toUpperCase()
-                                    : '?',
-                                style: AppTextStyles.xxlBold,
+                  Hero(
+                    tag: 'profile_picture',
+                    child: CircleAvatar(
+                      radius: 64,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      child: ClipOval(
+                        child: SizedBox(
+                          width: 128,
+                          height: 128,
+                          child:
+                              preview ??
+                              Center(
+                                child: Text(
+                                  (authService.currentUser?.displayName ?? '')
+                                          .isNotEmpty
+                                      ? authService.currentUser!.displayName![0]
+                                            .toUpperCase()
+                                      : '?',
+                                  style: AppTextStyles.xxlBold,
+                                ),
                               ),
-                            ),
+                        ),
                       ),
                     ),
                   ),

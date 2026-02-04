@@ -971,4 +971,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
       'we failed to get your state, please proofread your living-address';
+
+  @override
+  String get petitionGuidelines => 'petition guidelines';
+
+  @override
+  String get petitionGuidelineDescription => 'petition guideline description';
+
+  @override
+  String get pollGuidelines => 'poll guidelines';
+
+  @override
+  String get pollGuidelineDescription => 'poll guideline description';
 }

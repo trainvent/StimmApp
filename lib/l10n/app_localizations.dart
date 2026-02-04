@@ -1939,6 +1939,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'we failed to get your state, please proofread your living-address'**
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress;
+
+  /// No description provided for @petitionGuidelines.
+  ///
+  /// In en, this message translates to:
+  /// **'petition guidelines'**
+  String get petitionGuidelines;
+
+  /// No description provided for @petitionGuidelineDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'petition guideline description'**
+  String get petitionGuidelineDescription;
+
+  /// No description provided for @pollGuidelines.
+  ///
+  /// In en, this message translates to:
+  /// **'poll guidelines'**
+  String get pollGuidelines;
+
+  /// No description provided for @pollGuidelineDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'poll guideline description'**
+  String get pollGuidelineDescription;
 }
 
 class _AppLocalizationsDelegate

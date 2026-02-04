@@ -2573,6 +2573,46 @@ class S {
       args: [],
     );
   }
+
+  /// `petition guidelines`
+  String get petitionGuidelines {
+    return Intl.message(
+      'petition guidelines',
+      name: 'petitionGuidelines',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `petition guideline description`
+  String get petitionGuidelineDescription {
+    return Intl.message(
+      'petition guideline description',
+      name: 'petitionGuidelineDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `poll guidelines`
+  String get pollGuidelines {
+    return Intl.message(
+      'poll guidelines',
+      name: 'pollGuidelines',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `poll guideline description`
+  String get pollGuidelineDescription {
+    return Intl.message(
+      'poll guideline description',
+      name: 'pollGuidelineDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

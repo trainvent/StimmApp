@@ -95,6 +95,24 @@ class _MyAppState extends State<MyApp> {
               darkTheme: AppTheme.dark,
               themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
               locale: locale,
+              builder: (context, child) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Enforce a maximum aspect ratio of 2/3 (mobile-like)
+                    // If the screen is wider than this ratio, constrain the width.
+                    final maxAllowedWidth = constraints.maxHeight * (2 / 3);
+                    if (constraints.maxWidth > maxAllowedWidth) {
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                          child: child,
+                        ),
+                      );
+                    }
+                    return child ?? const SizedBox.shrink();
+                  },
+                );
+              },
               routes: {
                 '/petition': (ctx) {
                   final args =

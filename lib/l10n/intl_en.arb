@@ -117,7 +117,6 @@
   "deleted": "Deleted",
   "descriptionRequired": "Description is required",
   "description": "Description",
-  "descriptionRequired": "Description is required",
   "descriptionTooShort": "Description is too short",
   "devContactInformation": "This app is developed by Team LeEd with help of yannic",
   "developerSandbox": "Developer Sandbox",
@@ -348,5 +347,9 @@
   "verify": "Verify",
   "hello": "hello",
   "faultyInput": "Faulty input",
-  "weFailedToGetYourStatePleaseProofreadYourLivingaddress": "we failed to get your state, please proofread your living-address"
+  "weFailedToGetYourStatePleaseProofreadYourLivingaddress": "we failed to get your state, please proofread your living-address",
+  "petitionGuidelines": "petition guidelines",
+  "petitionGuidelineDescription": "petition guideline description",
+  "pollGuidelines": "poll guidelines",
+  "pollGuidelineDescription": "poll guideline description"
 }

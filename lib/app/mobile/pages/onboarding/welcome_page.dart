@@ -16,60 +16,40 @@ class WelcomePage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-          Expanded(
-          flex: 4,
-          child:
-          Image.asset(
-              'assets/images/Form_guy_waving.png',
-            ),
-          ),
             Expanded(
-              flex: 3,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: Center(
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.primary,
-                      BlendMode.srcATop,
-                    ),
-
-                  ),
-                ),
+              flex: 4,
+              child: Image.asset(
+                'assets/images/Form_guy_waving.png',
               ),
             ),
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      FittedBox(
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: context.l10n.welcomeTo,
-                                style: AppTextStyles.xxlRed,
-                              ),
-                              TextSpan(
-                                text: context.l10n.stimmapp,
-                                style: AppTextStyles.xxlRed,
-                              ),
-                            ],
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FittedBox(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: context.l10n.welcomeTo,
+                            style: AppTextStyles.xxlRed,
                           ),
-                        ),
+                          TextSpan(
+                            text: context.l10n.stimmapp,
+                            style: AppTextStyles.xxlRed,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.theWelcomePhrase,
-                        style: AppTextStyles.m.copyWith(color: Colors.blue),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    context.l10n.theWelcomePhrase,
+                    style: AppTextStyles.m.copyWith(color: Colors.blue),
+                  ),
+                ],
               ),
             ),
           ],

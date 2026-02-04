@@ -165,10 +165,52 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     }
   }
 
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.of(context).pollGuidelines),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(S.of(context).pollGuidelineDescription),
+                const SizedBox(height: 10),
+                Text(
+                  'Source: https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.l10n.close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.createPoll)),
+      appBar: AppBar(
+        title: Text(context.l10n.createPoll),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showInfoDialog,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Form(

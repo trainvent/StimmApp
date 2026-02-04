@@ -3,6 +3,10 @@
     "sendLoginLink",
     "hello",
     "faultyInput",
-    "weFailedToGetYourStatePleaseProofreadYourLivingaddress"
+    "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
+    "petitionGuidelines",
+    "petitionGuidelineDescription",
+    "pollGuidelines",
+    "pollGuidelineDescription"
   ]
 }

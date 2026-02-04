@@ -381,6 +381,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition by"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petition details"),
+    "petitionGuidelineDescription": MessageLookupByLibrary.simpleMessage(
+      "petition guideline description",
+    ),
+    "petitionGuidelines": MessageLookupByLibrary.simpleMessage(
+      "petition guidelines",
+    ),
     "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
       "Petition successfully signed!",
     ),
@@ -424,6 +430,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "poll": MessageLookupByLibrary.simpleMessage("Poll"),
     "pollDetails": MessageLookupByLibrary.simpleMessage("Poll details"),
+    "pollGuidelineDescription": MessageLookupByLibrary.simpleMessage(
+      "poll guideline description",
+    ),
+    "pollGuidelines": MessageLookupByLibrary.simpleMessage("poll guidelines"),
     "polls": MessageLookupByLibrary.simpleMessage("Polls"),
     "popularPetitions": MessageLookupByLibrary.simpleMessage(
       "Popular Petitions",
