@@ -1927,6 +1927,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'hello'**
   String get hello;
+
+  /// No description provided for @faultyInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Faulty input'**
+  String get faultyInput;
+
+  /// No description provided for @weFailedToGetYourStatePleaseProofreadYourLivingaddress.
+  ///
+  /// In en, this message translates to:
+  /// **'we failed to get your state, please proofread your living-address'**
+  String get weFailedToGetYourStatePleaseProofreadYourLivingaddress;
 }
 
 class _AppLocalizationsDelegate

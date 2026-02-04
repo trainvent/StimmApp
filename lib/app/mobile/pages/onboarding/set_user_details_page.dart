@@ -36,6 +36,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   String? _selectedState;
   String errorMessage = '';
   double _progress = 0.0;
+  AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
   @override
   void dispose() {
@@ -57,12 +58,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       }
 
       if (controllerAddress.text.trim().isEmpty) {
-        showErrorSnackBar(context.l10n.enterSomething);
+        showErrorSnackBar(S.of(context).faultyInput);
         return;
       }
 
       if (_selectedState == null) {
-        showErrorSnackBar(context.l10n.pleaseSelectState);
+        showErrorSnackBar(S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress);
         return;
       }
 
@@ -145,6 +146,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
+      autovalidateMode: _autoValidateMode,
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
@@ -177,7 +179,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -191,7 +193,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -224,7 +226,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                       validator: (String? value) {
                         if (_selectedDateOfBirth == null) {
-                          return S.of(context).pleaseEnterADateOfBirth;
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -242,6 +244,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                           });
                         }
                       },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return S.of(context).faultyInput;
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -254,15 +262,23 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                 isFilled: true,
                 label: context.l10n.save,
                 callback: () {
+                  setState(() {
+                    _autoValidateMode = AutovalidateMode.onUserInteraction;
+                  });
+                  
+                  // Update controllerAddress with _textController.text before validating
+                  controllerAddress.text = _textController.text;
+
                   if (_textController.text.trim().isEmpty) {
-                    showErrorSnackBar(context.l10n.enterSomething);
+                    showErrorSnackBar(S.of(context).faultyInput);
+                    // Force validation to show error on address field if it has a validator
+                    _formKey.currentState!.validate();
                     return;
                   }
+                  
                   if (!_formKey.currentState!.validate()) {
                     return;
                   } else {
-                    // Update controllerAddress with _textController.text before saving
-                    controllerAddress.text = _textController.text;
                     _saveUserDetails();
                   }
                 },

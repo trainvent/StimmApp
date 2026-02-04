@@ -2553,6 +2553,26 @@ class S {
   String get hello {
     return Intl.message('hello', name: 'hello', desc: '', args: []);
   }
+
+  /// `Faulty input`
+  String get faultyInput {
+    return Intl.message(
+      'Faulty input',
+      name: 'faultyInput',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `we failed to get your state, please proofread your living-address`
+  String get weFailedToGetYourStatePleaseProofreadYourLivingaddress {
+    return Intl.message(
+      'we failed to get your state, please proofread your living-address',
+      name: 'weFailedToGetYourStatePleaseProofreadYourLivingaddress',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

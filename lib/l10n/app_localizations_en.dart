@@ -964,4 +964,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hello => 'hello';
+
+  @override
+  String get faultyInput => 'Faulty input';
+
+  @override
+  String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
+      'we failed to get your state, please proofread your living-address';
 }

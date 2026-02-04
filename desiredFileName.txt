@@ -1,6 +1,8 @@
 {
   "de": [
     "sendLoginLink",
-    "hello"
+    "hello",
+    "faultyInput",
+    "weFailedToGetYourStatePleaseProofreadYourLivingaddress"
   ]
 }

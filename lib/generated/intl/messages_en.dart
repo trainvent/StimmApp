@@ -246,6 +246,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToUploadImage": MessageLookupByLibrary.simpleMessage(
       "Failed to upload image: ",
     ),
+    "faultyInput": MessageLookupByLibrary.simpleMessage("Faulty input"),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Final notice"),
     "finishedForms": MessageLookupByLibrary.simpleMessage("Finished forms"),
     "flutterPro": MessageLookupByLibrary.simpleMessage("Flutter Pro"),
@@ -577,6 +578,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Vote"),
     "voted": MessageLookupByLibrary.simpleMessage("Voted"),
+    "weFailedToGetYourStatePleaseProofreadYourLivingaddress":
+        MessageLookupByLibrary.simpleMessage(
+          "we failed to get your state, please proofread your living-address",
+        ),
     "weHaveSentA6digitCodeToYourEmailPlease":
         MessageLookupByLibrary.simpleMessage(
           "We have sent a 6-digit code to your email. Please enter it below.",

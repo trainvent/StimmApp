@@ -68,7 +68,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 60.0),
-                  Text(S.of(context).hello + userName, style: AppTextStyles.xlBold),
+                  Text("${S.of(context).hello} $userName", style: AppTextStyles.xlBold),
                   const SizedBox(height: 20.0),
                   Text(
                     context.l10n.resetPassword,

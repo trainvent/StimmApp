@@ -346,5 +346,7 @@
   "failedToResendCode": "Failed to resend code",
   "weHaveSentA6digitCodeToYourEmailPlease": "We have sent a 6-digit code to your email. Please enter it below.",
   "verify": "Verify",
-  "hello": "hello"
+  "hello": "hello",
+  "faultyInput": "Faulty input",
+  "weFailedToGetYourStatePleaseProofreadYourLivingaddress": "we failed to get your state, please proofread your living-address"
 }
