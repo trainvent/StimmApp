@@ -1,0 +1,112 @@
+@startuml Architecture
+title StimmApp - System Architecture & Feature Overview
+
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam nodesep 60
+skinparam ranksep 60
+
+left to right direction
+
+actor "User" as User
+actor "Admin" as Admin
+
+package "Mobile Client (Flutter)" {
+    package "Onboarding Module" {
+        [Sign In / Register]
+        [Email Verification]
+    }
+
+    package "Content Module" {
+        [Feed (Polls/Petitions)]
+        [Creator Studio\n--\n<b>Features:</b>\n- Image Upload (pro)\n- Provence dependency \n- validation deadline] as CreatorStudio
+        [Detail View (Vote/Sign)]
+    }
+
+    package "User Module" {
+        [Settings\n--\n- Details\n- activity history\n]
+        [Features\n--\n- Data export\n- Verification status]
+        [<b>Pro Membership UI</b>\n--\n- allow images\n- no ads] as ProUI
+    }
+
+    package "Admin Module" {
+        [Admin Dashboard]
+    }
+}
+package "Web Portal" {
+    [Delete Account Page] as WebDelete
+}
+
+package "External Services" {
+    [RevenueCat] as RC
+    [Google Places] as Places
+    [SMTP / Email] as EmailService
+}
+
+package "Backend" {
+    component "Firebase Auth" as Auth
+    database "Firestore DB" as DB
+    storage "Firebase Storage" as Storage
+    component "Hosting" as Hosting
+
+    package "Cloud Functions" {
+        control "Auth Logic\n(OTP, Verification)" as FuncAuth
+        control "Scheduled Tasks\n(Subscription Check)" as FuncSub
+        control "Triggers\n(User Cleanup)" as FuncCleanup
+        control "Callables\n(Admin Actions)" as FuncAdmin
+    }
+}
+
+' --- Relationships ---
+
+' User Actions
+User ..> [Sign In / Register]
+User ..> [Feed (Polls/Petitions)] : View/Search
+User ..> CreatorStudio : Create
+User ..> [Detail View (Vote/Sign)] : Interact
+User ..> ProUI : Purchase
+User ..> WebDelete : Request Deletion
+
+' Admin Actions
+Admin ..> [Admin Dashboard]
+
+' Mobile App Integration
+[Sign In / Register] --> Auth
+[Email Verification] --> FuncAuth : Verify Code
+[Feed (Polls/Petitions)] <--> DB : Sync Data
+CreatorStudio --> DB : Create Doc
+CreatorStudio --> Storage : Upload Media
+CreatorStudio --> Places : Location Search
+[Detail View (Vote/Sign)] --> DB : Update Counters
+ProUI <--> RC : Subscription Status
+[Admin Dashboard] --> FuncAdmin : Manage Users
+
+' Web Integration
+Hosting --> WebDelete
+WebDelete --> Auth : Authenticate
+WebDelete --> FuncCleanup : Trigger via Auth
+
+' Backend Logic
+FuncAuth --> EmailService : Send Code
+FuncSub --> DB : Check Expiry (Daily)
+FuncCleanup --> DB : Recursive Delete
+FuncCleanup --> Storage : Delete Files
+FuncAdmin --> Auth : Ban/Delete User
+FuncAdmin --> DB : Modify User Data
+
+ note bottom of FuncSub
+   <b>Planning Ahead:</b>
+   Centralized cron jobs for
+   maintenance and analytics.
+ end note
+
+note left of "External Services"
+   <b>Planning Ahead:</b>
+   List other portals content
+   - epetition
+   - openpetition
+   Ausweisapp Client
+end note
+
+@enduml

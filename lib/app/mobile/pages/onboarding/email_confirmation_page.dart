@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/debounced_text_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class EmailConfirmationPage extends StatefulWidget {
   const EmailConfirmationPage({super.key});
@@ -15,7 +17,6 @@ class EmailConfirmationPage extends StatefulWidget {
 
 class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   final TextEditingController _codeController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -26,17 +27,14 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   Future<void> _verifyCode() async {
     final code = _codeController.text.trim();
     if (code.length != 6) {
-      showErrorSnackBar('Please enter a valid 6-digit code');
+      showErrorSnackBar(S.of(context).pleaseEnterAValid6digitCode);
       return;
     }
 
-    setState(() => _isLoading = true);
 
     try {
       await authService.verifyCode(code);
       if (!mounted) return;
-      showSuccessSnackBar('Email verified successfully!');
-
       // If this page was pushed onto the stack (e.g. from OnboardingPage),
       // popping it might reveal the AuthLayout underneath which has now updated.
       if (Navigator.canPop(context)) {
@@ -44,26 +42,22 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorSnackBar(e.message ?? 'Verification failed');
+      showErrorSnackBar(e.message ?? S.of(context).verificationFailed);
     } catch (e) {
       if (!mounted) return;
-      showErrorSnackBar('An unexpected error occurred');
+      showErrorSnackBar(S.of(context).anUnexpectedErrorOccurred);
     } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _resendCode() async {
-    setState(() => _isLoading = true);
     try {
       await authService.sendVerificationCode();
       if (!mounted) return;
-      showSuccessSnackBar('Verification code resent!');
+      showSuccessSnackBar(S.of(context).verificationCodeResent);
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorSnackBar(e.message ?? 'Failed to resend code');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      showErrorSnackBar(e.message ?? S.of(context).failedToResendCode);
     }
   }
 
@@ -82,7 +76,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'We have sent a 6-digit code to your email. Please enter it below.',
+              S.of(context).weHaveSentA6digitCodeToYourEmailPlease,
               textAlign: TextAlign.center,
               style: AppTextStyles.descriptionText,
             ),
@@ -101,22 +95,20 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
               ),
             ),
             const SizedBox(height: 32),
-            if (_isLoading)
-              const CircularProgressIndicator()
-            else
-              Column(
+            Column(
                 children: [
                   ButtonWidget(
                     key: keys.emailConfirmationPage.verifyButton,
                     callback: _verifyCode,
-                    label: 'Verify',
+                    label: S.of(context).verify,
                     isFilled: true,
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
+                  DebouncedTextButtonWidget(
                     key: keys.emailConfirmationPage.resendCodeButton,
-                    onPressed: _resendCode,
-                    child: Text(context.l10n.resendEmail),
+                    callback: _resendCode,
+                    label: context.l10n.resendEmail,
+                    debounceDuration: const Duration(seconds: 30),
                   ),
                   const SizedBox(height: 8),
                   TextButton(

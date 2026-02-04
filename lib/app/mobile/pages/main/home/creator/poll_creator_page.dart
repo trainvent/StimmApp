@@ -6,6 +6,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -127,8 +128,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       String matchedTitle = matchedTitles.isNotEmpty
           ? matchedTitles.first.title
           : '';
+      if (!mounted) return;
       if (matchedTitle.isNotEmpty && matchedTitle == poll.title) {
-        showErrorSnackBar('petition title in use already');
+        showErrorSnackBar(S.of(context).petitionTitleInUseAlready);
         return;
       }
 
@@ -163,10 +165,52 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     }
   }
 
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.of(context).pollGuidelines),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(S.of(context).pollGuidelineDescription),
+                const SizedBox(height: 10),
+                Text(
+                  'Source: https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.l10n.close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.createPoll)),
+      appBar: AppBar(
+        title: Text(context.l10n.createPoll),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showInfoDialog,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Form(
@@ -192,7 +236,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                 ),
                 maxLines: 4,
                 validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.descriptioRequired
+                    ? context.l10n.descriptionRequired
                     : null,
               ),
               const SizedBox(height: 20),

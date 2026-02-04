@@ -16,6 +16,7 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class SetUserDetailsPage extends StatefulWidget {
   const SetUserDetailsPage({super.key});
@@ -25,19 +26,23 @@ class SetUserDetailsPage extends StatefulWidget {
 }
 
 class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
+  final TextEditingController controllerDisplayName = TextEditingController();
   final TextEditingController controllerDateOfBirth = TextEditingController();
   final TextEditingController controllerAddress = TextEditingController();
   DateTime? _selectedDateOfBirth;
   String? _selectedState;
-  String errorMessage = 'Error message';
+  String errorMessage = '';
   double _progress = 0.0;
+  AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
   @override
   void dispose() {
     controllerSurname.dispose();
     controllerGivenName.dispose();
+    controllerDisplayName.dispose();
     controllerDateOfBirth.dispose();
     controllerAddress.dispose();
     super.dispose();
@@ -48,17 +53,17 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final User? currentUser = authService.currentUser;
 
       if (currentUser == null) {
-        showErrorSnackBar('No authenticated user found.');
+        showErrorSnackBar(context.l10n.notAuthenticated);
         return;
       }
 
       if (controllerAddress.text.trim().isEmpty) {
-        showErrorSnackBar('Please enter your address');
+        showErrorSnackBar(S.of(context).faultyInput);
         return;
       }
 
       if (_selectedState == null) {
-        showErrorSnackBar('Please enter a valid living address');
+        showErrorSnackBar(S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress);
         return;
       }
 
@@ -70,7 +75,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: authService.currentUser!.displayName,
+        displayName: controllerDisplayName.text,
         state: _selectedState,
         createdAt: DateTime.now(),
         surname: controllerSurname.text,
@@ -109,16 +114,17 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         debugPrint('Default avatar upload failed: $e\n$st');
       }
 
-      // Navigate to main app screen after user details
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } on AuthException catch (e) {
       setState(() {
-        errorMessage = '${e.code}: ${e.message ?? 'Unknown error'}';
+        errorMessage = '${e.code}: ${e.message ?? S.of(context).unknownError}';
       });
       showErrorSnackBar(errorMessage);
     } on DatabaseException catch (e) {
       setState(() {
         errorMessage =
-            'Database error (${e.code}): ${e.message ?? 'Unknown error'}';
+            'Database error (${e.code}): ${e.message ?? S.of(context).unknownError}';
       });
       debugPrintStack(
         label: 'saveUserDetails database error',
@@ -139,6 +145,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
+      autovalidateMode: _autoValidateMode,
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
@@ -157,7 +165,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).pleaseEnterYourSurname;
                         }
                         return null;
                       },
@@ -171,7 +179,21 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).faultyInput;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      key: const Key('displayNameTextField'),
+                      controller: controllerDisplayName,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.displayName,
+                      ),
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -204,7 +226,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                       validator: (String? value) {
                         if (_selectedDateOfBirth == null) {
-                          return context.l10n.enterSomething;
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -222,6 +244,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                           });
                         }
                       },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return S.of(context).faultyInput;
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -234,17 +262,24 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                 isFilled: true,
                 label: context.l10n.save,
                 callback: () {
+                  setState(() {
+                    _autoValidateMode = AutovalidateMode.onUserInteraction;
+                  });
+                  
+                  // Update controllerAddress with _textController.text before validating
+                  controllerAddress.text = _textController.text;
+
                   if (_textController.text.trim().isEmpty) {
-                    showErrorSnackBar(context.l10n.enterSomething);
+                    showErrorSnackBar(S.of(context).faultyInput);
+                    // Force validation to show error on address field if it has a validator
+                    _formKey.currentState!.validate();
                     return;
                   }
-                  if (!Form.of(context).validate()) {
-                    showErrorSnackBar(errorMessage);
+                  
+                  if (!_formKey.currentState!.validate()) {
+                    return;
                   } else {
-                    // Update controllerAddress with _textController.text before saving
-                    controllerAddress.text = _textController.text;
                     _saveUserDetails();
-                    // Navigator.of(context).popUntil((route) => route.isFirst);
                   }
                 },
               ),

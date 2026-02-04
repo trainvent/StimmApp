@@ -49,6 +49,7 @@ class SetUserDetailsPageKeys {
   final saveButton = const Key('saveButton');
   final surnameTextField = const Key('surnameTextField');
   final givenNameTextField = const Key('givenNameTextField');
+  final displayNameTextField = const Key('displayNameTextField');
   final dateOfBirthTextField = const Key('dateOfBirthTextField');
   final addressTextField = const Key('addressTextField');
 }

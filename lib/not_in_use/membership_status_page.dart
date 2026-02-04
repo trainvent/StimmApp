@@ -75,9 +75,7 @@ class _MembershipStatusPageState extends State<MembershipStatusPage> {
                   if (isPro && user?.subscriptionEndsAt != null) ...[
                     const SizedBox(height: 8),
                     Text(
-                      context.l10n.validUntil(
                         _formatDate(user!.subscriptionEndsAt!),
-                      ),
                       style: AppTextStyles.m.copyWith(color: Colors.grey),
                     ),
                   ],

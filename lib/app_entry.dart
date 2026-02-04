@@ -19,6 +19,7 @@ import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_theme.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -94,6 +95,24 @@ class _MyAppState extends State<MyApp> {
               darkTheme: AppTheme.dark,
               themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
               locale: locale,
+              builder: (context, child) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Enforce a maximum aspect ratio of 2/3 (mobile-like)
+                    // If the screen is wider than this ratio, constrain the width.
+                    final maxAllowedWidth = constraints.maxHeight * (2 / 3);
+                    if (constraints.maxWidth > maxAllowedWidth) {
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                          child: child,
+                        ),
+                      );
+                    }
+                    return child ?? const SizedBox.shrink();
+                  },
+                );
+              },
               routes: {
                 '/petition': (ctx) {
                   final args =
@@ -107,7 +126,10 @@ class _MyAppState extends State<MyApp> {
                 },
                 '/delete_account': (context) => const DeleteAccountPage(),
               },
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: const [
+                S.delegate,
+                ...AppLocalizations.localizationsDelegates,
+              ],
               supportedLocales: AppLocalizations.supportedLocales,
               debugShowCheckedModeBanner: false,
               home: _initialized

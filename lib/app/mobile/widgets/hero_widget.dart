@@ -36,7 +36,7 @@ class HeroWidget extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   Hero(
-                    tag: 'hero1',
+                    tag: 'profile_picture',
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.0),
                       child: (currentUrl != null && currentUrl.isNotEmpty)

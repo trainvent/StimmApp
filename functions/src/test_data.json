@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "uid": "testUser1",
+      "email": "test1@example.com",
+      "displayName": "Test User 1",
+      "state": "Berlin",
+      "isPro": true,
+      "wentProAt": "2023-10-01T10:00:00Z",
+      "createdAt": "2023-01-01T10:00:00Z"
+    },
+    {
+      "uid": "testUser2",
+      "email": "test2@example.com",
+      "displayName": "Test User 2",
+      "state": "Bayern",
+      "isPro": false,
+      "createdAt": "2023-02-01T10:00:00Z"
+    }
+  ],
+  "petitions": [
+    {
+      "id": "petition1",
+      "title": "Save the Parks",
+      "description": "We need to protect our local parks from development.",
+      "createdBy": "testUser1",
+      "state": "Berlin",
+      "createdAt": "2023-10-15T09:00:00Z",
+      "expiresAt": "2024-12-31T23:59:59Z",
+      "signatureCount": 1,
+      "signatures": [
+        {
+          "uid": "testUser2",
+          "signedAt": "2023-10-16T14:30:00Z"
+        }
+      ]
+    }
+  ],
+  "polls": [
+    {
+      "id": "poll1",
+      "title": "Favorite Season?",
+      "description": "Which season do you prefer?",
+      "createdBy": "testUser2",
+      "createdAt": "2023-11-01T08:00:00Z",
+      "expiresAt": "2024-11-01T08:00:00Z",
+      "totalVotes": 1,
+      "options": [
+        { "id": "opt1", "label": "Summer" },
+        { "id": "opt2", "label": "Winter" }
+      ],
+      "votes": {
+        "opt1": 1,
+        "opt2": 0
+      },
+      "votesSubcollection": [
+        {
+          "uid": "testUser1",
+          "optionId": "opt1",
+          "votedAt": "2023-11-02T10:00:00Z"
+        }
+      ]
+    }
+  ]
+}

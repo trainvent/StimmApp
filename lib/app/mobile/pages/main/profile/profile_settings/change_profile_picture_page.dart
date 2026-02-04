@@ -128,7 +128,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
                 alignment: Alignment.center,
                 children: [
                   Hero(
-                    tag: 'hero1',
+                    tag: 'profile_picture',
                     child: CircleAvatar(
                       radius: 64,
                       backgroundColor: Theme.of(

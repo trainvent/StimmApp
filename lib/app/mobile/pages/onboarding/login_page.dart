@@ -59,84 +59,109 @@ class _LoginPageState extends State<LoginPage> {
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
-            appBar: AppBar(),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: BackButton(color: Theme.of(context).colorScheme.primary),
+            ),
             body: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 60.0),
-                    Text(context.l10n.signIn, style: AppTextStyles.xxlBold),
                     const SizedBox(height: 20.0),
-                    Text('🔑', style: AppTextStyles.icons),
-                    const SizedBox(height: 50),
-                    Center(
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            key: keys.loginPage.emailTextField,
-                            controller: controllerEm,
-                            decoration: InputDecoration(
-                              labelText: context.l10n.email,
-                            ),
-                            validator: (String? value) {
-                              if (value == null) {
-                                return context.l10n.enterSomething;
-                              }
-                              if (value.trim().isEmpty) {
-                                return context.l10n.enterSomething;
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            key: keys.loginPage.passwordTextField,
-                            obscureText: true,
-                            controller: controllerPw,
-                            decoration: InputDecoration(
-                              labelText: context.l10n.password,
-                            ),
-                            validator: (String? value) {
-                              if (value == null) {
-                                return context.l10n.enterSomething;
-                              }
-                              if (value.trim().isEmpty) {
-                                return context.l10n.enterSomething;
-                              }
-                              return null;
-                            },
-                            style: AppTextStyles.m,
-                            onFieldSubmitted: (value) {
-                              if (Form.of(context).validate()) {
-                                signIn();
-                              } else {
-                                showErrorSnackBar(errorMessage);
-                              }
-                            },
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              key: keys.loginPage.forgotPasswordButton,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ResetPasswordPage(
-                                        email: controllerEm.text,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Text(context.l10n.resetPassword),
-                            ),
-                          ),
-                        ],
+                    Text(
+                      context.l10n.signIn,
+                      style: AppTextStyles.xxlBold.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
+                    const SizedBox(height: 10.0),
+                    Text(
+                      context.l10n.welcomeBackPleaseEnterYourDetails,
+                      style: AppTextStyles.m.copyWith(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 40.0),
+                    TextFormField(
+                      key: keys.loginPage.emailTextField,
+                      controller: controllerEm,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email,
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (String? value) {
+                        if (value == null) {
+                          return context.l10n.enterSomething;
+                        }
+                        if (value.trim().isEmpty) {
+                          return context.l10n.enterSomething;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      key: keys.loginPage.passwordTextField,
+                      obscureText: true,
+                      controller: controllerPw,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.password,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (String? value) {
+                        if (value == null) {
+                          return context.l10n.enterSomething;
+                        }
+                        if (value.trim().isEmpty) {
+                          return context.l10n.enterSomething;
+                        }
+                        return null;
+                      },
+                        style: AppTextStyles.m,
+                      onFieldSubmitted: (value) {
+                        if (Form.of(context).validate()) {
+                          signIn();
+                        } else {
+                          showErrorSnackBar(errorMessage);
+                        }
+                      },
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        key: keys.loginPage.forgotPasswordButton,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ResetPasswordPage(
+                                  email: controllerEm.text,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Text(
+                          context.l10n.resetPassword,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      child: Image.asset("assets/images/form_guy_lock.png")
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

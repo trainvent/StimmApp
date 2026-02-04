@@ -6,6 +6,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/validate_password.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class SetNewPasswordPage extends StatefulWidget {
   const SetNewPasswordPage({super.key});
@@ -67,7 +68,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 60.0),
-                  Text('Hello $userName', style: AppTextStyles.xlBold),
+                  Text("${S.of(context).hello} $userName", style: AppTextStyles.xlBold),
                   const SizedBox(height: 20.0),
                   Text(
                     context.l10n.resetPassword,

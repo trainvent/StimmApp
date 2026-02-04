@@ -9,6 +9,12 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get pleaseEnterYourSurname => 'Bitte geben Sie Ihren Nachnamen ein';
+
+  @override
+  String get displayName => 'angezeigter Name';
+
+  @override
   String get about => 'Über';
 
   @override
@@ -240,13 +246,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleted => 'Gelöscht';
 
   @override
-  String get descriptioRequired => 'Beschreibung ist erforderlich';
+  String get descriptionRequired => 'Beschreibung ist erforderlich';
 
   @override
   String get description => 'Beschreibung';
-
-  @override
-  String get descriptionRequired => 'Beschreibung ist erforderlich';
 
   @override
   String get descriptionTooShort => 'Beschreibung ist zu kurz';
@@ -709,7 +712,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectFromGallery => 'Aus Galerie wählen';
 
   @override
-  String get sendLoginLink => 'Mit Code anmelden';
+  String get sendLoginLink => 'Log in with Code';
 
   @override
   String get setUserDetails => 'Benutzerdaten festlegen';
@@ -865,6 +868,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get voted => 'Abgestimmt';
 
   @override
+  String get requestLoginCode => 'Login Code anfordern';
+
+  @override
+  String get welcomeBackPleaseEnterYourDetails =>
+      'Willkommen zurück! Bitte geben Sie Ihre Daten ein.';
+
+  @override
   String get welcomeTo => 'Willkommen bei ';
 
   @override
@@ -879,4 +889,110 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get youSubscribedToFollowingBenefits =>
       'Du hast folgende Vorteile abonniert:';
+
+  @override
+  String get pleaseEnterYourEmail => 'Bitte die Email eingeben';
+
+  @override
+  String get welcomePleaseEnterYourDetails =>
+      'Willkommen! Bitte geben sie ihre Daten ein.';
+
+  @override
+  String get noUserFoundForThatEmail =>
+      'Kein dieser Email zugehöriger Nutzer gefunden.';
+
+  @override
+  String get wrongPasswordProvided => 'Falsches Passwort eingegeben.';
+
+  @override
+  String get anUnexpectedErrorOccurred =>
+      'Ein unerwarteter Fehler ist aufgetreten.';
+
+  @override
+  String get pleaseSignInToConfirmYourIdentity =>
+      'Bitte melden Sie sich an, um Ihre Identität zu bestätigen.';
+
+  @override
+  String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated =>
+      'Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.';
+
+  @override
+  String get pleaseEnterYourPassword => 'Bitte geben Sie Ihr Passwort ein';
+
+  @override
+  String get permanentlyDeleteAccount => 'KONTO DAUERHAFT LÖSCHEN';
+
+  @override
+  String get unknownError => 'Unbekannter Fehler';
+
+  @override
+  String get pleaseEnterADateOfBirth => 'Bitte geben Sie ein Geburtsdatum ein';
+
+  @override
+  String get linkedinLinkCopiedToClipboard =>
+      'LinkedIn-Link in die Zwischenablage kopiert';
+
+  @override
+  String get githubLinkCopiedToClipboard =>
+      'GitHub-Link in die Zwischenablage kopiert';
+
+  @override
+  String get emailCopiedToClipboard => 'E-Mail in die Zwischenablage kopiert';
+
+  @override
+  String get noName => 'Kein Name';
+
+  @override
+  String get noEmail => 'Keine E-Mail';
+
+  @override
+  String get petitionTitleInUseAlready => 'Petitionstitel bereits vergeben';
+
+  @override
+  String get loggedOutSuccessfully => 'Erfolgreich abgemeldet';
+
+  @override
+  String get pleaseEnterAValid6digitCode =>
+      'Bitte geben Sie einen gültigen 6-stelligen Code ein';
+
+  @override
+  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
+
+  @override
+  String get verificationFailed => 'Verifizierung fehlgeschlagen';
+
+  @override
+  String get verificationCodeResent => 'Verifizierungscode erneut gesendet!';
+
+  @override
+  String get failedToResendCode => 'Code konnte nicht erneut gesendet werden';
+
+  @override
+  String get weHaveSentA6digitCodeToYourEmailPlease =>
+      'Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.';
+
+  @override
+  String get verify => 'Verifizieren';
+
+  @override
+  String get hello => 'hello';
+
+  @override
+  String get faultyInput => 'Faulty input';
+
+  @override
+  String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
+      'we failed to get your state, please proofread your living-address';
+
+  @override
+  String get petitionGuidelines => 'petition guidelines';
+
+  @override
+  String get petitionGuidelineDescription => 'petition guideline description';
+
+  @override
+  String get pollGuidelines => 'poll guidelines';
+
+  @override
+  String get pollGuidelineDescription => 'poll guideline description';
 }

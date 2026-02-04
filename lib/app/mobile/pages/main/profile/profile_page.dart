@@ -19,6 +19,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
@@ -30,7 +31,8 @@ class ProfilePage extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     try {
       await authService.signOut();
-      showSuccessSnackBar("logged out");
+      if (!context.mounted) return;
+      showSuccessSnackBar(S.of(context).loggedOutSuccessfully);
       AppData.isAuthConnected.value = false;
       AppData.navBarCurrentIndexNotifier.value = 0;
       AppData.onboardingCurrentIndexNotifier.value = 0;

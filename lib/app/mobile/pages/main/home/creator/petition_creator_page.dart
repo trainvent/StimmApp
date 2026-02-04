@@ -13,6 +13,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/data/services/storage_service.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class PetitionCreatorPage extends StatefulWidget {
   const PetitionCreatorPage({super.key});
@@ -212,10 +213,52 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     }
   }
 
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.of(context).petitionGuidelines),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(S.of(context).petitionGuidelineDescription),
+                const SizedBox(height: 10),
+                Text(
+                  'Source: https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.l10n.close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.createPetition)),
+      appBar: AppBar(
+        title: Text(context.l10n.createPetition),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showInfoDialog,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Form(
