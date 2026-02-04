@@ -5,6 +5,7 @@ import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class EmailConfirmationPage extends StatefulWidget {
   const EmailConfirmationPage({super.key});
@@ -26,7 +27,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   Future<void> _verifyCode() async {
     final code = _codeController.text.trim();
     if (code.length != 6) {
-      showErrorSnackBar('Please enter a valid 6-digit code');
+      showErrorSnackBar(S.of(context).pleaseEnterAValid6digitCode);
       return;
     }
 
@@ -35,7 +36,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     try {
       await authService.verifyCode(code);
       if (!mounted) return;
-      showSuccessSnackBar('Email verified successfully!');
+      showSuccessSnackBar(S.of(context).emailVerifiedSuccessfully);
 
       // If this page was pushed onto the stack (e.g. from OnboardingPage),
       // popping it might reveal the AuthLayout underneath which has now updated.
@@ -44,10 +45,10 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorSnackBar(e.message ?? 'Verification failed');
+      showErrorSnackBar(e.message ?? S.of(context).verificationFailed);
     } catch (e) {
       if (!mounted) return;
-      showErrorSnackBar('An unexpected error occurred');
+      showErrorSnackBar(S.of(context).anUnexpectedErrorOccurred);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -58,10 +59,10 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     try {
       await authService.sendVerificationCode();
       if (!mounted) return;
-      showSuccessSnackBar('Verification code resent!');
+      showSuccessSnackBar(S.of(context).verificationCodeResent);
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorSnackBar(e.message ?? 'Failed to resend code');
+      showErrorSnackBar(e.message ?? S.of(context).failedToResendCode);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -82,7 +83,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'We have sent a 6-digit code to your email. Please enter it below.',
+              S.of(context).weHaveSentA6digitCodeToYourEmailPlease,
               textAlign: TextAlign.center,
               style: AppTextStyles.descriptionText,
             ),
@@ -109,7 +110,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
                   ButtonWidget(
                     key: keys.emailConfirmationPage.verifyButton,
                     callback: _verifyCode,
-                    label: 'Verify',
+                    label: S.of(context).verify,
                     isFilled: true,
                   ),
                   const SizedBox(height: 16),

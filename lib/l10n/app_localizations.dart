@@ -1771,6 +1771,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'please enter your Email'**
   String get pleaseEnterYourEmail;
+
+  /// No description provided for @welcomePleaseEnterYourDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome! Please enter your details.'**
+  String get welcomePleaseEnterYourDetails;
+
+  /// No description provided for @noUserFoundForThatEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found for that email.'**
+  String get noUserFoundForThatEmail;
+
+  /// No description provided for @wrongPasswordProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password provided.'**
+  String get wrongPasswordProvided;
+
+  /// No description provided for @anUnexpectedErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get anUnexpectedErrorOccurred;
+
+  /// No description provided for @pleaseSignInToConfirmYourIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to confirm your identity.'**
+  String get pleaseSignInToConfirmYourIdentity;
+
+  /// No description provided for @thisActionWillPermanentlyDeleteYourAccountAndAllAssociated.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will permanently delete your account and all associated data.'**
+  String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated;
+
+  /// No description provided for @pleaseEnterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get pleaseEnterYourPassword;
+
+  /// No description provided for @permanentlyDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'PERMANENTLY DELETE ACCOUNT'**
+  String get permanentlyDeleteAccount;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @pleaseEnterADateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a date of birth'**
+  String get pleaseEnterADateOfBirth;
+
+  /// No description provided for @linkedinLinkCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'LinkedIn link copied to clipboard'**
+  String get linkedinLinkCopiedToClipboard;
+
+  /// No description provided for @githubLinkCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub link copied to clipboard'**
+  String get githubLinkCopiedToClipboard;
+
+  /// No description provided for @emailCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Email copied to clipboard'**
+  String get emailCopiedToClipboard;
+
+  /// No description provided for @noName.
+  ///
+  /// In en, this message translates to:
+  /// **'No Name'**
+  String get noName;
+
+  /// No description provided for @noEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No Email'**
+  String get noEmail;
+
+  /// No description provided for @petitionTitleInUseAlready.
+  ///
+  /// In en, this message translates to:
+  /// **'petition title in use already'**
+  String get petitionTitleInUseAlready;
+
+  /// No description provided for @loggedOutSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged out successfully'**
+  String get loggedOutSuccessfully;
+
+  /// No description provided for @pleaseEnterAValid6digitCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid 6-digit code'**
+  String get pleaseEnterAValid6digitCode;
+
+  /// No description provided for @emailVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified successfully!'**
+  String get emailVerifiedSuccessfully;
+
+  /// No description provided for @verificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification failed'**
+  String get verificationFailed;
+
+  /// No description provided for @verificationCodeResent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code resent!'**
+  String get verificationCodeResent;
+
+  /// No description provided for @failedToResendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to resend code'**
+  String get failedToResendCode;
+
+  /// No description provided for @weHaveSentA6digitCodeToYourEmailPlease.
+  ///
+  /// In en, this message translates to:
+  /// **'We have sent a 6-digit code to your email. Please enter it below.'**
+  String get weHaveSentA6digitCodeToYourEmailPlease;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
 }
 
 class _AppLocalizationsDelegate

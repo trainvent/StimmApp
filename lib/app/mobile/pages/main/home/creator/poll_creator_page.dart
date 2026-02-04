@@ -6,6 +6,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -127,8 +128,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       String matchedTitle = matchedTitles.isNotEmpty
           ? matchedTitles.first.title
           : '';
+      if (!mounted) return;
       if (matchedTitle.isNotEmpty && matchedTitle == poll.title) {
-        showErrorSnackBar('petition title in use already');
+        showErrorSnackBar(S.of(context).petitionTitleInUseAlready);
         return;
       }
 

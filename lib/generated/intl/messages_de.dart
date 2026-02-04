@@ -53,6 +53,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "adminDashboard": MessageLookupByLibrary.simpleMessage("Admin-Dashboard"),
     "adminInterface": MessageLookupByLibrary.simpleMessage("Admin-Oberfläche"),
     "alert": MessageLookupByLibrary.simpleMessage("Warnung"),
+    "anUnexpectedErrorOccurred": MessageLookupByLibrary.simpleMessage(
+      "Ein unerwarteter Fehler ist aufgetreten.",
+    ),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonym"),
     "areYouSureYouWantToCancelYourProSubscription":
         MessageLookupByLibrary.simpleMessage(
@@ -195,8 +198,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "displayName": MessageLookupByLibrary.simpleMessage("angezeigter Name"),
     "editPetition": MessageLookupByLibrary.simpleMessage("Petition bearbeiten"),
     "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
+    "emailCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "E-Mail in die Zwischenablage kopiert",
+    ),
     "emailVerification": MessageLookupByLibrary.simpleMessage(
       "E-Mail-Bestätigung",
+    ),
+    "emailVerifiedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "E-Mail erfolgreich verifiziert!",
     ),
     "energy": MessageLookupByLibrary.simpleMessage("Energie"),
     "english": MessageLookupByLibrary.simpleMessage("Englisch"),
@@ -249,6 +258,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToCreatePoll": MessageLookupByLibrary.simpleMessage(
       "Fehler beim Erstellen der Umfrage",
     ),
+    "failedToResendCode": MessageLookupByLibrary.simpleMessage(
+      "Code konnte nicht erneut gesendet werden",
+    ),
     "failedToUploadImage": MessageLookupByLibrary.simpleMessage(
       "Bild konnte nicht hochgeladen werden",
     ),
@@ -263,6 +275,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "frontSide": MessageLookupByLibrary.simpleMessage("Vorderseite"),
     "german": MessageLookupByLibrary.simpleMessage("Deutsch"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Los geht\'s"),
+    "githubLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "GitHub-Link in die Zwischenablage kopiert",
+    ),
     "givenName": MessageLookupByLibrary.simpleMessage("Vorname"),
     "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
       "Pro-Abo abschließen um diese Vorteile zu nutzen",
@@ -289,7 +304,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "language": MessageLookupByLibrary.simpleMessage("Sprache"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Letzter Schritt!"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
+    "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "LinkedIn-Link in die Zwischenablage kopiert",
+    ),
     "livingAddress": MessageLookupByLibrary.simpleMessage("Anschrift"),
+    "loggedOutSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Erfolgreich abgemeldet",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Anmelden"),
     "loginCodeSent": MessageLookupByLibrary.simpleMessage(
       "Login Code gesendet",
@@ -319,17 +340,22 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noAdvertisements": MessageLookupByLibrary.simpleMessage("Keine Werbung"),
     "noData": MessageLookupByLibrary.simpleMessage("Keine Daten"),
+    "noEmail": MessageLookupByLibrary.simpleMessage("Keine E-Mail"),
     "noExpiredItems": MessageLookupByLibrary.simpleMessage(
       "Keine abgelaufenen Einträge",
     ),
     "noImageSelected": MessageLookupByLibrary.simpleMessage(
       "Kein Bild ausgewählt",
     ),
+    "noName": MessageLookupByLibrary.simpleMessage("Kein Name"),
     "noOptions": MessageLookupByLibrary.simpleMessage("Keine Optionen"),
     "noProMember": MessageLookupByLibrary.simpleMessage(
       "Nein, kein Pro-Mitglied",
     ),
     "noTitle": MessageLookupByLibrary.simpleMessage("Kein Titel"),
+    "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
+      "Kein dieser Email zugehöriger Nutzer gefunden.",
+    ),
     "noUsernameFound": MessageLookupByLibrary.simpleMessage(
       "Kein Benutzername gefunden",
     ),
@@ -367,11 +393,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "paywallTitle": MessageLookupByLibrary.simpleMessage(
       "Werde Premium-Mitglied",
     ),
+    "permanentlyDeleteAccount": MessageLookupByLibrary.simpleMessage(
+      "KONTO DAUERHAFT LÖSCHEN",
+    ),
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition von"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petitionsdetails"),
     "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
       "Petition erfolgreich unterzeichnet!",
+    ),
+    "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
+      "Petitionstitel bereits vergeben",
     ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitionen"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsort"),
@@ -381,8 +413,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseCheckYourInbox": MessageLookupByLibrary.simpleMessage(
       "Bitte prüfe deinen Posteingang und klicke auf den Bestätigungslink.",
     ),
+    "pleaseEnterADateOfBirth": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie ein Geburtsdatum ein",
+    ),
+    "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie einen gültigen 6-stelligen Code ein",
+    ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "Bitte die Email eingeben",
+    ),
+    "pleaseEnterYourPassword": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie Ihr Passwort ein",
     ),
     "pleaseEnterYourSurname": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie Ihren Nachnamen ein",
@@ -392,6 +433,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Bitte zuerst anmelden",
+    ),
+    "pleaseSignInToConfirmYourIdentity": MessageLookupByLibrary.simpleMessage(
+      "Bitte melden Sie sich an, um Ihre Identität zu bestätigen.",
     ),
     "pleaseUsePhoneToRegister": MessageLookupByLibrary.simpleMessage(
       "Bitte benutze dein Telefon zur Registrierung",
@@ -519,12 +563,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "theWelcomePhrase": MessageLookupByLibrary.simpleMessage(
       "Der ultimative Weg deine Meinung zu äußern",
     ),
+    "thisActionWillPermanentlyDeleteYourAccountAndAllAssociated":
+        MessageLookupByLibrary.simpleMessage(
+          "Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.",
+        ),
     "title": MessageLookupByLibrary.simpleMessage("Titel"),
     "titleRequired": MessageLookupByLibrary.simpleMessage(
       "Titel ist erforderlich",
     ),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Titel ist zu kurz"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
+    "unknownError": MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
     "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
       "Anschrift ändern",
     ),
@@ -552,10 +601,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
     "validUntil": m3,
+    "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
+      "Verifizierungscode erneut gesendet!",
+    ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
     "verificationEmailSentTo": m4,
+    "verificationFailed": MessageLookupByLibrary.simpleMessage(
+      "Verifizierung fehlgeschlagen",
+    ),
+    "verify": MessageLookupByLibrary.simpleMessage("Verifizieren"),
     "victory": MessageLookupByLibrary.simpleMessage("Sieg!"),
     "viewLicenses": MessageLookupByLibrary.simpleMessage("Lizenzen anzeigen"),
     "viewParticipants": MessageLookupByLibrary.simpleMessage(
@@ -563,12 +619,21 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Abstimmen"),
     "voted": MessageLookupByLibrary.simpleMessage("Abgestimmt"),
+    "weHaveSentA6digitCodeToYourEmailPlease": MessageLookupByLibrary.simpleMessage(
+      "Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.",
+    ),
     "welcomeBackPleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
       "Willkommen zurück! Bitte geben Sie Ihre Daten ein.",
+    ),
+    "welcomePleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "Willkommen! Bitte geben sie ihre Daten ein.",
     ),
     "welcomeTo": MessageLookupByLibrary.simpleMessage("Willkommen bei "),
     "welcomeToPro": MessageLookupByLibrary.simpleMessage(
       "Willkommen als Pro-Mitglied!",
+    ),
+    "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
+      "Falsches Passwort eingegeben.",
     ),
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesCancel": MessageLookupByLibrary.simpleMessage("Ja, kündigen"),

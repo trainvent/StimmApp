@@ -9,6 +9,7 @@ import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});
@@ -54,8 +55,8 @@ class UserListTab extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = users[index];
             return ListTile(
-              title: Text(user.displayName ?? 'No Name'),
-              subtitle: Text(user.email ?? 'No Email'),
+              title: Text(user.displayName ?? S.of(context).noName),
+              subtitle: Text(user.email ?? S.of(context).noEmail),
               trailing: IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
                 onPressed: () => _confirmDeleteUser(context, user),

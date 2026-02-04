@@ -117,13 +117,13 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       Navigator.of(context).popUntil((route) => route.isFirst);
     } on AuthException catch (e) {
       setState(() {
-        errorMessage = '${e.code}: ${e.message ?? 'Unknown error'}';
+        errorMessage = '${e.code}: ${e.message ?? S.of(context).unknownError}';
       });
       showErrorSnackBar(errorMessage);
     } on DatabaseException catch (e) {
       setState(() {
         errorMessage =
-            'Database error (${e.code}): ${e.message ?? 'Unknown error'}';
+            'Database error (${e.code}): ${e.message ?? S.of(context).unknownError}';
       });
       debugPrintStack(
         label: 'saveUserDetails database error',
@@ -224,7 +224,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                       validator: (String? value) {
                         if (_selectedDateOfBirth == null) {
-                          return "Please enter a date of birth";
+                          return S.of(context).pleaseEnterADateOfBirth;
                         }
                         return null;
                       },

@@ -2313,6 +2313,231 @@ class S {
       args: [],
     );
   }
+
+  /// `Welcome! Please enter your details.`
+  String get welcomePleaseEnterYourDetails {
+    return Intl.message(
+      'Welcome! Please enter your details.',
+      name: 'welcomePleaseEnterYourDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No user found for that email.`
+  String get noUserFoundForThatEmail {
+    return Intl.message(
+      'No user found for that email.',
+      name: 'noUserFoundForThatEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wrong password provided.`
+  String get wrongPasswordProvided {
+    return Intl.message(
+      'Wrong password provided.',
+      name: 'wrongPasswordProvided',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An unexpected error occurred.`
+  String get anUnexpectedErrorOccurred {
+    return Intl.message(
+      'An unexpected error occurred.',
+      name: 'anUnexpectedErrorOccurred',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please sign in to confirm your identity.`
+  String get pleaseSignInToConfirmYourIdentity {
+    return Intl.message(
+      'Please sign in to confirm your identity.',
+      name: 'pleaseSignInToConfirmYourIdentity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This action will permanently delete your account and all associated data.`
+  String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated {
+    return Intl.message(
+      'This action will permanently delete your account and all associated data.',
+      name: 'thisActionWillPermanentlyDeleteYourAccountAndAllAssociated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your password`
+  String get pleaseEnterYourPassword {
+    return Intl.message(
+      'Please enter your password',
+      name: 'pleaseEnterYourPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PERMANENTLY DELETE ACCOUNT`
+  String get permanentlyDeleteAccount {
+    return Intl.message(
+      'PERMANENTLY DELETE ACCOUNT',
+      name: 'permanentlyDeleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown error`
+  String get unknownError {
+    return Intl.message(
+      'Unknown error',
+      name: 'unknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a date of birth`
+  String get pleaseEnterADateOfBirth {
+    return Intl.message(
+      'Please enter a date of birth',
+      name: 'pleaseEnterADateOfBirth',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LinkedIn link copied to clipboard`
+  String get linkedinLinkCopiedToClipboard {
+    return Intl.message(
+      'LinkedIn link copied to clipboard',
+      name: 'linkedinLinkCopiedToClipboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `GitHub link copied to clipboard`
+  String get githubLinkCopiedToClipboard {
+    return Intl.message(
+      'GitHub link copied to clipboard',
+      name: 'githubLinkCopiedToClipboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email copied to clipboard`
+  String get emailCopiedToClipboard {
+    return Intl.message(
+      'Email copied to clipboard',
+      name: 'emailCopiedToClipboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Name`
+  String get noName {
+    return Intl.message('No Name', name: 'noName', desc: '', args: []);
+  }
+
+  /// `No Email`
+  String get noEmail {
+    return Intl.message('No Email', name: 'noEmail', desc: '', args: []);
+  }
+
+  /// `petition title in use already`
+  String get petitionTitleInUseAlready {
+    return Intl.message(
+      'petition title in use already',
+      name: 'petitionTitleInUseAlready',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Logged out successfully`
+  String get loggedOutSuccessfully {
+    return Intl.message(
+      'Logged out successfully',
+      name: 'loggedOutSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid 6-digit code`
+  String get pleaseEnterAValid6digitCode {
+    return Intl.message(
+      'Please enter a valid 6-digit code',
+      name: 'pleaseEnterAValid6digitCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email verified successfully!`
+  String get emailVerifiedSuccessfully {
+    return Intl.message(
+      'Email verified successfully!',
+      name: 'emailVerifiedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verification failed`
+  String get verificationFailed {
+    return Intl.message(
+      'Verification failed',
+      name: 'verificationFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verification code resent!`
+  String get verificationCodeResent {
+    return Intl.message(
+      'Verification code resent!',
+      name: 'verificationCodeResent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to resend code`
+  String get failedToResendCode {
+    return Intl.message(
+      'Failed to resend code',
+      name: 'failedToResendCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We have sent a 6-digit code to your email. Please enter it below.`
+  String get weHaveSentA6digitCodeToYourEmailPlease {
+    return Intl.message(
+      'We have sent a 6-digit code to your email. Please enter it below.',
+      name: 'weHaveSentA6digitCodeToYourEmailPlease',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verify`
+  String get verify {
+    return Intl.message('Verify', name: 'verify', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

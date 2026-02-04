@@ -5,6 +5,7 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key, required this.email});
@@ -142,7 +143,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           } on AuthException catch (e) {
                             isLoading.value = false;
                             // Show error in the dialog UI instead of just a snackbar
-                            dialogError.value = e.message ?? 'Error';
+                            dialogError.value = e.message ?? S.of(context).error;
 
                             // Clear the code field on error
                             codeController.clear();
@@ -151,7 +152,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             // but the text in dialog is better for tests waiting for text.
                             if (dialogContext.mounted) {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
-                                SnackBar(content: Text(e.message ?? 'Error')),
+                                SnackBar(content: Text(e.message ?? S.of(context).error)),
                               );
                             }
                           }

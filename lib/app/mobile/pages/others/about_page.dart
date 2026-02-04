@@ -6,6 +6,7 @@ import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class Contributor {
   final String name;
@@ -97,7 +98,7 @@ class AboutPage extends StatelessWidget {
               icon: const Icon(Icons.email_outlined),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: contributor.email!));
-                showSuccessSnackBar('Email copied to clipboard');
+                showSuccessSnackBar(S.of(context).emailCopiedToClipboard);
               },
             ),
           if (contributor.github != null)
@@ -105,7 +106,7 @@ class AboutPage extends StatelessWidget {
               icon: const Icon(Icons.code),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: contributor.github!));
-                showSuccessSnackBar('GitHub link copied to clipboard');
+                showSuccessSnackBar(S.of(context).githubLinkCopiedToClipboard);
               },
             ),
           if (contributor.linkedin != null)
@@ -113,7 +114,7 @@ class AboutPage extends StatelessWidget {
               icon: const Icon(Icons.business),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: contributor.linkedin!));
-                showSuccessSnackBar('LinkedIn link copied to clipboard');
+                showSuccessSnackBar(S.of(context).linkedinLinkCopiedToClipboard);
               },
             ),
         ],

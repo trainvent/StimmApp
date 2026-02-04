@@ -47,6 +47,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "adminDashboard": MessageLookupByLibrary.simpleMessage("Admin Dashboard"),
     "adminInterface": MessageLookupByLibrary.simpleMessage("Admin Interface"),
     "alert": MessageLookupByLibrary.simpleMessage("Alert"),
+    "anUnexpectedErrorOccurred": MessageLookupByLibrary.simpleMessage(
+      "An unexpected error occurred.",
+    ),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonymous"),
     "areYouSureYouWantToCancelYourProSubscription":
         MessageLookupByLibrary.simpleMessage(
@@ -185,8 +188,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "displayName": MessageLookupByLibrary.simpleMessage("displayed name"),
     "editPetition": MessageLookupByLibrary.simpleMessage("Edit Petition"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
+    "emailCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "Email copied to clipboard",
+    ),
     "emailVerification": MessageLookupByLibrary.simpleMessage(
       "Email verification",
+    ),
+    "emailVerifiedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Email verified successfully!",
     ),
     "energy": MessageLookupByLibrary.simpleMessage("Energy"),
     "english": MessageLookupByLibrary.simpleMessage("english"),
@@ -231,6 +240,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToCreatePoll": MessageLookupByLibrary.simpleMessage(
       "Failed to create poll",
     ),
+    "failedToResendCode": MessageLookupByLibrary.simpleMessage(
+      "Failed to resend code",
+    ),
     "failedToUploadImage": MessageLookupByLibrary.simpleMessage(
       "Failed to upload image: ",
     ),
@@ -243,6 +255,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "frontSide": MessageLookupByLibrary.simpleMessage("Front Side"),
     "german": MessageLookupByLibrary.simpleMessage("german"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get started"),
+    "githubLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "GitHub link copied to clipboard",
+    ),
     "givenName": MessageLookupByLibrary.simpleMessage("Given Name"),
     "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
       "Go pro to access these benefits",
@@ -269,7 +284,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "language": MessageLookupByLibrary.simpleMessage("language"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
+    "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "LinkedIn link copied to clipboard",
+    ),
     "livingAddress": MessageLookupByLibrary.simpleMessage("Living Address"),
+    "loggedOutSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Logged out successfully",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "loginCodeSent": MessageLookupByLibrary.simpleMessage("login code sent"),
     "loginLinkSent": MessageLookupByLibrary.simpleMessage("Code sent!"),
@@ -299,15 +320,20 @@ class MessageLookup extends MessageLookupByLibrary {
       "No advertisements",
     ),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
+    "noEmail": MessageLookupByLibrary.simpleMessage("No Email"),
     "noExpiredItems": MessageLookupByLibrary.simpleMessage("No expired items"),
     "noImageSelected": MessageLookupByLibrary.simpleMessage(
       "No image selected",
     ),
+    "noName": MessageLookupByLibrary.simpleMessage("No Name"),
     "noOptions": MessageLookupByLibrary.simpleMessage("no options"),
     "noProMember": MessageLookupByLibrary.simpleMessage(
       "Nein, kein Pro-Mitglied",
     ),
     "noTitle": MessageLookupByLibrary.simpleMessage("No Title"),
+    "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
+      "No user found for that email.",
+    ),
     "noUsernameFound": MessageLookupByLibrary.simpleMessage(
       "no username found",
     ),
@@ -347,11 +373,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "paywallTitle": MessageLookupByLibrary.simpleMessage(
       "Become a premium member",
     ),
+    "permanentlyDeleteAccount": MessageLookupByLibrary.simpleMessage(
+      "PERMANENTLY DELETE ACCOUNT",
+    ),
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition by"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petition details"),
     "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
       "Petition successfully signed!",
+    ),
+    "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
+      "petition title in use already",
     ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitions"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Place of Birth"),
@@ -361,8 +393,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseCheckYourInbox": MessageLookupByLibrary.simpleMessage(
       "Please check your inbox and click the verification link.",
     ),
+    "pleaseEnterADateOfBirth": MessageLookupByLibrary.simpleMessage(
+      "Please enter a date of birth",
+    ),
+    "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid 6-digit code",
+    ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "please enter your Email",
+    ),
+    "pleaseEnterYourPassword": MessageLookupByLibrary.simpleMessage(
+      "Please enter your password",
     ),
     "pleaseEnterYourSurname": MessageLookupByLibrary.simpleMessage(
       "Please enter your surname",
@@ -372,6 +413,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Please sign in first",
+    ),
+    "pleaseSignInToConfirmYourIdentity": MessageLookupByLibrary.simpleMessage(
+      "Please sign in to confirm your identity.",
     ),
     "pleaseUsePhoneToRegister": MessageLookupByLibrary.simpleMessage(
       "Use your phone for registering, please",
@@ -481,10 +525,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "theWelcomePhrase": MessageLookupByLibrary.simpleMessage(
       "The ultimate way to share your opinion",
     ),
+    "thisActionWillPermanentlyDeleteYourAccountAndAllAssociated":
+        MessageLookupByLibrary.simpleMessage(
+          "This action will permanently delete your account and all associated data.",
+        ),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
     "titleRequired": MessageLookupByLibrary.simpleMessage("Title is required"),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Title is too short"),
     "travel": MessageLookupByLibrary.simpleMessage("Travel"),
+    "unknownError": MessageLookupByLibrary.simpleMessage("Unknown error"),
     "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
       "Change address",
     ),
@@ -506,10 +555,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "users": MessageLookupByLibrary.simpleMessage("Users"),
     "validUntil": m3,
+    "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
+      "Verification code resent!",
+    ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Verification email sent",
     ),
     "verificationEmailSentTo": m4,
+    "verificationFailed": MessageLookupByLibrary.simpleMessage(
+      "Verification failed",
+    ),
+    "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "victory": MessageLookupByLibrary.simpleMessage("Victory!"),
     "viewLicenses": MessageLookupByLibrary.simpleMessage("View licenses"),
     "viewParticipants": MessageLookupByLibrary.simpleMessage(
@@ -517,11 +573,21 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Vote"),
     "voted": MessageLookupByLibrary.simpleMessage("Voted"),
+    "weHaveSentA6digitCodeToYourEmailPlease":
+        MessageLookupByLibrary.simpleMessage(
+          "We have sent a 6-digit code to your email. Please enter it below.",
+        ),
     "welcomeBackPleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
       "Welcome back! Please enter your details.",
     ),
+    "welcomePleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "Welcome! Please enter your details.",
+    ),
     "welcomeTo": MessageLookupByLibrary.simpleMessage("Welcome to "),
     "welcomeToPro": MessageLookupByLibrary.simpleMessage("Welcome to Pro!"),
+    "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
+      "Wrong password provided.",
+    ),
     "yes": MessageLookupByLibrary.simpleMessage("Ja"),
     "yesCancel": MessageLookupByLibrary.simpleMessage("Yes, cancel"),
     "youSubscribedToFollowingBenefits": MessageLookupByLibrary.simpleMessage(

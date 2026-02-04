@@ -19,6 +19,7 @@ import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_theme.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -107,7 +108,10 @@ class _MyAppState extends State<MyApp> {
                 },
                 '/delete_account': (context) => const DeleteAccountPage(),
               },
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: const [
+                S.delegate,
+                ...AppLocalizations.localizationsDelegates,
+              ],
               supportedLocales: AppLocalizations.supportedLocales,
               debugShowCheckedModeBanner: false,
               home: _initialized

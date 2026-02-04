@@ -16,6 +16,13 @@ class WelcomePage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+          Expanded(
+          flex: 4,
+          child:
+          Image.asset(
+              'assets/images/Form_guy_waving.png',
+            ),
+          ),
             Expanded(
               flex: 3,
               child: SizedBox(

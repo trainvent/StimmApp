@@ -63,7 +63,7 @@ class NeonPaddingWidget extends StatelessWidget {
           children: [
             if (title != null) Text(title!),
             if (label1 != null) Text(label1!),
-            if (child != null) child!,
+            ?child,
           ],
         ),
       ),

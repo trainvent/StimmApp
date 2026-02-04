@@ -881,4 +881,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterYourEmail => 'please enter your Email';
+
+  @override
+  String get welcomePleaseEnterYourDetails =>
+      'Welcome! Please enter your details.';
+
+  @override
+  String get noUserFoundForThatEmail => 'No user found for that email.';
+
+  @override
+  String get wrongPasswordProvided => 'Wrong password provided.';
+
+  @override
+  String get anUnexpectedErrorOccurred => 'An unexpected error occurred.';
+
+  @override
+  String get pleaseSignInToConfirmYourIdentity =>
+      'Please sign in to confirm your identity.';
+
+  @override
+  String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated =>
+      'This action will permanently delete your account and all associated data.';
+
+  @override
+  String get pleaseEnterYourPassword => 'Please enter your password';
+
+  @override
+  String get permanentlyDeleteAccount => 'PERMANENTLY DELETE ACCOUNT';
+
+  @override
+  String get unknownError => 'Unknown error';
+
+  @override
+  String get pleaseEnterADateOfBirth => 'Please enter a date of birth';
+
+  @override
+  String get linkedinLinkCopiedToClipboard =>
+      'LinkedIn link copied to clipboard';
+
+  @override
+  String get githubLinkCopiedToClipboard => 'GitHub link copied to clipboard';
+
+  @override
+  String get emailCopiedToClipboard => 'Email copied to clipboard';
+
+  @override
+  String get noName => 'No Name';
+
+  @override
+  String get noEmail => 'No Email';
+
+  @override
+  String get petitionTitleInUseAlready => 'petition title in use already';
+
+  @override
+  String get loggedOutSuccessfully => 'Logged out successfully';
+
+  @override
+  String get pleaseEnterAValid6digitCode => 'Please enter a valid 6-digit code';
+
+  @override
+  String get emailVerifiedSuccessfully => 'Email verified successfully!';
+
+  @override
+  String get verificationFailed => 'Verification failed';
+
+  @override
+  String get verificationCodeResent => 'Verification code resent!';
+
+  @override
+  String get failedToResendCode => 'Failed to resend code';
+
+  @override
+  String get weHaveSentA6digitCodeToYourEmailPlease =>
+      'We have sent a 6-digit code to your email. Please enter it below.';
+
+  @override
+  String get verify => 'Verify';
 }

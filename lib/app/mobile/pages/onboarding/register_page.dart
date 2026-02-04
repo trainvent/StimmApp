@@ -11,6 +11,8 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/validate_password.dart';
+import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -112,84 +114,97 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
-            appBar: AppBar(title: Text(context.l10n.registerHere)),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/form_guy.png',
-                        height: 150,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: BackButton(color: Theme.of(context).colorScheme.primary),
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20.0),
+                    Text(
+                      context.l10n.registerHere,
+                      style: AppTextStyles.xxlBold.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      const SizedBox(height: 50),
-                      Center(
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              key: keys.onboardingPage.emailTextField,
-                              controller: controllerEm,
-                              decoration: InputDecoration(
-                                labelText: context.l10n.email,
-                              ),
-                              validator: (String? value) {
-                                if (value == null) {
-                                  return context.l10n.enterSomething;
-                                }
-                                if (value.trim().isEmpty) {
-                                  return context.l10n.enterSomething;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              key: keys.onboardingPage.passwordTextField,
-                              obscureText: true,
-                              controller: controllerPw,
-                              decoration: InputDecoration(
-                                labelText: context.l10n.confirmPassword,
-                              ),
-                              validator: (value) =>
-                                  validatePassword(context, value),
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              key: const Key('repeatPasswordTextField'),
-                              obscureText: true,
-                              controller: controllerConfirmPw,
-                              decoration: InputDecoration(
-                                labelText: context.l10n.confirmPassword,
-                              ),
-                              validator: (String? value) {
-                                if (value == null) {
-                                  return context.l10n.enterSomething;
-                                }
-                                if (value.trim().isEmpty) {
-                                  return context.l10n.enterSomething;
-                                }
-                                if (value != controllerPw.text) {
-                                  return context.l10n.passwordsDoNotMatch;
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (value) {
-                                if (Form.of(context).validate()) {
-                                  register();
-                                } else {
-                                  showErrorSnackBar(context.l10n.error);
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                          ],
+                    ),
+                    const SizedBox(height: 10.0),
+                    Text(
+                     S.of(context).welcomePleaseEnterYourDetails,
+                      style: AppTextStyles.m.copyWith(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 40.0),
+                    TextFormField(
+                      key: keys.onboardingPage.emailTextField,
+                      controller: controllerEm,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email,
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      SizedBox(height: 50),
-                    ],
-                  ),
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return S.of(context).pleaseEnterYourEmail;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      key: keys.onboardingPage.passwordTextField,
+                      obscureText: true,
+                      controller: controllerPw,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.password,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) =>
+                          validatePassword(context, value),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      key: const Key('repeatPasswordTextField'),
+                      obscureText: true,
+                      controller: controllerConfirmPw,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.confirmPassword,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return context.l10n.pleaseEnterYourPassword;
+                        }
+                        if (value != controllerPw.text) {
+                          return context.l10n.passwordsDoNotMatch;
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (value) {
+                        if (Form.of(context).validate()) {
+                          register();
+                        } else {
+                          showErrorSnackBar(context.l10n.error);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      child: Image.asset("assets/images/form_guy_register.png")
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
             ),

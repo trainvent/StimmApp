@@ -889,4 +889,85 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseEnterYourEmail => 'Bitte die Email eingeben';
+
+  @override
+  String get welcomePleaseEnterYourDetails =>
+      'Willkommen! Bitte geben sie ihre Daten ein.';
+
+  @override
+  String get noUserFoundForThatEmail =>
+      'Kein dieser Email zugehöriger Nutzer gefunden.';
+
+  @override
+  String get wrongPasswordProvided => 'Falsches Passwort eingegeben.';
+
+  @override
+  String get anUnexpectedErrorOccurred =>
+      'Ein unerwarteter Fehler ist aufgetreten.';
+
+  @override
+  String get pleaseSignInToConfirmYourIdentity =>
+      'Bitte melden Sie sich an, um Ihre Identität zu bestätigen.';
+
+  @override
+  String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated =>
+      'Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.';
+
+  @override
+  String get pleaseEnterYourPassword => 'Bitte geben Sie Ihr Passwort ein';
+
+  @override
+  String get permanentlyDeleteAccount => 'KONTO DAUERHAFT LÖSCHEN';
+
+  @override
+  String get unknownError => 'Unbekannter Fehler';
+
+  @override
+  String get pleaseEnterADateOfBirth => 'Bitte geben Sie ein Geburtsdatum ein';
+
+  @override
+  String get linkedinLinkCopiedToClipboard =>
+      'LinkedIn-Link in die Zwischenablage kopiert';
+
+  @override
+  String get githubLinkCopiedToClipboard =>
+      'GitHub-Link in die Zwischenablage kopiert';
+
+  @override
+  String get emailCopiedToClipboard => 'E-Mail in die Zwischenablage kopiert';
+
+  @override
+  String get noName => 'Kein Name';
+
+  @override
+  String get noEmail => 'Keine E-Mail';
+
+  @override
+  String get petitionTitleInUseAlready => 'Petitionstitel bereits vergeben';
+
+  @override
+  String get loggedOutSuccessfully => 'Erfolgreich abgemeldet';
+
+  @override
+  String get pleaseEnterAValid6digitCode =>
+      'Bitte geben Sie einen gültigen 6-stelligen Code ein';
+
+  @override
+  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
+
+  @override
+  String get verificationFailed => 'Verifizierung fehlgeschlagen';
+
+  @override
+  String get verificationCodeResent => 'Verifizierungscode erneut gesendet!';
+
+  @override
+  String get failedToResendCode => 'Code konnte nicht erneut gesendet werden';
+
+  @override
+  String get weHaveSentA6digitCodeToYourEmailPlease =>
+      'Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.';
+
+  @override
+  String get verify => 'Verifizieren';
 }
