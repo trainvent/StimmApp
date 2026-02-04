@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'Voted'**
   String get voted;
 
+  /// No description provided for @requestLoginCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Request login code'**
+  String get requestLoginCode;
+
   /// No description provided for @welcomeBackPleaseEnterYourDetails.
   ///
   /// In en, this message translates to:
@@ -1915,6 +1921,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verify'**
   String get verify;
+
+  /// No description provided for @hello.
+  ///
+  /// In en, this message translates to:
+  /// **'hello'**
+  String get hello;
 }
 
 class _AppLocalizationsDelegate

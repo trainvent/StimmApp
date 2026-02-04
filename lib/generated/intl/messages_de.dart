@@ -478,6 +478,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
     "relatedToState": m2,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
+    "requestLoginCode": MessageLookupByLibrary.simpleMessage(
+      "Login Code anfordern",
+    ),
     "resendEmail": MessageLookupByLibrary.simpleMessage("E-Mail erneut senden"),
     "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
       "Bitte warte, bevor du erneut sendest",
@@ -510,7 +513,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Aus Galerie wählen",
     ),
-    "sendLoginLink": MessageLookupByLibrary.simpleMessage("Mit Code anmelden"),
     "setUserDetails": MessageLookupByLibrary.simpleMessage(
       "Benutzerdaten festlegen",
     ),

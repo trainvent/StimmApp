@@ -860,6 +860,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voted => 'Voted';
 
   @override
+  String get requestLoginCode => 'Request login code';
+
+  @override
   String get welcomeBackPleaseEnterYourDetails =>
       'Welcome back! Please enter your details.';
 
@@ -958,4 +961,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verify => 'Verify';
+
+  @override
+  String get hello => 'hello';
 }

@@ -2259,6 +2259,16 @@ class S {
     return Intl.message('Voted', name: 'voted', desc: '', args: []);
   }
 
+  /// `Request login code`
+  String get requestLoginCode {
+    return Intl.message(
+      'Request login code',
+      name: 'requestLoginCode',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Welcome back! Please enter your details.`
   String get welcomeBackPleaseEnterYourDetails {
     return Intl.message(
@@ -2537,6 +2547,11 @@ class S {
   /// `Verify`
   String get verify {
     return Intl.message('Verify', name: 'verify', desc: '', args: []);
+  }
+
+  /// `hello`
+  String get hello {
+    return Intl.message('hello', name: 'hello', desc: '', args: []);
   }
 }
 

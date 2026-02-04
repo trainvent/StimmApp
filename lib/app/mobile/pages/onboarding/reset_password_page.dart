@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/set_new_password_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
+import 'package:stimmapp/app/mobile/widgets/debounced_text_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -226,14 +227,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               return Column(
                 children: [
                   const SizedBox(height: 10),
-                  TextButton(
+                  DebouncedTextButtonWidget(
                     key: const Key('sendLoginCodeButton'),
-                    onPressed: () {
+                    callback: () {
                       if (Form.of(context).validate()) {
                         sendLoginCode();
                       }
                     },
-                    child: Text(context.l10n.sendLoginLink),
+                    label: S.of(context).requestLoginCode,
                   ),
                 ],
               );

@@ -712,7 +712,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectFromGallery => 'Aus Galerie wählen';
 
   @override
-  String get sendLoginLink => 'Mit Code anmelden';
+  String get sendLoginLink => 'Log in with Code';
 
   @override
   String get setUserDetails => 'Benutzerdaten festlegen';
@@ -868,6 +868,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get voted => 'Abgestimmt';
 
   @override
+  String get requestLoginCode => 'Login Code anfordern';
+
+  @override
   String get welcomeBackPleaseEnterYourDetails =>
       'Willkommen zurück! Bitte geben Sie Ihre Daten ein.';
 
@@ -970,4 +973,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get verify => 'Verifizieren';
+
+  @override
+  String get hello => 'hello';
 }

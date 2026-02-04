@@ -267,6 +267,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Growth starts within",
     ),
     "height": MessageLookupByLibrary.simpleMessage("Height"),
+    "hello": MessageLookupByLibrary.simpleMessage("hello"),
     "helloAndWelcome": m0,
     "hintTextTags": MessageLookupByLibrary.simpleMessage(
       "e.g. environment, transport",
@@ -450,6 +451,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "registerHere": MessageLookupByLibrary.simpleMessage("Register here"),
     "relatedToState": m2,
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+    "requestLoginCode": MessageLookupByLibrary.simpleMessage(
+      "Request login code",
+    ),
     "resendEmail": MessageLookupByLibrary.simpleMessage("Resend Email"),
     "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
       "Please wait before resending",

@@ -314,6 +314,7 @@
   "viewParticipants": "View Participants",
   "vote": "Vote",
   "voted": "Voted",
+  "requestLoginCode": "Request login code",
   "welcomeBackPleaseEnterYourDetails": "Welcome back! Please enter your details.",
   "welcomeTo": "Welcome to ",
   "welcomeToPro": "Welcome to Pro!",
@@ -344,5 +345,6 @@
   "verificationCodeResent": "Verification code resent!",
   "failedToResendCode": "Failed to resend code",
   "weHaveSentA6digitCodeToYourEmailPlease": "We have sent a 6-digit code to your email. Please enter it below.",
-  "verify": "Verify"
+  "verify": "Verify",
+  "hello": "hello"
 }

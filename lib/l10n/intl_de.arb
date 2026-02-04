@@ -267,7 +267,7 @@
   "select": "Auswählen",
   "selectFromCamera": "Mit Kamera aufnehmen",
   "selectFromGallery": "Aus Galerie wählen",
-  "sendLoginLink": "Mit Code anmelden",
+  "requestLoginCode": "Login Code anfordern",
   "setUserDetails": "Benutzerdaten festlegen",
   "settings": "Einstellungen",
   "sharePetition": "Petition teilen",

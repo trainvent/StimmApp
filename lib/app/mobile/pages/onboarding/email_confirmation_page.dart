@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/debounced_text_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -102,10 +103,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
               ),
             ),
             const SizedBox(height: 32),
-            if (_isLoading)
-              const CircularProgressIndicator()
-            else
-              Column(
+            Column(
                 children: [
                   ButtonWidget(
                     key: keys.emailConfirmationPage.verifyButton,
@@ -114,10 +112,11 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
                     isFilled: true,
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
+                  DebouncedTextButtonWidget(
                     key: keys.emailConfirmationPage.resendCodeButton,
-                    onPressed: _resendCode,
-                    child: Text(context.l10n.resendEmail),
+                    callback: _resendCode,
+                    label: context.l10n.resendEmail,
+                    debounceDuration: const Duration(seconds: 30),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
