@@ -17,7 +17,6 @@ class EmailConfirmationPage extends StatefulWidget {
 
 class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   final TextEditingController _codeController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -32,7 +31,6 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       return;
     }
 
-    setState(() => _isLoading = true);
 
     try {
       await authService.verifyCode(code);
@@ -49,12 +47,10 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       if (!mounted) return;
       showErrorSnackBar(S.of(context).anUnexpectedErrorOccurred);
     } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _resendCode() async {
-    setState(() => _isLoading = true);
     try {
       await authService.sendVerificationCode();
       if (!mounted) return;
@@ -62,8 +58,6 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     } on AuthException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(e.message ?? S.of(context).failedToResendCode);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 

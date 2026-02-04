@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
