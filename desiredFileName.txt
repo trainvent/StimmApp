@@ -7,6 +7,7 @@
     "petitionGuidelines",
     "petitionGuidelineDescription",
     "pollGuidelines",
-    "pollGuidelineDescription"
+    "pollGuidelineDescription",
+    "manytooTagsMax5"
   ]
 }

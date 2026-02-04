@@ -56,7 +56,7 @@ void main() {
           ? password
           : IConst.testSecurePassword;
       await regNOut($, l10n, email, validPassword, testCode);
-
+      await Future.delayed(const Duration(seconds: 4));
       // Verify back at Welcome and try to register again
       await $(l10n.theWelcomePhrase).waitUntilVisible();
       await $(l10n.getStarted).tap();

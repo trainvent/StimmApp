@@ -351,5 +351,6 @@
   "petitionGuidelines": "petition guidelines",
   "petitionGuidelineDescription": "petition guideline description",
   "pollGuidelines": "poll guidelines",
-  "pollGuidelineDescription": "poll guideline description"
+  "pollGuidelineDescription": "poll guideline description",
+  "manytooTagsMax5": "manyToo tags (max 5)"
 }

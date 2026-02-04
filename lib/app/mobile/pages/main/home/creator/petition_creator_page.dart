@@ -339,7 +339,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
                   }
                   final tags = value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
                   if (tags.length > 5) {
-                    return "Too many tags (max 5)";
+                    return S.of(context).manytooTagsMax5;
                   }
                   for (final tag in tags) {
                     if (tag.length > 20) {

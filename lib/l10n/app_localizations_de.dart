@@ -995,4 +995,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollGuidelineDescription => 'poll guideline description';
+
+  @override
+  String get manytooTagsMax5 => 'manyToo tags (max 5)';
 }

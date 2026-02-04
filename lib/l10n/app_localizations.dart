@@ -1963,6 +1963,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'poll guideline description'**
   String get pollGuidelineDescription;
+
+  /// No description provided for @manytooTagsMax5.
+  ///
+  /// In en, this message translates to:
+  /// **'manyToo tags (max 5)'**
+  String get manytooTagsMax5;
 }
 
 class _AppLocalizationsDelegate

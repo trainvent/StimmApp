@@ -2613,6 +2613,16 @@ class S {
       args: [],
     );
   }
+
+  /// `manyToo tags (max 5)`
+  String get manytooTagsMax5 {
+    return Intl.message(
+      'manyToo tags (max 5)',
+      name: 'manytooTagsMax5',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
