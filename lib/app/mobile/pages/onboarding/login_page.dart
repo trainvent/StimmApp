@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -70,14 +71,14 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                     Text(
                       context.l10n.signIn,
                       style: AppTextStyles.xxlBold.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: DConst.padBox),
                     Text(
                       context.l10n.welcomeBackPleaseEnterYourDetails,
                       style: AppTextStyles.m.copyWith(color: Colors.grey),
@@ -103,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                     TextFormField(
                       key: keys.loginPage.passwordTextField,
                       obscureText: true,
@@ -157,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                     SizedBox(
                       child: Image.asset("assets/images/form_guy_lock.png")
                     ),

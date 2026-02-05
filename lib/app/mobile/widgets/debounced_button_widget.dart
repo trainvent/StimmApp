@@ -76,7 +76,7 @@ class _DebouncedButtonWidgetState extends State<DebouncedButtonWidget> {
 
     // Define styles for filled and outlined buttons
     final filledStyle = ElevatedButton.styleFrom(
-      backgroundColor: _isOnCooldown ? disabledColor.withOpacity(0.5) : primaryColor,
+      backgroundColor: _isOnCooldown ? disabledColor.withValues(alpha: 0.5) : primaryColor,
       foregroundColor: Colors.black,
       minimumSize: const Size(double.infinity, 50),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

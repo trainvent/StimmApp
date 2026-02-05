@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_dimensions.dart';
+import '../constants/dimension_constants.dart';
 import '../constants/internal_constants.dart';
 import 'app_text_styles.dart';
 
@@ -10,7 +10,7 @@ class AppTheme {
     inputDecorationTheme: const InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(
-          Radius.circular(AppDimensions.kBorderRadius10),
+          Radius.circular(DConst.kBorderRadius10),
         ),
       ),
     ),
@@ -28,7 +28,7 @@ class AppTheme {
     inputDecorationTheme: const InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(
-          Radius.circular(AppDimensions.kBorderRadius10),
+          Radius.circular(DConst.kBorderRadius10),
         ),
       ),
     ),

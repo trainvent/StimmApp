@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/constants/app_dimensions.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
 
 class AppPaddingScaffold extends StatelessWidget {
   const AppPaddingScaffold({
@@ -29,7 +29,7 @@ class AppPaddingScaffold extends StatelessWidget {
     if (child != null) {
       widget = Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.kAppHorizontalPadding,
+          horizontal: DConst.kAppHorizontalPadding,
           vertical: 10.0,
         ),
         child: child,

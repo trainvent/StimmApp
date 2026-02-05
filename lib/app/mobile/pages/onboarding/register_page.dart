@@ -6,6 +6,7 @@ import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dar
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
@@ -170,7 +171,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       validator: (value) =>
                           validatePassword(context, value),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                     TextFormField(
                       key: const Key('repeatPasswordTextField'),
                       obscureText: true,
@@ -199,11 +200,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                       },
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                     SizedBox(
                       child: Image.asset("assets/images/form_guy_register.png")
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DConst.padBox),
                   ],
                 ),
               ),

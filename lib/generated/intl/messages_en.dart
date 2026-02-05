@@ -20,16 +20,16 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(firstName, lastName) => "Welcome ${firstName} ${lastName}!";
+  static String m0(String firstName, String lastName) => "Welcome ${firstName} ${lastName}!";
 
-  static String m1(newMessages) =>
+  static String m1(int newMessages) =>
       "You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new Messages', other: '${newMessages} new messages')}";
 
-  static String m2(state) => "Related to ${state}";
+  static String m2(String state) => "Related to ${state}";
 
-  static String m3(date) => "Valid until: ${date}";
+  static String m3(String date) => "Valid until: ${date}";
 
-  static String m4(email) => "A verification email has been sent to ${email}";
+  static String m4(String email) => "A verification email has been sent to ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
