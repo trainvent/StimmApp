@@ -1963,6 +1963,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'poll guideline description'**
   String get pollGuidelineDescription;
+
+  /// No description provided for @pleaseEnterYourDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'please enter your details.'**
+  String get pleaseEnterYourDetails;
+
+  /// No description provided for @thisAppWasDevelopedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'this app was developed by'**
+  String get thisAppWasDevelopedBy;
+
+  /// No description provided for @licenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get licenses;
 }
 
 class _AppLocalizationsDelegate

@@ -351,5 +351,8 @@
   "petitionGuidelines": "petition guidelines",
   "petitionGuidelineDescription": "petition guideline description",
   "pollGuidelines": "poll guidelines",
-  "pollGuidelineDescription": "poll guideline description"
+  "pollGuidelineDescription": "poll guideline description",
+  "pleaseEnterYourDetails": "please enter your details.",
+  "thisAppWasDevelopedBy": "this app was developed by",
+  "licenses": "Licenses"
 }

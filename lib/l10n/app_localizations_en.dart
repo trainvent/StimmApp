@@ -983,4 +983,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pollGuidelineDescription => 'poll guideline description';
+
+  @override
+  String get pleaseEnterYourDetails => 'please enter your details.';
+
+  @override
+  String get thisAppWasDevelopedBy => 'this app was developed by';
+
+  @override
+  String get licenses => 'Licenses';
 }

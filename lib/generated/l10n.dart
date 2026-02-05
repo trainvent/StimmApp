@@ -2613,6 +2613,31 @@ class S {
       args: [],
     );
   }
+
+  /// `please enter your details.`
+  String get pleaseEnterYourDetails {
+    return Intl.message(
+      'please enter your details.',
+      name: 'pleaseEnterYourDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `this app was developed by`
+  String get thisAppWasDevelopedBy {
+    return Intl.message(
+      'this app was developed by',
+      name: 'thisAppWasDevelopedBy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Licenses`
+  String get licenses {
+    return Intl.message('Licenses', name: 'licenses', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

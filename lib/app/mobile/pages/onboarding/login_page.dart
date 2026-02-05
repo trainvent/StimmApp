@@ -7,6 +7,7 @@ import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 import 'reset_password_page.dart';
 
@@ -65,106 +66,109 @@ class _LoginPageState extends State<LoginPage> {
               elevation: 0,
               leading: BackButton(color: Theme.of(context).colorScheme.primary),
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: DConst.padBox),
-                    Text(
-                      context.l10n.signIn,
-                      style: AppTextStyles.xxlBold.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: DConst.padBox),
+                  Text(
+                    context.l10n.signIn,
+                    style: AppTextStyles.xxlBold.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  Text(
+                    S.of(context).pleaseEnterYourDetails,
+                    style: AppTextStyles.m.copyWith(color: Colors.grey),
+                  ),
+                  const SizedBox(height: DConst.pad25),
+                  TextFormField(
+                    key: keys.loginPage.emailTextField,
+                    controller: controllerEm,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.email,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    const SizedBox(height: DConst.padBox),
-                    Text(
-                      context.l10n.welcomeBackPleaseEnterYourDetails,
-                      style: AppTextStyles.m.copyWith(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      key: keys.loginPage.emailTextField,
-                      controller: controllerEm,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.email,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    validator: (String? value) {
+                      if (value == null) {
+                        return context.l10n.enterSomething;
+                      }
+                      if (value.trim().isEmpty) {
+                        return context.l10n.enterSomething;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  TextFormField(
+                    key: keys.loginPage.passwordTextField,
+                    obscureText: true,
+                    controller: controllerPw,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.password,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      validator: (String? value) {
-                        if (value == null) {
-                          return context.l10n.enterSomething;
-                        }
-                        if (value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
-                        }
-                        return null;
-                      },
                     ),
-                    const SizedBox(height: DConst.padBox),
-                    TextFormField(
-                      key: keys.loginPage.passwordTextField,
-                      obscureText: true,
-                      controller: controllerPw,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.password,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      validator: (String? value) {
-                        if (value == null) {
-                          return context.l10n.enterSomething;
-                        }
-                        if (value.trim().isEmpty) {
-                          return context.l10n.enterSomething;
-                        }
-                        return null;
-                      },
-                        style: AppTextStyles.m,
-                      onFieldSubmitted: (value) {
-                        if (Form.of(context).validate()) {
-                          signIn();
-                        } else {
-                          showErrorSnackBar(errorMessage);
-                        }
-                      },
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        key: keys.loginPage.forgotPasswordButton,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ResetPasswordPage(
-                                  email: controllerEm.text,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: Text(
-                          context.l10n.resetPassword,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                    validator: (String? value) {
+                      if (value == null) {
+                        return context.l10n.enterSomething;
+                      }
+                      if (value.trim().isEmpty) {
+                        return context.l10n.enterSomething;
+                      }
+                      return null;
+                    },
+                    style: AppTextStyles.m,
+                    onFieldSubmitted: (value) {
+                      if (Form.of(context).validate()) {
+                        signIn();
+                      } else {
+                        showErrorSnackBar(errorMessage);
+                      }
+                    },
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      key: keys.loginPage.forgotPasswordButton,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ResetPasswordPage(
+                                email: controllerEm.text,
+                              );
+                            },
                           ),
+                        );
+                      },
+                      child: Text(
+                        context.l10n.resetPassword,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
-                    const SizedBox(height: DConst.padBox),
-                    SizedBox(
-                      child: Image.asset("assets/images/form_guy_lock.png")
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  Expanded(
+                    child: Center(
+                      child: Image.asset(
+                        "assets/images/form_guy_lock.png",
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                ],
               ),
             ),
             buttons: [

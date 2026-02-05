@@ -7,6 +7,9 @@
     "petitionGuidelines",
     "petitionGuidelineDescription",
     "pollGuidelines",
-    "pollGuidelineDescription"
+    "pollGuidelineDescription",
+    "pleaseEnterYourDetails",
+    "thisAppWasDevelopedBy",
+    "licenses"
   ]
 }

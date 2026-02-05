@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/about_page.dart';
@@ -7,6 +9,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -127,17 +130,41 @@ class _SettingsPageState extends State<SettingsPage> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text(
-                          '${context.l10n.about} ${context.l10n.stimmapp}',
-                        ),
+                        title: Text(S.of(context).viewLicenses),
                         content: Text(
-                          context.l10n.devContactInformation,
+                          "published under the GNU General Public License v3.0",
                           style: AppTextStyles.m,
                         ),
                         actions: [
                           FilledButton(
                             onPressed: () async {
-                              showLicensePage(context: context);
+                              // Add your app's license to the registry before showing the page
+                          /*    LicenseRegistry.addLicense(() async* {
+                                try {
+                                  final license = await rootBundle.loadString('LICENSE');
+                                  yield LicenseEntryWithLineBreaks(
+                                    ['stimmapp'],
+                                    license,
+                                  );
+                                } catch (e) {
+                                  debugPrint('Failed to load LICENSE file: $e');
+                                }
+                              });*/
+                              
+                              if (!context.mounted) return;
+                              showLicensePage(
+                                context: context,
+                                applicationName: IConst.appName,
+                                applicationVersion: '1.0.0', // Or fetch dynamically
+                                applicationIcon: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    "assets/images/cropped-LeLogo.png",
+                                    width: 48,
+                                    height: 48,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(context.l10n.viewLicenses),
                           ),

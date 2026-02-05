@@ -104,6 +104,7 @@ flutter:
   - assets/images/
   - assets/lotties/
   - assets/fonts/
+  - LICENSE
 
 patrol:
   app_name: StimmApp

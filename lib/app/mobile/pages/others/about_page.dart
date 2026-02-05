@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
@@ -53,7 +54,7 @@ class AboutPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 40),
-          const Center(child: Text('🔐', style: AppTextStyles.icons)),
+          Center(child:Image.asset("assets/images/cropped-LeLogo.png")),
           const SizedBox(height: 10),
           Center(
             child: Text(context.l10n.stimmapp, style: AppTextStyles.xxlBold),
@@ -66,7 +67,7 @@ class AboutPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    context.l10n.devContactInformation,
+                    S.of(context).thisAppWasDevelopedBy + ' ' + "Team Vogelcode",
                     textAlign: TextAlign.center,
                     style: AppTextStyles.m,
                   ),
@@ -78,7 +79,18 @@ class AboutPage extends StatelessWidget {
           ),
           const SizedBox(height: 40),
           Center(
-            child: Text('Version 1.0.0', style: AppTextStyles.descriptionText),
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    'Version ${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                    style: AppTextStyles.descriptionText,
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
           const SizedBox(height: 20),
         ],

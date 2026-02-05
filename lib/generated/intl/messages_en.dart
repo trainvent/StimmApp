@@ -20,16 +20,16 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(String firstName, String lastName) => "Welcome ${firstName} ${lastName}!";
+  static String m0(firstName, lastName) => "Welcome ${firstName} ${lastName}!";
 
-  static String m1(int newMessages) =>
+  static String m1(newMessages) =>
       "You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new Messages', other: '${newMessages} new messages')}";
 
-  static String m2(String state) => "Related to ${state}";
+  static String m2(state) => "Related to ${state}";
 
-  static String m3(String date) => "Valid until: ${date}";
+  static String m3(date) => "Valid until: ${date}";
 
-  static String m4(String email) => "A verification email has been sent to ${email}";
+  static String m4(email) => "A verification email has been sent to ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -285,6 +285,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
     "language": MessageLookupByLibrary.simpleMessage("language"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
+    "licenses": MessageLookupByLibrary.simpleMessage("Licenses"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn link copied to clipboard",
@@ -406,6 +407,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid 6-digit code",
+    ),
+    "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "please enter your details.",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "please enter your Email",
@@ -544,6 +548,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "This action will permanently delete your account and all associated data.",
         ),
+    "thisAppWasDevelopedBy": MessageLookupByLibrary.simpleMessage(
+      "this app was developed by",
+    ),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
     "titleRequired": MessageLookupByLibrary.simpleMessage("Title is required"),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Title is too short"),

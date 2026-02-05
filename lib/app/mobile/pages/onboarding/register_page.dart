@@ -120,93 +120,95 @@ class _RegisterPageState extends State<RegisterPage> {
               elevation: 0,
               leading: BackButton(color: Theme.of(context).colorScheme.primary),
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20.0),
-                    Text(
-                      context.l10n.registerHere,
-                      style: AppTextStyles.xxlBold.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: DConst.padBox),
+                  Text(
+                    context.l10n.registerHere,
+                    style: AppTextStyles.xxlBold.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  Text(
+                    S.of(context).pleaseEnterYourDetails,
+                    style: AppTextStyles.m.copyWith(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 30.0),
+                  TextFormField(
+                    key: keys.onboardingPage.emailTextField,
+                    controller: controllerEm,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.email,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    const SizedBox(height: 10.0),
-                    Text(
-                     S.of(context).welcomePleaseEnterYourDetails,
-                      style: AppTextStyles.m.copyWith(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 30.0),
-                    TextFormField(
-                      key: keys.onboardingPage.emailTextField,
-                      controller: controllerEm,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.email,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    validator: (String? value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return S.of(context).pleaseEnterYourEmail;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  TextFormField(
+                    key: keys.onboardingPage.passwordTextField,
+                    obscureText: true,
+                    controller: controllerPw,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.password,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return S.of(context).pleaseEnterYourEmail;
-                        }
-                        return null;
-                      },
                     ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      key: keys.onboardingPage.passwordTextField,
-                      obscureText: true,
-                      controller: controllerPw,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.password,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    validator: (value) => validatePassword(context, value),
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  TextFormField(
+                    key: const Key('repeatPasswordTextField'),
+                    obscureText: true,
+                    controller: controllerConfirmPw,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.confirmPassword,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      validator: (value) =>
-                          validatePassword(context, value),
                     ),
-                    const SizedBox(height: DConst.padBox),
-                    TextFormField(
-                      key: const Key('repeatPasswordTextField'),
-                      obscureText: true,
-                      controller: controllerConfirmPw,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.confirmPassword,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    validator: (String? value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return context.l10n.pleaseEnterYourPassword;
+                      }
+                      if (value != controllerPw.text) {
+                        return context.l10n.passwordsDoNotMatch;
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: (value) {
+                      if (Form.of(context).validate()) {
+                        register();
+                      } else {
+                        showErrorSnackBar(context.l10n.error);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                  Expanded(
+                    child: Center(
+                      child: Image.asset(
+                        "assets/images/form_guy_register.png",
+                        fit: BoxFit.contain,
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return context.l10n.pleaseEnterYourPassword;
-                        }
-                        if (value != controllerPw.text) {
-                          return context.l10n.passwordsDoNotMatch;
-                        }
-                        return null;
-                      },
-                      onFieldSubmitted: (value) {
-                        if (Form.of(context).validate()) {
-                          register();
-                        } else {
-                          showErrorSnackBar(context.l10n.error);
-                        }
-                      },
                     ),
-                    const SizedBox(height: DConst.padBox),
-                    SizedBox(
-                      child: Image.asset("assets/images/form_guy_register.png")
-                    ),
-                    const SizedBox(height: DConst.padBox),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: DConst.padBox),
+                ],
               ),
             ),
             buttons: [
