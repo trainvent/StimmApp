@@ -137,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                      S.of(context).welcomePleaseEnterYourDetails,
                       style: AppTextStyles.m.copyWith(color: Colors.grey),
                     ),
-                    const SizedBox(height: 40.0),
+                    const SizedBox(height: 30.0),
                     TextFormField(
                       key: keys.onboardingPage.emailTextField,
                       controller: controllerEm,
@@ -155,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     TextFormField(
                       key: keys.onboardingPage.passwordTextField,
                       obscureText: true,
@@ -170,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       validator: (value) =>
                           validatePassword(context, value),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     TextFormField(
                       key: const Key('repeatPasswordTextField'),
                       obscureText: true,
@@ -199,11 +199,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     SizedBox(
                       child: Image.asset("assets/images/form_guy_register.png")
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

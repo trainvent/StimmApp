@@ -70,19 +70,19 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 8),
                     Text(
                       context.l10n.signIn,
                       style: AppTextStyles.xxlBold.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(height: 10.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       context.l10n.welcomeBackPleaseEnterYourDetails,
                       style: AppTextStyles.m.copyWith(color: Colors.grey),
                     ),
-                    const SizedBox(height: 40.0),
+                    const SizedBox(height: 30),
                     TextFormField(
                       key: keys.loginPage.emailTextField,
                       controller: controllerEm,
@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     TextFormField(
                       key: keys.loginPage.passwordTextField,
                       obscureText: true,
@@ -157,11 +157,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     SizedBox(
                       child: Image.asset("assets/images/form_guy_lock.png")
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

@@ -102,10 +102,13 @@ class _MyAppState extends State<MyApp> {
                     // If the screen is wider than this ratio, constrain the width.
                     final maxAllowedWidth = constraints.maxHeight * (2 / 3);
                     if (constraints.maxWidth > maxAllowedWidth) {
-                      return Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: maxAllowedWidth),
-                          child: child,
+                      return ColoredBox(
+                        color: Colors.black, // Background for the empty space
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                            child: ClipRect(child: child),
+                          ),
                         ),
                       );
                     }
