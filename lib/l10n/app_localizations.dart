@@ -590,6 +590,12 @@ abstract class AppLocalizations {
   /// **'Email verification'**
   String get emailVerification;
 
+  /// No description provided for @emailVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified successfully!'**
+  String get emailVerifiedSuccessfully;
+
   /// No description provided for @energy.
   ///
   /// In en, this message translates to:
@@ -1886,12 +1892,6 @@ abstract class AppLocalizations {
   /// **'Please enter a valid 6-digit code'**
   String get pleaseEnterAValid6digitCode;
 
-  /// No description provided for @emailVerifiedSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Email verified successfully!'**
-  String get emailVerifiedSuccessfully;
-
   /// No description provided for @verificationFailed.
   ///
   /// In en, this message translates to:
@@ -1993,6 +1993,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter Verification Code'**
   String get enterVerificationCode;
+
+  /// No description provided for @tagEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get tagEnvironment;
+
+  /// No description provided for @tagPolitics.
+  ///
+  /// In en, this message translates to:
+  /// **'Politics'**
+  String get tagPolitics;
+
+  /// No description provided for @tagEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get tagEducation;
+
+  /// No description provided for @tagHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get tagHealth;
+
+  /// No description provided for @tagInfrastructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Infrastructure'**
+  String get tagInfrastructure;
+
+  /// No description provided for @tagEconomy.
+  ///
+  /// In en, this message translates to:
+  /// **'Economy'**
+  String get tagEconomy;
+
+  /// No description provided for @tagSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get tagSocial;
+
+  /// No description provided for @tagTechnology.
+  ///
+  /// In en, this message translates to:
+  /// **'Technology'**
+  String get tagTechnology;
+
+  /// No description provided for @tagCulture.
+  ///
+  /// In en, this message translates to:
+  /// **'Culture'**
+  String get tagCulture;
+
+  /// No description provided for @tagSports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get tagSports;
+
+  /// No description provided for @tagAnimalWelfare.
+  ///
+  /// In en, this message translates to:
+  /// **'Animal Welfare'**
+  String get tagAnimalWelfare;
+
+  /// No description provided for @tagSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get tagSafety;
+
+  /// No description provided for @tagTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic'**
+  String get tagTraffic;
+
+  /// No description provided for @tagHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get tagHousing;
+
+  /// No description provided for @tagOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get tagOther;
 }
 
 class _AppLocalizationsDelegate

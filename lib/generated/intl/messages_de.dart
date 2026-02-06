@@ -217,9 +217,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Geben Sie etwas ein",
     ),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Titel eingeben"),
-    "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
-      "Verifizierungscode eingeben",
-    ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
       "gib deine Wohnanschrift ein",
     ),
@@ -306,7 +303,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
     "language": MessageLookupByLibrary.simpleMessage("Sprache"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Letzter Schritt!"),
-    "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn-Link in die Zwischenablage kopiert",
@@ -403,19 +399,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition von"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petitionsdetails"),
-    "petitionGuidelineDescription": MessageLookupByLibrary.simpleMessage(
-      "Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.",
-    ),
-    "petitionGuidelines": MessageLookupByLibrary.simpleMessage(
-      "Petitionsrichtlinien",
-    ),
     "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
       "Petition erfolgreich unterzeichnet!",
     ),
     "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
       "Petitionstitel bereits vergeben",
     ),
-    "petitions": MessageLookupByLibrary.simpleMessage("Petitionen"),
+    "petitions": MessageLookupByLibrary.simpleMessage("Petitions"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsort"),
     "pleaseCheckYourEmail": MessageLookupByLibrary.simpleMessage(
       "Bitte überprüfen Sie Ihre E-Mails",
@@ -428,9 +418,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie einen gültigen 6-stelligen Code ein",
-    ),
-    "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben sie die Details ein",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "Bitte die Email eingeben",
@@ -455,12 +442,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "poll": MessageLookupByLibrary.simpleMessage("Umfrage"),
     "pollDetails": MessageLookupByLibrary.simpleMessage("Umfragedetails"),
-    "pollGuidelineDescription": MessageLookupByLibrary.simpleMessage(
-      "Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.",
-    ),
-    "pollGuidelines": MessageLookupByLibrary.simpleMessage(
-      "Umfragerichtlinien",
-    ),
     "polls": MessageLookupByLibrary.simpleMessage("Umfragen"),
     "popularPetitions": MessageLookupByLibrary.simpleMessage(
       "Beliebte Petitionen",
@@ -475,10 +456,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profilbild aktualisiert",
     ),
-    "publishedUnderTheGnuGeneralPublicLicenseV30":
-        MessageLookupByLibrary.simpleMessage(
-          "herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3",
-        ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Kauf abgebrochen.",
     ),
@@ -574,6 +551,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "supporters": MessageLookupByLibrary.simpleMessage("Unterstützer"),
     "surname": MessageLookupByLibrary.simpleMessage("Nachname"),
     "systemDefault": MessageLookupByLibrary.simpleMessage("Systemstandard"),
+    "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Tierschutz"),
+    "tagCulture": MessageLookupByLibrary.simpleMessage("Kultur"),
+    "tagEconomy": MessageLookupByLibrary.simpleMessage("Wirtschaft"),
+    "tagEducation": MessageLookupByLibrary.simpleMessage("Bildung"),
+    "tagEnvironment": MessageLookupByLibrary.simpleMessage("Umwelt"),
+    "tagHealth": MessageLookupByLibrary.simpleMessage("Gesundheit"),
+    "tagHousing": MessageLookupByLibrary.simpleMessage("Wohnen"),
+    "tagInfrastructure": MessageLookupByLibrary.simpleMessage("Infrastruktur"),
+    "tagOther": MessageLookupByLibrary.simpleMessage("Sonstiges"),
+    "tagPolitics": MessageLookupByLibrary.simpleMessage("Politik"),
+    "tagSafety": MessageLookupByLibrary.simpleMessage("Sicherheit"),
+    "tagSocial": MessageLookupByLibrary.simpleMessage("Soziales"),
+    "tagSports": MessageLookupByLibrary.simpleMessage("Sport"),
+    "tagTechnology": MessageLookupByLibrary.simpleMessage("Technologie"),
+    "tagTraffic": MessageLookupByLibrary.simpleMessage("Verkehr"),
     "tags": MessageLookupByLibrary.simpleMessage("Tags"),
     "tagsHint": MessageLookupByLibrary.simpleMessage("Komma-getrennte Tags"),
     "tagsRequired": MessageLookupByLibrary.simpleMessage(

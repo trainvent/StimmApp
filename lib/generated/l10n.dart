@@ -734,6 +734,16 @@ class S {
     );
   }
 
+  /// `Email verified successfully!`
+  String get emailVerifiedSuccessfully {
+    return Intl.message(
+      'Email verified successfully!',
+      name: 'emailVerifiedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Energy`
   String get energy {
     return Intl.message('Energy', name: 'energy', desc: '', args: []);
@@ -2494,16 +2504,6 @@ class S {
     );
   }
 
-  /// `Email verified successfully!`
-  String get emailVerifiedSuccessfully {
-    return Intl.message(
-      'Email verified successfully!',
-      name: 'emailVerifiedSuccessfully',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Verification failed`
   String get verificationFailed {
     return Intl.message(
@@ -2657,6 +2657,101 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Environment`
+  String get tagEnvironment {
+    return Intl.message(
+      'Environment',
+      name: 'tagEnvironment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Politics`
+  String get tagPolitics {
+    return Intl.message('Politics', name: 'tagPolitics', desc: '', args: []);
+  }
+
+  /// `Education`
+  String get tagEducation {
+    return Intl.message('Education', name: 'tagEducation', desc: '', args: []);
+  }
+
+  /// `Health`
+  String get tagHealth {
+    return Intl.message('Health', name: 'tagHealth', desc: '', args: []);
+  }
+
+  /// `Infrastructure`
+  String get tagInfrastructure {
+    return Intl.message(
+      'Infrastructure',
+      name: 'tagInfrastructure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Economy`
+  String get tagEconomy {
+    return Intl.message('Economy', name: 'tagEconomy', desc: '', args: []);
+  }
+
+  /// `Social`
+  String get tagSocial {
+    return Intl.message('Social', name: 'tagSocial', desc: '', args: []);
+  }
+
+  /// `Technology`
+  String get tagTechnology {
+    return Intl.message(
+      'Technology',
+      name: 'tagTechnology',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Culture`
+  String get tagCulture {
+    return Intl.message('Culture', name: 'tagCulture', desc: '', args: []);
+  }
+
+  /// `Sports`
+  String get tagSports {
+    return Intl.message('Sports', name: 'tagSports', desc: '', args: []);
+  }
+
+  /// `Animal Welfare`
+  String get tagAnimalWelfare {
+    return Intl.message(
+      'Animal Welfare',
+      name: 'tagAnimalWelfare',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Safety`
+  String get tagSafety {
+    return Intl.message('Safety', name: 'tagSafety', desc: '', args: []);
+  }
+
+  /// `Traffic`
+  String get tagTraffic {
+    return Intl.message('Traffic', name: 'tagTraffic', desc: '', args: []);
+  }
+
+  /// `Housing`
+  String get tagHousing {
+    return Intl.message('Housing', name: 'tagHousing', desc: '', args: []);
+  }
+
+  /// `Other`
+  String get tagOther {
+    return Intl.message('Other', name: 'tagOther', desc: '', args: []);
   }
 }
 

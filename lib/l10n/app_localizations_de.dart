@@ -271,6 +271,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emailVerification => 'E-Mail-Bestätigung';
 
   @override
+  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
+
+  @override
   String get energy => 'Energie';
 
   @override
@@ -578,7 +581,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Petition erfolgreich unterzeichnet!';
 
   @override
-  String get petitions => 'Petitionen';
+  String get petitions => 'Petitions';
 
   @override
   String get placeOfBirth => 'Geburtsort';
@@ -956,9 +959,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte geben Sie einen gültigen 6-stelligen Code ein';
 
   @override
-  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
-
-  @override
   String get verificationFailed => 'Verifizierung fehlgeschlagen';
 
   @override
@@ -985,32 +985,75 @@ class AppLocalizationsDe extends AppLocalizations {
       'we failed to get your state, please proofread your living-address';
 
   @override
-  String get petitionGuidelines => 'Petitionsrichtlinien';
+  String get petitionGuidelines => 'petition guidelines';
 
   @override
-  String get petitionGuidelineDescription =>
-      'Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.';
+  String get petitionGuidelineDescription => 'petition guideline description';
 
   @override
-  String get pollGuidelines => 'Umfragerichtlinien';
+  String get pollGuidelines => 'poll guidelines';
 
   @override
-  String get pollGuidelineDescription =>
-      'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
+  String get pollGuidelineDescription => 'poll guideline description';
 
   @override
-  String get pleaseEnterYourDetails => 'Bitte geben sie die Details ein';
+  String get pleaseEnterYourDetails => 'please enter your details.';
 
   @override
   String get thisAppWasDevelopedBy => 'this app was developed by';
 
   @override
-  String get licenses => 'Lizenzen';
+  String get licenses => 'Licenses';
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3';
+      'published under the GNU General Public License v3.0';
 
   @override
-  String get enterVerificationCode => 'Verifizierungscode eingeben';
+  String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get tagEnvironment => 'Umwelt';
+
+  @override
+  String get tagPolitics => 'Politik';
+
+  @override
+  String get tagEducation => 'Bildung';
+
+  @override
+  String get tagHealth => 'Gesundheit';
+
+  @override
+  String get tagInfrastructure => 'Infrastruktur';
+
+  @override
+  String get tagEconomy => 'Wirtschaft';
+
+  @override
+  String get tagSocial => 'Soziales';
+
+  @override
+  String get tagTechnology => 'Technologie';
+
+  @override
+  String get tagCulture => 'Kultur';
+
+  @override
+  String get tagSports => 'Sport';
+
+  @override
+  String get tagAnimalWelfare => 'Tierschutz';
+
+  @override
+  String get tagSafety => 'Sicherheit';
+
+  @override
+  String get tagTraffic => 'Verkehr';
+
+  @override
+  String get tagHousing => 'Wohnen';
+
+  @override
+  String get tagOther => 'Sonstiges';
 }

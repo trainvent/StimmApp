@@ -268,6 +268,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailVerification => 'Email verification';
 
   @override
+  String get emailVerifiedSuccessfully => 'Email verified successfully!';
+
+  @override
   String get energy => 'Energy';
 
   @override
@@ -944,9 +947,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterAValid6digitCode => 'Please enter a valid 6-digit code';
 
   @override
-  String get emailVerifiedSuccessfully => 'Email verified successfully!';
-
-  @override
   String get verificationFailed => 'Verification failed';
 
   @override
@@ -999,4 +999,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get tagEnvironment => 'Environment';
+
+  @override
+  String get tagPolitics => 'Politics';
+
+  @override
+  String get tagEducation => 'Education';
+
+  @override
+  String get tagHealth => 'Health';
+
+  @override
+  String get tagInfrastructure => 'Infrastructure';
+
+  @override
+  String get tagEconomy => 'Economy';
+
+  @override
+  String get tagSocial => 'Social';
+
+  @override
+  String get tagTechnology => 'Technology';
+
+  @override
+  String get tagCulture => 'Culture';
+
+  @override
+  String get tagSports => 'Sports';
+
+  @override
+  String get tagAnimalWelfare => 'Animal Welfare';
+
+  @override
+  String get tagSafety => 'Safety';
+
+  @override
+  String get tagTraffic => 'Traffic';
+
+  @override
+  String get tagHousing => 'Housing';
+
+  @override
+  String get tagOther => 'Other';
 }

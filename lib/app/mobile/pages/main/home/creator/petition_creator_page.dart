@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -28,7 +29,7 @@ class PetitionCreatorPage extends StatefulWidget {
 class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _tagsController = TextEditingController();
+  List<String> _selectedTags = [];
   final _repository = PetitionRepository.create();
   bool _isLoading = false;
   bool _isStateDependent = false;
@@ -61,7 +62,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _tagsController.dispose();
     super.dispose();
   }
 
@@ -113,6 +113,11 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       return;
     }
 
+    if (_selectedTags.isEmpty) {
+      showErrorSnackBar(context.l10n.tagsRequired);
+      return;
+    }
+
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
@@ -134,13 +139,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         }
       }
 
-      // Parse tags from comma-separated input
-      final tags = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .toList();
-
       String? state;
       if (_isStateDependent) {
         final userProfile = await UserRepository.create().getById(
@@ -155,7 +153,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         id: '', // Will be set by Firestore
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
-        tags: tags,
+        tags: _selectedTags,
         signatureCount: 0,
         createdBy: currentUser.uid,
         createdAt: now,
@@ -188,8 +186,8 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         // Clear form
         _titleController.clear();
         _descriptionController.clear();
-        _tagsController.clear();
         setState(() {
+          _selectedTags = [];
           _imageFile = null;
         });
         form.reset();
@@ -346,18 +344,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
                 maxLength: 1000,
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _tagsController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.tags,
-                  hintText: context.l10n.tagsHint,
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return context.l10n.tagsRequired;
-                  }
-                  return null;
+              Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              TagSelector(
+                selectedTags: _selectedTags,
+                onChanged: (newTags) {
+                  setState(() {
+                    _selectedTags = newTags;
+                  });
                 },
               ),
               const SizedBox(height: 10),

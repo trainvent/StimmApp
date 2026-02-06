@@ -4,6 +4,14 @@
     "hello",
     "faultyInput",
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
-    "thisAppWasDevelopedBy"
+    "petitionGuidelines",
+    "petitionGuidelineDescription",
+    "pollGuidelines",
+    "pollGuidelineDescription",
+    "pleaseEnterYourDetails",
+    "thisAppWasDevelopedBy",
+    "licenses",
+    "publishedUnderTheGnuGeneralPublicLicenseV30",
+    "enterVerificationCode"
   ]
 }

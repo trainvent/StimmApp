@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -7,6 +9,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +23,7 @@ class PollCreatorPage extends StatefulWidget {
 class _PollCreatorPageState extends State<PollCreatorPage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _tagsController = TextEditingController();
+  List<String> _selectedTags = [];
   final List<TextEditingController> _optionControllers = [
     TextEditingController(),
     TextEditingController(),
@@ -35,7 +38,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _tagsController.dispose();
     for (final controller in _optionControllers) {
       controller.dispose();
     }
@@ -77,6 +79,11 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       return;
     }
 
+    if (_selectedTags.isEmpty) {
+      showErrorSnackBar(context.l10n.tagsRequired);
+      return;
+    }
+
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
@@ -88,12 +95,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     });
 
     try {
-      final tags = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .toList();
-
       final options = _optionControllers
           .map(
             (controller) =>
@@ -113,7 +114,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         id: '', // Will be set by Firestore
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
-        tags: tags,
+        tags: _selectedTags,
         options: options,
         votes: {for (var option in options) option.id: 0},
         createdBy: currentUser.uid,
@@ -178,11 +179,28 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
               children: [
                 Text(S.of(context).pollGuidelineDescription),
                 const SizedBox(height: 10),
-                Text(
-                  'Source: https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Source: ',
+                        style: DefaultTextStyle.of(context).style,
+                      ),
+                      TextSpan(
+                        text: 'https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final url = Uri.parse('https://www.bundestag.de/ausschuesse/a02_petitionsausschuss');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          },
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -240,13 +258,15 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                     : null,
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _tagsController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.tags,
-                  hintText: context.l10n.hintTextTags,
-                  border: OutlineInputBorder(),
-                ),
+              Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              TagSelector(
+                selectedTags: _selectedTags,
+                onChanged: (newTags) {
+                  setState(() {
+                    _selectedTags = newTags;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               CheckboxListTile(
