@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
+import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -30,6 +31,7 @@ class _BaseOverviewPageState<T extends HomeItem>
 
   late TabController _tabController;
   String _query = '';
+  List<String> _selectedTags = [];
   Future<UserProfile?>? _userProfileFuture;
 
   @override
@@ -48,6 +50,54 @@ class _BaseOverviewPageState<T extends HomeItem>
     super.dispose();
   }
 
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        // Use a local state for the dialog to allow updating selection before confirming
+        List<String> tempSelectedTags = List.from(_selectedTags);
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(context.l10n.tags),
+              content: SingleChildScrollView(
+                child: TagSelector(
+                  selectedTags: tempSelectedTags,
+                  maxTags: 10, // Allow more tags for filtering
+                  onChanged: (newTags) {
+                    setState(() {
+                      tempSelectedTags = newTags;
+                    });
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Clear filters
+                    setState(() {
+                      tempSelectedTags = [];
+                    });
+                  },
+                  child: Text(context.l10n.remove),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    this.setState(() {
+                      _selectedTags = tempSelectedTags;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text(context.l10n.confirm),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildItemList(String status) {
     return FutureBuilder<UserProfile?>(
       future: _userProfileFuture,
@@ -63,11 +113,36 @@ class _BaseOverviewPageState<T extends HomeItem>
               return const Center(child: CircularProgressIndicator());
             }
             var items = snap.data ?? const [];
+            
+            // Filter by state
             if (userProfile != null) {
               items = items.where((p) {
                 return p.state == null || p.state == userProfile.state;
               }).toList();
             }
+
+            // Filter by tags
+            if (_selectedTags.isNotEmpty) {
+              items = items.where((item) {
+                // Check if item has any of the selected tags
+                // Assuming HomeItem has a tags property. 
+                // Since T extends HomeItem, we need to cast or ensure HomeItem has tags.
+                // Looking at models, Petition and Poll have tags. 
+                // We might need to check runtime type or update HomeItem interface.
+                // For now, let's assume dynamic access or check if we can add tags to HomeItem.
+                // Actually, HomeItem is abstract. Let's check its definition.
+                // If it doesn't have tags, we can't filter safely without casting.
+                // Let's try dynamic for now as a quick fix, or better, update HomeItem.
+                final dynamic dynamicItem = item;
+                try {
+                  final List<String> itemTags = (dynamicItem.tags as List<dynamic>).cast<String>();
+                  return itemTags.any((tag) => _selectedTags.contains(tag));
+                } catch (e) {
+                  return true; // If no tags property, don't filter out
+                }
+              }).toList();
+            }
+
             if (items.isEmpty) {
               return Center(child: Text(context.l10n.noData));
             }
@@ -129,9 +204,24 @@ class _BaseOverviewPageState<T extends HomeItem>
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            SearchTextField(
-              hint: context.l10n.searchTextField,
-              onChanged: (q) => setState(() => _query = q),
+            Row(
+              children: [
+                Expanded(
+                  child: SearchTextField(
+                    hint: context.l10n.searchTextField,
+                    onChanged: (q) => setState(() => _query = q),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  onPressed: _showFilterDialog,
+                  icon: Badge(
+                    isLabelVisible: _selectedTags.isNotEmpty,
+                    label: Text('${_selectedTags.length}'),
+                    child: const Icon(Icons.filter_list),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Expanded(

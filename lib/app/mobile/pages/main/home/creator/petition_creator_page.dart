@@ -191,6 +191,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
           _imageFile = null;
         });
         form.reset();
+        Navigator.of(context).pop();
       }
     } on StateError catch (e) {
       if (mounted) {
@@ -209,7 +210,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pop();
       }
     }
   }
