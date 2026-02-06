@@ -7,14 +7,19 @@ import 'package:flutter/material.dart';
 /// the button enters a loading state (grayed out/animated) until the Future completes.
 /// It also supports a simple cooldown duration if no Future is returned.
 class DebouncedButton extends StatefulWidget {
+  // We capture the key here but DO NOT pass it to super.key.
+  // Instead, we pass it down to the inner ElevatedButton.
+  // This allows tests to find the actual interactive button using the key provided
+  // to this widget, while keeping the API clean.
   const DebouncedButton({
-    super.key,
+    Key? key,
     required this.child,
     required this.onPressed,
     this.cooldownDuration = const Duration(milliseconds: 500),
     this.style,
-  });
+  }) : forwardedKey = key, super(key: null);
 
+  final Key? forwardedKey;
   final Widget child;
   final FutureOr<void> Function()? onPressed;
   final Duration cooldownDuration;
@@ -77,6 +82,7 @@ class _DebouncedButtonState extends State<DebouncedButton> with SingleTickerProv
         duration: const Duration(milliseconds: 200),
         opacity: _isBusy ? 0.6 : 1.0,
         child: ElevatedButton(
+          key: widget.forwardedKey, // Key is applied here
           onPressed: _isBusy ? null : _handleTap,
           style: widget.style,
           child: _isBusy

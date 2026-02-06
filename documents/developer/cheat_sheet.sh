@@ -9,7 +9,12 @@ flutter build appbundle --release --flavor prod
 # how to debug
 flutter run --debug -d chrome -t lib/main_dev.dart
 
+# run a single patrol test
+patrol test --target integration_test/
+
 # set a secret to store hidden data
+
+firebase functions:secrets:set
 
 # sync dev with prod
 gcloud scheduler jobs run firebase-schedule-syncProdToDev-us-central1 --project=stimmapp-dev --location=us-central1

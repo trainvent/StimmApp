@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:patrol/patrol.dart';
@@ -50,7 +51,7 @@ void main() {
       if (!kIsWeb && kDebugMode) {
         await authService.setSettings(appVerificationDisabledForTesting: true);
       }
-      await $.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(const ProviderScope(child: MyApp()));
 
       final validPassword = password.isNotEmpty
           ? password
