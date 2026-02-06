@@ -37,7 +37,7 @@ class _InitAppLayoutState extends State<InitAppLayout> {
               if (isAppOutdated) {
                 widget = const OutdatedPage();
               } else {
-                widget = const AuthLayout();
+                widget = const AuthLayout() as Widget;
               }
               return widget;
             },
