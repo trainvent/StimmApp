@@ -18,7 +18,7 @@ import 'package:stimmapp/l10n/app_localizations_de.dart';
 void main() {
   final l10n = AppLocalizationsDe();
   const email = String.fromEnvironment('TEST_EMAIL');
-  const password = String.fromEnvironment('TEST_PASSWORD');
+  const password = IConst.testSecurePassword;
   const testCode = String.fromEnvironment('TEST_CODE');
 
   patrolTest(

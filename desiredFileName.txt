@@ -4,12 +4,6 @@
     "hello",
     "faultyInput",
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
-    "petitionGuidelines",
-    "petitionGuidelineDescription",
-    "pollGuidelines",
-    "pollGuidelineDescription",
-    "pleaseEnterYourDetails",
-    "thisAppWasDevelopedBy",
-    "licenses"
+    "thisAppWasDevelopedBy"
   ]
 }

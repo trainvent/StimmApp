@@ -985,23 +985,32 @@ class AppLocalizationsDe extends AppLocalizations {
       'we failed to get your state, please proofread your living-address';
 
   @override
-  String get petitionGuidelines => 'petition guidelines';
+  String get petitionGuidelines => 'Petitionsrichtlinien';
 
   @override
-  String get petitionGuidelineDescription => 'petition guideline description';
+  String get petitionGuidelineDescription =>
+      'Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.';
 
   @override
-  String get pollGuidelines => 'poll guidelines';
+  String get pollGuidelines => 'Umfragerichtlinien';
 
   @override
-  String get pollGuidelineDescription => 'poll guideline description';
+  String get pollGuidelineDescription =>
+      'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
 
   @override
-  String get pleaseEnterYourDetails => 'please enter your details.';
+  String get pleaseEnterYourDetails => 'Bitte geben sie die Details ein';
 
   @override
   String get thisAppWasDevelopedBy => 'this app was developed by';
 
   @override
-  String get licenses => 'Licenses';
+  String get licenses => 'Lizenzen';
+
+  @override
+  String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
+      'herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3';
+
+  @override
+  String get enterVerificationCode => 'Verifizierungscode eingeben';
 }

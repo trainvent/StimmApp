@@ -348,5 +348,13 @@
   "verificationCodeResent": "Verifizierungscode erneut gesendet!",
   "failedToResendCode": "Code konnte nicht erneut gesendet werden",
   "weHaveSentA6digitCodeToYourEmailPlease": "Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.",
-  "verify": "Verifizieren"
+  "verify": "Verifizieren",
+  "petitionGuidelines": "Petitionsrichtlinien",
+  "petitionGuidelineDescription": "Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.",
+  "pollGuidelines": "Umfragerichtlinien",
+  "pollGuidelineDescription": "Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.",
+  "licenses": "Lizenzen",
+  "pleaseEnterYourDetails": "Bitte geben sie die Details ein",
+  "publishedUnderTheGnuGeneralPublicLicenseV30": "herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3",
+  "enterVerificationCode": "Verifizierungscode eingeben"
 }

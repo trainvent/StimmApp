@@ -992,4 +992,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get licenses => 'Licenses';
+
+  @override
+  String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
+      'published under the GNU General Public License v3.0';
+
+  @override
+  String get enterVerificationCode => 'Enter Verification Code';
 }

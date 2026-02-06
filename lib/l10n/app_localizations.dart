@@ -1981,6 +1981,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Licenses'**
   String get licenses;
+
+  /// No description provided for @publishedUnderTheGnuGeneralPublicLicenseV30.
+  ///
+  /// In en, this message translates to:
+  /// **'published under the GNU General Public License v3.0'**
+  String get publishedUnderTheGnuGeneralPublicLicenseV30;
+
+  /// No description provided for @enterVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Verification Code'**
+  String get enterVerificationCode;
 }
 
 class _AppLocalizationsDelegate

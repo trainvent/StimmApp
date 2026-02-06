@@ -266,9 +266,13 @@ export const verifyLoginCode = onCall(async (request) => {
     let token;
     try {
         token = await admin.auth().createCustomToken(uid);
-    } catch (e) {
+    } catch (e: any) {
         console.error("Error creating custom token:", e);
-        throw new HttpsError('internal', 'Failed to generate login token. Check IAM permissions.');
+        // Check for the specific IAM permission error
+        if (e.code === 'auth/insufficient-permission' || (e.message && e.message.includes('iam.serviceAccounts.signBlob'))) {
+             throw new HttpsError('internal', 'Server configuration error: Missing IAM permissions for token creation. Please contact support.');
+        }
+        throw new HttpsError('internal', 'Failed to generate login token.');
     }
 
     // Also mark email as verified since they proved ownership

@@ -122,15 +122,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ListTile(
-                title: Text(context.l10n.viewLicenses),
+                title: Text(context.l10n.licenses),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text(S.of(context).viewLicenses),
+                        title: Text(S.of(context).licenses),
                         content: Text(
-                          "published under the GNU General Public License v3.0",
+                          S.of(context).publishedUnderTheGnuGeneralPublicLicenseV30,
                           style: AppTextStyles.m,
                         ),
                         actions: [

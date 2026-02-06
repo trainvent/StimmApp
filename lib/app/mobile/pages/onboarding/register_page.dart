@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
-import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/debounced_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -134,7 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: DConst.padBox),
                   Text(
-                    S.of(context).pleaseEnterYourDetails,
+                    S.of(context).welcomePleaseEnterYourDetails,
                     style: AppTextStyles.m.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 30.0),
@@ -212,17 +212,21 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             buttons: [
-              ButtonWidget(
+              DebouncedButton(
                 key: keys.onboardingPage.registerButton,
-                isFilled: true,
-                label: context.l10n.register,
-                callback: () {
+                onPressed: () async {
                   if (Form.of(context).validate()) {
-                    register();
+                    await register();
                   } else {
                     showErrorSnackBar(errorMessage);
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: Text(context.l10n.register),
               ),
             ],
           );

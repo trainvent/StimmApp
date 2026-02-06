@@ -28,7 +28,7 @@ List<MainPageConfig> mainPagesConfig(BuildContext context) => [
   MainPageConfig(
     page: const CreatorPage(),
     title: context.l10n.creator,
-    icon: Icons.mail,
+    icon: Icons.assignment_add,
   ),
   MainPageConfig(
     page: const PollsPage(),

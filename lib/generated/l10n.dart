@@ -2638,6 +2638,26 @@ class S {
   String get licenses {
     return Intl.message('Licenses', name: 'licenses', desc: '', args: []);
   }
+
+  /// `published under the GNU General Public License v3.0`
+  String get publishedUnderTheGnuGeneralPublicLicenseV30 {
+    return Intl.message(
+      'published under the GNU General Public License v3.0',
+      name: 'publishedUnderTheGnuGeneralPublicLicenseV30',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Verification Code`
+  String get enterVerificationCode {
+    return Intl.message(
+      'Enter Verification Code',
+      name: 'enterVerificationCode',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

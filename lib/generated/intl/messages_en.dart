@@ -205,6 +205,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "enterSomething": MessageLookupByLibrary.simpleMessage("Enter something"),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Enter title"),
+    "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
+      "Enter Verification Code",
+    ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
       "enter Your Address",
     ),
@@ -450,6 +453,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profile picture updated",
     ),
+    "publishedUnderTheGnuGeneralPublicLicenseV30":
+        MessageLookupByLibrary.simpleMessage(
+          "published under the GNU General Public License v3.0",
+        ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Purchase cancelled.",
     ),

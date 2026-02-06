@@ -354,5 +354,7 @@
   "pollGuidelineDescription": "poll guideline description",
   "pleaseEnterYourDetails": "please enter your details.",
   "thisAppWasDevelopedBy": "this app was developed by",
-  "licenses": "Licenses"
+  "licenses": "Licenses",
+  "publishedUnderTheGnuGeneralPublicLicenseV30": "published under the GNU General Public License v3.0",
+  "enterVerificationCode": "Enter Verification Code"
 }
