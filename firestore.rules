@@ -1,8 +1,61 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // --- Helper Functions ---
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'admin@stimmapp.org';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // --- Collection Rules ---
+
+    // Users Collection
+    match /users/{userId} {
+      // Main Profile: Public Read, Owner Write
+      allow read: if true;
+      allow write: if isOwner(userId) || isAdmin();
+
+      // Explicitly handle subcollections for history
+      match /signedPetitions/{docId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      match /votedPolls/{docId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      // Catch-all for other subcollections (if any)
+      match /{subcollection}/{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // Petitions & Polls: Public Read/Write (Temporary)
+    match /petitions/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /polls/{document=**} {
+      allow read, write: if true;
+    }
+
+    // Verification Codes: Blocked
+    match /verificationCodes/{document=**} {
+      allow read, write: if false;
+    }
+
+    // Default Fallback
     match /{document=**} {
-      allow read, write;
+      allow read, write: if isAdmin();
     }
   }
 }
