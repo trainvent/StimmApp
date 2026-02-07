@@ -13,6 +13,8 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 *   **Dependency Injection:** `get_it` (Service Locator pattern) & Riverpod Providers
 *   **Testing:** `flutter_test`, `patrol` (Integration tests)
 *   **CI/CD:** **GitLab CI/CD** (Migrated from GitHub Actions)
+*   **Sandbox:** a seperate enviroment which mirrors the content and User. Existing Users all get assigned the same Password == "KWII!Gr0ße$GenugB3isp!3le".
+
 
 ## 2. Architecture
 
@@ -28,6 +30,7 @@ The app follows a clean architecture approach, separated into layers:
     *   `data/services`: Business logic services (`AuthService`, `ProfilePictureService`).
     *   `providers`: Riverpod providers (`auth_provider.dart`).
     *   `config`: App initialization and configuration.
+
 
 ### Initialization Flow
 1.  `app_entry.dart`:

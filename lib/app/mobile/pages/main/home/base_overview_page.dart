@@ -32,6 +32,7 @@ class _BaseOverviewPageState<T extends HomeItem>
   late TabController _tabController;
   String _query = '';
   List<String> _selectedTags = [];
+  bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
 
   @override
@@ -56,19 +57,40 @@ class _BaseOverviewPageState<T extends HomeItem>
       builder: (context) {
         // Use a local state for the dialog to allow updating selection before confirming
         List<String> tempSelectedTags = List.from(_selectedTags);
+        bool tempOnlyMyPublications = _onlyMyPublications;
+        
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(context.l10n.tags),
+              title: Text(context.l10n.settings), // Using "Settings" or "Filter"
               content: SingleChildScrollView(
-                child: TagSelector(
-                  selectedTags: tempSelectedTags,
-                  maxTags: 10, // Allow more tags for filtering
-                  onChanged: (newTags) {
-                    setState(() {
-                      tempSelectedTags = newTags;
-                    });
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SwitchListTile(
+                      title: Text(context.l10n.myPetitions), // Reusing "My Petitions" or similar key for "My Publications"
+                      value: tempOnlyMyPublications,
+                      onChanged: (val) {
+                        setState(() {
+                          tempOnlyMyPublications = val;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const Divider(),
+                    Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    TagSelector(
+                      selectedTags: tempSelectedTags,
+                      maxTags: 10, // Allow more tags for filtering
+                      onChanged: (newTags) {
+                        setState(() {
+                          tempSelectedTags = newTags;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
               actions: [
@@ -77,6 +99,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                     // Clear filters
                     setState(() {
                       tempSelectedTags = [];
+                      tempOnlyMyPublications = false;
                     });
                   },
                   child: Text(context.l10n.remove),
@@ -85,6 +108,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                   onPressed: () {
                     this.setState(() {
                       _selectedTags = tempSelectedTags;
+                      _onlyMyPublications = tempOnlyMyPublications;
                     });
                     Navigator.pop(context);
                   },
@@ -121,24 +145,33 @@ class _BaseOverviewPageState<T extends HomeItem>
               }).toList();
             }
 
+            // Filter by "My Publications"
+            if (_onlyMyPublications) {
+              final currentUid = authService.currentUser?.uid;
+              if (currentUid != null) {
+                items = items.where((item) {
+                  // Assuming HomeItem has createdBy or we check dynamic
+                  // HomeItem doesn't have createdBy in the abstract class yet, 
+                  // but Petition and Poll do.
+                  final dynamic dynamicItem = item;
+                  try {
+                    return dynamicItem.createdBy == currentUid;
+                  } catch (e) {
+                    return false;
+                  }
+                }).toList();
+              }
+            }
+
             // Filter by tags
             if (_selectedTags.isNotEmpty) {
               items = items.where((item) {
-                // Check if item has any of the selected tags
-                // Assuming HomeItem has a tags property. 
-                // Since T extends HomeItem, we need to cast or ensure HomeItem has tags.
-                // Looking at models, Petition and Poll have tags. 
-                // We might need to check runtime type or update HomeItem interface.
-                // For now, let's assume dynamic access or check if we can add tags to HomeItem.
-                // Actually, HomeItem is abstract. Let's check its definition.
-                // If it doesn't have tags, we can't filter safely without casting.
-                // Let's try dynamic for now as a quick fix, or better, update HomeItem.
                 final dynamic dynamicItem = item;
                 try {
                   final List<String> itemTags = (dynamicItem.tags as List<dynamic>).cast<String>();
                   return itemTags.any((tag) => _selectedTags.contains(tag));
                 } catch (e) {
-                  return true; // If no tags property, don't filter out
+                  return true; 
                 }
               }).toList();
             }
@@ -192,6 +225,10 @@ class _BaseOverviewPageState<T extends HomeItem>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate active filters count
+    int filterCount = _selectedTags.length;
+    if (_onlyMyPublications) filterCount++;
+
     return Scaffold(
       appBar: TabBar(
         controller: _tabController,
@@ -216,8 +253,8 @@ class _BaseOverviewPageState<T extends HomeItem>
                 IconButton.filledTonal(
                   onPressed: _showFilterDialog,
                   icon: Badge(
-                    isLabelVisible: _selectedTags.isNotEmpty,
-                    label: Text('${_selectedTags.length}'),
+                    isLabelVisible: filterCount > 0,
+                    label: Text('$filterCount'),
                     child: const Icon(Icons.filter_list),
                   ),
                 ),

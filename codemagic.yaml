@@ -1,0 +1,50 @@
+workflows:
+  ios-release:
+    name: iOS Release
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      groups:
+        - app_store_credentials # Create this group in Codemagic UI
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        FLUTTER_FLAVOR: "prod" # Assuming you use flavors
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "de.lemarq.stimmapp" --type IOS_APP_STORE --create
+      - name: Set up signing certificate
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages get
+      - name: Install CocoaPods dependencies
+        script: |
+          find . -name "Podfile" -exec dir {} \;
+          cd ios && pod install
+      - name: Flutter build ipa
+        script: |
+          flutter build ipa --release --flavor $FLUTTER_FLAVOR --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      app_store_connect:
+        auth: integration 
+        # Configuration for automatic upload to TestFlight/App Store
+        # You need to connect your Apple Developer account in Codemagic UI > Teams > Integrations
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups
+          - "Internal Testers"
