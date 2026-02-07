@@ -25,13 +25,13 @@ class HeroWidget extends StatelessWidget {
           : null,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              // Ensure the widget's height never exceeds its width
-              maxHeight: constraints.maxWidth,
-            ),
-            child: AspectRatio(
-              aspectRatio: 1,
+          // Calculate 1/3 of the available width
+          final size = constraints.maxWidth / 3;
+          
+          return Center(
+            child: SizedBox(
+              width: size,
+              height: size,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -54,15 +54,41 @@ class HeroWidget extends StatelessWidget {
                             ),
                     ),
                   ),
-                  Text(
-                    title != null ? title! : '',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 50,
-                      letterSpacing: 50,
-                      color: Colors.white24,
+                  if (title != null)
+                    Text(
+                      title!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                        letterSpacing: 50,
+                        color: Colors.white24,
+                      ),
                     ),
-                  ),
+                  // Edit Icon Overlay
+                  if (nextPage != null)
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
