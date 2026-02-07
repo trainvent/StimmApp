@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await authService.createAccount(
-        email: controllerEm.text,
+        email: controllerEm.text.trim(),
         password: controllerPw.text,
       );
       if (!mounted) return;

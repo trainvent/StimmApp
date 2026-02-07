@@ -304,9 +304,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginCodeSent": MessageLookupByLibrary.simpleMessage("login code sent"),
     "loginLinkSent": MessageLookupByLibrary.simpleMessage("Code sent!"),
     "logout": MessageLookupByLibrary.simpleMessage("Logout"),
-    "manytooTagsMax5": MessageLookupByLibrary.simpleMessage(
-      "manyToo tags (max 5)",
-    ),
     "membershipStatus": MessageLookupByLibrary.simpleMessage(
       "Membership Status",
     ),
