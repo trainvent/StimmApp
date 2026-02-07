@@ -2943,6 +2943,21 @@ class S {
       args: [],
     );
   }
+
+  /// `Limit this petition to your state?`
+  String get limitThisPetitionToYourState {
+    return Intl.message(
+      'Limit this petition to your state?',
+      name: 'limitThisPetitionToYourState',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Source`
+  String get source {
+    return Intl.message('Source', name: 'source', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -999,7 +999,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
 
   @override
-  String get pleaseEnterYourDetails => 'Bitte geben sie die Details ein';
+  String get pleaseEnterYourDetails => 'please enter your details.';
 
   @override
   String get thisAppWasDevelopedBy => 'this app was developed by';
@@ -1009,10 +1009,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3';
+      'published under the GNU General Public License v3.0';
 
   @override
-  String get enterVerificationCode => 'Verifizierungscode eingeben';
+  String get enterVerificationCode => 'Enter Verification Code';
 
   @override
   String get tagEnvironment => 'Umwelt';
@@ -1125,5 +1125,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get petitionTutorialStep5 =>
-      'Bei Erreichen von 30.000 Mitschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörungssitzung darzustellen';
+      'Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.';
+
+  @override
+  String get limitThisPetitionToYourState =>
+      'Diese Petition auf Ihr Bundesland beschränken?';
+
+  @override
+  String get source => 'Quelle';
 }

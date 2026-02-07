@@ -391,6 +391,7 @@
   "petitionTutorialStep2": "It must not contain any personal references.",
   "petitionTutorialStep3": "The concern and justification must be formulated concisely and in a generally understandable manner.",
   "petitionTutorialStep4": "Only topics where a factual discussion is expected will be published.",
-  "petitionTutorialStep5": "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing."
-
+  "petitionTutorialStep5": "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.",
+  "limitThisPetitionToYourState": "Limit this petition to your state?",
+  "source": "Source"
 }

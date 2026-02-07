@@ -251,7 +251,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Source: ',
+                          text: S.of(context).source,
                           style: DefaultTextStyle.of(context).style,
                         ),
                         TextSpan(

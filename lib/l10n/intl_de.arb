@@ -257,6 +257,7 @@
   "resendEmailCooldown": "Bitte warte, bevor du erneut sendest",
   "resendVerificationEmail": "Bestätigungs-E-Mail erneut senden",
   "resetPassword": "Passwort zurücksetzen",
+  "resetPasswordCodeSent": "Code abgeschickt",
   "resetPasswordLinkSent": "Link zum Zurücksetzen des Passworts gesendet",
   "resubscribe": "Erneut abonnieren",
   "result": "Ergebnis",
@@ -350,14 +351,13 @@
   "failedToResendCode": "Code konnte nicht erneut gesendet werden",
   "weHaveSentA6digitCodeToYourEmailPlease": "Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.",
   "verify": "Verifizieren",
+  "loginCodeSent": "Login Code gesendet",
   "petitionGuidelines": "Petitionsrichtlinien",
   "petitionGuidelineDescription": "Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.",
   "pollGuidelines": "Umfragerichtlinien",
   "pollGuidelineDescription": "Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.",
   "licenses": "Lizenzen",
-  "pleaseEnterYourDetails": "Bitte geben sie die Details ein",
-  "publishedUnderTheGnuGeneralPublicLicenseV30": "herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3",
-  "enterVerificationCode": "Verifizierungscode eingeben",
+  "viewLicenses": "Lizenzen anzeigen",
   "tagEnvironment": "Umwelt",
   "tagPolitics": "Politik",
   "tagEducation": "Bildung",
@@ -391,5 +391,7 @@
   "petitionTutorialStep2": "Es darf keine persönlichen Bezüge enthalten.",
   "petitionTutorialStep3": "Anliegen und Begründung müssen knapp und allgemein verständlich formuliert sein.",
   "petitionTutorialStep4": "Es werden nur Themen veröffentlicht, bei denen eine sachliche Diskussion zu erwarten ist.",
-  "petitionTutorialStep5": "Bei Erreichen von 30.000 Mitschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörungssitzung darzustellen"
+  "petitionTutorialStep5": "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
+  "limitThisPetitionToYourState": "Diese Petition auf Ihr Bundesland beschränken?",
+  "source": "Quelle"
 }

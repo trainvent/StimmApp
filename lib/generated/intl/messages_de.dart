@@ -217,9 +217,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Geben Sie etwas ein",
     ),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Titel eingeben"),
-    "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
-      "Verifizierungscode eingeben",
-    ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
       "gib deine Wohnanschrift ein",
     ),
@@ -308,6 +305,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastStep": MessageLookupByLibrary.simpleMessage("Letzter Schritt!"),
     "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
+    "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
+      "Diese Petition auf Ihr Bundesland beschränken?",
+    ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn-Link in die Zwischenablage kopiert",
     ),
@@ -428,7 +428,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Es werden nur Themen veröffentlicht, bei denen eine sachliche Diskussion zu erwarten ist.",
     ),
     "petitionTutorialStep5": MessageLookupByLibrary.simpleMessage(
-      "Bei Erreichen von 30.000 Mitschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörungssitzung darzustellen",
+      "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
     ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitionen"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsort"),
@@ -443,9 +443,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie einen gültigen 6-stelligen Code ein",
-    ),
-    "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben sie die Details ein",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "Bitte die Email eingeben",
@@ -532,10 +529,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profilbild aktualisiert",
     ),
-    "publishedUnderTheGnuGeneralPublicLicenseV30":
-        MessageLookupByLibrary.simpleMessage(
-          "herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3",
-        ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Kauf abgebrochen.",
     ),
@@ -613,6 +606,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signedPetitions": MessageLookupByLibrary.simpleMessage(
       "Unterzeichnete Petitionen",
     ),
+    "source": MessageLookupByLibrary.simpleMessage("Quelle"),
     "state": MessageLookupByLibrary.simpleMessage("Bundesland"),
     "stateDependent": MessageLookupByLibrary.simpleMessage(
       "Bundeslandabhängig",

@@ -9,10 +9,10 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 ### Key Technologies
 *   **Frontend:** Flutter (Dart)
 *   **Backend:** Firebase (Firestore, Auth, Storage, Cloud Functions v2)
-*   **State Management:** `ValueNotifier` (Simple, native) & `StreamBuilder`
-*   **Dependency Injection:** `get_it` (Service Locator pattern)
+*   **State Management:** **Riverpod** (Migrated from ValueNotifier/StreamBuilder)
+*   **Dependency Injection:** `get_it` (Service Locator pattern) & Riverpod Providers
 *   **Testing:** `flutter_test`, `patrol` (Integration tests)
-*   **CI/CD:** GitHub Actions (implied by `.github` folder)
+*   **CI/CD:** **GitLab CI/CD** (Migrated from GitHub Actions)
 
 ## 2. Architecture
 
@@ -26,25 +26,26 @@ The app follows a clean architecture approach, separated into layers:
     *   `data/models`: Data classes (e.g., `UserProfile`, `Petition`).
     *   `data/repositories`: Data access logic (Firestore interactions).
     *   `data/services`: Business logic services (`AuthService`, `ProfilePictureService`).
-    *   `notifiers`: Global state notifiers (`AppStateNotifier`).
+    *   `providers`: Riverpod providers (`auth_provider.dart`).
     *   `config`: App initialization and configuration.
 
 ### Initialization Flow
-1.  `main.dart`:
+1.  `app_entry.dart`:
     *   Initializes Flutter bindings.
     *   Initializes Firebase.
     *   Sets up Service Locator (`locator`).
     *   Initializes Purchases (RevenueCat).
-    *   Runs `MyApp`.
-2.  `MyApp` (`lib/main.dart`):
+    *   Runs `MyApp` wrapped in `ProviderScope`.
+2.  `MyApp` (`lib/app_entry.dart`):
     *   Uses `AppBootstrap` (`lib/core/config/app_bootstrap.dart`) to handle async setup (Theme, Locale, Ads).
     *   Shows `AppLoadingPage` until initialized.
+    *   **LayoutBuilder:** Enforces a max width/aspect ratio (2/3) for web/tablet compatibility.
     *   Routing is handled here.
 3.  `InitAppLayout` (`lib/app/mobile/layout/init_app_layout.dart`):
     *   Checks for app updates/maintenance mode.
     *   Delegates to `AuthLayout`.
 4.  `AuthLayout` (`lib/app/mobile/layout/app_root.dart`):
-    *   Listens to Auth State.
+    *   **Riverpod Consumer:** Listens to `authStateProvider` and `userProfileProvider`.
     *   **Crucial Flow:**
         *   Not Logged In -> `WelcomePage`
         *   Logged In ->
@@ -66,11 +67,14 @@ The app follows a clean architecture approach, separated into layers:
 *   **Firestore:** Primary database.
 *   **Repositories:** Encapsulate Firestore queries (e.g., `UserRepository`, `PetitionRepository`).
 *   **Security:** `firestore.rules` defines access control.
+*   **Sync (Prod -> Dev):** `functions/src/data_sync.ts` copies Prod data to Dev daily.
+    *   **User Relinking:** Automatically links synced user data to Dev Auth accounts if emails match.
 
 ### Cloud Functions (`functions/src`)
 *   **Runtime:** Node.js 22 (Gen 2).
-*   **`auth_code.ts`**: Handles sending and verifying email codes.
-*   **`user_cleanup.ts`**: Triggered on Auth User Deletion. Recursively wipes all user data (Firestore docs, subcollections, Storage files).
+*   **`auth_code.ts`**: Handles sending and verifying email codes. Uses `defineSecret` for SMTP credentials.
+*   **`user_cleanup.ts`**: Triggered on Auth User Deletion. Recursively wipes all user data.
+*   **`data_sync.ts`**: Handles scheduled sync from Prod to Dev environment.
 *   **`index.ts`**: Exports functions and handles scheduled tasks (e.g., subscription checks).
 
 ### Testing
@@ -85,6 +89,7 @@ firebase deploy --only functions
 ```
 *   **Secrets:** SMTP password is stored in Google Cloud Secret Manager (`SMTP_PASSWORD`).
     *   Set/Update: `firebase functions:secrets:set SMTP_PASSWORD`
+    *   **Note:** Secrets are project-specific. Must be set for both Prod and Dev projects.
 
 ### Running Integration Tests
 ```bash
@@ -94,26 +99,25 @@ patrol test -t integration_test/simple_flow_test.dart
 ### Adding a New Feature
 1.  Define Model in `lib/core/data/models`.
 2.  Create Repository in `lib/core/data/repositories`.
-3.  Register in `ServiceLocator` if needed (though currently Repos are often instantiated directly or via static `create()`).
-4.  Build UI in `lib/app/mobile/pages`.
+3.  Create/Update Riverpod Provider in `lib/core/providers`.
+4.  Build UI in `lib/app/mobile/pages` using `ConsumerWidget`.
 
 ## 5. Known Flaws & Areas for Improvement
 
-1.  **State Management:** The app relies heavily on `ValueNotifier` and `StreamBuilder`. While simple, this can become hard to manage as the app grows. Consider migrating to `Provider` or `Riverpod` for better scoping and testability.
-2.  **Hardcoded Strings:** Some older parts of the app might still have hardcoded strings instead of using `AppLocalizations`. Always use `context.l10n`.
-3.  **Error Handling:** While there is a global error logger, individual UI error handling (Snackbars) is sometimes repetitive. A centralized error handler for UI feedback would be beneficial.
-4.  **Navigation:** Navigation is mostly `Navigator.push` with `MaterialPageRoute`. Using a named route generator or a routing package (like `go_router`) would improve deep linking and maintenance.
-5.  **Dependency Injection:** The `ServiceLocator` is set up but not consistently used for all Repositories (some use `Repository.create()`). Consistent usage would improve testability.
-6.  **Cloud Functions Quotas:** Deploying all functions at once can hit Google Cloud API rate limits (`429 Quota Exceeded`). Deploy individual functions if this happens.
+1.  **State Management:** Migration to **Riverpod** is underway (Auth is done). Continue migrating other parts of the app from `StreamBuilder`/`ValueNotifier`.
+2.  **Hardcoded Strings:** Most strings are now localized using `AppLocalizations` (`context.l10n`), but vigilance is needed for new features.
+3.  **Error Handling:** While there is a global error logger, individual UI error handling (Snackbars) is sometimes repetitive.
+4.  **Navigation:** Navigation is mostly `Navigator.push` with `MaterialPageRoute`. Consider `go_router` for better deep linking.
+5.  **Cloud Functions Quotas:** Deploying all functions at once can hit Google Cloud API rate limits. Deploy individual functions if this happens.
 
 ## 6. Secrets & Keys
 *   **RevenueCat:** Public SDK key in `IConst`. Safe.
-*   **Google Places:** API key in `IConst`. **MUST BE RESTRICTED** in Google Cloud Console to the app's package name (`de.lemarq.stimmapp`) and SHA-1 fingerprint.
-*   **SMTP Password:** Stored securely in Cloud Secret Manager.
+*   **Google Places:** API key in `IConst`. **MUST BE RESTRICTED** in Google Cloud Console.
+*   **SMTP Password:** Stored securely in Cloud Secret Manager (`SMTP_PASSWORD`).
 
 ## 7. Release Checklist
 *   [ ] Increment `version` in `pubspec.yaml`.
 *   [ ] Ensure `IConst.appName` is correct ("StimmApp").
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
-*   [ ] Build App Bundle: `flutter build appbundle`.
+*   [ ] Build App Bundle: `flutter build appbundle --release --flavor prod`.

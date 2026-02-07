@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
@@ -46,6 +47,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
   }
 
   void _addOption() {
+    if (_optionControllers.length >= AppLimits.maxPollOptions) {
+      showErrorSnackBar('Maximum ${AppLimits.maxPollOptions} options allowed');
+      return;
+    }
     setState(() {
       _optionControllers.add(TextEditingController());
     });
@@ -226,25 +231,39 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
               const SizedBox(height: 30),
               TextFormField(
                 controller: _titleController,
+                maxLength: AppLimits.maxTitleLength,
                 decoration: InputDecoration(
                   labelText: context.l10n.title,
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.titleRequired
-                    : null,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return context.l10n.titleRequired;
+                  }
+                  if (v.trim().length < AppLimits.minTitleLength) {
+                    return context.l10n.titleTooShort;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _descriptionController,
+                maxLength: AppLimits.maxDescriptionLength,
                 decoration: InputDecoration(
                   labelText: context.l10n.description,
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 4,
-                validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.descriptionRequired
-                    : null,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return context.l10n.descriptionRequired;
+                  }
+                  if (v.trim().length < AppLimits.minDescriptionLength) {
+                    return context.l10n.descriptionTooShort;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 20),
               Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
@@ -289,10 +308,12 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                       Expanded(
                         child: TextFormField(
                           controller: controller,
+                          maxLength: AppLimits.maxPollOptionLength,
                           decoration: InputDecoration(
                             labelText:
                                 context.l10n.option + (index + 1).toString(),
                             border: const OutlineInputBorder(),
+                            counterText: "", // Hide counter for cleaner look in list
                           ),
                           validator: (v) => (v?.trim().isEmpty ?? true)
                               ? context.l10n.optionRequired
@@ -308,11 +329,12 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                   ),
                 );
               }),
-              TextButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text(context.l10n.addOption),
-                onPressed: _addOption,
-              ),
+              if (_optionControllers.length < AppLimits.maxPollOptions)
+                TextButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: Text(context.l10n.addOption),
+                  onPressed: _addOption,
+                ),
               const SizedBox(height: 30),
               Builder(
                 builder: (context) {

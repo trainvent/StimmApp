@@ -290,6 +290,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
     "licenses": MessageLookupByLibrary.simpleMessage("Licenses"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
+    "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
+      "Limit this petition to your state?",
+    ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn link copied to clipboard",
     ),
@@ -578,6 +581,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signed": MessageLookupByLibrary.simpleMessage("Signed"),
     "signedOn": MessageLookupByLibrary.simpleMessage("Signed on "),
     "signedPetitions": MessageLookupByLibrary.simpleMessage("Signed Petitions"),
+    "source": MessageLookupByLibrary.simpleMessage("Source"),
     "state": MessageLookupByLibrary.simpleMessage("State"),
     "stateDependent": MessageLookupByLibrary.simpleMessage("State dependent"),
     "stateUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(

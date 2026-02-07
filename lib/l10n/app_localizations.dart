@@ -2197,6 +2197,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.'**
   String get petitionTutorialStep5;
+
+  /// No description provided for @limitThisPetitionToYourState.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit this petition to your state?'**
+  String get limitThisPetitionToYourState;
+
+  /// No description provided for @source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get source;
 }
 
 class _AppLocalizationsDelegate

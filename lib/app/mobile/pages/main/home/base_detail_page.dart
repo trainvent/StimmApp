@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -46,6 +47,23 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                 if (item.state != null && item.state!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Chip(label: Text(context.l10n.relatedToState(item.state!))),
+                ],
+                if (item.tags.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: item.tags.map((tagKey) {
+                      return Chip(
+                        label: Text(
+                          AppTagsHelper.getLocalizedTag(context, tagKey),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      );
+                    }).toList(),
+                  ),
                 ],
                 const SizedBox(height: 16),
                 Text(

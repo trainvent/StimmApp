@@ -1112,4 +1112,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get petitionTutorialStep5 =>
       'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.';
+
+  @override
+  String get limitThisPetitionToYourState =>
+      'Limit this petition to your state?';
+
+  @override
+  String get source => 'Source';
 }

@@ -4,6 +4,9 @@
     "hello",
     "faultyInput",
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
-    "thisAppWasDevelopedBy"
+    "pleaseEnterYourDetails",
+    "thisAppWasDevelopedBy",
+    "publishedUnderTheGnuGeneralPublicLicenseV30",
+    "enterVerificationCode"
   ]
 }
