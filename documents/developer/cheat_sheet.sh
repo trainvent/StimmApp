@@ -13,11 +13,13 @@ flutter run --debug -d chrome -t lib/main_dev.dart
 patrol test --target integration_test/
 
 # set a secret to store hidden data
-
 firebase functions:secrets:set
 
 # sync dev with prod
 gcloud scheduler jobs run firebase-schedule-syncProdToDev-us-central1 --project=stimmapp-dev --location=us-central1
+
+# clean up job
+gcloud scheduler jobs run firebase-schedule-cleanupOrphanedUsers-us-central1 --location=us-central1 --project=stimmapp-dev
 
 # How to set up a dev channel
 ## Setting up i did not like for emailservice

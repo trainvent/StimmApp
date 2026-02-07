@@ -2753,6 +2753,196 @@ class S {
   String get tagOther {
     return Intl.message('Other', name: 'tagOther', desc: '', args: []);
   }
+
+  /// `1. Be crystal clear about the goal`
+  String get pollTutorialStep1Title {
+    return Intl.message(
+      '1. Be crystal clear about the goal',
+      name: 'pollTutorialStep1Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Know exactly what you want to learn — one idea only.`
+  String get pollTutorialStep1Desc {
+    return Intl.message(
+      'Know exactly what you want to learn — one idea only.',
+      name: 'pollTutorialStep1Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `2. Use everyday language`
+  String get pollTutorialStep2Title {
+    return Intl.message(
+      '2. Use everyday language',
+      name: 'pollTutorialStep2Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.`
+  String get pollTutorialStep2Desc {
+    return Intl.message(
+      'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.',
+      name: 'pollTutorialStep2Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3. Ask one short, direct question`
+  String get pollTutorialStep3Title {
+    return Intl.message(
+      '3. Ask one short, direct question',
+      name: 'pollTutorialStep3Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Simple sentence. Simple structure.`
+  String get pollTutorialStep3Desc {
+    return Intl.message(
+      'Simple sentence. Simple structure.',
+      name: 'pollTutorialStep3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `4. Give fair choices`
+  String get pollTutorialStep4Title {
+    return Intl.message(
+      '4. Give fair choices',
+      name: 'pollTutorialStep4Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.`
+  String get pollTutorialStep4Desc {
+    return Intl.message(
+      'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.',
+      name: 'pollTutorialStep4Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `5. Keep options few`
+  String get pollTutorialStep5Title {
+    return Intl.message(
+      '5. Keep options few',
+      name: 'pollTutorialStep5Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3–5 choices is perfect for public polls.`
+  String get pollTutorialStep5Desc {
+    return Intl.message(
+      '3–5 choices is perfect for public polls.',
+      name: 'pollTutorialStep5Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `6. Make it fast to answer`
+  String get pollTutorialStep6Title {
+    return Intl.message(
+      '6. Make it fast to answer',
+      name: 'pollTutorialStep6Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `People should understand and vote in under 10 seconds.`
+  String get pollTutorialStep6Desc {
+    return Intl.message(
+      'People should understand and vote in under 10 seconds.',
+      name: 'pollTutorialStep6Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `7. Respect neutrality`
+  String get pollTutorialStep7Title {
+    return Intl.message(
+      '7. Respect neutrality',
+      name: 'pollTutorialStep7Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The poll must feel safe, non-judgmental, and unbiased.`
+  String get pollTutorialStep7Desc {
+    return Intl.message(
+      'The poll must feel safe, non-judgmental, and unbiased.',
+      name: 'pollTutorialStep7Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The concern must be of general interest.`
+  String get petitionTutorialStep1 {
+    return Intl.message(
+      'The concern must be of general interest.',
+      name: 'petitionTutorialStep1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `It must not contain any personal references.`
+  String get petitionTutorialStep2 {
+    return Intl.message(
+      'It must not contain any personal references.',
+      name: 'petitionTutorialStep2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The concern and justification must be formulated concisely and in a generally understandable manner.`
+  String get petitionTutorialStep3 {
+    return Intl.message(
+      'The concern and justification must be formulated concisely and in a generally understandable manner.',
+      name: 'petitionTutorialStep3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only topics where a factual discussion is expected will be published.`
+  String get petitionTutorialStep4 {
+    return Intl.message(
+      'Only topics where a factual discussion is expected will be published.',
+      name: 'petitionTutorialStep4',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.`
+  String get petitionTutorialStep5 {
+    return Intl.message(
+      'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.',
+      name: 'petitionTutorialStep5',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

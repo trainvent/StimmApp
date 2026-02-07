@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/constants/petition_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
@@ -215,43 +216,63 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   }
 
   void _showInfoDialog() {
+    final steps = PetitionTutorialHelper.getSteps(context);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(S.of(context).petitionGuidelines),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(S.of(context).petitionGuidelineDescription),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Source: ',
-                        style: DefaultTextStyle.of(context).style,
-                      ),
-                      TextSpan(
-                        text: 'https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () async {
-                            final url = Uri.parse('https://www.bundestag.de/ausschuesse/a02_petitionsausschuss');
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            }
-                          },
-                      ),
-                    ],
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: steps.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Expanded(
+                            child: Text(steps[index], style: Theme.of(context).textTheme.bodyMedium),
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Source: ',
+                          style: DefaultTextStyle.of(context).style,
+                        ),
+                        TextSpan(
+                          text: 'https://epetitionen.bundestag.de/epet/peteinreichen.html',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              final url = Uri.parse('https://epetitionen.bundestag.de/epet/peteinreichen.html');
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
+                              }
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -329,7 +350,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
                   labelText: context.l10n.description,
                   hintText: context.l10n.enterDescription,
                   border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
                 ),
                 maxLines: 8,
                 validator: (value) {

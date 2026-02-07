@@ -581,7 +581,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Petition erfolgreich unterzeichnet!';
 
   @override
-  String get petitions => 'Petitions';
+  String get petitions => 'Petitionen';
 
   @override
   String get placeOfBirth => 'Geburtsort';
@@ -985,32 +985,34 @@ class AppLocalizationsDe extends AppLocalizations {
       'we failed to get your state, please proofread your living-address';
 
   @override
-  String get petitionGuidelines => 'petition guidelines';
+  String get petitionGuidelines => 'Petitionsrichtlinien';
 
   @override
-  String get petitionGuidelineDescription => 'petition guideline description';
+  String get petitionGuidelineDescription =>
+      'Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.';
 
   @override
-  String get pollGuidelines => 'poll guidelines';
+  String get pollGuidelines => 'Umfragerichtlinien';
 
   @override
-  String get pollGuidelineDescription => 'poll guideline description';
+  String get pollGuidelineDescription =>
+      'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
 
   @override
-  String get pleaseEnterYourDetails => 'please enter your details.';
+  String get pleaseEnterYourDetails => 'Bitte geben sie die Details ein';
 
   @override
   String get thisAppWasDevelopedBy => 'this app was developed by';
 
   @override
-  String get licenses => 'Licenses';
+  String get licenses => 'Lizenzen';
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'published under the GNU General Public License v3.0';
+      'herausgebracht unter der GNU allgemeinen öffentlichen Lizenz v3';
 
   @override
-  String get enterVerificationCode => 'Enter Verification Code';
+  String get enterVerificationCode => 'Verifizierungscode eingeben';
 
   @override
   String get tagEnvironment => 'Umwelt';
@@ -1056,4 +1058,72 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tagOther => 'Sonstiges';
+
+  @override
+  String get pollTutorialStep1Title => '1. Sei kristallklar über das Ziel';
+
+  @override
+  String get pollTutorialStep1Desc =>
+      'Wisse genau, was du lernen willst – nur eine Idee.';
+
+  @override
+  String get pollTutorialStep2Title => '2. Verwende Alltagssprache';
+
+  @override
+  String get pollTutorialStep2Desc =>
+      'Keine Fachwörter. Kein Jargon. Keine „klug klingenden“ Formulierungen. Wenn ein Teenager und ein Großelternteil es beide verstehen, ist es gut.';
+
+  @override
+  String get pollTutorialStep3Title => '3. Stelle eine kurze, direkte Frage';
+
+  @override
+  String get pollTutorialStep3Desc => 'Einfacher Satz. Einfache Struktur.';
+
+  @override
+  String get pollTutorialStep4Title => '4. Gib faire Auswahlmöglichkeiten';
+
+  @override
+  String get pollTutorialStep4Desc =>
+      'Keine Fangfragen. Keine emotionale Wortwahl. Kein Drängen der Leute zu einer Option. Füge „Nicht sicher“ hinzu, wenn relevant.';
+
+  @override
+  String get pollTutorialStep5Title => '5. Halte die Optionen gering';
+
+  @override
+  String get pollTutorialStep5Desc =>
+      '3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.';
+
+  @override
+  String get pollTutorialStep6Title => '6. Mache es schnell zu beantworten';
+
+  @override
+  String get pollTutorialStep6Desc =>
+      'Die Leute sollten es in unter 10 Sekunden verstehen und abstimmen können.';
+
+  @override
+  String get pollTutorialStep7Title => '7. Respektiere Neutralität';
+
+  @override
+  String get pollTutorialStep7Desc =>
+      'Die Umfrage muss sich sicher, nicht wertend und unvoreingenommen anfühlen.';
+
+  @override
+  String get petitionTutorialStep1 =>
+      'Das Anliegen muss von allgemeinem Interesse sein.';
+
+  @override
+  String get petitionTutorialStep2 =>
+      'Es darf keine persönlichen Bezüge enthalten.';
+
+  @override
+  String get petitionTutorialStep3 =>
+      'Anliegen und Begründung müssen knapp und allgemein verständlich formuliert sein.';
+
+  @override
+  String get petitionTutorialStep4 =>
+      'Es werden nur Themen veröffentlicht, bei denen eine sachliche Diskussion zu erwarten ist.';
+
+  @override
+  String get petitionTutorialStep5 =>
+      'Bei Erreichen von 30.000 Mitschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörungssitzung darzustellen';
 }

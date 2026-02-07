@@ -397,6 +397,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
       "petition title in use already",
     ),
+    "petitionTutorialStep1": MessageLookupByLibrary.simpleMessage(
+      "The concern must be of general interest.",
+    ),
+    "petitionTutorialStep2": MessageLookupByLibrary.simpleMessage(
+      "It must not contain any personal references.",
+    ),
+    "petitionTutorialStep3": MessageLookupByLibrary.simpleMessage(
+      "The concern and justification must be formulated concisely and in a generally understandable manner.",
+    ),
+    "petitionTutorialStep4": MessageLookupByLibrary.simpleMessage(
+      "Only topics where a factual discussion is expected will be published.",
+    ),
+    "petitionTutorialStep5": MessageLookupByLibrary.simpleMessage(
+      "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.",
+    ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitions"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Place of Birth"),
     "pleaseCheckYourEmail": MessageLookupByLibrary.simpleMessage(
@@ -441,6 +456,48 @@ class MessageLookup extends MessageLookupByLibrary {
       "poll guideline description",
     ),
     "pollGuidelines": MessageLookupByLibrary.simpleMessage("poll guidelines"),
+    "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
+      "Know exactly what you want to learn — one idea only.",
+    ),
+    "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
+      "1. Be crystal clear about the goal",
+    ),
+    "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
+      "No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.",
+    ),
+    "pollTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
+      "2. Use everyday language",
+    ),
+    "pollTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
+      "Simple sentence. Simple structure.",
+    ),
+    "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
+      "3. Ask one short, direct question",
+    ),
+    "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
+      "No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.",
+    ),
+    "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
+      "4. Give fair choices",
+    ),
+    "pollTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
+      "3–5 choices is perfect for public polls.",
+    ),
+    "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
+      "5. Keep options few",
+    ),
+    "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
+      "People should understand and vote in under 10 seconds.",
+    ),
+    "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
+      "6. Make it fast to answer",
+    ),
+    "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
+      "The poll must feel safe, non-judgmental, and unbiased.",
+    ),
+    "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
+      "7. Respect neutrality",
+    ),
     "polls": MessageLookupByLibrary.simpleMessage("Polls"),
     "popularPetitions": MessageLookupByLibrary.simpleMessage(
       "Popular Petitions",

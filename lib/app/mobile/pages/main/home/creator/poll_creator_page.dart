@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
+import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -166,43 +167,32 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
   }
 
   void _showInfoDialog() {
+    final steps = PollTutorialHelper.getSteps(context);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(S.of(context).pollGuidelines),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(S.of(context).pollGuidelineDescription),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: steps.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) {
+                final step = steps[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: 'Source: ',
-                        style: DefaultTextStyle.of(context).style,
-                      ),
-                      TextSpan(
-                        text: 'https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () async {
-                            final url = Uri.parse('https://www.bundestag.de/ausschuesse/a02_petitionsausschuss');
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            }
-                          },
-                      ),
+                      Text(step.title, style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      Text(step.description, style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
           ),
           actions: [

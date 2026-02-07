@@ -132,6 +132,9 @@ exports.syncProdToDev = (0, scheduler_1.onSchedule)({
     }
     // Clean up the temporary prod app instance
     await prodApp.delete();
+    // --- 3. Relink Users ---
+    console.log("Relinking users...");
+    await relinkUsers(devDb);
     console.log("Sync Complete!");
 });
 /**
@@ -150,6 +153,20 @@ class BatchManager {
             await this.commit();
         }
     }
+    async delete(ref) {
+        this.batch.delete(ref);
+        this.count++;
+        if (this.count >= 400) {
+            await this.commit();
+        }
+    }
+    async update(ref, data) {
+        this.batch.update(ref, data);
+        this.count++;
+        if (this.count >= 400) {
+            await this.commit();
+        }
+    }
     async commit() {
         if (this.count > 0) {
             await this.batch.commit();
@@ -157,5 +174,73 @@ class BatchManager {
             this.count = 0;
         }
     }
+}
+/**
+ * Relinks synced user data to existing Dev Authentication users.
+ *
+ * Iterates through the 'users' collection (which contains Prod UIDs).
+ * Checks if a user with the same email exists in Dev Auth.
+ * If NOT found:
+ *   Creates the user in Dev Auth with the Prod UID.
+ * If FOUND but UID mismatch:
+ *   Deletes the old Dev Auth user.
+ *   Creates a new Dev Auth user with the Prod UID.
+ */
+async function relinkUsers(db) {
+    const usersSnapshot = await db.collection('users').get();
+    let relinkedCount = 0;
+    console.log(`[Relink] Found ${usersSnapshot.size} users in Firestore to check.`);
+    for (const userDoc of usersSnapshot.docs) {
+        const userData = userDoc.data();
+        const email = userData.email;
+        const prodUid = userDoc.id;
+        if (!email) {
+            console.log(`[Relink] Skipping user ${prodUid} (no email)`);
+            continue;
+        }
+        try {
+            let devUser;
+            try {
+                devUser = await admin.auth().getUserByEmail(email);
+            }
+            catch (e) {
+                if (e.code !== 'auth/user-not-found')
+                    throw e;
+            }
+            if (!devUser) {
+                // Case 1: User does not exist in Dev Auth. Create it with Prod UID.
+                console.log(`[Relink] Creating new Dev Auth user for ${email} with UID ${prodUid}`);
+                await admin.auth().createUser({
+                    uid: prodUid,
+                    email: email,
+                    emailVerified: true, // Auto-verify since it's from Prod
+                    password: process.env.TEST_PASSWORD, // Default password for dev testing
+                    displayName: userData.displayName,
+                });
+                relinkedCount++;
+            }
+            else if (devUser.uid !== prodUid) {
+                // Case 2: User exists but UID mismatch. Delete and recreate.
+                console.log(`[Relink] UID mismatch for ${email} (Dev: ${devUser.uid}, Prod: ${prodUid}). Recreating Auth user.`);
+                await admin.auth().deleteUser(devUser.uid);
+                await admin.auth().createUser({
+                    uid: prodUid,
+                    email: email,
+                    emailVerified: true,
+                    password: process.env.TEST_PASSWORD,
+                    displayName: userData.displayName,
+                });
+                relinkedCount++;
+            }
+            else {
+                // Case 3: User exists and UID matches. All good.
+                console.log(`[Relink] User ${email} already correctly linked.`);
+            }
+        }
+        catch (error) {
+            console.error(`[Relink] Error processing user ${email}:`, error);
+        }
+    }
+    console.log(`Relinked/Created ${relinkedCount} users in Dev Auth.`);
 }
 //# sourceMappingURL=data_sync.js.map

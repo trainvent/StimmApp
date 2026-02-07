@@ -2083,6 +2083,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get tagOther;
+
+  /// No description provided for @pollTutorialStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Be crystal clear about the goal'**
+  String get pollTutorialStep1Title;
+
+  /// No description provided for @pollTutorialStep1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Know exactly what you want to learn — one idea only.'**
+  String get pollTutorialStep1Desc;
+
+  /// No description provided for @pollTutorialStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Use everyday language'**
+  String get pollTutorialStep2Title;
+
+  /// No description provided for @pollTutorialStep2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.'**
+  String get pollTutorialStep2Desc;
+
+  /// No description provided for @pollTutorialStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Ask one short, direct question'**
+  String get pollTutorialStep3Title;
+
+  /// No description provided for @pollTutorialStep3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple sentence. Simple structure.'**
+  String get pollTutorialStep3Desc;
+
+  /// No description provided for @pollTutorialStep4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Give fair choices'**
+  String get pollTutorialStep4Title;
+
+  /// No description provided for @pollTutorialStep4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.'**
+  String get pollTutorialStep4Desc;
+
+  /// No description provided for @pollTutorialStep5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Keep options few'**
+  String get pollTutorialStep5Title;
+
+  /// No description provided for @pollTutorialStep5Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'3–5 choices is perfect for public polls.'**
+  String get pollTutorialStep5Desc;
+
+  /// No description provided for @pollTutorialStep6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. Make it fast to answer'**
+  String get pollTutorialStep6Title;
+
+  /// No description provided for @pollTutorialStep6Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'People should understand and vote in under 10 seconds.'**
+  String get pollTutorialStep6Desc;
+
+  /// No description provided for @pollTutorialStep7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Respect neutrality'**
+  String get pollTutorialStep7Title;
+
+  /// No description provided for @pollTutorialStep7Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The poll must feel safe, non-judgmental, and unbiased.'**
+  String get pollTutorialStep7Desc;
+
+  /// No description provided for @petitionTutorialStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'The concern must be of general interest.'**
+  String get petitionTutorialStep1;
+
+  /// No description provided for @petitionTutorialStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'It must not contain any personal references.'**
+  String get petitionTutorialStep2;
+
+  /// No description provided for @petitionTutorialStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'The concern and justification must be formulated concisely and in a generally understandable manner.'**
+  String get petitionTutorialStep3;
+
+  /// No description provided for @petitionTutorialStep4.
+  ///
+  /// In en, this message translates to:
+  /// **'Only topics where a factual discussion is expected will be published.'**
+  String get petitionTutorialStep4;
+
+  /// No description provided for @petitionTutorialStep5.
+  ///
+  /// In en, this message translates to:
+  /// **'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.'**
+  String get petitionTutorialStep5;
 }
 
 class _AppLocalizationsDelegate
