@@ -3,13 +3,15 @@ workflows:
     name: iOS Release
     max_build_duration: 60
     instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: <YOUR_API_KEY_NAME> # Replace with the name you gave your API key in Codemagic UI
     environment:
       groups:
-        - app_store_credentials # Create this group in Codemagic UI
+        - app_store_credentials 
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        FLUTTER_FLAVOR: "prod" # Assuming you use flavors
+        FLUTTER_FLAVOR: "prod"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -43,8 +45,6 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration 
-        # Configuration for automatic upload to TestFlight/App Store
-        # You need to connect your Apple Developer account in Codemagic UI > Teams > Integrations
         submit_to_testflight: true
-        beta_groups: # Specify the names of beta tester groups
+        beta_groups:
           - "Internal Testers"
