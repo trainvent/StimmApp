@@ -7,14 +7,14 @@ import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 
-class CreatorPage extends StatefulWidget {
-  const CreatorPage({super.key});
+class CreatorsPage extends StatefulWidget {
+  const CreatorsPage({super.key});
 
   @override
-  State<CreatorPage> createState() => _CreatorPageState();
+  State<CreatorsPage> createState() => _CreatorsPageState();
 }
 
-class _CreatorPageState extends State<CreatorPage> {
+class _CreatorsPageState extends State<CreatorsPage> {
   bool _loading = true;
   bool _canCreatePetition = false;
   bool _canCreatePoll = false;
