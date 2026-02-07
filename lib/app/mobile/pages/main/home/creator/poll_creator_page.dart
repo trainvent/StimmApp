@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
-import 'package:stimmapp/generated/l10n.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -18,24 +21,15 @@ class PollCreatorPage extends StatefulWidget {
 }
 
 class _PollCreatorPageState extends State<PollCreatorPage> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _tagsController = TextEditingController();
   final List<TextEditingController> _optionControllers = [
     TextEditingController(),
     TextEditingController(),
   ];
-  final _repository = PollRepository.create();
-  bool _isLoading = false;
-  bool _isStateDependent = false;
   DateTime _expiresAt = DateTime.now().add(const Duration(days: 7));
   final _uuid = const Uuid();
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _tagsController.dispose();
     for (final controller in _optionControllers) {
       controller.dispose();
     }
@@ -43,6 +37,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
   }
 
   void _addOption() {
+    if (_optionControllers.length >= AppLimits.maxPollOptions) {
+      showErrorSnackBar('Maximum ${AppLimits.maxPollOptions} options allowed');
+      return;
+    }
     setState(() {
       _optionControllers.add(TextEditingController());
     });
@@ -71,29 +69,27 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     }
   }
 
-  Future<void> _createPoll(FormState form) async {
-    if (!form.validate()) {
-      showErrorSnackBar(context.l10n.error);
-      return;
-    }
-
+  Future<void> _createPoll({
+    required String title,
+    required String description,
+    required List<String> tags,
+    required bool isStateDependent,
+  }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    // Validate options
+    for (var controller in _optionControllers) {
+      if (controller.text.trim().isEmpty) {
+        showErrorSnackBar(context.l10n.optionRequired);
+        throw Exception(context.l10n.optionRequired); // Stop submission
+      }
+    }
 
     try {
-      final tags = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .toList();
-
       final options = _optionControllers
           .map(
             (controller) =>
@@ -102,7 +98,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
           .toList();
 
       String? state;
-      if (_isStateDependent) {
+      if (isStateDependent) {
         final userProfile = await UserRepository.create().getById(
           currentUser.uid,
         );
@@ -110,9 +106,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       }
 
       final poll = Poll(
-        id: '', // Will be set by Firestore
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
+        id: '',
+        title: title,
+        description: description,
         tags: tags,
         options: options,
         votes: {for (var option in options) option.id: 0},
@@ -122,22 +118,20 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         state: state,
       );
 
-      List<Poll> matchedTitles = await _repository
+      List<Poll> matchedTitles = await PollRepository.create()
           .list(query: poll.title, status: "active")
           .first;
       String matchedTitle = matchedTitles.isNotEmpty
           ? matchedTitles.first.title
           : '';
-      if (!mounted) return;
       if (matchedTitle.isNotEmpty && matchedTitle == poll.title) {
-        showErrorSnackBar(S.of(context).petitionTitleInUseAlready);
+        if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
         return;
       }
 
-      // Enforce daily quota atomically
       await PublishingQuotaService.instance.incrementPoll();
 
-      final pollId = await _repository.createPoll(poll);
+      final pollId = await PollRepository.create().createPoll(poll);
 
       if (mounted) {
         showSuccessSnackBar(context.l10n.createdPoll + pollId);
@@ -155,184 +149,65 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       if (mounted) {
         showErrorSnackBar(context.l10n.failedToCreatePoll + e.toString());
       }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
-      }
     }
-  }
-
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(S.of(context).pollGuidelines),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(S.of(context).pollGuidelineDescription),
-                const SizedBox(height: 10),
-                Text(
-                  'Source: https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(context.l10n.close),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.createPoll),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: _showInfoDialog,
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Form(
-          child: ListView(
-            children: [
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.title,
-                  border: OutlineInputBorder(),
-                ),
-                validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.titleRequired
-                    : null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.description,
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 4,
-                validator: (v) => (v?.trim().isEmpty ?? true)
-                    ? context.l10n.descriptionRequired
-                    : null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _tagsController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.tags,
-                  hintText: context.l10n.hintTextTags,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              CheckboxListTile(
-                title: Text(context.l10n.stateDependent),
-                value: _isStateDependent,
-                onChanged: (newValue) {
-                  setState(() {
-                    _isStateDependent = newValue!;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              ListTile(
-                title: Text(context.l10n.expiresOn),
-                subtitle: Text(DateFormat.yMMMd().format(_expiresAt)),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectExpiryDate(context),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                context.l10n.options,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              ..._optionControllers.asMap().entries.map((entry) {
-                final index = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: controller,
-                          decoration: InputDecoration(
-                            labelText:
-                                context.l10n.option + (index + 1).toString(),
-                            border: const OutlineInputBorder(),
-                          ),
-                          validator: (v) => (v?.trim().isEmpty ?? true)
-                              ? context.l10n.optionRequired
-                              : null,
-                        ),
-                      ),
-                      if (_optionControllers.length > 2)
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: () => _removeOption(index),
-                        ),
-                    ],
-                  ),
-                );
-              }),
-              TextButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text(context.l10n.addOption),
-                onPressed: _addOption,
-              ),
-              const SizedBox(height: 30),
-              Builder(
-                builder: (context) {
-                  return ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                            final form = Form.of(context);
-                            _createPoll(form);
-                          },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          )
-                        : Text(
-                            context.l10n.createPoll,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+    return BaseCreatorPage(
+      title: context.l10n.createPoll,
+      tutorialSteps: PollTutorialHelper.getSteps(context),
+      sourceUrl: 'https://www.bundestag.de/ausschuesse/a02_petitionsausschuss',
+      onSubmit: _createPoll,
+      additionalBottomFields: [
+        ListTile(
+          title: Text(context.l10n.expiresOn),
+          subtitle: Text(DateFormat.yMMMd().format(_expiresAt)),
+          trailing: const Icon(Icons.calendar_today),
+          onTap: () => _selectExpiryDate(context),
         ),
-      ),
+        const SizedBox(height: 20),
+        Text(
+          context.l10n.options,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        ..._optionControllers.asMap().entries.map((entry) {
+          final index = entry.key;
+          final controller = entry.value;
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: controller,
+                    maxLength: AppLimits.maxPollOptionLength,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.option + (index + 1).toString(),
+                      border: const OutlineInputBorder(),
+                      counterText: "",
+                    ),
+                    validator: (v) => (v?.trim().isEmpty ?? true)
+                        ? context.l10n.optionRequired
+                        : null,
+                  ),
+                ),
+                if (_optionControllers.length > 2)
+                  IconButton(
+                    icon: const Icon(Icons.remove_circle_outline),
+                    onPressed: () => _removeOption(index),
+                  ),
+              ],
+            ),
+          );
+        }),
+        if (_optionControllers.length < AppLimits.maxPollOptions)
+          TextButton.icon(
+            icon: const Icon(Icons.add),
+            label: Text(context.l10n.addOption),
+            onPressed: _addOption,
+          ),
+      ],
     );
   }
 }

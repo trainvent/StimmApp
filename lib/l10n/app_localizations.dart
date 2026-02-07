@@ -590,6 +590,12 @@ abstract class AppLocalizations {
   /// **'Email verification'**
   String get emailVerification;
 
+  /// No description provided for @emailVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified successfully!'**
+  String get emailVerifiedSuccessfully;
+
   /// No description provided for @energy.
   ///
   /// In en, this message translates to:
@@ -1886,12 +1892,6 @@ abstract class AppLocalizations {
   /// **'Please enter a valid 6-digit code'**
   String get pleaseEnterAValid6digitCode;
 
-  /// No description provided for @emailVerifiedSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Email verified successfully!'**
-  String get emailVerifiedSuccessfully;
-
   /// No description provided for @verificationFailed.
   ///
   /// In en, this message translates to:
@@ -1964,11 +1964,251 @@ abstract class AppLocalizations {
   /// **'poll guideline description'**
   String get pollGuidelineDescription;
 
-  /// No description provided for @manytooTagsMax5.
+  /// No description provided for @pleaseEnterYourDetails.
   ///
   /// In en, this message translates to:
-  /// **'manyToo tags (max 5)'**
-  String get manytooTagsMax5;
+  /// **'please enter your details.'**
+  String get pleaseEnterYourDetails;
+
+  /// No description provided for @thisAppWasDevelopedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'this app was developed by'**
+  String get thisAppWasDevelopedBy;
+
+  /// No description provided for @licenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get licenses;
+
+  /// No description provided for @publishedUnderTheGnuGeneralPublicLicenseV30.
+  ///
+  /// In en, this message translates to:
+  /// **'published under the GNU General Public License v3.0'**
+  String get publishedUnderTheGnuGeneralPublicLicenseV30;
+
+  /// No description provided for @enterVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Verification Code'**
+  String get enterVerificationCode;
+
+  /// No description provided for @tagEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get tagEnvironment;
+
+  /// No description provided for @tagPolitics.
+  ///
+  /// In en, this message translates to:
+  /// **'Politics'**
+  String get tagPolitics;
+
+  /// No description provided for @tagEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get tagEducation;
+
+  /// No description provided for @tagHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get tagHealth;
+
+  /// No description provided for @tagInfrastructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Infrastructure'**
+  String get tagInfrastructure;
+
+  /// No description provided for @tagEconomy.
+  ///
+  /// In en, this message translates to:
+  /// **'Economy'**
+  String get tagEconomy;
+
+  /// No description provided for @tagSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get tagSocial;
+
+  /// No description provided for @tagTechnology.
+  ///
+  /// In en, this message translates to:
+  /// **'Technology'**
+  String get tagTechnology;
+
+  /// No description provided for @tagCulture.
+  ///
+  /// In en, this message translates to:
+  /// **'Culture'**
+  String get tagCulture;
+
+  /// No description provided for @tagSports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get tagSports;
+
+  /// No description provided for @tagAnimalWelfare.
+  ///
+  /// In en, this message translates to:
+  /// **'Animal Welfare'**
+  String get tagAnimalWelfare;
+
+  /// No description provided for @tagSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get tagSafety;
+
+  /// No description provided for @tagTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic'**
+  String get tagTraffic;
+
+  /// No description provided for @tagHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get tagHousing;
+
+  /// No description provided for @tagOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get tagOther;
+
+  /// No description provided for @pollTutorialStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Be crystal clear about the goal'**
+  String get pollTutorialStep1Title;
+
+  /// No description provided for @pollTutorialStep1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Know exactly what you want to learn — one idea only.'**
+  String get pollTutorialStep1Desc;
+
+  /// No description provided for @pollTutorialStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Use everyday language'**
+  String get pollTutorialStep2Title;
+
+  /// No description provided for @pollTutorialStep2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.'**
+  String get pollTutorialStep2Desc;
+
+  /// No description provided for @pollTutorialStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Ask one short, direct question'**
+  String get pollTutorialStep3Title;
+
+  /// No description provided for @pollTutorialStep3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple sentence. Simple structure.'**
+  String get pollTutorialStep3Desc;
+
+  /// No description provided for @pollTutorialStep4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Give fair choices'**
+  String get pollTutorialStep4Title;
+
+  /// No description provided for @pollTutorialStep4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.'**
+  String get pollTutorialStep4Desc;
+
+  /// No description provided for @pollTutorialStep5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Keep options few'**
+  String get pollTutorialStep5Title;
+
+  /// No description provided for @pollTutorialStep5Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'3–5 choices is perfect for public polls.'**
+  String get pollTutorialStep5Desc;
+
+  /// No description provided for @pollTutorialStep6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. Make it fast to answer'**
+  String get pollTutorialStep6Title;
+
+  /// No description provided for @pollTutorialStep6Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'People should understand and vote in under 10 seconds.'**
+  String get pollTutorialStep6Desc;
+
+  /// No description provided for @pollTutorialStep7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Respect neutrality'**
+  String get pollTutorialStep7Title;
+
+  /// No description provided for @pollTutorialStep7Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The poll must feel safe, non-judgmental, and unbiased.'**
+  String get pollTutorialStep7Desc;
+
+  /// No description provided for @petitionTutorialStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'The concern must be of general interest.'**
+  String get petitionTutorialStep1;
+
+  /// No description provided for @petitionTutorialStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'It must not contain any personal references.'**
+  String get petitionTutorialStep2;
+
+  /// No description provided for @petitionTutorialStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'The concern and justification must be formulated concisely and in a generally understandable manner.'**
+  String get petitionTutorialStep3;
+
+  /// No description provided for @petitionTutorialStep4.
+  ///
+  /// In en, this message translates to:
+  /// **'Only topics where a factual discussion is expected will be published.'**
+  String get petitionTutorialStep4;
+
+  /// No description provided for @petitionTutorialStep5.
+  ///
+  /// In en, this message translates to:
+  /// **'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.'**
+  String get petitionTutorialStep5;
+
+  /// No description provided for @limitThisPetitionToYourState.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit this petition to your state?'**
+  String get limitThisPetitionToYourState;
+
+  /// No description provided for @source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get source;
 }
 
 class _AppLocalizationsDelegate

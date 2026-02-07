@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/widgets/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/debounced_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/debounced_text_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -71,7 +71,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Enter Verification Code',
+              S.of(context).enterVerificationCode,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
@@ -97,11 +97,15 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
             const SizedBox(height: 32),
             Column(
                 children: [
-                  ButtonWidget(
+                  DebouncedButton(
                     key: keys.emailConfirmationPage.verifyButton,
-                    callback: _verifyCode,
-                    label: S.of(context).verify,
-                    isFilled: true,
+                    onPressed: _verifyCode,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: Text(S.of(context).verify),
                   ),
                   const SizedBox(height: 16),
                   DebouncedTextButtonWidget(

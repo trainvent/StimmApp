@@ -70,7 +70,7 @@ void main() {
 
     // Read variables passed via --dart-define
     const email = String.fromEnvironment('EMAIL');
-    const password = String.fromEnvironment('PASSWORD');
+    const password = IConst.testSecurePassword;
     const testCode = String.fromEnvironment('TEST_CODE');
 
     $.log("Flavor: $flavor");

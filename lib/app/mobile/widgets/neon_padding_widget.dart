@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/constants/app_dimensions.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import '../../../../core/functions/get_border_radius.dart';
 
@@ -40,20 +40,20 @@ class NeonPaddingWidget extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(
           getOutterBorderRadius(
-            innerBorderRadius: AppDimensions.kBorderRadius10,
-            margin: AppDimensions.kMargin3,
+            innerBorderRadius: DConst.kBorderRadius10,
+            margin: DConst.kMargin3,
           ),
         ),
       ),
       child: Container(
         padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.all(AppDimensions.kMargin3),
+        margin: const EdgeInsets.all(DConst.kMargin3),
         decoration: BoxDecoration(
           boxShadow: const [
             BoxShadow(color: IConst.appColor, blurRadius: 20, spreadRadius: 0),
           ],
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(AppDimensions.kBorderRadius10),
+          borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
         ),
         child: Column(
           crossAxisAlignment: isCentered

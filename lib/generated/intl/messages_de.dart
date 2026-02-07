@@ -303,7 +303,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
     "language": MessageLookupByLibrary.simpleMessage("Sprache"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Letzter Schritt!"),
+    "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
+    "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
+      "Diese Petition auf Ihr Bundesland beschränken?",
+    ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn-Link in die Zwischenablage kopiert",
     ),
@@ -399,11 +403,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition von"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petitionsdetails"),
+    "petitionGuidelineDescription": MessageLookupByLibrary.simpleMessage(
+      "Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.",
+    ),
+    "petitionGuidelines": MessageLookupByLibrary.simpleMessage(
+      "Petitionsrichtlinien",
+    ),
     "petitionSuccessfullySigned": MessageLookupByLibrary.simpleMessage(
       "Petition erfolgreich unterzeichnet!",
     ),
     "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
       "Petitionstitel bereits vergeben",
+    ),
+    "petitionTutorialStep1": MessageLookupByLibrary.simpleMessage(
+      "Das Anliegen muss von allgemeinem Interesse sein.",
+    ),
+    "petitionTutorialStep2": MessageLookupByLibrary.simpleMessage(
+      "Es darf keine persönlichen Bezüge enthalten.",
+    ),
+    "petitionTutorialStep3": MessageLookupByLibrary.simpleMessage(
+      "Anliegen und Begründung müssen knapp und allgemein verständlich formuliert sein.",
+    ),
+    "petitionTutorialStep4": MessageLookupByLibrary.simpleMessage(
+      "Es werden nur Themen veröffentlicht, bei denen eine sachliche Diskussion zu erwarten ist.",
+    ),
+    "petitionTutorialStep5": MessageLookupByLibrary.simpleMessage(
+      "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
     ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitionen"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsort"),
@@ -442,6 +467,54 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "poll": MessageLookupByLibrary.simpleMessage("Umfrage"),
     "pollDetails": MessageLookupByLibrary.simpleMessage("Umfragedetails"),
+    "pollGuidelineDescription": MessageLookupByLibrary.simpleMessage(
+      "Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.",
+    ),
+    "pollGuidelines": MessageLookupByLibrary.simpleMessage(
+      "Umfragerichtlinien",
+    ),
+    "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
+      "Wisse genau, was du lernen willst – nur eine Idee.",
+    ),
+    "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
+      "1. Sei kristallklar über das Ziel",
+    ),
+    "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
+      "Keine Fachwörter. Kein Jargon. Keine „klug klingenden“ Formulierungen. Wenn ein Teenager und ein Großelternteil es beide verstehen, ist es gut.",
+    ),
+    "pollTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
+      "2. Verwende Alltagssprache",
+    ),
+    "pollTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
+      "Einfacher Satz. Einfache Struktur.",
+    ),
+    "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
+      "3. Stelle eine kurze, direkte Frage",
+    ),
+    "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
+      "Keine Fangfragen. Keine emotionale Wortwahl. Kein Drängen der Leute zu einer Option. Füge „Nicht sicher“ hinzu, wenn relevant.",
+    ),
+    "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
+      "4. Gib faire Auswahlmöglichkeiten",
+    ),
+    "pollTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
+      "3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.",
+    ),
+    "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
+      "5. Halte die Optionen gering",
+    ),
+    "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
+      "Die Leute sollten es in unter 10 Sekunden verstehen und abstimmen können.",
+    ),
+    "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
+      "6. Mache es schnell zu beantworten",
+    ),
+    "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
+      "Die Umfrage muss sich sicher, nicht wertend und unvoreingenommen anfühlen.",
+    ),
+    "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
+      "7. Respektiere Neutralität",
+    ),
     "polls": MessageLookupByLibrary.simpleMessage("Umfragen"),
     "popularPetitions": MessageLookupByLibrary.simpleMessage(
       "Beliebte Petitionen",
@@ -533,6 +606,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signedPetitions": MessageLookupByLibrary.simpleMessage(
       "Unterzeichnete Petitionen",
     ),
+    "source": MessageLookupByLibrary.simpleMessage("Quelle"),
     "state": MessageLookupByLibrary.simpleMessage("Bundesland"),
     "stateDependent": MessageLookupByLibrary.simpleMessage(
       "Bundeslandabhängig",
@@ -551,6 +625,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "supporters": MessageLookupByLibrary.simpleMessage("Unterstützer"),
     "surname": MessageLookupByLibrary.simpleMessage("Nachname"),
     "systemDefault": MessageLookupByLibrary.simpleMessage("Systemstandard"),
+    "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Tierschutz"),
+    "tagCulture": MessageLookupByLibrary.simpleMessage("Kultur"),
+    "tagEconomy": MessageLookupByLibrary.simpleMessage("Wirtschaft"),
+    "tagEducation": MessageLookupByLibrary.simpleMessage("Bildung"),
+    "tagEnvironment": MessageLookupByLibrary.simpleMessage("Umwelt"),
+    "tagHealth": MessageLookupByLibrary.simpleMessage("Gesundheit"),
+    "tagHousing": MessageLookupByLibrary.simpleMessage("Wohnen"),
+    "tagInfrastructure": MessageLookupByLibrary.simpleMessage("Infrastruktur"),
+    "tagOther": MessageLookupByLibrary.simpleMessage("Sonstiges"),
+    "tagPolitics": MessageLookupByLibrary.simpleMessage("Politik"),
+    "tagSafety": MessageLookupByLibrary.simpleMessage("Sicherheit"),
+    "tagSocial": MessageLookupByLibrary.simpleMessage("Soziales"),
+    "tagSports": MessageLookupByLibrary.simpleMessage("Sport"),
+    "tagTechnology": MessageLookupByLibrary.simpleMessage("Technologie"),
+    "tagTraffic": MessageLookupByLibrary.simpleMessage("Verkehr"),
     "tags": MessageLookupByLibrary.simpleMessage("Tags"),
     "tagsHint": MessageLookupByLibrary.simpleMessage("Komma-getrennte Tags"),
     "tagsRequired": MessageLookupByLibrary.simpleMessage(

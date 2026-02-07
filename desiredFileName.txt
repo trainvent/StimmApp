@@ -4,10 +4,9 @@
     "hello",
     "faultyInput",
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
-    "petitionGuidelines",
-    "petitionGuidelineDescription",
-    "pollGuidelines",
-    "pollGuidelineDescription",
-    "manytooTagsMax5"
+    "pleaseEnterYourDetails",
+    "thisAppWasDevelopedBy",
+    "publishedUnderTheGnuGeneralPublicLicenseV30",
+    "enterVerificationCode"
   ]
 }

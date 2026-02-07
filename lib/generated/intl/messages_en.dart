@@ -205,6 +205,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "enterSomething": MessageLookupByLibrary.simpleMessage("Enter something"),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Enter title"),
+    "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
+      "Enter Verification Code",
+    ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
       "enter Your Address",
     ),
@@ -285,7 +288,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
     "language": MessageLookupByLibrary.simpleMessage("language"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
+    "licenses": MessageLookupByLibrary.simpleMessage("Licenses"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
+    "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
+      "Limit this petition to your state?",
+    ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn link copied to clipboard",
     ),
@@ -396,6 +403,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "petitionTitleInUseAlready": MessageLookupByLibrary.simpleMessage(
       "petition title in use already",
     ),
+    "petitionTutorialStep1": MessageLookupByLibrary.simpleMessage(
+      "The concern must be of general interest.",
+    ),
+    "petitionTutorialStep2": MessageLookupByLibrary.simpleMessage(
+      "It must not contain any personal references.",
+    ),
+    "petitionTutorialStep3": MessageLookupByLibrary.simpleMessage(
+      "The concern and justification must be formulated concisely and in a generally understandable manner.",
+    ),
+    "petitionTutorialStep4": MessageLookupByLibrary.simpleMessage(
+      "Only topics where a factual discussion is expected will be published.",
+    ),
+    "petitionTutorialStep5": MessageLookupByLibrary.simpleMessage(
+      "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.",
+    ),
     "petitions": MessageLookupByLibrary.simpleMessage("Petitions"),
     "placeOfBirth": MessageLookupByLibrary.simpleMessage("Place of Birth"),
     "pleaseCheckYourEmail": MessageLookupByLibrary.simpleMessage(
@@ -409,6 +431,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid 6-digit code",
+    ),
+    "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "please enter your details.",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "please enter your Email",
@@ -437,6 +462,48 @@ class MessageLookup extends MessageLookupByLibrary {
       "poll guideline description",
     ),
     "pollGuidelines": MessageLookupByLibrary.simpleMessage("poll guidelines"),
+    "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
+      "Know exactly what you want to learn — one idea only.",
+    ),
+    "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
+      "1. Be crystal clear about the goal",
+    ),
+    "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
+      "No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.",
+    ),
+    "pollTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
+      "2. Use everyday language",
+    ),
+    "pollTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
+      "Simple sentence. Simple structure.",
+    ),
+    "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
+      "3. Ask one short, direct question",
+    ),
+    "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
+      "No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.",
+    ),
+    "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
+      "4. Give fair choices",
+    ),
+    "pollTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
+      "3–5 choices is perfect for public polls.",
+    ),
+    "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
+      "5. Keep options few",
+    ),
+    "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
+      "People should understand and vote in under 10 seconds.",
+    ),
+    "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
+      "6. Make it fast to answer",
+    ),
+    "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
+      "The poll must feel safe, non-judgmental, and unbiased.",
+    ),
+    "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
+      "7. Respect neutrality",
+    ),
     "polls": MessageLookupByLibrary.simpleMessage("Polls"),
     "popularPetitions": MessageLookupByLibrary.simpleMessage(
       "Popular Petitions",
@@ -449,6 +516,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profile picture updated",
     ),
+    "publishedUnderTheGnuGeneralPublicLicenseV30":
+        MessageLookupByLibrary.simpleMessage(
+          "published under the GNU General Public License v3.0",
+        ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Purchase cancelled.",
     ),
@@ -513,6 +584,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signed": MessageLookupByLibrary.simpleMessage("Signed"),
     "signedOn": MessageLookupByLibrary.simpleMessage("Signed on "),
     "signedPetitions": MessageLookupByLibrary.simpleMessage("Signed Petitions"),
+    "source": MessageLookupByLibrary.simpleMessage("Source"),
     "state": MessageLookupByLibrary.simpleMessage("State"),
     "stateDependent": MessageLookupByLibrary.simpleMessage("State dependent"),
     "stateUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -529,6 +601,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "supporters": MessageLookupByLibrary.simpleMessage("Supporters"),
     "surname": MessageLookupByLibrary.simpleMessage("Surname"),
     "systemDefault": MessageLookupByLibrary.simpleMessage("System Default"),
+    "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Animal Welfare"),
+    "tagCulture": MessageLookupByLibrary.simpleMessage("Culture"),
+    "tagEconomy": MessageLookupByLibrary.simpleMessage("Economy"),
+    "tagEducation": MessageLookupByLibrary.simpleMessage("Education"),
+    "tagEnvironment": MessageLookupByLibrary.simpleMessage("Environment"),
+    "tagHealth": MessageLookupByLibrary.simpleMessage("Health"),
+    "tagHousing": MessageLookupByLibrary.simpleMessage("Housing"),
+    "tagInfrastructure": MessageLookupByLibrary.simpleMessage("Infrastructure"),
+    "tagOther": MessageLookupByLibrary.simpleMessage("Other"),
+    "tagPolitics": MessageLookupByLibrary.simpleMessage("Politics"),
+    "tagSafety": MessageLookupByLibrary.simpleMessage("Safety"),
+    "tagSocial": MessageLookupByLibrary.simpleMessage("Social"),
+    "tagSports": MessageLookupByLibrary.simpleMessage("Sports"),
+    "tagTechnology": MessageLookupByLibrary.simpleMessage("Technology"),
+    "tagTraffic": MessageLookupByLibrary.simpleMessage("Traffic"),
     "tags": MessageLookupByLibrary.simpleMessage("Tags"),
     "tagsHint": MessageLookupByLibrary.simpleMessage("Comma-separated tags"),
     "tagsRequired": MessageLookupByLibrary.simpleMessage(
@@ -547,6 +634,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "This action will permanently delete your account and all associated data.",
         ),
+    "thisAppWasDevelopedBy": MessageLookupByLibrary.simpleMessage(
+      "this app was developed by",
+    ),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
     "titleRequired": MessageLookupByLibrary.simpleMessage("Title is required"),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Title is too short"),

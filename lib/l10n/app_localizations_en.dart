@@ -268,6 +268,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailVerification => 'Email verification';
 
   @override
+  String get emailVerifiedSuccessfully => 'Email verified successfully!';
+
+  @override
   String get energy => 'Energy';
 
   @override
@@ -944,9 +947,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterAValid6digitCode => 'Please enter a valid 6-digit code';
 
   @override
-  String get emailVerifiedSuccessfully => 'Email verified successfully!';
-
-  @override
   String get verificationFailed => 'Verification failed';
 
   @override
@@ -985,5 +985,138 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pollGuidelineDescription => 'poll guideline description';
 
   @override
-  String get manytooTagsMax5 => 'manyToo tags (max 5)';
+  String get pleaseEnterYourDetails => 'please enter your details.';
+
+  @override
+  String get thisAppWasDevelopedBy => 'this app was developed by';
+
+  @override
+  String get licenses => 'Licenses';
+
+  @override
+  String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
+      'published under the GNU General Public License v3.0';
+
+  @override
+  String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get tagEnvironment => 'Environment';
+
+  @override
+  String get tagPolitics => 'Politics';
+
+  @override
+  String get tagEducation => 'Education';
+
+  @override
+  String get tagHealth => 'Health';
+
+  @override
+  String get tagInfrastructure => 'Infrastructure';
+
+  @override
+  String get tagEconomy => 'Economy';
+
+  @override
+  String get tagSocial => 'Social';
+
+  @override
+  String get tagTechnology => 'Technology';
+
+  @override
+  String get tagCulture => 'Culture';
+
+  @override
+  String get tagSports => 'Sports';
+
+  @override
+  String get tagAnimalWelfare => 'Animal Welfare';
+
+  @override
+  String get tagSafety => 'Safety';
+
+  @override
+  String get tagTraffic => 'Traffic';
+
+  @override
+  String get tagHousing => 'Housing';
+
+  @override
+  String get tagOther => 'Other';
+
+  @override
+  String get pollTutorialStep1Title => '1. Be crystal clear about the goal';
+
+  @override
+  String get pollTutorialStep1Desc =>
+      'Know exactly what you want to learn — one idea only.';
+
+  @override
+  String get pollTutorialStep2Title => '2. Use everyday language';
+
+  @override
+  String get pollTutorialStep2Desc =>
+      'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.';
+
+  @override
+  String get pollTutorialStep3Title => '3. Ask one short, direct question';
+
+  @override
+  String get pollTutorialStep3Desc => 'Simple sentence. Simple structure.';
+
+  @override
+  String get pollTutorialStep4Title => '4. Give fair choices';
+
+  @override
+  String get pollTutorialStep4Desc =>
+      'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.';
+
+  @override
+  String get pollTutorialStep5Title => '5. Keep options few';
+
+  @override
+  String get pollTutorialStep5Desc =>
+      '3–5 choices is perfect for public polls.';
+
+  @override
+  String get pollTutorialStep6Title => '6. Make it fast to answer';
+
+  @override
+  String get pollTutorialStep6Desc =>
+      'People should understand and vote in under 10 seconds.';
+
+  @override
+  String get pollTutorialStep7Title => '7. Respect neutrality';
+
+  @override
+  String get pollTutorialStep7Desc =>
+      'The poll must feel safe, non-judgmental, and unbiased.';
+
+  @override
+  String get petitionTutorialStep1 =>
+      'The concern must be of general interest.';
+
+  @override
+  String get petitionTutorialStep2 =>
+      'It must not contain any personal references.';
+
+  @override
+  String get petitionTutorialStep3 =>
+      'The concern and justification must be formulated concisely and in a generally understandable manner.';
+
+  @override
+  String get petitionTutorialStep4 =>
+      'Only topics where a factual discussion is expected will be published.';
+
+  @override
+  String get petitionTutorialStep5 =>
+      'Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.';
+
+  @override
+  String get limitThisPetitionToYourState =>
+      'Limit this petition to your state?';
+
+  @override
+  String get source => 'Source';
 }

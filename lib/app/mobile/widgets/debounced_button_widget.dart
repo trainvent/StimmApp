@@ -1,104 +1,101 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-/// A button that has a debounce and cooldown effect to prevent spamming.
+/// A button wrapper that handles debouncing and loading states with a cool animation.
 ///
-/// When tapped, it becomes disabled for the given [debounceDuration]
-/// and displays a countdown.
-class DebouncedButtonWidget extends StatefulWidget {
-  const DebouncedButtonWidget({
-    super.key,
-    this.isFilled = false,
-    required this.label,
-    required this.callback,
-    this.debounceDuration = const Duration(seconds: 10),
-  });
+/// When tapped, it executes the [onPressed] callback. If [onPressed] returns a Future,
+/// the button enters a loading state (grayed out/animated) until the Future completes.
+/// It also supports a simple cooldown duration if no Future is returned.
+class DebouncedButton extends StatefulWidget {
+  // We capture the key here but DO NOT pass it to super.key.
+  // Instead, we pass it down to the inner ElevatedButton.
+  // This allows tests to find the actual interactive button using the key provided
+  // to this widget, while keeping the API clean.
+  const DebouncedButton({
+    Key? key,
+    required this.child,
+    required this.onPressed,
+    this.cooldownDuration = const Duration(milliseconds: 500),
+    this.style,
+  }) : forwardedKey = key, super(key: null);
 
-  final bool isFilled;
-  final String label;
-  final VoidCallback callback;
-  final Duration debounceDuration;
+  final Key? forwardedKey;
+  final Widget child;
+  final FutureOr<void> Function()? onPressed;
+  final Duration cooldownDuration;
+  final ButtonStyle? style;
 
   @override
-  State<DebouncedButtonWidget> createState() => _DebouncedButtonWidgetState();
+  State<DebouncedButton> createState() => _DebouncedButtonState();
 }
 
-class _DebouncedButtonWidgetState extends State<DebouncedButtonWidget> {
-  bool _isOnCooldown = false;
-  int _countdown = 0;
-  Timer? _timer;
+class _DebouncedButtonState extends State<DebouncedButton> with SingleTickerProviderStateMixin {
+  bool _isBusy = false;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _countdown = widget.debounceDuration.inSeconds;
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
-  void _handleTap() {
-    if (_isOnCooldown) return;
+  Future<void> _handleTap() async {
+    if (_isBusy || widget.onPressed == null) return;
 
-    widget.callback();
+    setState(() => _isBusy = true);
+    await _controller.forward(); // Shrink
 
-    setState(() {
-      _isOnCooldown = true;
-      _countdown = widget.debounceDuration.inSeconds;
-    });
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      if (_countdown > 1) {
-        setState(() {
-          _countdown--;
-        });
+    try {
+      final result = widget.onPressed!();
+      if (result is Future) {
+        await result;
       } else {
-        timer.cancel();
-        setState(() {
-          _isOnCooldown = false;
-        });
+        // If not a future, just wait for the cooldown
+        await Future.delayed(widget.cooldownDuration);
       }
-    });
+    } finally {
+      if (mounted) {
+        await _controller.reverse(); // Grow back
+        setState(() => _isBusy = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isFilled = widget.isFilled;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    final disabledColor = Colors.grey;
-
-    // Define styles for filled and outlined buttons
-    final filledStyle = ElevatedButton.styleFrom(
-      backgroundColor: _isOnCooldown ? disabledColor.withOpacity(0.5) : primaryColor,
-      foregroundColor: Colors.black,
-      minimumSize: const Size(double.infinity, 50),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      // Tapped effect color
-      splashFactory: InkRipple.splashFactory,
-    );
-
-    final outlinedStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.transparent,
-      foregroundColor: _isOnCooldown ? disabledColor : primaryColor,
-      side: BorderSide(color: _isOnCooldown ? disabledColor : primaryColor),
-      minimumSize: const Size(double.infinity, 50),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      // No splash for outlined to make it cleaner
-      splashFactory: NoSplash.splashFactory,
-    );
-
-    return ElevatedButton(
-      onPressed: _isOnCooldown ? null : _handleTap,
-      style: isFilled ? filledStyle : outlinedStyle,
-      child: Text(
-        _isOnCooldown ? 'Bitte warten (${_countdown}s)' : widget.label,
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _isBusy ? 0.6 : 1.0,
+        child: ElevatedButton(
+          key: widget.forwardedKey, // Key is applied here
+          onPressed: _isBusy ? null : _handleTap,
+          style: widget.style,
+          child: _isBusy
+              ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                )
+              : widget.child,
+        ),
       ),
     );
   }

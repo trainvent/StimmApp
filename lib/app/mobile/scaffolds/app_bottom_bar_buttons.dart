@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/constants/app_dimensions.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
 
 class AppBottomBarButtons extends StatelessWidget {
   const AppBottomBarButtons({
@@ -19,8 +19,8 @@ class AppBottomBarButtons extends StatelessWidget {
       body: body,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(
-          vertical: AppDimensions.kPadding50,
-          horizontal: AppDimensions.kPadding15,
+          vertical: DConst.pad50,
+          horizontal: DConst.pad25,
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: buttons),
       ),

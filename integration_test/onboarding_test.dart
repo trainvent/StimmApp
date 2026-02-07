@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:patrol/patrol.dart';
@@ -18,7 +19,7 @@ import 'package:stimmapp/l10n/app_localizations_de.dart';
 void main() {
   final l10n = AppLocalizationsDe();
   const email = String.fromEnvironment('TEST_EMAIL');
-  const password = String.fromEnvironment('TEST_PASSWORD');
+  const password = IConst.testSecurePassword;
   const testCode = String.fromEnvironment('TEST_CODE');
 
   patrolTest(
@@ -50,7 +51,7 @@ void main() {
       if (!kIsWeb && kDebugMode) {
         await authService.setSettings(appVerificationDisabledForTesting: true);
       }
-      await $.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(const ProviderScope(child: MyApp()));
 
       final validPassword = password.isNotEmpty
           ? password

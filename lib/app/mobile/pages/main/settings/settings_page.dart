@@ -7,6 +7,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -121,23 +122,47 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ListTile(
-                title: Text(context.l10n.viewLicenses),
+                title: Text(context.l10n.licenses),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text(
-                          '${context.l10n.about} ${context.l10n.stimmapp}',
-                        ),
+                        title: Text(S.of(context).licenses),
                         content: Text(
-                          context.l10n.devContactInformation,
+                          S.of(context).publishedUnderTheGnuGeneralPublicLicenseV30,
                           style: AppTextStyles.m,
                         ),
                         actions: [
                           FilledButton(
                             onPressed: () async {
-                              showLicensePage(context: context);
+                              // Add your app's license to the registry before showing the page
+                          /*    LicenseRegistry.addLicense(() async* {
+                                try {
+                                  final license = await rootBundle.loadString('LICENSE');
+                                  yield LicenseEntryWithLineBreaks(
+                                    ['stimmapp'],
+                                    license,
+                                  );
+                                } catch (e) {
+                                  debugPrint('Failed to load LICENSE file: $e');
+                                }
+                              });*/
+                              
+                              if (!context.mounted) return;
+                              showLicensePage(
+                                context: context,
+                                applicationName: IConst.appName,
+                                applicationVersion: '1.0.0', // Or fetch dynamically
+                                applicationIcon: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    "assets/images/cropped-LeLogo.png",
+                                    width: 48,
+                                    height: 48,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(context.l10n.viewLicenses),
                           ),

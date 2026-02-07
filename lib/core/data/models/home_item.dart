@@ -5,4 +5,5 @@ abstract class HomeItem {
   String? get state;
   DateTime get expiresAt;
   int get participantCount;
+  List<String> get tags;
 }

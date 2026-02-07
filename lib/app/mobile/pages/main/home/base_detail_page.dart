@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -43,68 +44,74 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (item.state != null && item.state!.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Chip(
-                            label: Text(
-                              context.l10n.relatedToState(item.state!),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        Text(
-                          item.title,
-                          style: Theme.of(context).textTheme.headlineSmall,
+                if (item.state != null && item.state!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Chip(label: Text(context.l10n.relatedToState(item.state!))),
+                ],
+                if (item.tags.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: item.tags.map((tagKey) {
+                      return Chip(
+                        label: Text(
+                          AppTagsHelper.getLocalizedTag(context, tagKey),
+                          style: const TextStyle(fontSize: 12),
                         ),
-                        Text(item.description),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${context.l10n.participants}: ${item.participantCount}',
-                            ),
-                            if (participantsStream != null)
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => ParticipantsListPage(
-                                            participantsStream:
-                                                participantsStream!,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                child: Text(context.l10n.viewParticipants),
-                              ),
-                          ],
-                        ),
-                        Text(
-                          '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
-                        ),
-                        if (isExpired) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            context.l10n.closed,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        contentBuilder(context, item),
-                      ],
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      );
+                    }).toList(),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                Text(
+                  item.title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(item.description),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${context.l10n.participants}: ${item.participantCount}',
                     ),
+                    if (participantsStream != null)
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => ParticipantsListPage(
+                                    participantsStream: participantsStream!,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Text(context.l10n.viewParticipants),
+                      ),
+                  ],
+                ),
+                Text(
+                  '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
+                ),
+                if (isExpired) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    context.l10n.closed,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelLarge
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                Expanded(
+                  child: AbsorbPointer(
+                    absorbing: isExpired,
+                    child: contentBuilder(context, item),
                   ),
                 ),
                 if (!isExpired && bottomAction != null) ...[

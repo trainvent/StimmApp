@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
+import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -30,6 +31,8 @@ class _BaseOverviewPageState<T extends HomeItem>
 
   late TabController _tabController;
   String _query = '';
+  List<String> _selectedTags = [];
+  bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
 
   @override
@@ -48,6 +51,77 @@ class _BaseOverviewPageState<T extends HomeItem>
     super.dispose();
   }
 
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        // Use a local state for the dialog to allow updating selection before confirming
+        List<String> tempSelectedTags = List.from(_selectedTags);
+        bool tempOnlyMyPublications = _onlyMyPublications;
+        
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(context.l10n.settings), // Using "Settings" or "Filter"
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SwitchListTile(
+                      title: Text(context.l10n.myPetitions), // Reusing "My Petitions" or similar key for "My Publications"
+                      value: tempOnlyMyPublications,
+                      onChanged: (val) {
+                        setState(() {
+                          tempOnlyMyPublications = val;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const Divider(),
+                    Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    TagSelector(
+                      selectedTags: tempSelectedTags,
+                      maxTags: 10, // Allow more tags for filtering
+                      onChanged: (newTags) {
+                        setState(() {
+                          tempSelectedTags = newTags;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Clear filters
+                    setState(() {
+                      tempSelectedTags = [];
+                      tempOnlyMyPublications = false;
+                    });
+                  },
+                  child: Text(context.l10n.remove),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    this.setState(() {
+                      _selectedTags = tempSelectedTags;
+                      _onlyMyPublications = tempOnlyMyPublications;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text(context.l10n.confirm),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildItemList(String status) {
     return FutureBuilder<UserProfile?>(
       future: _userProfileFuture,
@@ -63,11 +137,45 @@ class _BaseOverviewPageState<T extends HomeItem>
               return const Center(child: CircularProgressIndicator());
             }
             var items = snap.data ?? const [];
+            
+            // Filter by state
             if (userProfile != null) {
               items = items.where((p) {
                 return p.state == null || p.state == userProfile.state;
               }).toList();
             }
+
+            // Filter by "My Publications"
+            if (_onlyMyPublications) {
+              final currentUid = authService.currentUser?.uid;
+              if (currentUid != null) {
+                items = items.where((item) {
+                  // Assuming HomeItem has createdBy or we check dynamic
+                  // HomeItem doesn't have createdBy in the abstract class yet, 
+                  // but Petition and Poll do.
+                  final dynamic dynamicItem = item;
+                  try {
+                    return dynamicItem.createdBy == currentUid;
+                  } catch (e) {
+                    return false;
+                  }
+                }).toList();
+              }
+            }
+
+            // Filter by tags
+            if (_selectedTags.isNotEmpty) {
+              items = items.where((item) {
+                final dynamic dynamicItem = item;
+                try {
+                  final List<String> itemTags = (dynamicItem.tags as List<dynamic>).cast<String>();
+                  return itemTags.any((tag) => _selectedTags.contains(tag));
+                } catch (e) {
+                  return true; 
+                }
+              }).toList();
+            }
+
             if (items.isEmpty) {
               return Center(child: Text(context.l10n.noData));
             }
@@ -117,6 +225,10 @@ class _BaseOverviewPageState<T extends HomeItem>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate active filters count
+    int filterCount = _selectedTags.length;
+    if (_onlyMyPublications) filterCount++;
+
     return Scaffold(
       appBar: TabBar(
         controller: _tabController,
@@ -129,9 +241,24 @@ class _BaseOverviewPageState<T extends HomeItem>
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            SearchTextField(
-              hint: context.l10n.searchTextField,
-              onChanged: (q) => setState(() => _query = q),
+            Row(
+              children: [
+                Expanded(
+                  child: SearchTextField(
+                    hint: context.l10n.searchTextField,
+                    onChanged: (q) => setState(() => _query = q),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  onPressed: _showFilterDialog,
+                  icon: Badge(
+                    isLabelVisible: filterCount > 0,
+                    label: Text('$filterCount'),
+                    child: const Icon(Icons.filter_list),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Expanded(

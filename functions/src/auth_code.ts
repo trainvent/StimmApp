@@ -1,36 +1,37 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
+import {defineSecret} from "firebase-functions/params";
 
 const db = admin.firestore();
 
 const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
-
+const smtpPassword = defineSecret('SMTP_PASSWORD');
+const smtpHost = process.env.SMPT_SERVER || "smtp.ionos.de";
 // Generate a random 6-digit code
 function generateCode(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 async function sendEmail(email: string, code: string, type: 'verification' | 'login') {
-    const smtpPassword = process.env.SMTP_PASSWORD;
-    
-    console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!smtpPassword}`);
+    const password = smtpPassword.value();
+    console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}`);
 
-    if (!smtpPassword) {
+    if (!password) {
         console.error("SMTP_PASSWORD is not set in environment variables.");
         throw new HttpsError('internal', 'Email configuration error.');
     }
 
     const transporter = nodemailer.createTransport({
-        host: "smtp.ionos.de",
+        host: smtpHost,
         port: 587,
         secure: false, // Explicitly false for STARTTLS
         requireTLS: true, // Enforce STARTTLS
         auth: {
             user: smtpMail,
-            pass: smtpPassword,
+            pass: password,
         },
-    });
+    } as nodemailer.TransportOptions);
 
     const subject = type === 'login' ? 'Your Login Code' : 'Your Verification Code';
     const actionText = type === 'login' ? 'log in to StimmApp' : 'verify your email';
@@ -123,7 +124,7 @@ async function verifyCodeLogic(uid: string, code: string, email?: string) {
  * Sends a verification code to the user's email.
  * Call this after creating the account or when requesting a new code.
  */
-export const sendVerificationCode = onCall(async (request) => {
+export const sendVerificationCode = onCall({ secrets: [smtpPassword] }, async (request) => {
     if (!request.auth) {
         throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -141,7 +142,7 @@ export const sendVerificationCode = onCall(async (request) => {
  * Sends a login code to the user's email (for passwordless login).
  * Publicly callable.
  */
-export const sendLoginCode = onCall(async (request) => {
+export const sendLoginCode = onCall({ secrets: [smtpPassword] }, async (request) => {
     const { email } = request.data;
     if (!email) {
         throw new HttpsError('invalid-argument', 'Email is required.');
@@ -266,9 +267,13 @@ export const verifyLoginCode = onCall(async (request) => {
     let token;
     try {
         token = await admin.auth().createCustomToken(uid);
-    } catch (e) {
+    } catch (e: any) {
         console.error("Error creating custom token:", e);
-        throw new HttpsError('internal', 'Failed to generate login token. Check IAM permissions.');
+        // Check for the specific IAM permission error
+        if (e.code === 'auth/insufficient-permission' || (e.message && e.message.includes('iam.serviceAccounts.signBlob'))) {
+             throw new HttpsError('internal', 'Server configuration error: Missing IAM permissions for token creation. Please contact support.');
+        }
+        throw new HttpsError('internal', 'Failed to generate login token.');
     }
 
     // Also mark email as verified since they proved ownership

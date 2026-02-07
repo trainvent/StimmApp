@@ -6,7 +6,7 @@ import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_l
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/user_history.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
