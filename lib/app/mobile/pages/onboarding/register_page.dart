@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await authService.createAccount(
-        email: controllerEm.text,
+        email: controllerEm.text.trim(),
         password: controllerPw.text,
       );
       if (!mounted) return;
@@ -151,6 +151,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     validator: (String? value) {
                       if (value == null || value.trim().isEmpty) {
                         return S.of(context).pleaseEnterYourEmail;
+                      }
+                      // Simple regex for email validation
+                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                      if (!emailRegex.hasMatch(value)) {
+                        return context.l10n.invalidEmailEntered;
                       }
                       return null;
                     },

@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     integrations:
-      app_store_connect: <YOUR_API_KEY_NAME> # Replace with the name you gave your API key in Codemagic UI
+      app_store_connect: 69877d8de4e9346aa185159d # Replace with the name you gave your API key in Codemagic UI
     environment:
       groups:
         - app_store_credentials 

@@ -179,20 +179,20 @@ class _BaseOverviewPageState<T extends HomeItem>
             if (items.isEmpty) {
               return Center(child: Text(context.l10n.noData));
             }
-            final showAds = userProfile?.isPro ?? false || kIsWeb;
+            final showAds = !(userProfile?.isPro ?? false) && !kIsWeb;
             final standardAdCount = showAds
-                ? 0
-                : (items.length / _itemsPerAd).floor();
+                ? (items.length / _itemsPerAd).floor()
+                : 0;
             // Ensure at least one ad is shown if the list is short but not empty.
             final showFallbackAd =
-                !showAds && items.isNotEmpty && standardAdCount == 0;
+                showAds && items.isNotEmpty && standardAdCount == 0;
             final totalCount =
                 items.length + standardAdCount + (showFallbackAd ? 1 : 0);
 
             return ListView.builder(
               itemCount: totalCount,
               itemBuilder: (context, index) {
-                if (showAds) {
+                if (!showAds) {
                   return Column(
                     children: [
                       widget.itemBuilder(context, items[index]),
