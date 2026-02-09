@@ -88,86 +88,102 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(widget.title), // Use page title as dialog title
-          content: SizedBox(
-            width: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.tutorialSteps.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final step = widget.tutorialSteps[index];
-                      if (step is String) {
-                        // Petition style (simple bullets)
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+        final screenWidth = MediaQuery.of(context).size.width;
+        return Stack(
+          children: [
+            AlertDialog(
+              title: Text(widget.title), // Use page title as dialog title
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.tutorialSteps.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final step = widget.tutorialSteps[index];
+                          if (step is String) {
+                            // Petition style (simple bullets)
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Expanded(
+                                  child: Text(step, style: Theme.of(context).textTheme.bodyMedium),
+                                ),
+                              ],
+                            );
+                          } else {
+                            // Poll style (Title + Description object)
+                            // Assuming dynamic access or we define a common interface/type
+                            // For now, let's assume it has title and description properties
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(step.title, style: Theme.of(context).textTheme.titleMedium),
+                                  const SizedBox(height: 4),
+                                  Text(step.description, style: Theme.of(context).textTheme.bodyMedium),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.bodyMedium,
                           children: [
-                            const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            Expanded(
-                              child: Text(step, style: Theme.of(context).textTheme.bodyMedium),
+                            TextSpan(
+                              text: S.of(context).source,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const TextSpan(text: ': '),
+                            TextSpan(
+                              text: widget.sourceUrl,
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = Uri.parse(widget.sourceUrl);
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url);
+                                  }
+                                },
                             ),
                           ],
-                        );
-                      } else {
-                        // Poll style (Title + Description object)
-                        // Assuming dynamic access or we define a common interface/type
-                        // For now, let's assume it has title and description properties
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(step.title, style: Theme.of(context).textTheme.titleMedium),
-                              const SizedBox(height: 4),
-                              Text(step.description, style: Theme.of(context).textTheme.bodyMedium),
-                            ],
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  RichText(
-                    text: TextSpan(
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      children: [
-                        TextSpan(
-                          text: S.of(context).source,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const TextSpan(text: ': '),
-                        TextSpan(
-                          text: widget.sourceUrl,
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              final url = Uri.parse(widget.sourceUrl);
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url);
-                              }
-                            },
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(context.l10n.close),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(context.l10n.close),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: IgnorePointer(
+                child: Image.asset(
+                  'assets/images/form_guy_teaching.png',
+                  width: screenWidth / 3, // 1/3 of screen width
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ],
         );
