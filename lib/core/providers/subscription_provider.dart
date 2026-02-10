@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -36,19 +37,39 @@ final subscriptionSyncProvider = Provider<void>((ref) {
 /// Logic to sync subscription status to Firestore.
 /// Call this from a top-level widget's build method (via ref.listen) or useEffect.
 Future<void> syncSubscriptionStatus(String uid, EntitlementTier tier) async {
-  final repo = UserRepository.create();
-  final profile = await repo.getById(uid);
-  
-  if (profile == null) return;
+  try {
+    final repo = UserRepository.create();
+    final profile = await repo.getById(uid);
 
-  final isPro = tier == EntitlementTier.pro;
-  
-  // Only update if changed
-  if (profile.isPro != isPro) {
-    await repo.upsert(profile.copyWith(
-      isPro: isPro,
-      wentProAt: isPro ? DateTime.now() : profile.wentProAt, // Keep original date if downgrading? Or null?
-      // Usually you keep the history or update it. Let's say we update it on upgrade.
-    ));
+    if (profile == null) {
+      if (kDebugMode) {
+        debugPrint('syncSubscriptionStatus: no profile for uid=$uid');
+      }
+      return;
+    }
+
+    final isPro = tier == EntitlementTier.pro;
+
+    if (kDebugMode) {
+      debugPrint(
+        'syncSubscriptionStatus: uid=$uid tier=$tier '
+        'currentIsPro=${profile.isPro} -> newIsPro=$isPro',
+      );
+    }
+
+    // Only update if changed
+    if (profile.isPro != isPro) {
+      await repo.upsert(profile.copyWith(
+        isPro: isPro,
+        wentProAt: isPro ? DateTime.now() : profile.wentProAt,
+      ));
+      if (kDebugMode) {
+        debugPrint('syncSubscriptionStatus: profile updated for uid=$uid');
+      }
+    }
+  } catch (e, st) {
+    if (kDebugMode) {
+      debugPrint('syncSubscriptionStatus error: $e\n$st');
+    }
   }
 }

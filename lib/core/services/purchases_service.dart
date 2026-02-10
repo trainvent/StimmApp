@@ -41,10 +41,11 @@ class PurchasesService {
   EntitlementTier get currentStatus => _currentStatus;
 
   /// The entitlement identifiers you configured in RevenueCat.
-  static const String _proEntitlementId = 'premium';
+  static const String _proEntitlementId = 'pro';
   static const String _basicEntitlementId = 'basic';
 
   bool _isInitialized = false;
+  String? _appUserId;
 
   /// Call this early in app startup.
   Future<void> init({required String apiKey, String? appUserId}) async {
@@ -58,6 +59,7 @@ class PurchasesService {
         PurchasesConfiguration(apiKey)..appUserID = appUserId,
       );
 
+      _appUserId = appUserId;
       _isInitialized = true;
 
       // Listen to any customer info changes (restores, purchases, etc.).
@@ -73,6 +75,16 @@ class PurchasesService {
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
     try {
+      if (!kReleaseMode) {
+        final message =
+            'RC customerInfo: appUserId=${info.originalAppUserId} '
+            'activeEntitlements=${info.entitlements.active.keys.toList()} '
+            'allEntitlements=${info.entitlements.all.keys.toList()} '
+            'activeSubscriptions=${info.activeSubscriptions.toList()} '
+            'allPurchasedProductIds=${info.allPurchasedProductIdentifiers.toList()}';
+        log(message);
+        debugPrint(message);
+      }
       EntitlementTier tier = EntitlementTier.free;
 
       // Check for Pro first (highest tier)
@@ -80,6 +92,14 @@ class PurchasesService {
         tier = EntitlementTier.pro;
       } else if (info.entitlements.all[_basicEntitlementId]?.isActive == true) {
         tier = EntitlementTier.basic;
+      } else if (kDebugMode && info.activeSubscriptions.isNotEmpty) {
+        // Debug-only fallback: if RevenueCat entitlements aren't configured yet,
+        // treat any active subscription as Pro so dev testing can proceed.
+        tier = EntitlementTier.pro;
+        log(
+          'RC debug fallback: no entitlement matched, but activeSubscriptions '
+          'is not empty -> treating as pro.',
+        );
       }
 
       if (_currentStatus != tier) {
@@ -89,6 +109,28 @@ class PurchasesService {
       }
     } catch (e, st) {
       log('PurchasesService._onCustomerInfoUpdated error: $e\n$st');
+    }
+  }
+
+  /// Sync RevenueCat app user with Firebase user.
+  Future<void> syncAppUser(String? uid) async {
+    if (!_isInitialized) return;
+    if (_appUserId == uid) return;
+
+    try {
+      if (uid == null) {
+        await Purchases.logOut();
+        _appUserId = null;
+        _currentStatus = EntitlementTier.free;
+        _entitlementController.add(_currentStatus);
+        return;
+      }
+
+      final result = await Purchases.logIn(uid);
+      _appUserId = uid;
+      _onCustomerInfoUpdated(result.customerInfo);
+    } catch (e, st) {
+      log('PurchasesService.syncAppUser error: $e\n$st');
     }
   }
 

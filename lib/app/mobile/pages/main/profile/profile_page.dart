@@ -190,8 +190,13 @@ class ProfilePage extends StatelessWidget {
                             userProfile.isPro == true
                                 ? context.l10n.yes
                                 : context.l10n.no,
-                            onTap: () {
-                              PurchasesService.instance.presentPaywall();
+                            onTap: () async {
+                              final uid = authService.currentUser?.uid;
+                              await PurchasesService.instance
+                                  .syncAppUser(uid);
+                              await PurchasesService.instance
+                                  .refreshCustomerInfo();
+                              await PurchasesService.instance.presentPaywall();
                             },
                           ),
                           _buildDetailTile(
