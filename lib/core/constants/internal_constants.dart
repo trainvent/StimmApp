@@ -8,7 +8,7 @@ class IConst {
   static const String closed = 'closed';
 
   static const Color appColor = Colors.greenAccent;
-  static const Color lightColor = Colors.blue;
+  static const Color lightColor = Colors.teal;
 
   static const String adminEmail = 'service@stimmapp.org';
   static const String supportEmail = 'support@stimmapp.org';

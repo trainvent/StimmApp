@@ -7,6 +7,7 @@ import 'package:stimmapp/app/mobile/pages/onboarding/welcome_page.dart'
     show WelcomePage;
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
+import 'package:stimmapp/core/providers/subscription_provider.dart';
 
 class AuthLayout extends ConsumerWidget {
   const AuthLayout({super.key, this.pageIfNotConnected});
@@ -16,6 +17,14 @@ class AuthLayout extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
+
+    // Listen to entitlement changes and sync to Firestore
+    ref.listen(entitlementStreamProvider, (previous, next) {
+      final user = ref.read(currentUserProvider);
+      if (user != null && next.hasValue) {
+        syncSubscriptionStatus(user.uid, next.value!);
+      }
+    });
 
     return authState.when(
       data: (user) {

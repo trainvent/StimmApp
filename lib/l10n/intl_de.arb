@@ -393,5 +393,6 @@
   "petitionTutorialStep4": "Es werden nur Themen veröffentlicht, bei denen eine sachliche Diskussion zu erwarten ist.",
   "petitionTutorialStep5": "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
   "limitThisPetitionToYourState": "Diese Petition auf Ihr Bundesland beschränken?",
-  "source": "Quelle"
+  "source": "Quelle",
+  "viewInstitutionalGuide": "Institutionellen Leitfaden ansehen"
 }

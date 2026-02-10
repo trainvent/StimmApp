@@ -704,6 +704,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "verify": MessageLookupByLibrary.simpleMessage("Verifizieren"),
     "victory": MessageLookupByLibrary.simpleMessage("Sieg!"),
+    "viewInstitutionalGuide": MessageLookupByLibrary.simpleMessage(
+      "Institutionellen Leitfaden ansehen",
+    ),
     "viewLicenses": MessageLookupByLibrary.simpleMessage("Lizenzen anzeigen"),
     "viewParticipants": MessageLookupByLibrary.simpleMessage(
       "Teilnehmer anzeigen",

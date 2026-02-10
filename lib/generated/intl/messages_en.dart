@@ -475,7 +475,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Simple sentence. Simple structure.",
     ),
     "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
-      "3. Ask one short, direct question",
+      "3. Ask one short, easy to understand direct question",
     ),
     "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
       "No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.",
@@ -672,6 +672,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "victory": MessageLookupByLibrary.simpleMessage("Victory!"),
+    "viewInstitutionalGuide": MessageLookupByLibrary.simpleMessage(
+      "View institutional guide",
+    ),
     "viewLicenses": MessageLookupByLibrary.simpleMessage("View licenses"),
     "viewParticipants": MessageLookupByLibrary.simpleMessage(
       "View Participants",

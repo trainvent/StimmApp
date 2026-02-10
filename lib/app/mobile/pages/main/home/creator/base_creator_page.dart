@@ -137,30 +137,16 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          children: [
-                            TextSpan(
-                              text: S.of(context).source,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const TextSpan(text: ': '),
-                            TextSpan(
-                              text: widget.sourceUrl,
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  final url = Uri.parse(widget.sourceUrl);
-                                  if (await canLaunchUrl(url)) {
-                                    await launchUrl(url);
-                                  }
-                                },
-                            ),
-                          ],
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final url = Uri.parse(widget.sourceUrl);
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          },
+                          icon: const Icon(Icons.description),
+                          label: Text(context.l10n.viewInstitutionalGuide),
                         ),
                       ),
                     ],

@@ -1060,7 +1060,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.';
 
   @override
-  String get pollTutorialStep3Title => '3. Ask one short, direct question';
+  String get pollTutorialStep3Title =>
+      '3. Ask one short, easy to understand direct question';
 
   @override
   String get pollTutorialStep3Desc => 'Simple sentence. Simple structure.';
@@ -1119,4 +1120,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get source => 'Source';
+
+  @override
+  String get viewInstitutionalGuide => 'View institutional guide';
 }

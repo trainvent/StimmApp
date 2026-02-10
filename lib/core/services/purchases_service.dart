@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
@@ -43,13 +44,21 @@ class PurchasesService {
   static const String _proEntitlementId = 'premium';
   static const String _basicEntitlementId = 'basic';
 
+  bool _isInitialized = false;
+
   /// Call this early in app startup.
   Future<void> init({required String apiKey, String? appUserId}) async {
+    if (_isInitialized) {
+      log('PurchasesService already initialized. Skipping configuration.');
+      return;
+    }
     try {
       await Purchases.setLogLevel(LogLevel.debug);
       await Purchases.configure(
         PurchasesConfiguration(apiKey)..appUserID = appUserId,
       );
+
+      _isInitialized = true;
 
       // Listen to any customer info changes (restores, purchases, etc.).
       Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
@@ -95,6 +104,10 @@ class PurchasesService {
 
   /// Hosted paywall – returns true on success.
   Future<bool> presentPaywall() async {
+    if (kIsWeb) {
+      log('RevenueCat Paywalls are not supported on Web.');
+      return false;
+    }
     try {
       final result = await RevenueCatUI.presentPaywall();
       log('presentPaywall result: $result');
@@ -107,6 +120,10 @@ class PurchasesService {
 
   /// Specific hosted paywall if needed – returns true on success.
   Future<bool> presentPaywallIfNeeded(String paywallId) async {
+    if (kIsWeb) {
+      log('RevenueCat Paywalls are not supported on Web.');
+      return false;
+    }
     try {
       final result = await RevenueCatUI.presentPaywallIfNeeded(paywallId);
       log('presentPaywallIfNeeded($paywallId) result: $result');

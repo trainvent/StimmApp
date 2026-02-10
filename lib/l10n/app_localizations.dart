@@ -2111,7 +2111,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTutorialStep3Title.
   ///
   /// In en, this message translates to:
-  /// **'3. Ask one short, direct question'**
+  /// **'3. Ask one short, easy to understand direct question'**
   String get pollTutorialStep3Title;
 
   /// No description provided for @pollTutorialStep3Desc.
@@ -2209,6 +2209,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source'**
   String get source;
+
+  /// No description provided for @viewInstitutionalGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'View institutional guide'**
+  String get viewInstitutionalGuide;
 }
 
 class _AppLocalizationsDelegate

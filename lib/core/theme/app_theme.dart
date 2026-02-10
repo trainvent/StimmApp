@@ -13,11 +13,30 @@ class AppTheme {
           Radius.circular(DConst.kBorderRadius10),
         ),
       ),
+      filled: true,
+      fillColor: Colors.white,
+    ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      backgroundColor: IConst.appColor,
+      foregroundColor: Colors.black, // Changed to black for readability
+      elevation: 0,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: IConst.appColor,
+        foregroundColor: Colors.black, // Changed to black for readability
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
+        ),
+      ),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: IConst.appColor,
-      primary: IConst.lightColor,
-      secondary: Colors.red,
+      primary: IConst.appColor,
+      onPrimary: Colors.black, // Ensure text on primary color is black
+      secondary: IConst.lightColor,
+      onSecondary: Colors.black, // Ensure text on secondary color is black
       brightness: Brightness.light,
     ),
   );
@@ -31,10 +50,27 @@ class AppTheme {
           Radius.circular(DConst.kBorderRadius10),
         ),
       ),
+      filled: true,
+    ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: IConst.appColor,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
+        ),
+      ),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: IConst.appColor,
       primary: IConst.appColor,
+      onPrimary: Colors.black, // Ensure text on primary color is black
+      secondary: IConst.lightColor,
+      onSecondary: Colors.black, // Ensure text on secondary color is black
       brightness: Brightness.dark,
     ),
   );

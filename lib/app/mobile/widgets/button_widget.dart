@@ -19,16 +19,17 @@ class ButtonWidget extends StatelessWidget {
         onPressed: callback,
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.black, // Ensure text is black on filled buttons
           minimumSize: const Size(double.infinity, 50),
         ),
         child: Text(label),
       );
     } else {
-      widget = ElevatedButton(
+      widget = OutlinedButton( // Changed to OutlinedButton for non-filled state
         onPressed: callback,
-        style: ElevatedButton.styleFrom(
+        style: OutlinedButton.styleFrom(
           foregroundColor: Theme.of(context).colorScheme.primary,
+          side: BorderSide(color: Theme.of(context).colorScheme.primary),
           minimumSize: const Size(double.infinity, 50),
         ),
         child: Text(label),

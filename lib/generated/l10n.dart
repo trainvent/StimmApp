@@ -2794,10 +2794,10 @@ class S {
     );
   }
 
-  /// `3. Ask one short, direct question`
+  /// `3. Ask one short, easy to understand direct question`
   String get pollTutorialStep3Title {
     return Intl.message(
-      '3. Ask one short, direct question',
+      '3. Ask one short, easy to understand direct question',
       name: 'pollTutorialStep3Title',
       desc: '',
       args: [],
@@ -2957,6 +2957,16 @@ class S {
   /// `Source`
   String get source {
     return Intl.message('Source', name: 'source', desc: '', args: []);
+  }
+
+  /// `View institutional guide`
+  String get viewInstitutionalGuide {
+    return Intl.message(
+      'View institutional guide',
+      name: 'viewInstitutionalGuide',
+      desc: '',
+      args: [],
+    );
   }
 }
 

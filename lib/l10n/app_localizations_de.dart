@@ -1133,4 +1133,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get source => 'Quelle';
+
+  @override
+  String get viewInstitutionalGuide => 'Institutionellen Leitfaden ansehen';
 }

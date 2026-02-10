@@ -377,7 +377,7 @@
   "pollTutorialStep1Desc": "Know exactly what you want to learn — one idea only.",
   "pollTutorialStep2Title": "2. Use everyday language",
   "pollTutorialStep2Desc": "No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.",
-  "pollTutorialStep3Title": "3. Ask one short, direct question",
+  "pollTutorialStep3Title": "3. Ask one short, easy to understand direct question",
   "pollTutorialStep3Desc": "Simple sentence. Simple structure.",
   "pollTutorialStep4Title": "4. Give fair choices",
   "pollTutorialStep4Desc": "No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.",
@@ -393,5 +393,6 @@
   "petitionTutorialStep4": "Only topics where a factual discussion is expected will be published.",
   "petitionTutorialStep5": "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.",
   "limitThisPetitionToYourState": "Limit this petition to your state?",
-  "source": "Source"
+  "source": "Source",
+  "viewInstitutionalGuide": "View institutional guide"
 }
