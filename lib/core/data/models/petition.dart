@@ -9,6 +9,7 @@ class Petition implements HomeItem {
   final String title;
   @override
   final String description;
+  @override
   final List<String> tags;
   final int signatureCount;
   final String createdBy;

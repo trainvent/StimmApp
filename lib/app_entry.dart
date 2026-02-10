@@ -24,10 +24,27 @@ import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+Future<void>? _firebaseInit;
+
+Future<void> _initFirebase(FirebaseOptions firebaseOptions) async {
+  try {
+    await Firebase.initializeApp(options: firebaseOptions);
+  } on FirebaseException catch (e) {
+    if (e.code == 'duplicate-app') {
+      // Native side already created DEFAULT (e.g., FirebaseInitProvider).
+      // Just bind to it.
+      Firebase.app();
+    } else if (e.code == 'no-app') {
+      await Firebase.initializeApp(options: firebaseOptions);
+    } else {
+      rethrow;
+    }
+  }
+}
 
 Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
-  if (kIsWeb) usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) usePathUrlStrategy();
 
   FlutterError.onError = (details) => errorLogTool(
     exception: details.exception,
@@ -40,8 +57,12 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
 
   SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
 
-  // Initialize Firebase with the provided options (Prod or Dev)
-  await Firebase.initializeApp(options: firebaseOptions);
+  // Debug: log Firebase app state early to diagnose duplicate-app on device.
+  debugPrint('Firebase apps before init: ${Firebase.apps.map((a) => a.name).toList()}');
+  // Initialize Firebase once, even if startApp is triggered twice.
+  _firebaseInit ??= _initFirebase(firebaseOptions);
+  await _firebaseInit;
+  debugPrint('Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}');
 
   locator.init();
   await PurchasesService.instance.init(

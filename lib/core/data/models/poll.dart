@@ -19,6 +19,7 @@ class Poll implements HomeItem {
   final String title;
   @override
   final String description;
+  @override
   final List<String> tags;
   final List<PollOption> options;
   final Map<String, int> votes; // optionId -> count

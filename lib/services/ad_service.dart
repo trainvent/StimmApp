@@ -27,12 +27,12 @@ class AdService {
   AdService._internal();
 
   Future<void> initialize() async {
-    if (kIsWeb) return;
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
     await MobileAds.instance.initialize();
   }
 
   String get bannerAdUnitId {
-    if (kIsWeb) return '';
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
       return 'ca-app-pub-5296065079333841~8760518694'; // Test ID
     } else if (Platform.isIOS) {
@@ -43,7 +43,7 @@ class AdService {
   }
 
   String get interstitialAdUnitId {
-    if (kIsWeb) return '';
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
       return 'ca-app-pub-5296065079333841~8760518694'; // Test ID
       // TODO: Replace with your actual Ad Unit ID
@@ -59,7 +59,7 @@ class AdService {
     required VoidCallback onAdLoaded,
     Function(String)? onAdFailedToLoad,
   }) {
-    if (kIsWeb) {
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       return BannerAdWrapper(null);
     }
 
@@ -85,7 +85,7 @@ class AdService {
     required void Function(InterstitialAd) onAdLoaded,
     void Function(LoadAdError)? onAdFailedToLoad,
   }) {
-    if (kIsWeb) return;
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
