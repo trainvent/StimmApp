@@ -140,5 +140,3 @@ playwright-report/
 # Firebase cache
 /.firebase/
 
-# Functions env files
-functions/.env.*
