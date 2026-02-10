@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
@@ -20,6 +21,7 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
@@ -27,6 +29,21 @@ import 'delete_account_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  Future<void> _openManageSubscriptions() async {
+    final Uri uri;
+    if (kIsWeb) {
+      uri = Uri.parse('https://play.google.com/store/account/subscriptions');
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      uri = Uri.parse('https://apps.apple.com/account/subscriptions');
+    } else {
+      uri = Uri.parse('https://play.google.com/store/account/subscriptions');
+    }
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok) {
+      showErrorSnackBar(S.current.error);
+    }
+  }
 
   Future<void> _logout(BuildContext context) async {
     try {
@@ -191,9 +208,12 @@ class ProfilePage extends StatelessWidget {
                                 ? context.l10n.yes
                                 : context.l10n.no,
                             onTap: () async {
+                              if (userProfile.isPro == true) {
+                                await _openManageSubscriptions();
+                                return;
+                              }
                               final uid = authService.currentUser?.uid;
-                              await PurchasesService.instance
-                                  .syncAppUser(uid);
+                              await PurchasesService.instance.syncAppUser(uid);
                               await PurchasesService.instance
                                   .refreshCustomerInfo();
                               await PurchasesService.instance.presentPaywall();

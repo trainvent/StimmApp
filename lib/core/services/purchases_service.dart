@@ -153,6 +153,7 @@ class PurchasesService {
     try {
       final result = await RevenueCatUI.presentPaywall();
       log('presentPaywall result: $result');
+      await refreshCustomerInfo();
       return true;
     } catch (e, st) {
       log('presentPaywall error: $e\n$st');
@@ -169,6 +170,7 @@ class PurchasesService {
     try {
       final result = await RevenueCatUI.presentPaywallIfNeeded(paywallId);
       log('presentPaywallIfNeeded($paywallId) result: $result');
+      await refreshCustomerInfo();
       return true;
     } catch (e, st) {
       log('presentPaywallIfNeeded error: $e\n$st');
