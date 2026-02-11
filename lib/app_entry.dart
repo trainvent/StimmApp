@@ -58,18 +58,28 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
 
   // Debug: log Firebase app state early to diagnose duplicate-app on device.
-  debugPrint('Firebase apps before init: ${Firebase.apps.map((a) => a.name).toList()}');
+  debugPrint(
+    'Firebase apps before init: ${Firebase.apps.map((a) => a.name).toList()}',
+  );
   // Initialize Firebase once, even if startApp is triggered twice.
   _firebaseInit ??= _initFirebase(firebaseOptions);
   await _firebaseInit;
-  debugPrint('Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}');
-
-  locator.init();
-  await PurchasesService.instance.init(
-    apiKey: IConst.revenueCatApiKey,
-    appUserId: authService.currentUser?.uid,
+  debugPrint(
+    'Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}',
   );
 
+  locator.init();
+  if (Environment.isDev) {
+    await PurchasesService.instance.init(
+      apiKey: IConst.revenueCatApiKey_dev,
+      appUserId: authService.currentUser?.uid,
+    );
+  } else {
+    await PurchasesService.instance.init(
+      apiKey: IConst.revenueCatApiKey_prod,
+      appUserId: authService.currentUser?.uid,
+    );
+  }
   if (!kIsWeb && kDebugMode) {
     await authService.setSettings(appVerificationDisabledForTesting: true);
   }
@@ -128,7 +138,9 @@ class _MyAppState extends State<MyApp> {
                         color: Colors.black, // Background for the empty space
                         child: Center(
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                            constraints: BoxConstraints(
+                              maxWidth: maxAllowedWidth,
+                            ),
                             child: ClipRect(child: child),
                           ),
                         ),

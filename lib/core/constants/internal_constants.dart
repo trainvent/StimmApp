@@ -19,7 +19,9 @@ class IConst {
       'https://www.stimmapp.org/terms-of-service';
   static const String faqUrl = 'https://www.stimmapp.org/faq';
 
-  static const String revenueCatApiKey = 'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
+  static const String revenueCatApiKey_dev = 'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
+  static const String revenueCatApiKey_prod =
+      'goog_gaOrZloplZgSgUVWiKGRXUXyFXF';
 
   // Google Places API Key.
   // If your Firebase API key is restricted and doesn't work for Places,
