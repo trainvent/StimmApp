@@ -42,3 +42,17 @@
 
 # Firebase (if used)
 -dontwarn com.google.android.gms.**
+-keep class com.google.firebase.** { *; }
+
+# General safety
+-dontwarn javax.annotation.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn org.checkerframework.**
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+
+# Prevent R8 from stripping native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}

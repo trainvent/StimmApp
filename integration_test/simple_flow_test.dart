@@ -57,7 +57,7 @@ void main() {
 
     locator.init();
     await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKey,
+      apiKey: IConst.revenueCatApiKey_dev,
       appUserId: authService.currentUser?.uid,
     );
 

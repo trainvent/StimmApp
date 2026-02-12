@@ -34,10 +34,17 @@ class AdService {
   String get bannerAdUnitId {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
-      return 'ca-app-pub-5296065079333841~8760518694'; // Test ID
+      // Use test ID for debug builds, real ID for release
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/6300978111'; // Android Test Banner ID
+      }
+      return 'ca-app-pub-5296065079333841/8760518694'; // Real Banner ID
     } else if (Platform.isIOS) {
-      // TODO: Replace with your actual Ad Unit ID
-      return 'ca-app-pub-3940256099942544/2934735716'; // Test ID
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/2934735716'; // iOS Test Banner ID
+      }
+      // TODO: Replace with your actual iOS Ad Unit ID
+      return 'ca-app-pub-3940256099942544/2934735716'; 
     }
     throw UnsupportedError("Unsupported platform");
   }
@@ -45,10 +52,16 @@ class AdService {
   String get interstitialAdUnitId {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
-      return 'ca-app-pub-5296065079333841~8760518694'; // Test ID
-      // TODO: Replace with your actual Ad Unit ID
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/1033173712'; // Android Test Interstitial ID
+      }
+      return 'ca-app-pub-5296065079333841/5826982633'; // Real Interstitial ID
     } else if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/4411468910'; // Test ID
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/4411468910'; // iOS Test Interstitial ID
+      }
+      // TODO: Replace with your actual iOS Ad Unit ID
+      return 'ca-app-pub-3940256099942544/4411468910';
     }
     throw UnsupportedError("Unsupported platform");
   }
