@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/set_new_password_page.dart';
 import 'package:stimmapp/app/mobile/widgets/debounced_button_widget.dart';
-import 'package:stimmapp/app/mobile/widgets/debounced_text_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/app/mobile/widgets/verification_code_input.dart';
+import 'package:stimmapp/app/mobile/widgets/verification_widget.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
@@ -135,49 +134,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     child: Text(S.of(context).requestLoginCode),
                   ),
                 ] else ...[
-                  Text(
-                    S.of(context).enterVerificationCode,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    S.of(context).weHaveSentA6digitCodeToYourEmailPlease,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.descriptionText,
-                  ),
-                  const SizedBox(height: 32),
-                  VerificationCodeInput(
-                    controller: _codeController,
-                    onCompleted: (_) => _verifyCode(),
-                  ),
-                  const SizedBox(height: 32),
-                  DebouncedButton(
-                    key: const Key('verifyButton'),
-                    onPressed: _verifyCode,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.black,
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: Text(S.of(context).verify),
-                  ),
-                  const SizedBox(height: 16),
-                  DebouncedTextButtonWidget(
-                    key: const Key('resendCodeButton'),
-                    callback: _sendLoginCode,
-                    label: context.l10n.resendEmail,
-                    debounceDuration: const Duration(seconds: 30),
+                  VerificationWidget(
+                    codeController: _codeController,
+                    onVerify: _verifyCode,
+                    onResend: _sendLoginCode,
                   ),
                   const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _codeSent = false;
-                        _codeController.clear();
-                      });
-                    },
-                    child: Text(context.l10n.backToLogin), // Using backToLogin as "Change Email" effectively
-                  ),
                 ],
               ],
             ),

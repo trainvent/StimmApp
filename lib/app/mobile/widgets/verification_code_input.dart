@@ -18,6 +18,7 @@ class VerificationCodeInput extends StatefulWidget {
 class _VerificationCodeInputState extends State<VerificationCodeInput> {
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
+  bool _isSyncing = false;
 
   @override
   void initState() {
@@ -41,6 +42,9 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   }
 
   void _syncFromMainController() {
+    if (_isSyncing) return;
+    _isSyncing = true;
+
     String text = widget.controller.text;
     if (text.length > 6) text = text.substring(0, 6);
     
@@ -50,16 +54,22 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
           _controllers[i].text = text[i];
         }
       } else {
-        _controllers[i].clear();
+        if (_controllers[i].text.isNotEmpty) {
+          _controllers[i].clear();
+        }
       }
     }
+    _isSyncing = false;
   }
 
   void _onDigitChanged(int index) {
+    if (_isSyncing) return;
+    
     String value = _controllers[index].text;
     
     // Handle paste or multi-character input
     if (value.length > 1) {
+      _isSyncing = true;
       // It's a paste!
       String newCode = value;
       
@@ -69,9 +79,21 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
       }
 
       // Update the main controller with the pasted code
-      // This will trigger _syncFromMainController which updates all boxes
       widget.controller.text = newCode;
       
+      // Manually sync back to boxes since we are in _isSyncing block
+      for (int i = 0; i < 6; i++) {
+        if (i < newCode.length) {
+          if (_controllers[i].text != newCode[i]) {
+            _controllers[i].text = newCode[i];
+          }
+        } else {
+          _controllers[i].clear();
+        }
+      }
+      
+      _isSyncing = false;
+
       // Move focus to the end of the new input
       int nextIndex = newCode.length;
       if (nextIndex < 6) {
@@ -90,7 +112,9 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     }
     
     if (widget.controller.text != newCode) {
+      _isSyncing = true;
       widget.controller.text = newCode;
+      _isSyncing = false;
     }
 
     if (value.isNotEmpty) {
