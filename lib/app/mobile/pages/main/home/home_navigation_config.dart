@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/creators_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petitions_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/polls_page.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -24,11 +23,6 @@ List<MainPageConfig> mainPagesConfig(BuildContext context) => [
     page: const PetitionsPage(),
     title: context.l10n.petitions,
     icon: Icons.drive_file_rename_outline,
-  ),
-  MainPageConfig(
-    page: const CreatorsPage(),
-    title: context.l10n.creator,
-    icon: Icons.assignment_add,
   ),
   MainPageConfig(
     page: const PollsPage(),
