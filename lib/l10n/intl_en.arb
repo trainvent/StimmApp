@@ -394,5 +394,19 @@
   "petitionTutorialStep5": "Upon reaching 30,000 signatures, the petitioner is granted the right to present their request in a public hearing.",
   "limitThisPetitionToYourState": "Limit this petition to your state?",
   "source": "Source",
-  "viewInstitutionalGuide": "View institutional guide"
+  "viewInstitutionalGuide": "View institutional guide",
+  "pleaseEnterYourCredentials": "Please enter your Credentials",
+  "pleaseEnterYourDesiredCredentials": "Please enter the Credentials you desire.",
+  "sendConfirmationEmail": "Send confirmation Email.",
+  "weCannotProvideSecureVerificationYetButWeAreWorking": "We cannot provide secure verification yet, but we are working on it.",
+  "passwordMustBeAtLeast8CharactersLong": "Password must be at least 8 characters long",
+  "@passwordValidation": {
+    "description": "Password validation messages",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordValidation": "Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}"
 }

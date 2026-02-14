@@ -975,14 +975,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get verify => 'Verifizieren';
 
   @override
-  String get hello => 'hello';
+  String get hello => 'Hallo';
 
   @override
-  String get faultyInput => 'Faulty input';
+  String get faultyInput => 'Fehlerhafte Eingabe';
 
   @override
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
-      'we failed to get your state, please proofread your living-address';
+      'Wir konnten Ihr Bundesland nicht ermitteln, bitte überprüfen Sie Ihre Wohnadresse';
 
   @override
   String get petitionGuidelines => 'Petitionsrichtlinien';
@@ -999,20 +999,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
 
   @override
-  String get pleaseEnterYourDetails => 'please enter your details.';
+  String get pleaseEnterYourDetails => 'Bitte geben Sie Ihre Daten ein.';
 
   @override
-  String get thisAppWasDevelopedBy => 'this app was developed by';
+  String get thisAppWasDevelopedBy => 'Diese App wurde entwickelt von';
 
   @override
   String get licenses => 'Lizenzen';
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'published under the GNU General Public License v3.0';
+      'veröffentlicht unter der GNU General Public License v3.0';
 
   @override
-  String get enterVerificationCode => 'Enter Verification Code';
+  String get enterVerificationCode => 'Bestätigungscode eingeben';
 
   @override
   String get tagEnvironment => 'Umwelt';
@@ -1136,4 +1136,35 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get viewInstitutionalGuide => 'Institutionellen Leitfaden ansehen';
+
+  @override
+  String get pleaseEnterYourCredentials =>
+      'Bitte geben Sie ihre Zugangsdaten ein.';
+
+  @override
+  String get pleaseEnterYourDesiredCredentials =>
+      'Bitte geben sie ihre gewünschten Zugangsdaten ein.';
+
+  @override
+  String get sendConfirmationEmail => 'Sende Bestätigungs-E-Mail';
+
+  @override
+  String get weCannotProvideSecureVerificationYetButWeAreWorking =>
+      'Wir können noch keine sichere Verifizierung anbieten, arbeiten aber daran.';
+
+  @override
+  String get passwordMustBeAtLeast8CharactersLong =>
+      'Password must be at least 8 characters long';
+
+  @override
+  String passwordValidation(String type) {
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'uppercase': 'Großbuchstabe',
+      'lowercase': 'Kleinbuchstabe',
+      'number': 'Zahl',
+      'special': 'Sonderzeichen',
+      'other': 'gültiges Zeichen',
+    });
+    return 'Das Passwort muss mindestens ein $_temp0 enthalten';
+  }
 }

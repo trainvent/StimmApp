@@ -8,9 +8,6 @@ class OnboardingPageKeys {
 }
 
 class EmailConfirmationPageKeys {
-  final verificationCodeTextField = const Key('verificationCodeTextField');
-  final verifyButton = const Key('verifyButton');
-  final resendCodeButton = const Key('resendCodeButton');
   final backButton = const Key('backButton');
 }
 
@@ -76,6 +73,11 @@ class DeleteAccountPageKeys {
   final deleteAccountButton = const Key('deleteAccountButton');
 }
 
+class VerificationWidgetKeys {
+  final verificationCodeTextField = const Key('verificationCodeTextField');
+  final resendCodeButton = const Key('resendCodeButton');
+}
+
 class Keys {
   final resetPasswordPage = ResetPasswordPageKeys();
   final loginPage = LoginPageKeys();
@@ -86,6 +88,7 @@ class Keys {
   final setUserDetailsPage = SetUserDetailsPageKeys();
   final setNewPasswordPage = SetNewPasswordPageKeys();
   final deleteAccountPage = DeleteAccountPageKeys();
+  final verificationWidget = VerificationWidgetKeys();
 }
 
 final keys = Keys();

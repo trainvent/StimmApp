@@ -65,6 +65,12 @@ class _LoginPageState extends State<LoginPage> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               leading: BackButton(color: Theme.of(context).colorScheme.primary),
+              title: Text(
+                context.l10n.signIn,
+                style: AppTextStyles.xxlBold.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -73,17 +79,10 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   const SizedBox(height: DConst.padBox),
                   Text(
-                    context.l10n.signIn,
-                    style: AppTextStyles.xxlBold.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: DConst.padBox),
-                  Text(
-                    S.of(context).pleaseEnterYourDetails,
+                    S.of(context).pleaseEnterYourCredentials,
                     style: AppTextStyles.m.copyWith(color: Colors.grey),
                   ),
-                  const SizedBox(height: DConst.pad25),
+                  const SizedBox(height: DConst.padBox),
                   TextFormField(
                     key: keys.loginPage.emailTextField,
                     controller: controllerEm,

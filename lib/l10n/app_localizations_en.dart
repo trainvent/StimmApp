@@ -1123,4 +1123,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewInstitutionalGuide => 'View institutional guide';
+
+  @override
+  String get pleaseEnterYourCredentials => 'Please enter your Credentials';
+
+  @override
+  String get pleaseEnterYourDesiredCredentials =>
+      'Please enter the Credentials you desire.';
+
+  @override
+  String get sendConfirmationEmail => 'Send confirmation Email.';
+
+  @override
+  String get weCannotProvideSecureVerificationYetButWeAreWorking =>
+      'We cannot provide secure verification yet, but we are working on it.';
+
+  @override
+  String get passwordMustBeAtLeast8CharactersLong =>
+      'Password must be at least 8 characters long';
+
+  @override
+  String passwordValidation(String type) {
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'uppercase': 'uppercase letter',
+      'lowercase': 'lowercase letter',
+      'number': 'number',
+      'special': 'special character',
+      'other': 'valid character',
+    });
+    return 'Password must contain at least one $_temp0';
+  }
 }

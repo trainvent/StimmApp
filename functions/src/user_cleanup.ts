@@ -1,4 +1,3 @@
-import * as functions from "firebase-functions/v1";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 
@@ -124,6 +123,9 @@ export async function cleanupUserData(uid: string) {
 	}
 }
 
+// Using v1 for Auth trigger as v2 identity.beforeUserDeleted/onUserDeleted might not be available or configured correctly in this environment.
+// Reverting to v1 to ensure stability.
+import * as functions from "firebase-functions/v1";
 export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
 	await cleanupUserData(user.uid);
 });

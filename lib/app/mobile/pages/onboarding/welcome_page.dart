@@ -57,7 +57,7 @@ class WelcomePage extends StatelessWidget {
       ),
       buttons: [
         ButtonWidget(
-          label: context.l10n.getStarted,
+          label: context.l10n.register,
           isFilled: true,
           callback: () {
             Navigator.push(

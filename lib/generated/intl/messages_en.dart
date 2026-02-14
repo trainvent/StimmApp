@@ -25,11 +25,14 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m1(newMessages) =>
       "You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new Messages', other: '${newMessages} new messages')}";
 
-  static String m2(state) => "Related to ${state}";
+  static String m2(type) =>
+      "Password must contain at least one ${Intl.select(type, {'uppercase': 'uppercase letter', 'lowercase': 'lowercase letter', 'number': 'number', 'special': 'special character', 'other': 'valid character'})}";
 
-  static String m3(date) => "Valid until: ${date}";
+  static String m3(state) => "Related to ${state}";
 
-  static String m4(email) => "A verification email has been sent to ${email}";
+  static String m4(date) => "Valid until: ${date}";
+
+  static String m5(email) => "A verification email has been sent to ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -370,6 +373,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Password changed successfully",
     ),
+    "passwordMustBeAtLeast8CharactersLong":
+        MessageLookupByLibrary.simpleMessage(
+          "Password must be at least 8 characters long",
+        ),
+    "passwordValidation": m2,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
@@ -428,6 +436,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid 6-digit code",
+    ),
+    "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
+      "Please enter your Credentials",
+    ),
+    "pleaseEnterYourDesiredCredentials": MessageLookupByLibrary.simpleMessage(
+      "Please enter the Credentials you desire.",
     ),
     "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
       "please enter your details.",
@@ -531,7 +545,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registerAccount": MessageLookupByLibrary.simpleMessage("Register Account"),
     "registerHere": MessageLookupByLibrary.simpleMessage("Register here"),
-    "relatedToState": m2,
+    "relatedToState": m3,
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Request login code",
@@ -565,6 +579,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Select from Gallery",
+    ),
+    "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
+      "Send confirmation Email.",
     ),
     "sendLoginLink": MessageLookupByLibrary.simpleMessage("Log in with Code"),
     "setUserDetails": MessageLookupByLibrary.simpleMessage("Set user details"),
@@ -659,14 +676,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Username changed successfully",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Users"),
-    "validUntil": m3,
+    "validUntil": m4,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verification code resent!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Verification email sent",
     ),
-    "verificationEmailSentTo": m4,
+    "verificationEmailSentTo": m5,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verification failed",
     ),
@@ -681,6 +698,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Vote"),
     "voted": MessageLookupByLibrary.simpleMessage("Voted"),
+    "weCannotProvideSecureVerificationYetButWeAreWorking":
+        MessageLookupByLibrary.simpleMessage(
+          "We cannot provide secure verification yet, but we are working on it.",
+        ),
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress":
         MessageLookupByLibrary.simpleMessage(
           "we failed to get your state, please proofread your living-address",

@@ -71,12 +71,12 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   locator.init();
   if (Environment.isDev) {
     await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKey_dev,
+      apiKey: IConst.revenueCatApiKeyDev,
       appUserId: authService.currentUser?.uid,
     );
   } else {
     await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKey_prod,
+      apiKey: IConst.revenueCatApiKeyProd,
       appUserId: authService.currentUser?.uid,
     );
   }

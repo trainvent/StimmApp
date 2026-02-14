@@ -119,25 +119,24 @@ class _RegisterPageState extends State<RegisterPage> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               leading: BackButton(color: Theme.of(context).colorScheme.primary),
+              title: Text(
+                context.l10n.registerHere,
+                style: AppTextStyles.xxlBold.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              padding: const EdgeInsets.symmetric(horizontal: DConst.pad25),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: DConst.padBox),
                   Text(
-                    context.l10n.registerHere,
-                    style: AppTextStyles.xxlBold.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: DConst.padBox),
-                  Text(
-                    S.of(context).welcomePleaseEnterYourDetails,
+                    S.of(context).pleaseEnterYourDesiredCredentials,
                     style: AppTextStyles.m.copyWith(color: Colors.grey),
                   ),
-                  const SizedBox(height: 30.0),
+                  const SizedBox(height: DConst.padBox),
                   TextFormField(
                     key: keys.onboardingPage.emailTextField,
                     controller: controllerEm,
@@ -231,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   foregroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text(context.l10n.register),
+                child: Text(context.l10n.sendConfirmationEmail),
               ),
             ],
           );

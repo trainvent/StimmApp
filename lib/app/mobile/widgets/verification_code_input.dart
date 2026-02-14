@@ -17,7 +17,10 @@ class VerificationCodeInput extends StatefulWidget {
 
 class _VerificationCodeInputState extends State<VerificationCodeInput> {
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
   bool _isSyncing = false;
 
   @override
@@ -47,7 +50,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
 
     String text = widget.controller.text;
     if (text.length > 6) text = text.substring(0, 6);
-    
+
     for (int i = 0; i < 6; i++) {
       if (i < text.length) {
         if (_controllers[i].text != text[i]) {
@@ -64,15 +67,15 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
 
   void _onDigitChanged(int index) {
     if (_isSyncing) return;
-    
+
     String value = _controllers[index].text;
-    
+
     // Handle paste or multi-character input
     if (value.length > 1) {
       _isSyncing = true;
       // It's a paste!
       String newCode = value;
-      
+
       // If the user pasted something longer than 6 chars, truncate it
       if (newCode.length > 6) {
         newCode = newCode.substring(0, 6);
@@ -80,7 +83,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
 
       // Update the main controller with the pasted code
       widget.controller.text = newCode;
-      
+
       // Manually sync back to boxes since we are in _isSyncing block
       for (int i = 0; i < 6; i++) {
         if (i < newCode.length) {
@@ -91,7 +94,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
           _controllers[i].clear();
         }
       }
-      
+
       _isSyncing = false;
 
       // Move focus to the end of the new input
@@ -110,7 +113,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     for (var c in _controllers) {
       newCode += c.text;
     }
-    
+
     if (widget.controller.text != newCode) {
       _isSyncing = true;
       widget.controller.text = newCode;
@@ -138,13 +141,18 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
               width: 45,
               height: 55,
               child: TextField(
+                // Only assign the key to the first TextField so the finder can locate it
+                key: index == 0 ? widget.key : null,
                 controller: _controllers[index],
                 focusNode: _focusNodes[index],
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 // Allow more than 1 char temporarily to capture paste events
-                maxLength: 6, 
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                maxLength: 6,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   counterText: "",
                   contentPadding: EdgeInsets.zero,
@@ -170,9 +178,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
                     FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
                   }
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
             ),
             if (index < 5) const SizedBox(width: 8),

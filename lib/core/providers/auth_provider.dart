@@ -37,6 +37,6 @@ final userProfileProvider = StreamProvider<UserProfile?>((ref) {
       return UserRepository.create().watchById(user.uid);
     },
     loading: () => const Stream.empty(),
-    error: (_, __) => Stream.value(null),
+    error: (_, _) => Stream.value(null),
   );
 });

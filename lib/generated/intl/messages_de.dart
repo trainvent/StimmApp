@@ -26,11 +26,14 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m1(newMessages) =>
       "Sie haben ${Intl.plural(newMessages, zero: 'Keine neuen Nachrichten', one: 'Eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
-  static String m2(state) => "Bezogen auf ${state}";
+  static String m2(type) =>
+      "Das Passwort muss mindestens ein ${Intl.select(type, {'uppercase': 'Großbuchstabe', 'lowercase': 'Kleinbuchstabe', 'number': 'Zahl', 'special': 'Sonderzeichen', 'other': 'gültiges Zeichen'})} enthalten";
 
-  static String m3(date) => "Gültig bis";
+  static String m3(state) => "Bezogen auf ${state}";
 
-  static String m4(email) =>
+  static String m4(date) => "Gültig bis";
+
+  static String m5(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -217,6 +220,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Geben Sie etwas ein",
     ),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Titel eingeben"),
+    "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
+      "Bestätigungscode eingeben",
+    ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
       "gib deine Wohnanschrift ein",
     ),
@@ -264,6 +270,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToUploadImage": MessageLookupByLibrary.simpleMessage(
       "Bild konnte nicht hochgeladen werden",
     ),
+    "faultyInput": MessageLookupByLibrary.simpleMessage("Fehlerhafte Eingabe"),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Letzter Hinweis"),
     "finishedForms": MessageLookupByLibrary.simpleMessage(
       "Abgeschlossene Formulare",
@@ -287,6 +294,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Wachstum beginnt von innen",
     ),
     "height": MessageLookupByLibrary.simpleMessage("Größe"),
+    "hello": MessageLookupByLibrary.simpleMessage("Hallo"),
     "helloAndWelcome": m0,
     "hintTextTags": MessageLookupByLibrary.simpleMessage(
       "z.B. umwelt, verkehr",
@@ -385,6 +393,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Passwort erfolgreich geändert",
     ),
+    "passwordValidation": m2,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
     ),
@@ -443,6 +452,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie einen gültigen 6-stelligen Code ein",
+    ),
+    "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie ihre Zugangsdaten ein.",
+    ),
+    "pleaseEnterYourDesiredCredentials": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben sie ihre gewünschten Zugangsdaten ein.",
+    ),
+    "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie Ihre Daten ein.",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
       "Bitte die Email eingeben",
@@ -529,6 +547,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profilbild aktualisiert",
     ),
+    "publishedUnderTheGnuGeneralPublicLicenseV30":
+        MessageLookupByLibrary.simpleMessage(
+          "veröffentlicht unter der GNU General Public License v3.0",
+        ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Kauf abgebrochen.",
     ),
@@ -549,7 +571,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto registrieren",
     ),
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
-    "relatedToState": m2,
+    "relatedToState": m3,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Login Code anfordern",
@@ -585,6 +607,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Aus Galerie wählen",
+    ),
+    "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
+      "Sende Bestätigungs-E-Mail",
     ),
     "setUserDetails": MessageLookupByLibrary.simpleMessage(
       "Benutzerdaten festlegen",
@@ -658,6 +683,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.",
         ),
+    "thisAppWasDevelopedBy": MessageLookupByLibrary.simpleMessage(
+      "Diese App wurde entwickelt von",
+    ),
     "title": MessageLookupByLibrary.simpleMessage("Titel"),
     "titleRequired": MessageLookupByLibrary.simpleMessage(
       "Titel ist erforderlich",
@@ -691,14 +719,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzername erfolgreich geändert",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m3,
+    "validUntil": m4,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m4,
+    "verificationEmailSentTo": m5,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),
@@ -713,6 +741,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Abstimmen"),
     "voted": MessageLookupByLibrary.simpleMessage("Abgestimmt"),
+    "weCannotProvideSecureVerificationYetButWeAreWorking":
+        MessageLookupByLibrary.simpleMessage(
+          "Wir können noch keine sichere Verifizierung anbieten, arbeiten aber daran.",
+        ),
+    "weFailedToGetYourStatePleaseProofreadYourLivingaddress":
+        MessageLookupByLibrary.simpleMessage(
+          "Wir konnten Ihr Bundesland nicht ermitteln, bitte überprüfen Sie Ihre Wohnadresse",
+        ),
     "weHaveSentA6digitCodeToYourEmailPlease": MessageLookupByLibrary.simpleMessage(
       "Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.",
     ),

@@ -25,7 +25,6 @@ class PetitionCreatorPage extends StatefulWidget {
 
 class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   XFile? _imageFile;
-  bool _isUploading = false;
   UserProfile? _user;
   final _picker = ImagePicker();
 
@@ -63,10 +62,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       return null;
     }
 
-    setState(() {
-      _isUploading = true;
-    });
-
     try {
       final storage = StorageService(FirebaseStorage.instance);
       final fileName = '${DateTime.now().toIso8601String()}.jpg';
@@ -83,12 +78,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         showErrorSnackBar(context.l10n.errorUploadingImage + e.toString());
       }
       return null;
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
-      }
     }
   }
 

@@ -33,15 +33,15 @@ async function sendEmail(email: string, code: string, type: 'verification' | 'lo
         },
     } as nodemailer.TransportOptions);
 
-    const subject = type === 'login' ? 'Your Login Code' : 'Your Verification Code';
-    const actionText = type === 'login' ? 'log in to StimmApp' : 'verify your email';
+    const subject = type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode';
+    const actionText = type === 'login' ? 'um dich bei StimmApp anzumelden' : 'um deine E-Mail zu bestätigen';
 
     const mailOptions = {
         from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
         subject: subject,
-        text: `Welcome to StimmApp!\n\nYour code to ${actionText} is: ${code}\n\nThis code will expire in 15 minutes.`,
-        html: `<p>Welcome to StimmApp!</p><p>Your code to ${actionText} is: <strong>${code}</strong></p><p>This code will expire in 15 minutes.</p>`,
+        text: `Willkommen bei StimmApp!\n\nDein Code, ${actionText}, lautet: ${code}\n\nDieser Code läuft in 15 Minuten ab.`,
+        html: `<p>Willkommen bei StimmApp!</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>Dieser Code läuft in 15 Minuten ab.</p>`,
     };
 
     try {

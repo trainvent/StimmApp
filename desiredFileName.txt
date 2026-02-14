@@ -1,12 +1,6 @@
 {
   "de": [
     "sendLoginLink",
-    "hello",
-    "faultyInput",
-    "weFailedToGetYourStatePleaseProofreadYourLivingaddress",
-    "pleaseEnterYourDetails",
-    "thisAppWasDevelopedBy",
-    "publishedUnderTheGnuGeneralPublicLicenseV30",
-    "enterVerificationCode"
+    "passwordMustBeAtLeast8CharactersLong"
   ]
 }

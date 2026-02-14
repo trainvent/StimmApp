@@ -2215,6 +2215,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View institutional guide'**
   String get viewInstitutionalGuide;
+
+  /// No description provided for @pleaseEnterYourCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your Credentials'**
+  String get pleaseEnterYourCredentials;
+
+  /// No description provided for @pleaseEnterYourDesiredCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the Credentials you desire.'**
+  String get pleaseEnterYourDesiredCredentials;
+
+  /// No description provided for @sendConfirmationEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send confirmation Email.'**
+  String get sendConfirmationEmail;
+
+  /// No description provided for @weCannotProvideSecureVerificationYetButWeAreWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'We cannot provide secure verification yet, but we are working on it.'**
+  String get weCannotProvideSecureVerificationYetButWeAreWorking;
+
+  /// No description provided for @passwordMustBeAtLeast8CharactersLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters long'**
+  String get passwordMustBeAtLeast8CharactersLong;
+
+  /// Password validation messages
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}'**
+  String passwordValidation(String type);
 }
 
 class _AppLocalizationsDelegate

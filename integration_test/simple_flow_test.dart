@@ -57,7 +57,7 @@ void main() {
 
     locator.init();
     await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKey_dev,
+      apiKey: IConst.revenueCatApiKeyDev,
       appUserId: authService.currentUser?.uid,
     );
 
@@ -89,7 +89,7 @@ void main() {
     ).enterText(password.isNotEmpty ? password : IConst.testSecurePassword);
     await $(keys.onboardingPage.registerButton).tap();
     await $(
-      keys.emailConfirmationPage.verificationCodeTextField,
+      keys.verificationWidget.verificationCodeTextField,
     ).waitUntilVisible();
 
     String? code;
@@ -112,12 +112,11 @@ void main() {
       throw Exception("Verification code not found");
     }
     await $(
-      keys.emailConfirmationPage.verificationCodeTextField,
+      keys.verificationWidget.verificationCodeTextField,
     ).waitUntilVisible();
     await $(
-      keys.emailConfirmationPage.verificationCodeTextField,
+      keys.verificationWidget.verificationCodeTextField,
     ).enterText(code);
-    await $(keys.emailConfirmationPage.verifyButton).tap();
     await $(keys.setUserDetailsPage.givenNameTextField).enterText("Tester");
     await $(keys.setUserDetailsPage.surnameTextField).enterText("Georg");
 

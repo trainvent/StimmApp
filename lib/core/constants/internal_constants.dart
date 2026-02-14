@@ -19,8 +19,8 @@ class IConst {
       'https://www.stimmapp.org/terms-of-service';
   static const String faqUrl = 'https://www.stimmapp.org/faq';
 
-  static const String revenueCatApiKey_dev = 'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
-  static const String revenueCatApiKey_prod =
+  static const String revenueCatApiKeyDev = 'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
+  static const String revenueCatApiKeyProd =
       'goog_gaOrZloplZgSgUVWiKGRXUXyFXF';
 
   // Google Places API Key.

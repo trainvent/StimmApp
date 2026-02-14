@@ -1,24 +1,24 @@
-import * as functions from "firebase-functions/v1";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
 // Hardcoded admin email matching IConst.adminEmail in your Dart code
 const ADMIN_EMAIL = 'service@stimmapp.org';
 
-export const deleteUserByAdmin = functions.https.onCall(async (data, context) => {
+export const deleteUserByAdmin = onCall(async (request) => {
 	// 1. Ensure the caller is authenticated
-	if (!context.auth) {
-		throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+	if (!request.auth) {
+		throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
 	}
 
 	// 2. Ensure the caller is the Admin
-	const callerEmail = context.auth.token.email;
+	const callerEmail = request.auth.token.email;
 	if (callerEmail !== ADMIN_EMAIL) {
-		throw new functions.https.HttpsError('permission-denied', 'Only admins can delete users.');
+		throw new HttpsError('permission-denied', 'Only admins can delete users.');
 	}
 
-	const uid = data.uid;
+	const uid = request.data.uid;
 	if (!uid) {
-		throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "uid" argument.');
+		throw new HttpsError('invalid-argument', 'The function must be called with a "uid" argument.');
 	}
 
 	try {
@@ -31,6 +31,6 @@ export const deleteUserByAdmin = functions.https.onCall(async (data, context) =>
 		return { success: true };
 	} catch (error) {
 		console.error("Error deleting user:", error);
-		throw new functions.https.HttpsError('internal', 'Unable to delete user.');
+		throw new HttpsError('internal', 'Unable to delete user.');
 	}
 });

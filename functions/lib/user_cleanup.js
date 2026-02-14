@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cleanupOrphanedUsers = exports.onAccountDelete = void 0;
 exports.cleanupUserData = cleanupUserData;
-const functions = __importStar(require("firebase-functions/v1"));
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 if (admin.apps.length === 0) {
@@ -147,6 +146,9 @@ async function cleanupUserData(uid) {
         console.error(`[cleanupUserData] Error cleaning up user ${uid}:`, error);
     }
 }
+// Using v1 for Auth trigger as v2 identity.beforeUserDeleted/onUserDeleted might not be available or configured correctly in this environment.
+// Reverting to v1 to ensure stability.
+const functions = __importStar(require("firebase-functions/v1"));
 exports.onAccountDelete = functions.auth.user().onDelete(async (user) => {
     await cleanupUserData(user.uid);
 });

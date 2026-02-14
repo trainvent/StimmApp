@@ -71,7 +71,6 @@ class ProfilePage extends StatelessWidget {
       title: context.l10n.myProfile,
       actions: [
         Badge.count(
-          // TODO: Implement notification count
           offset: const Offset(-5, 5),
           count: 0,
           child: IconButton(
@@ -183,7 +182,6 @@ class ProfilePage extends StatelessWidget {
                             context,
                             context.l10n.email,
                             userProfile.email,
-                            //!TODO: create changeemailpage
                           ),
                           _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
@@ -226,6 +224,23 @@ class ProfilePage extends StatelessWidget {
                             userProfile.isVerified == true
                                 ? context.l10n.yes
                                 : context.l10n.no,
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(context.l10n.userProfileVerified),
+                                  content: Text(
+                                    S.of(context).weCannotProvideSecureVerificationYetButWeAreWorking,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                             //TODO: route to verificationPage once Ausweisapp Client is in place
                           ),
                           if (userProfile.isAdmin) ...[

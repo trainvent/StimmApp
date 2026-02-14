@@ -2968,6 +2968,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Please enter your Credentials`
+  String get pleaseEnterYourCredentials {
+    return Intl.message(
+      'Please enter your Credentials',
+      name: 'pleaseEnterYourCredentials',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the Credentials you desire.`
+  String get pleaseEnterYourDesiredCredentials {
+    return Intl.message(
+      'Please enter the Credentials you desire.',
+      name: 'pleaseEnterYourDesiredCredentials',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send confirmation Email.`
+  String get sendConfirmationEmail {
+    return Intl.message(
+      'Send confirmation Email.',
+      name: 'sendConfirmationEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We cannot provide secure verification yet, but we are working on it.`
+  String get weCannotProvideSecureVerificationYetButWeAreWorking {
+    return Intl.message(
+      'We cannot provide secure verification yet, but we are working on it.',
+      name: 'weCannotProvideSecureVerificationYetButWeAreWorking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be at least 8 characters long`
+  String get passwordMustBeAtLeast8CharactersLong {
+    return Intl.message(
+      'Password must be at least 8 characters long',
+      name: 'passwordMustBeAtLeast8CharactersLong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}`
+  String passwordValidation(String type) {
+    return Intl.message(
+      'Password must contain at least one ${Intl.select(type, {'uppercase': 'uppercase letter', 'lowercase': 'lowercase letter', 'number': 'number', 'special': 'special character', 'other': 'valid character'})}',
+      name: 'passwordValidation',
+      desc: 'Password validation messages',
+      args: [type],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

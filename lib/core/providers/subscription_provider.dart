@@ -20,8 +20,6 @@ final subscriptionSyncProvider = Provider<void>((ref) {
   // Only proceed if user is logged in and we have entitlement data
   if (authState.value == null || !entitlementAsync.hasValue) return;
 
-  final user = authState.value!;
-  final tier = entitlementAsync.value!;
   
   // We need to check the current profile to avoid infinite loops or unnecessary writes
   // But we can't easily "await" here inside a synchronous provider body.

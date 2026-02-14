@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 String? validatePassword(BuildContext context, String? value) {
   if (value == null || value.isEmpty) {
     return context.l10n.enterSomething;
   }
+
+  final List<String> errors = [];
+
   if (value.length < 8) {
-    return 'Password must be at least 8 characters long';
+    errors.add(S.of(context).passwordMustBeAtLeast8CharactersLong);
   }
   if (!value.contains(RegExp(r'[A-Z]'))) {
-    return 'Password must contain at least one uppercase letter';
+    errors.add(S.of(context).passwordValidation('uppercase'));
   }
   if (!value.contains(RegExp(r'[a-z]'))) {
-    return 'Password must contain at least one lowercase letter';
+    errors.add(S.of(context).passwordValidation('lowercase'));
   }
   if (!value.contains(RegExp(r'[0-9]'))) {
-    return 'Password must contain at least one number';
+    errors.add(S.of(context).passwordValidation('number'));
   }
   if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-    return 'Password must contain at least one special character';
+    errors.add(S.of(context).passwordValidation('special'));
   }
-  return null;
+
+  if (errors.isEmpty) {
+    return null;
+  }
+
+  return errors.join('\n');
 }

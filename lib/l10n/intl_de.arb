@@ -394,5 +394,25 @@
   "petitionTutorialStep5": "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
   "limitThisPetitionToYourState": "Diese Petition auf Ihr Bundesland beschränken?",
   "source": "Quelle",
-  "viewInstitutionalGuide": "Institutionellen Leitfaden ansehen"
+  "viewInstitutionalGuide": "Institutionellen Leitfaden ansehen",
+  "weCannotProvideSecureVerificationYetButWeAreWorking": "Wir können noch keine sichere Verifizierung anbieten, arbeiten aber daran.",
+  "enterVerificationCode": "Bestätigungscode eingeben",
+  "hello": "Hallo",
+  "faultyInput": "Fehlerhafte Eingabe",
+  "weFailedToGetYourStatePleaseProofreadYourLivingaddress": "Wir konnten Ihr Bundesland nicht ermitteln, bitte überprüfen Sie Ihre Wohnadresse",
+  "pleaseEnterYourDetails": "Bitte geben Sie Ihre Daten ein.",
+  "pleaseEnterYourCredentials": "Bitte geben Sie ihre Zugangsdaten ein.",
+  "thisAppWasDevelopedBy": "Diese App wurde entwickelt von",
+  "sendConfirmationEmail": "Sende Bestätigungs-E-Mail",
+  "pleaseEnterYourDesiredCredentials": "Bitte geben sie ihre gewünschten Zugangsdaten ein.",
+  "publishedUnderTheGnuGeneralPublicLicenseV30": "veröffentlicht unter der GNU General Public License v3.0",
+  "@passwordValidation": {
+    "description": "Password validation messages",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordValidation": "Das Passwort muss mindestens ein {type, select, uppercase{Großbuchstabe} lowercase{Kleinbuchstabe} number{Zahl} special{Sonderzeichen} other{gültiges Zeichen}} enthalten"
 }

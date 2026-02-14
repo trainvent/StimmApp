@@ -67,7 +67,7 @@ class AboutPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    S.of(context).thisAppWasDevelopedBy + ' ' + "Team Vogelcode",
+                    "${S.of(context).thisAppWasDevelopedBy} Team Vogelcode",
                     textAlign: TextAlign.center,
                     style: AppTextStyles.m,
                   ),
