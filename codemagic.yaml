@@ -21,7 +21,12 @@ workflows:
           keychain initialize
       - name: Fetch signing files
         script: |
-          app-store-connect fetch-signing-files "de.lemarq.stimmapp" --type IOS_APP_STORE --create
+          if [ "$RUN_FETCH_SIGNING_FILES" = "true" ] && [ -n "$CERTIFICATE_PRIVATE_KEY" ]; then
+            echo "RUN_FETCH_SIGNING_FILES=true and CERTIFICATE_PRIVATE_KEY is set. Fetching signing files from App Store Connect."
+            app-store-connect fetch-signing-files "de.lemarq.stimmapp" --type IOS_APP_STORE --certificate-key=@env:CERTIFICATE_PRIVATE_KEY --create
+          else
+            echo "Skipping fetch-signing-files. Using certificates/profiles provided in Codemagic UI (.p12 + provisioning profile)."
+          fi
       - name: Set up signing certificate
         script: |
           keychain add-certificates
