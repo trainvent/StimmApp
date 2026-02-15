@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     integrations:
-      app_store_connect: 69877d8de4e9346aa185159d # Replace with the name you gave your API key in Codemagic UI
+      app_store_connect: LeMarq # Replace with the name you gave your API key in Codemagic UI
     environment:
       groups:
         - app_store_credentials 
@@ -37,7 +37,7 @@ workflows:
           cd ios && pod install
       - name: Flutter build ipa
         script: |
-          flutter build ipa --release --flavor $FLUTTER_FLAVOR --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --flavor $FLUTTER_FLAVOR --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
