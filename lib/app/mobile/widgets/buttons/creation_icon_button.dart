@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/creation_floating_action_button.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 
-enum CreationType { petition, poll }
-
-class CreationFloatingActionButton extends StatefulWidget {
+class CreationIconButton extends StatefulWidget {
   final CreationType type;
   final WidgetBuilder pageBuilder;
+  final IconData icon;
 
-  const CreationFloatingActionButton({
+  const CreationIconButton({
     super.key,
     required this.type,
     required this.pageBuilder,
+    this.icon = Icons.assignment_add,
   });
 
   @override
-  State<CreationFloatingActionButton> createState() =>
-      _CreationFloatingActionButtonState();
+  State<CreationIconButton> createState() => _CreationIconButtonState();
 }
 
-class _CreationFloatingActionButtonState
-    extends State<CreationFloatingActionButton> {
+class _CreationIconButtonState extends State<CreationIconButton> {
   bool _loading = true;
   bool _canCreate = false;
 
@@ -29,9 +29,25 @@ class _CreationFloatingActionButtonState
   void initState() {
     super.initState();
     _loadStatus();
+    QuotaUpdateNotifier.instance.addListener(_loadStatus);
+  }
+
+  @override
+  void dispose() {
+    QuotaUpdateNotifier.instance.removeListener(_loadStatus);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CreationIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.type != oldWidget.type) {
+      _loadStatus();
+    }
   }
 
   Future<void> _loadStatus() async {
+    setState(() => _loading = true);
     try {
       final status = await PublishingQuotaService.instance.getDailyStatus();
       if (!mounted) return;
@@ -63,12 +79,21 @@ class _CreationFloatingActionButtonState
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: _loading ? null : _handlePressed,
-      backgroundColor: _canCreate ? null : Colors.grey,
-      child: _loading
-          ? const CircularProgressIndicator(color: Colors.white)
-          : const Icon(Icons.add),
+    if (_loading) {
+      return const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+
+    return IconButton(
+      onPressed: _handlePressed,
+      icon: Icon(widget.icon),
+      color: _canCreate ? null : Colors.grey,
+      tooltip: _canCreate ? null : context.l10n.dailyCreateLimitReached,
     );
   }
 }

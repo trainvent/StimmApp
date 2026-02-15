@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
-import 'package:stimmapp/app/mobile/widgets/debounced_button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/debounced_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';

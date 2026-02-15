@@ -4,7 +4,7 @@ import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/app/mobile/widgets/sign_action_button.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/sign_action_button.dart';
 
 class PetitionDetailPage extends StatelessWidget {
   const PetitionDetailPage({super.key, required this.id});

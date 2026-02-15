@@ -4,7 +4,7 @@ import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/app/mobile/widgets/sign_action_button.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/sign_action_button.dart';
 
 class PollDetailPage extends StatefulWidget {
   const PollDetailPage({super.key, required this.id});

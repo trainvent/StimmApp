@@ -7,6 +7,7 @@ import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_l
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/running_forms_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
@@ -230,7 +231,9 @@ class ProfilePage extends StatelessWidget {
                                 builder: (context) => AlertDialog(
                                   title: Text(context.l10n.userProfileVerified),
                                   content: Text(
-                                    S.of(context).weCannotProvideSecureVerificationYetButWeAreWorking,
+                                    S
+                                        .of(context)
+                                        .weCannotProvideSecureVerificationYetButWeAreWorking,
                                   ),
                                   actions: [
                                     TextButton(
@@ -287,6 +290,18 @@ class ProfilePage extends StatelessWidget {
                           builder: (context) {
                             return const UserHistoryPage();
                           },
+                        ),
+                      );
+                    },
+                  ),
+                  // Running forms
+                  PointingListTile(
+                    title: const Text('Running Forms'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RunningFormsPage(),
                         ),
                       );
                     },

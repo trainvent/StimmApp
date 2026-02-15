@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/set_new_password_page.dart';
-import 'package:stimmapp/app/mobile/widgets/debounced_button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/debounced_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/verification_widget.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';

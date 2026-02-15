@@ -4,8 +4,8 @@ import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_creator_page.da
 import 'package:stimmapp/app/mobile/pages/main/home/home_navigation_config.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/settings/settings_page.dart';
-import 'package:stimmapp/app/mobile/widgets/creation_floating_action_button.dart';
-import 'package:stimmapp/app/mobile/widgets/creation_icon_button.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/creation_floating_action_button.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/creation_icon_button.dart';
 import 'package:stimmapp/app/mobile/widgets/navbar_widget.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
