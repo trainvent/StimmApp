@@ -64,3 +64,28 @@ workflows:
         submit_to_testflight: true
         beta_groups:
           - "Internal Testers"
+  ios-preview:
+    name: iOS Preview (Simulator)
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages get
+      - name: Install CocoaPods dependencies
+        script: |
+          if [ -f "ios/Podfile" ]; then
+            cd ios
+            pod install
+          else
+            echo "No ios/Podfile found. Skipping pod install."
+          fi
+      - name: Build iOS Simulator app
+        script: |
+          flutter build ios --simulator --debug
+    artifacts:
+      - build/ios/iphonesimulator/*.app
