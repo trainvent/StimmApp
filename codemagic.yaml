@@ -83,6 +83,7 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           cd ios
+          pod deintegrate || true
           pod install --repo-update
       - name: Build iOS Simulator app
         script: |
