@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -105,7 +107,11 @@ class _FormExportPageState extends State<FormExportPage>
                         .exportPetitionResults(context, p, p.id);
                     if (!context.mounted) return;
                     showSuccessSnackBar('${context.l10n.exportSuccess}: $path');
+                  } on MissingPluginException {
+                    if (!context.mounted) return;
+                    showErrorSnackBar(context.l10n.notAvailableOnWebApp);
                   } catch (e) {
+                    if (!context.mounted) return;
                     showErrorSnackBar('${context.l10n.exportFailed}: $e');
                   }
                 },
@@ -146,7 +152,11 @@ class _FormExportPageState extends State<FormExportPage>
                         .exportPollResults(context, p, p.id);
                     if (!context.mounted) return;
                     showSuccessSnackBar('${context.l10n.exportSuccess}: $path');
+                  } on MissingPluginException {
+                    if (!context.mounted) return;
+                    showErrorSnackBar(context.l10n.notAvailableOnWebApp);
                   } catch (e) {
+                    if (!context.mounted) return;
                     showErrorSnackBar('${context.l10n.exportFailed}: $e');
                   }
                 },
