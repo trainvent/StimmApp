@@ -8,10 +8,12 @@ workflows:
     environment:
       groups:
         - app_store_credentials 
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: de.lemarq.stimmapp
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        FLUTTER_FLAVOR: "prod"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -19,14 +21,6 @@ workflows:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
           keychain initialize
-      - name: Fetch signing files
-        script: |
-          if [ "$RUN_FETCH_SIGNING_FILES" = "true" ] && [ -n "$CERTIFICATE_PRIVATE_KEY" ]; then
-            echo "RUN_FETCH_SIGNING_FILES=true and CERTIFICATE_PRIVATE_KEY is set. Fetching signing files from App Store Connect."
-            app-store-connect fetch-signing-files "de.lemarq.stimmapp" --type IOS_APP_STORE --certificate-key=@env:CERTIFICATE_PRIVATE_KEY --create
-          else
-            echo "Skipping fetch-signing-files. Using certificates/profiles provided in Codemagic UI (.p12 + provisioning profile)."
-          fi
       - name: Set up signing certificate
         script: |
           keychain add-certificates
@@ -38,11 +32,15 @@ workflows:
           flutter packages get
       - name: Install CocoaPods dependencies
         script: |
-          find . -name "Podfile" -exec dir {} \;
-          cd ios && pod install
+          if [ -f "ios/Podfile" ]; then
+            cd ios
+            pod install
+          else
+            echo "No ios/Podfile found. Skipping pod install."
+          fi
       - name: Flutter build ipa
         script: |
-          flutter build ipa --release --flavor $FLUTTER_FLAVOR --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log

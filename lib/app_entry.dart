@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,19 @@ import 'package:stimmapp/l10n/app_localizations.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void>? _firebaseInit;
+
+String _resolveRevenueCatApiKey() {
+  final bool isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  if (Environment.isDev) {
+    return isIos
+        ? IConst.revenueCatApiKeyDevIos
+        : IConst.revenueCatApiKeyDevAndroid;
+  }
+  return isIos
+      ? IConst.revenueCatApiKeyProdIos
+      : IConst.revenueCatApiKeyProdAndroid;
+}
 
 Future<void> _initFirebase(FirebaseOptions firebaseOptions) async {
   try {
@@ -69,17 +83,10 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   );
 
   locator.init();
-  if (Environment.isDev) {
-    await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKeyDev,
-      appUserId: authService.currentUser?.uid,
-    );
-  } else {
-    await PurchasesService.instance.init(
-      apiKey: IConst.revenueCatApiKeyProd,
-      appUserId: authService.currentUser?.uid,
-    );
-  }
+  await PurchasesService.instance.init(
+    apiKey: _resolveRevenueCatApiKey(),
+    appUserId: authService.currentUser?.uid,
+  );
   if (!kIsWeb && kDebugMode) {
     await authService.setSettings(appVerificationDisabledForTesting: true);
   }

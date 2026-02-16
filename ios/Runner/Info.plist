@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Stimmapp</string>
+	<string>StimmApp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>NSCameraUsageDescription</key>
+	<string>StimmApp uses the camera so you can add photos to petitions and polls.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>StimmApp needs photo library access so you can choose images for petitions and polls.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>StimmApp may save generated images to your photo library when you export content.</string>
 </dict>
 </plist>
