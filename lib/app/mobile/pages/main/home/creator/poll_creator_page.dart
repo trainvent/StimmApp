@@ -10,7 +10,6 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:uuid/uuid.dart';
-import 'package:intl/intl.dart';
 
 class PollCreatorPage extends StatefulWidget {
   const PollCreatorPage({super.key});
@@ -24,7 +23,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     TextEditingController(),
     TextEditingController(),
   ];
-  DateTime _expiresAt = DateTime.now().add(const Duration(days: 7));
   final _uuid = const Uuid();
 
   @override
@@ -52,27 +50,12 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     });
   }
 
-  Future<void> _selectExpiryDate(BuildContext context) async {
-    final now = DateTime.now();
-    final newDate = await showDatePicker(
-      context: context,
-      initialDate: _expiresAt,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
-    );
-
-    if (newDate != null) {
-      setState(() {
-        _expiresAt = newDate;
-      });
-    }
-  }
-
   Future<void> _createPoll({
     required String title,
     required String description,
     required List<String> tags,
     required bool isStateDependent,
+    required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
@@ -104,6 +87,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         state = userProfile?.state;
       }
 
+      final now = DateTime.now();
       final poll = Poll(
         id: '',
         title: title,
@@ -112,8 +96,8 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         options: options,
         votes: {for (var option in options) option.id: 0},
         createdBy: currentUser.uid,
-        createdAt: DateTime.now(),
-        expiresAt: _expiresAt,
+        createdAt: now,
+        expiresAt: now.add(Duration(days: durationDays)),
         state: state,
       );
 
@@ -159,12 +143,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       sourceUrl: 'https://www.bpb.de/system/files/dokument_pdf/M%2001.04%20Fragebogenerstellung_3.pdf',
       onSubmit: _createPoll,
       additionalBottomFields: [
-        ListTile(
-          title: Text(context.l10n.expiresOn),
-          subtitle: Text(DateFormat.yMMMd().format(_expiresAt)),
-          trailing: const Icon(Icons.calendar_today),
-          onTap: () => _selectExpiryDate(context),
-        ),
         const SizedBox(height: 20),
         Text(
           context.l10n.options,

@@ -86,6 +86,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     required String description,
     required List<String> tags,
     required bool isStateDependent,
+    required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
@@ -119,7 +120,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         signatureCount: 0,
         createdBy: currentUser.uid,
         createdAt: now,
-        expiresAt: now.add(const Duration(days: 28)),
+        expiresAt: now.add(Duration(days: durationDays)),
         status: IConst.active,
         state: state,
         imageUrl: imageUrl,

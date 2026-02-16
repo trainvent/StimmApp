@@ -25,6 +25,7 @@ class BaseCreatorPage extends StatefulWidget {
     required String description,
     required List<String> tags,
     required bool isStateDependent,
+    required int durationDays,
   }) onSubmit;
   final List<Widget>? additionalTopFields;
   final List<Widget>? additionalBottomFields;
@@ -40,6 +41,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   List<String> _selectedTags = [];
   bool _isStateDependent = false;
   bool _isLoading = false;
+  int _durationDays = 28; // Default duration
 
   @override
   void dispose() {
@@ -73,6 +75,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
         isStateDependent: _isStateDependent,
+        durationDays: _durationDays,
       );
     } catch (e) {
       // Error handling is mostly done in the callback, but catch here just in case
@@ -245,6 +248,21 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   });
                 },
               ),
+              const SizedBox(height: 20),
+              Text(context.l10n.daysLeft, style: Theme.of(context).textTheme.titleMedium),
+              Slider(
+                value: _durationDays.toDouble(),
+                min: 1,
+                max: 42, // 6 weeks
+                divisions: 41,
+                label: '$_durationDays days',
+                onChanged: (double value) {
+                  setState(() {
+                    _durationDays = value.toInt();
+                  });
+                },
+              ),
+              Center(child: Text('$_durationDays days')),
               const SizedBox(height: 10),
               CheckboxListTile(
                 title: Text(context.l10n.stateDependent),

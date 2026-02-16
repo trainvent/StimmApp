@@ -76,17 +76,26 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages get
+      - name: Clean iOS build state
+        script: |
+          flutter clean
+          rm -rf ios/Pods ios/Podfile.lock
       - name: Install CocoaPods dependencies
         script: |
-          if [ -f "ios/Podfile" ]; then
-            cd ios
-            rm -rf Pods Podfile.lock
-            pod install --repo-update
-          else
-            echo "No ios/Podfile found. Skipping pod install."
-          fi
+          cd ios
+          pod install --repo-update
       - name: Build iOS Simulator app
         script: |
-          flutter build ios --simulator --debug --no-pub
+          cd ios
+          xcodebuild \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ../build/ios_sim \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
     artifacts:
-      - build/ios/iphonesimulator/*.app
+      - build/ios_sim/Build/Products/Debug-iphonesimulator/*.app
+      - /tmp/xcodebuild_logs/*.log
