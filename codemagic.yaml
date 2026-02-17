@@ -27,12 +27,17 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
+      - name: Clean iOS build state
+        script: |
+          flutter clean
+          rm -rf ios/Pods ios/Podfile.lock
       - name: Get Flutter packages
         script: |
           flutter packages get
       - name: Install CocoaPods dependencies
         script: |
           cd ios
+          pod deintegrate || true
           pod install --repo-update
       - name: Flutter build ipa
         script: |
