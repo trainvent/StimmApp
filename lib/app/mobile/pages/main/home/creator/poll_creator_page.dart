@@ -50,6 +50,16 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     });
   }
 
+  void _reorderOptions(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final item = _optionControllers.removeAt(oldIndex);
+      _optionControllers.insert(newIndex, item);
+    });
+  }
+
   Future<void> _createPoll({
     required String title,
     required String description,
@@ -148,36 +158,49 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
           context.l10n.options,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        ..._optionControllers.asMap().entries.map((entry) {
-          final index = entry.key;
-          final controller = entry.value;
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: controller,
-                    maxLength: AppLimits.maxPollOptionLength,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.option + (index + 1).toString(),
-                      border: const OutlineInputBorder(),
-                      counterText: "",
+        const SizedBox(height: 8),
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _optionControllers.length,
+          onReorder: _reorderOptions,
+          buildDefaultDragHandles: false, // Disable default handles
+          itemBuilder: (context, index) {
+            final controller = _optionControllers[index];
+            return Padding(
+              key: ValueKey(controller),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  ReorderableDragStartListener(
+                    index: index,
+                    child: const Icon(Icons.drag_handle),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      controller: controller,
+                      maxLength: AppLimits.maxPollOptionLength,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.option + (index + 1).toString(),
+                        border: const OutlineInputBorder(),
+                        counterText: "",
+                      ),
+                      validator: (v) => (v?.trim().isEmpty ?? true)
+                          ? context.l10n.optionRequired
+                          : null,
                     ),
-                    validator: (v) => (v?.trim().isEmpty ?? true)
-                        ? context.l10n.optionRequired
-                        : null,
                   ),
-                ),
-                if (_optionControllers.length > 2)
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: () => _removeOption(index),
-                  ),
-              ],
-            ),
-          );
-        }),
+                  if (_optionControllers.length > 2)
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline),
+                      onPressed: () => _removeOption(index),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
         if (_optionControllers.length < AppLimits.maxPollOptions)
           TextButton.icon(
             icon: const Icon(Icons.add),
