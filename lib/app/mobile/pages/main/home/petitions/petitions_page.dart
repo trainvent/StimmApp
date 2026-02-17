@@ -14,6 +14,19 @@ class PetitionsPage extends StatelessWidget {
           repo.list(query: query, status: status),
       itemBuilder: (context, p) {
         return ListTile(
+          leading: p.imageUrl != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    p.imageUrl!,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.broken_image),
+                  ),
+                )
+              : null,
           title: Text(p.title),
           subtitle: Text(
             p.description,

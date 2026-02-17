@@ -13,6 +13,7 @@ import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/pointing_list_tile.dart';
+import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -32,18 +33,40 @@ import 'delete_account_page.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  Future<void> _openManageSubscriptions() async {
-    final Uri uri;
+  Future<void> _openManageSubscriptions(BuildContext context) async {
     if (kIsWeb) {
-      uri = Uri.parse('https://play.google.com/store/account/subscriptions');
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      uri = Uri.parse('https://apps.apple.com/account/subscriptions');
+      final notifier = ValueNotifier<String?>(null);
+      await showDialog(
+        context: context,
+        builder:
+            (context) => SelectionNotifierDialog<String>(
+              notifier: notifier,
+              title: 'Select Payment Provider',
+              options: const ['Google Play'],
+              optionLabel: (context, option) => option,
+              onConfirm: (selected) async {
+                if (selected == 'Google Play') {
+                  final uri = Uri.parse(
+                    'https://play.google.com/store/account/subscriptions',
+                  );
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
+                }
+              },
+            ),
+      );
     } else {
-      uri = Uri.parse('https://play.google.com/store/account/subscriptions');
-    }
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok) {
-      showErrorSnackBar(S.current.error);
+      final Uri uri;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        uri = Uri.parse('https://apps.apple.com/account/subscriptions');
+      } else {
+        uri = Uri.parse('https://play.google.com/store/account/subscriptions');
+      }
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok) {
+        showErrorSnackBar(S.current.error);
+      }
     }
   }
 
@@ -209,14 +232,16 @@ class ProfilePage extends StatelessWidget {
                                 : context.l10n.no,
                             onTap: () async {
                               if (userProfile.isPro == true) {
-                                await _openManageSubscriptions();
+                                await _openManageSubscriptions(context);
                                 return;
                               }
                               final uid = authService.currentUser?.uid;
                               await PurchasesService.instance.syncAppUser(uid);
                               await PurchasesService.instance
                                   .refreshCustomerInfo();
-                              await PurchasesService.instance.presentPaywall();
+                              await PurchasesService.instance.presentPaywall(
+                                context: context,
+                              );
                             },
                           ),
                           _buildDetailTile(

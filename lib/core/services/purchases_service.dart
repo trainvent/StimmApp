@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /*// on startup:
 await PurchasesService.instance.init(apiKey: 'your_public_sdk_key');
@@ -145,9 +148,13 @@ class PurchasesService {
   }
 
   /// Hosted paywall – returns true on success.
-  Future<bool> presentPaywall() async {
+  Future<bool> presentPaywall({BuildContext? context}) async {
     if (kIsWeb) {
       log('RevenueCat Paywalls are not supported on Web.');
+      if (context != null) {
+        await _showWebPaymentDialog(context);
+        return true;
+      }
       return false;
     }
     try {
@@ -162,9 +169,16 @@ class PurchasesService {
   }
 
   /// Specific hosted paywall if needed – returns true on success.
-  Future<bool> presentPaywallIfNeeded(String paywallId) async {
+  Future<bool> presentPaywallIfNeeded(
+    String paywallId, {
+    BuildContext? context,
+  }) async {
     if (kIsWeb) {
       log('RevenueCat Paywalls are not supported on Web.');
+      if (context != null) {
+        await _showWebPaymentDialog(context);
+        return true;
+      }
       return false;
     }
     try {
@@ -176,6 +190,30 @@ class PurchasesService {
       log('presentPaywallIfNeeded error: $e\n$st');
       return false;
     }
+  }
+
+  Future<void> _showWebPaymentDialog(BuildContext context) async {
+    final notifier = ValueNotifier<String?>(null);
+    await showDialog(
+      context: context,
+      builder:
+          (context) => SelectionNotifierDialog<String>(
+            notifier: notifier,
+            title: 'Select Payment Provider',
+            options: const ['Google Play'],
+            optionLabel: (context, option) => option,
+            onConfirm: (selected) async {
+              if (selected == 'Google Play') {
+                final uri = Uri.parse(
+                  'https://play.google.com/store/account/subscriptions',
+                );
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              }
+            },
+          ),
+    );
   }
 
   /// Convenience: refresh customer info and entitlement.
