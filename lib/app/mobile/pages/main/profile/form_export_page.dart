@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
@@ -86,7 +87,7 @@ class _FormExportPageState extends State<FormExportPage>
       ),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {
@@ -131,7 +132,7 @@ class _FormExportPageState extends State<FormExportPage>
       ),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {

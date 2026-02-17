@@ -10,10 +10,6 @@ class AppLoadingPage extends StatelessWidget {
       body: Center(
         child: TriangleLoadingIndicator(
           size: 56,
-          trianglesPerCycle: 6,
-          buildDuration: Duration(milliseconds: 1300),
-          zoomDuration: Duration(milliseconds: 800),
-          strokeWidth: 2.1,
         ),
       ),
     );

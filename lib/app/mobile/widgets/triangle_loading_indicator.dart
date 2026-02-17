@@ -12,6 +12,8 @@ class TriangleLoadingIndicator extends StatefulWidget {
     this.keepHistoryCycles = 2,
     this.strokeWidth = 2.2,
     this.strokeColor = const Color(0xFF111111),
+    this.showFill = true,
+    this.baseColor,
     this.baseHue = 26,
     this.saturation = 0.73,
     this.lightness = 0.52,
@@ -27,6 +29,8 @@ class TriangleLoadingIndicator extends StatefulWidget {
   final int keepHistoryCycles;
   final double strokeWidth;
   final Color strokeColor;
+  final bool showFill;
+  final Color? baseColor;
   final double baseHue;
   final double saturation;
   final double lightness;
@@ -81,6 +85,9 @@ class _TriangleLoadingIndicatorState extends State<TriangleLoadingIndicator>
                 keepHistoryCycles: widget.keepHistoryCycles,
                 strokeWidth: widget.strokeWidth,
                 strokeColor: widget.strokeColor,
+                showFill: widget.showFill,
+                baseColor:
+                    widget.baseColor ?? Theme.of(context).colorScheme.primary,
                 baseHue: widget.baseHue,
                 saturation: widget.saturation,
                 lightness: widget.lightness,
@@ -105,6 +112,8 @@ class _TriangleLoadingPainter extends CustomPainter {
     required this.keepHistoryCycles,
     required this.strokeWidth,
     required this.strokeColor,
+    required this.showFill,
+    required this.baseColor,
     required this.baseHue,
     required this.saturation,
     required this.lightness,
@@ -120,6 +129,8 @@ class _TriangleLoadingPainter extends CustomPainter {
   final int keepHistoryCycles;
   final double strokeWidth;
   final Color strokeColor;
+  final bool showFill;
+  final Color? baseColor;
   final double baseHue;
   final double saturation;
   final double lightness;
@@ -368,8 +379,14 @@ class _TriangleLoadingPainter extends CustomPainter {
   }
 
   Color _triColor(int index) {
-    final hue = (baseHue + index * hueStep) % 360;
-    final hsl = HSLColor.fromAHSL(1, hue, saturation, lightness);
+    final seedHsl = baseColor != null ? HSLColor.fromColor(baseColor!) : null;
+    final hue = ((seedHsl?.hue ?? baseHue) + index * hueStep) % 360;
+    final hsl = HSLColor.fromAHSL(
+      1,
+      hue,
+      saturation,
+      lightness,
+    );
     return hsl.toColor();
   }
 
@@ -394,7 +411,9 @@ class _TriangleLoadingPainter extends CustomPainter {
       ..strokeWidth = strokeWidth
       ..color = strokeColor.withValues(alpha: alpha);
 
-    canvas.drawPath(path, fillPaint);
+    if (showFill) {
+      canvas.drawPath(path, fillPaint);
+    }
     canvas.drawPath(path, strokePaint);
   }
 

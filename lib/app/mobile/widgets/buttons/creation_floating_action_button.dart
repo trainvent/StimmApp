@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
@@ -75,7 +76,11 @@ class _CreationFloatingActionButtonState
       onPressed: _loading ? null : _handlePressed,
       backgroundColor: _canCreate ? null : Colors.grey,
       child: _loading
-          ? const CircularProgressIndicator(color: Colors.white)
+          ? const TriangleLoadingIndicator(
+              size: 20,
+              showFill: false,
+              strokeColor: Colors.white,
+            )
           : const Icon(Icons.add),
     );
   }

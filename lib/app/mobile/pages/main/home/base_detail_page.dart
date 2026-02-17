@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -32,7 +33,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
         stream: streamProvider(id),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: TriangleLoadingIndicator());
           }
           final item = snap.data;
           if (item == null) return Center(child: Text(context.l10n.notFound));

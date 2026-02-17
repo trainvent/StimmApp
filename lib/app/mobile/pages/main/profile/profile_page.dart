@@ -14,6 +14,7 @@ import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/pointing_list_tile.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -92,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                   : null,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: TriangleLoadingIndicator());
                 }
                 if (snapshot.hasError) {
                   return Text('${context.l10n.error}${snapshot.error}');

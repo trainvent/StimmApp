@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -127,14 +128,14 @@ class _BaseOverviewPageState<T extends HomeItem>
       future: _userProfileFuture,
       builder: (context, userSnap) {
         if (userSnap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final userProfile = userSnap.data;
         return StreamBuilder<List<T>>(
           stream: widget.streamProvider(_query, status),
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: TriangleLoadingIndicator());
             }
             var items = snap.data ?? const [];
             

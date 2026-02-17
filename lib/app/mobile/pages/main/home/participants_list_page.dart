@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -15,7 +16,7 @@ class ParticipantsListPage extends StatelessWidget {
         stream: participantsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: TriangleLoadingIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text(context.l10n.error));

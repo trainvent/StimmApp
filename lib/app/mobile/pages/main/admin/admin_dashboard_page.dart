@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
@@ -47,7 +48,7 @@ class UserListTab extends StatelessWidget {
       stream: repo.watchAll(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final users = snapshot.data!;
         return ListView.builder(
@@ -112,7 +113,7 @@ class PollListTab extends StatelessWidget {
       stream: repo.list(status: IConst.active),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final polls = snapshot.data!;
         return ListView.builder(
@@ -171,7 +172,7 @@ class PetitionListTab extends StatelessWidget {
       stream: repo.list(status: IConst.active),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: TriangleLoadingIndicator());
         }
         final petitions = snapshot.data!;
         return ListView.builder(

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class DeleteAccountPage extends StatefulWidget {
@@ -171,13 +172,10 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                        ? const TriangleLoadingIndicator(
+                            size: 20,
+                            showFill: false,
+                            strokeColor: Colors.white,
                           )
                         : Text(context.l10n.deleteAccountButton),
                   ),

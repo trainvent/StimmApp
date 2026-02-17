@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 
 /// A button wrapper that handles debouncing and loading states with a cool animation.
 ///
@@ -86,13 +87,10 @@ class _DebouncedButtonState extends State<DebouncedButton> with SingleTickerProv
           onPressed: _isBusy ? null : _handleTap,
           style: widget.style,
           child: _isBusy
-              ? SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+              ? TriangleLoadingIndicator(
+                  size: 20,
+                  showFill: false,
+                  strokeColor: Theme.of(context).colorScheme.onPrimary,
                 )
               : widget.child,
         ),
