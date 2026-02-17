@@ -157,17 +157,27 @@ class _MyAppState extends State<MyApp> {
                   },
                 );
               },
+              onGenerateRoute: (settings) {
+                if (settings.name != null) {
+                  final uri = Uri.parse(settings.name!);
+                  if (uri.pathSegments.length == 2) {
+                    final id = uri.pathSegments[1];
+                    if (uri.pathSegments[0] == 'petition') {
+                      return MaterialPageRoute(
+                        builder: (context) => PetitionDetailPage(id: id),
+                        settings: settings,
+                      );
+                    } else if (uri.pathSegments[0] == 'poll') {
+                      return MaterialPageRoute(
+                        builder: (context) => PollDetailPage(id: id),
+                        settings: settings,
+                      );
+                    }
+                  }
+                }
+                return null;
+              },
               routes: {
-                '/petition': (ctx) {
-                  final args =
-                      ModalRoute.of(ctx)?.settings.arguments as String?;
-                  return PetitionDetailPage(id: args ?? '');
-                },
-                '/poll': (ctx) {
-                  final args =
-                      ModalRoute.of(ctx)?.settings.arguments as String?;
-                  return PollDetailPage(id: args ?? '');
-                },
                 '/delete_account': (context) => const DeleteAccountPage(),
               },
               localizationsDelegates: const [

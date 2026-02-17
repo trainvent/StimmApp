@@ -16,6 +16,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
     required this.contentBuilder,
     this.bottomAction,
     this.participantsStream,
+    this.actions,
   });
 
   final String id;
@@ -24,11 +25,12 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   final Widget Function(BuildContext context, T item) contentBuilder;
   final Widget? bottomAction;
   final Stream<List<UserProfile>>? participantsStream;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(appBarTitle)),
+      appBar: AppBar(title: Text(appBarTitle), actions: actions),
       body: StreamBuilder<T?>(
         stream: streamProvider(id),
         builder: (context, snap) {

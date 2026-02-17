@@ -30,7 +30,7 @@ class PollsPage extends StatelessWidget {
             ],
           ),
           onTap: () {
-            Navigator.of(context).pushNamed('/poll', arguments: p.id);
+            Navigator.of(context).pushNamed('/poll/${p.id}');
           },
         );
       },

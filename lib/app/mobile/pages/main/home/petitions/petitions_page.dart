@@ -42,7 +42,7 @@ class PetitionsPage extends StatelessWidget {
             ],
           ),
           onTap: () {
-            Navigator.of(context).pushNamed('/petition', arguments: p.id);
+            Navigator.of(context).pushNamed('/petition/${p.id}');
           },
         );
       },
