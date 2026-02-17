@@ -25,7 +25,7 @@ class IConst {
       'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
   static const String revenueCatApiKeyProdAndroid =
       'goog_gaOrZloplZgSgUVWiKGRXUXyFXF';
-  static const String revenueCatApiKeyProdIos = 'appl_REPLACE_WITH_IOS_KEY';
+  static const String revenueCatApiKeyProdIos = 'test_VEGOJICjsOpHUeSPdwjeXBwfLph'; //!TODO change as soon as we have it
 
   // Google Places API Key.
   // If your Firebase API key is restricted and doesn't work for Places,
