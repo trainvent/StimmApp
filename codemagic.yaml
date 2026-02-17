@@ -32,25 +32,8 @@ workflows:
           flutter packages get
       - name: Install CocoaPods dependencies
         script: |
-          if [ -f "ios/Podfile" ]; then
-            cd ios
-            echo "Using Podfile from: $(pwd)/Podfile"
-            head -n 20 Podfile || true
-            if ! grep -q "platform :ios" Podfile; then
-              echo "No iOS platform specified in Podfile. Inserting iOS 16.0."
-              cp Podfile Podfile.bak
-              {
-                echo "platform :ios, '16.0'"
-                cat Podfile.bak
-              } > Podfile
-            fi
-            sed -i.bak "s/platform :ios, '13.0'/platform :ios, '16.0'/g" Podfile
-            sed -i.bak "s/platform :ios, '15.0'/platform :ios, '16.0'/g" Podfile
-            rm -f Podfile.bak
-            pod install
-          else
-            echo "No ios/Podfile found. Skipping pod install."
-          fi
+          cd ios
+          pod install --repo-update
       - name: Flutter build ipa
         script: |
           flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
