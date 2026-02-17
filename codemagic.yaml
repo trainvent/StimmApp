@@ -2,7 +2,7 @@ workflows:
   ios-release:
     name: iOS Release
     max_build_duration: 60
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     integrations:
       app_store_connect: LeMarq # Replace with the name you gave your API key in Codemagic UI
     environment:
@@ -51,7 +51,7 @@ workflows:
   ios-preview:
     name: iOS Preview (Simulator)
     max_build_duration: 60
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     environment:
       flutter: stable
       xcode: latest

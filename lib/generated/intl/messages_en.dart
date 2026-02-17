@@ -58,6 +58,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Are you sure you want to cancel your Pro subscription? You will lose Pro features.",
         ),
+    "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to clear this draft?",
+    ),
     "areYouSureYouWantToDeleteThisPetition":
         MessageLookupByLibrary.simpleMessage(
           "Are you sure you want to delete this petition?",
@@ -143,6 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
     "dateOfBirth": MessageLookupByLibrary.simpleMessage("Date of Birth"),
     "daysLeft": MessageLookupByLibrary.simpleMessage("Days Left"),
+    "delete": MessageLookupByLibrary.simpleMessage("delete"),
     "deleteAccount": MessageLookupByLibrary.simpleMessage("delete Account"),
     "deleteAccountButton": MessageLookupByLibrary.simpleMessage(
       "PERMANENTLY DELETE ACCOUNT",

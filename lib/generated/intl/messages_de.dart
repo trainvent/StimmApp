@@ -64,6 +64,9 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Möchtest du dein Pro-Abo wirklich kündigen?",
         ),
+    "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
+      "Sind sie sicher das sie das Formular löschen wollen?",
+    ),
     "areYouSureYouWantToDeleteThisPetition":
         MessageLookupByLibrary.simpleMessage(
           "Sind Sie sicher, dass Sie diese Petition löschen möchten?",
@@ -155,6 +158,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "darkMode": MessageLookupByLibrary.simpleMessage("Dunkler Modus"),
     "dateOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsdatum"),
     "daysLeft": MessageLookupByLibrary.simpleMessage("Verbleibende Tage"),
+    "delete": MessageLookupByLibrary.simpleMessage("löschen"),
     "deleteAccount": MessageLookupByLibrary.simpleMessage("Konto löschen"),
     "deleteAccountButton": MessageLookupByLibrary.simpleMessage(
       "KONTO ENDGÜLTIG LÖSCHEN",

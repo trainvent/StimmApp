@@ -414,5 +414,7 @@
       }
     }
   },
-  "passwordValidation": "Das Passwort muss mindestens ein {type, select, uppercase{Großbuchstabe} lowercase{Kleinbuchstabe} number{Zahl} special{Sonderzeichen} other{gültiges Zeichen}} enthalten"
+  "delete": "löschen",
+  "passwordValidation": "Das Passwort muss mindestens ein {type, select, uppercase{Großbuchstabe} lowercase{Kleinbuchstabe} number{Zahl} special{Sonderzeichen} other{gültiges Zeichen}} enthalten",
+  "areYouSureYouWantToClearThisDraft": "Sind sie sicher das sie das Formular löschen wollen?"
 }

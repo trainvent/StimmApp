@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BaseCreatorPage extends StatefulWidget {
@@ -45,10 +47,70 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   int _durationDays = 28; // Default duration
 
   @override
+  void initState() {
+    super.initState();
+    _loadDraft();
+    _titleController.addListener(_saveDraft);
+    _descriptionController.addListener(_saveDraft);
+  }
+
+  @override
   void dispose() {
+    _titleController.removeListener(_saveDraft);
+    _descriptionController.removeListener(_saveDraft);
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  String get _draftKey => 'draft_${widget.title}';
+
+  Future<void> _loadDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final draftTitle = prefs.getString('${_draftKey}_title');
+    final draftDescription = prefs.getString('${_draftKey}_description');
+    final draftTags = prefs.getStringList('${_draftKey}_tags');
+    final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
+    final draftDuration = prefs.getInt('${_draftKey}_duration');
+
+    if (mounted) {
+      setState(() {
+        if (draftTitle != null) _titleController.text = draftTitle;
+        if (draftDescription != null) _descriptionController.text = draftDescription;
+        if (draftTags != null) _selectedTags = draftTags;
+        if (draftStateDependent != null) _isStateDependent = draftStateDependent;
+        if (draftDuration != null) _durationDays = draftDuration;
+      });
+    }
+  }
+
+  Future<void> _saveDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('${_draftKey}_title', _titleController.text);
+    await prefs.setString('${_draftKey}_description', _descriptionController.text);
+    await prefs.setStringList('${_draftKey}_tags', _selectedTags);
+    await prefs.setBool('${_draftKey}_stateDependent', _isStateDependent);
+    await prefs.setInt('${_draftKey}_duration', _durationDays);
+  }
+
+  Future<void> _clearDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('${_draftKey}_title');
+    await prefs.remove('${_draftKey}_description');
+    await prefs.remove('${_draftKey}_tags');
+    await prefs.remove('${_draftKey}_stateDependent');
+    await prefs.remove('${_draftKey}_duration');
+  }
+
+  Future<void> _resetForm() async {
+    await _clearDraft();
+    setState(() {
+      _titleController.clear();
+      _descriptionController.clear();
+      _selectedTags = [];
+      _isStateDependent = false;
+      _durationDays = 28;
+    });
   }
 
   Future<void> _handleSubmit() async {
@@ -78,6 +140,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         isStateDependent: _isStateDependent,
         durationDays: _durationDays,
       );
+      await _clearDraft(); // Clear draft on successful submission
     } catch (e) {
       // Error handling is mostly done in the callback, but catch here just in case
       if (mounted) showErrorSnackBar(e.toString());
@@ -186,6 +249,31 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         title: Text(widget.title),
         actions: [
           IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(context.l10n.delete),
+                  content: Text(S.of(context).areYouSureYouWantToClearThisDraft),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(context.l10n.cancel),
+                    ),
+                    FilledButton(
+                      onPressed: () {
+                        _resetForm();
+                        Navigator.pop(context);
+                      },
+                      child: Text(context.l10n.confirm),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: _showInfoDialog,
           ),
@@ -247,6 +335,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   setState(() {
                     _selectedTags = newTags;
                   });
+                  _saveDraft();
                 },
               ),
               const SizedBox(height: 20),
@@ -261,6 +350,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   setState(() {
                     _durationDays = value.toInt();
                   });
+                  _saveDraft();
                 },
               ),
               Center(child: Text('$_durationDays days')),
@@ -272,6 +362,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   setState(() {
                     _isStateDependent = newValue!;
                   });
+                  _saveDraft();
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),

@@ -2251,6 +2251,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}'**
   String passwordValidation(String type);
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'delete'**
+  String get delete;
+
+  /// No description provided for @areYouSureYouWantToClearThisDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear this draft?'**
+  String get areYouSureYouWantToClearThisDraft;
 }
 
 class _AppLocalizationsDelegate

@@ -1153,4 +1153,11 @@ class AppLocalizationsEn extends AppLocalizations {
     });
     return 'Password must contain at least one $_temp0';
   }
+
+  @override
+  String get delete => 'delete';
+
+  @override
+  String get areYouSureYouWantToClearThisDraft =>
+      'Are you sure you want to clear this draft?';
 }

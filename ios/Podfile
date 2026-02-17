@@ -43,5 +43,13 @@ post_install do |installer|
       # Fix for some Firebase/CocoaPods issues in Xcode 15+
       config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
     end
+
+    # Specific fix for gRPC-C++ issues in newer Xcode versions
+    if target.name == 'gRPC-C++'
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_WARN_STRICT_PROTOTYPES'] = 'NO'
+        config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+      end
+    end
   end
 end

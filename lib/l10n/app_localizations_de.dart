@@ -1167,4 +1167,11 @@ class AppLocalizationsDe extends AppLocalizations {
     });
     return 'Das Passwort muss mindestens ein $_temp0 enthalten';
   }
+
+  @override
+  String get delete => 'löschen';
+
+  @override
+  String get areYouSureYouWantToClearThisDraft =>
+      'Sind sie sicher das sie das Formular löschen wollen?';
 }

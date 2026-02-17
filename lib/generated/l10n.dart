@@ -3028,6 +3028,21 @@ class S {
       args: [type],
     );
   }
+
+  /// `delete`
+  String get delete {
+    return Intl.message('delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to clear this draft?`
+  String get areYouSureYouWantToClearThisDraft {
+    return Intl.message(
+      'Are you sure you want to clear this draft?',
+      name: 'areYouSureYouWantToClearThisDraft',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
