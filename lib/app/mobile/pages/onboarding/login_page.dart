@@ -12,7 +12,8 @@ import 'package:stimmapp/generated/l10n.dart';
 import 'reset_password_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, this.isEmbedded = false});
+  final bool isEmbedded;
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -61,22 +62,35 @@ class _LoginPageState extends State<LoginPage> {
       child: Builder(
         builder: (context) {
           return AppBottomBarButtons(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: BackButton(color: Theme.of(context).colorScheme.primary),
-              title: Text(
-                context.l10n.signIn,
-                style: AppTextStyles.xxlBold.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
+            appBar: widget.isEmbedded
+                ? null
+                : AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    leading: BackButton(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(
+                      context.l10n.signIn,
+                      style: AppTextStyles.xxlBold.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.isEmbedded) ...[
+                    const SizedBox(height: DConst.padBox),
+                    Text(
+                      context.l10n.signIn,
+                      style: AppTextStyles.xxlBold.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: DConst.padBox),
                   Text(
                     S.of(context).pleaseEnterYourCredentials,
@@ -92,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      isDense: true,
                     ),
                     validator: (String? value) {
                       if (value == null) {
@@ -114,6 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      isDense: true,
                     ),
                     validator: (String? value) {
                       if (value == null) {

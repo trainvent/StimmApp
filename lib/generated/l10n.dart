@@ -1359,6 +1359,26 @@ class S {
     return Intl.message('Not found', name: 'notFound', desc: '', args: []);
   }
 
+  /// `Not signed up yet? Forgot password?`
+  String get notSignedUpYet {
+    return Intl.message(
+      'Not signed up yet? Forgot password?',
+      name: 'notSignedUpYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go to Welcome`
+  String get goToWelcome {
+    return Intl.message(
+      'Go to Welcome',
+      name: 'goToWelcome',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Option`
   String get option {
     return Intl.message('Option', name: 'option', desc: '', args: []);
@@ -1902,6 +1922,16 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Share this`
+  String get shareThis {
+    return Intl.message('Share this', name: 'shareThis', desc: '', args: []);
+  }
+
+  /// `Share`
+  String get share {
+    return Intl.message('Share', name: 'share', desc: '', args: []);
   }
 
   /// `Sign`
@@ -3039,6 +3069,26 @@ class S {
     return Intl.message(
       'Are you sure you want to clear this draft?',
       name: 'areYouSureYouWantToClearThisDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sharing not supported on this platform.`
+  String get sharingNotSupported {
+    return Intl.message(
+      'Sharing not supported on this platform.',
+      name: 'sharingNotSupported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Link copied to clipboard`
+  String get linkCopiedToClipboard {
+    return Intl.message(
+      'Link copied to clipboard',
+      name: 'linkCopiedToClipboard',
       desc: '',
       args: [],
     );

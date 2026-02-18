@@ -206,6 +206,8 @@
   "notAuthenticated": "Nicht authentifiziert",
   "notAvailableOnWebApp": "Nicht in der Web-App verfügbar",
   "notFound": "Nicht gefunden",
+  "notSignedUpYet": "Noch nicht registriert? Passwort vergessen?",
+  "goToWelcome": "Zum Startbildschirm",
   "option": "Option",
   "optionRequired": "Option ist erforderlich",
   "options": "Optionen",
@@ -274,6 +276,8 @@
   "settings": "Einstellungen",
   "sharePetition": "Petition teilen",
   "shareThisPetition": "Teile diese Petition",
+  "shareThis": "Teile dies",
+  "share": "Teilen",
   "sign": "Unterzeichen",
   "signIn": "Anmelden",
   "signPetition": "Petition unterzeichnen",
@@ -416,5 +420,7 @@
   },
   "delete": "löschen",
   "passwordValidation": "Das Passwort muss mindestens ein {type, select, uppercase{Großbuchstabe} lowercase{Kleinbuchstabe} number{Zahl} special{Sonderzeichen} other{gültiges Zeichen}} enthalten",
-  "areYouSureYouWantToClearThisDraft": "Sind sie sicher das sie das Formular löschen wollen?"
+  "areYouSureYouWantToClearThisDraft": "Sind sie sicher das sie das Formular löschen wollen?",
+  "sharingNotSupported": "Teilen wird auf dieser Plattform nicht unterstützt.",
+  "linkCopiedToClipboard": "Link in die Zwischenablage kopiert"
 }

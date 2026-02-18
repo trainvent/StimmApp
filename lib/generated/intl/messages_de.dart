@@ -293,6 +293,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
       "Pro-Abo abschließen um diese Vorteile zu nutzen",
     ),
+    "goToWelcome": MessageLookupByLibrary.simpleMessage("Zum Startbildschirm"),
     "goal": MessageLookupByLibrary.simpleMessage("Ziel"),
     "growthStartsWithin": MessageLookupByLibrary.simpleMessage(
       "Wachstum beginnt von innen",
@@ -319,6 +320,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
     "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
       "Diese Petition auf Ihr Bundesland beschränken?",
+    ),
+    "linkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "Link in die Zwischenablage kopiert",
     ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn-Link in die Zwischenablage kopiert",
@@ -382,6 +386,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nicht in der Web-App verfügbar",
     ),
     "notFound": MessageLookupByLibrary.simpleMessage("Nicht gefunden"),
+    "notSignedUpYet": MessageLookupByLibrary.simpleMessage(
+      "Noch nicht registriert? Passwort vergessen?",
+    ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option ist erforderlich",
@@ -619,9 +626,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzerdaten festlegen",
     ),
     "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
+    "share": MessageLookupByLibrary.simpleMessage("Teilen"),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Petition teilen"),
+    "shareThis": MessageLookupByLibrary.simpleMessage("Teile dies"),
     "shareThisPetition": MessageLookupByLibrary.simpleMessage(
       "Teile diese Petition",
+    ),
+    "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
+      "Teilen wird auf dieser Plattform nicht unterstützt.",
     ),
     "sign": MessageLookupByLibrary.simpleMessage("Unterzeichen"),
     "signIn": MessageLookupByLibrary.simpleMessage("Anmelden"),

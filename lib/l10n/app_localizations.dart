@@ -1076,6 +1076,18 @@ abstract class AppLocalizations {
   /// **'Not found'**
   String get notFound;
 
+  /// No description provided for @notSignedUpYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed up yet? Forgot password?'**
+  String get notSignedUpYet;
+
+  /// No description provided for @goToWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Welcome'**
+  String get goToWelcome;
+
   /// No description provided for @option.
   ///
   /// In en, this message translates to:
@@ -1465,6 +1477,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share this petition'**
   String get shareThisPetition;
+
+  /// No description provided for @shareThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this'**
+  String get shareThis;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
 
   /// No description provided for @sign.
   ///
@@ -2263,6 +2287,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to clear this draft?'**
   String get areYouSureYouWantToClearThisDraft;
+
+  /// No description provided for @sharingNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing not supported on this platform.'**
+  String get sharingNotSupported;
+
+  /// No description provided for @linkCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard'**
+  String get linkCopiedToClipboard;
 }
 
 class _AppLocalizationsDelegate

@@ -528,6 +528,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notFound => 'Nicht gefunden';
 
   @override
+  String get notSignedUpYet => 'Noch nicht registriert? Passwort vergessen?';
+
+  @override
+  String get goToWelcome => 'Zum Startbildschirm';
+
+  @override
   String get option => 'Option';
 
   @override
@@ -728,6 +734,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get shareThisPetition => 'Teile diese Petition';
+
+  @override
+  String get shareThis => 'Teile dies';
+
+  @override
+  String get share => 'Teilen';
 
   @override
   String get sign => 'Unterzeichen';
@@ -1174,4 +1186,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get areYouSureYouWantToClearThisDraft =>
       'Sind sie sicher das sie das Formular löschen wollen?';
+
+  @override
+  String get sharingNotSupported =>
+      'Teilen wird auf dieser Plattform nicht unterstützt.';
+
+  @override
+  String get linkCopiedToClipboard => 'Link in die Zwischenablage kopiert';
 }

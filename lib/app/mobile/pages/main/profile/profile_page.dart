@@ -239,6 +239,7 @@ class ProfilePage extends StatelessWidget {
                               await PurchasesService.instance.syncAppUser(uid);
                               await PurchasesService.instance
                                   .refreshCustomerInfo();
+                              if (!context.mounted) {return;}
                               await PurchasesService.instance.presentPaywall(
                                 context: context,
                               );

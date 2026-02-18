@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/sign_action_button.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
@@ -19,16 +18,7 @@ class PetitionDetailPage extends StatelessWidget {
       appBarTitle: context.l10n.petitionDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(id),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.share),
-          onPressed: () {
-            // TODO: Replace with your actual domain/scheme
-            final link = 'https://stimmapp.org/petition/$id';
-            Share.share('${context.l10n.shareThisPetition}: $link');
-          },
-        ),
-      ],
+      sharePathSegment: 'petition',
       contentBuilder: (context, p) {
         if (p.imageUrl != null) {
           return Image.network(p.imageUrl!);

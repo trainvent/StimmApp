@@ -524,6 +524,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notFound => 'Not found';
 
   @override
+  String get notSignedUpYet => 'Not signed up yet? Forgot password?';
+
+  @override
+  String get goToWelcome => 'Go to Welcome';
+
+  @override
   String get option => 'Option';
 
   @override
@@ -721,6 +727,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareThisPetition => 'Share this petition';
+
+  @override
+  String get shareThis => 'Share this';
+
+  @override
+  String get share => 'Share';
 
   @override
   String get sign => 'Sign';
@@ -1160,4 +1172,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get areYouSureYouWantToClearThisDraft =>
       'Are you sure you want to clear this draft?';
+
+  @override
+  String get sharingNotSupported => 'Sharing not supported on this platform.';
+
+  @override
+  String get linkCopiedToClipboard => 'Link copied to clipboard';
 }

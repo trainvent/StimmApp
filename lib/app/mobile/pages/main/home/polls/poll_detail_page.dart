@@ -25,6 +25,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
       appBarTitle: context.l10n.pollDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(widget.id),
+      sharePathSegment: 'poll',
       contentBuilder: (context, poll) {
         final total = poll.totalVotes;
         return RadioGroup<String>(

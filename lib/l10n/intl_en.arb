@@ -204,6 +204,8 @@
   "notAuthenticated": "Not authenticated",
   "notAvailableOnWebApp": "Not available on web, use mobile app",
   "notFound": "Not found",
+  "notSignedUpYet": "Not signed up yet? Forgot password?",
+  "goToWelcome": "Go to Welcome",
   "option": "Option",
   "optionRequired": "Option is required",
   "options": "Options",
@@ -269,6 +271,8 @@
   "settings": "Settings",
   "sharePetition": "Share Petition",
   "shareThisPetition": "Share this petition",
+  "shareThis": "Share this",
+  "share": "Share",
   "sign": "Sign",
   "signIn": "Sign in",
   "signPetition": "Sign Petition",
@@ -410,5 +414,7 @@
   },
   "passwordValidation": "Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}",
   "delete": "delete",
-  "areYouSureYouWantToClearThisDraft": "Are you sure you want to clear this draft?"
+  "areYouSureYouWantToClearThisDraft": "Are you sure you want to clear this draft?",
+  "sharingNotSupported": "Sharing not supported on this platform.",
+  "linkCopiedToClipboard": "Link copied to clipboard"
 }

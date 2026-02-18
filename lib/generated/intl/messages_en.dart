@@ -273,6 +273,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
       "Go pro to access these benefits",
     ),
+    "goToWelcome": MessageLookupByLibrary.simpleMessage("Go to Welcome"),
     "goal": MessageLookupByLibrary.simpleMessage("Goal"),
     "growthStartsWithin": MessageLookupByLibrary.simpleMessage(
       "Growth starts within",
@@ -299,6 +300,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
     "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
       "Limit this petition to your state?",
+    ),
+    "linkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
+      "Link copied to clipboard",
     ),
     "linkedinLinkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "LinkedIn link copied to clipboard",
@@ -360,6 +364,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Not available on web, use mobile app",
     ),
     "notFound": MessageLookupByLibrary.simpleMessage("Not found"),
+    "notSignedUpYet": MessageLookupByLibrary.simpleMessage(
+      "Not signed up yet? Forgot password?",
+    ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option is required",
@@ -590,9 +597,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendLoginLink": MessageLookupByLibrary.simpleMessage("Log in with Code"),
     "setUserDetails": MessageLookupByLibrary.simpleMessage("Set user details"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "share": MessageLookupByLibrary.simpleMessage("Share"),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Share Petition"),
+    "shareThis": MessageLookupByLibrary.simpleMessage("Share this"),
     "shareThisPetition": MessageLookupByLibrary.simpleMessage(
       "Share this petition",
+    ),
+    "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
+      "Sharing not supported on this platform.",
     ),
     "sign": MessageLookupByLibrary.simpleMessage("Sign"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
