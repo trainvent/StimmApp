@@ -9,6 +9,7 @@ import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_p
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/running_forms_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
+import 'package:stimmapp/app/mobile/pages/others/privacy_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
@@ -358,6 +359,19 @@ class ProfilePage extends StatelessWidget {
                           builder: (context) {
                             return ChangePasswordPage();
                           },
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Privacy Settings
+                  PointingListTile(
+                    title: Text(context.l10n.privacySettings),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacyPage(),
                         ),
                       );
                     },

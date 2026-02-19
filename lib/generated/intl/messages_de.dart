@@ -551,6 +551,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "prioritySupport": MessageLookupByLibrary.simpleMessage(
       "Prioritätssupport",
     ),
+    "privacySettings": MessageLookupByLibrary.simpleMessage(
+      "Datenschutzeinstellungen",
+    ),
     "proMember": MessageLookupByLibrary.simpleMessage("Pro-Mitglied"),
     "processId": MessageLookupByLibrary.simpleMessage("Ausweis verarbeiten"),
     "products": MessageLookupByLibrary.simpleMessage("Produkte"),
@@ -621,6 +624,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
       "Sende Bestätigungs-E-Mail",
+    ),
+    "sendCrashLogs": MessageLookupByLibrary.simpleMessage(
+      "Absturzberichte senden",
+    ),
+    "sendCrashLogsDescription": MessageLookupByLibrary.simpleMessage(
+      "Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.",
     ),
     "setUserDetails": MessageLookupByLibrary.simpleMessage(
       "Benutzerdaten festlegen",

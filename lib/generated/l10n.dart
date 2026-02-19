@@ -3093,6 +3093,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Privacy Settings`
+  String get privacySettings {
+    return Intl.message(
+      'Privacy Settings',
+      name: 'privacySettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Crash Logs`
+  String get sendCrashLogs {
+    return Intl.message(
+      'Send Crash Logs',
+      name: 'sendCrashLogs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Help us improve the app by automatically sending crash reports.`
+  String get sendCrashLogsDescription {
+    return Intl.message(
+      'Help us improve the app by automatically sending crash reports.',
+      name: 'sendCrashLogsDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

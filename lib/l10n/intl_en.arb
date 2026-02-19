@@ -416,5 +416,8 @@
   "delete": "delete",
   "areYouSureYouWantToClearThisDraft": "Are you sure you want to clear this draft?",
   "sharingNotSupported": "Sharing not supported on this platform.",
-  "linkCopiedToClipboard": "Link copied to clipboard"
+  "linkCopiedToClipboard": "Link copied to clipboard",
+  "privacySettings": "Privacy Settings",
+  "sendCrashLogs": "Send Crash Logs",
+  "sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports."
 }

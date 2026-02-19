@@ -1193,4 +1193,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get linkCopiedToClipboard => 'Link in die Zwischenablage kopiert';
+
+  @override
+  String get privacySettings => 'Datenschutzeinstellungen';
+
+  @override
+  String get sendCrashLogs => 'Absturzberichte senden';
+
+  @override
+  String get sendCrashLogsDescription =>
+      'Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.';
 }

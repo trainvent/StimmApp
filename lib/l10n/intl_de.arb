@@ -422,5 +422,8 @@
   "passwordValidation": "Das Passwort muss mindestens ein {type, select, uppercase{Großbuchstabe} lowercase{Kleinbuchstabe} number{Zahl} special{Sonderzeichen} other{gültiges Zeichen}} enthalten",
   "areYouSureYouWantToClearThisDraft": "Sind sie sicher das sie das Formular löschen wollen?",
   "sharingNotSupported": "Teilen wird auf dieser Plattform nicht unterstützt.",
-  "linkCopiedToClipboard": "Link in die Zwischenablage kopiert"
+  "linkCopiedToClipboard": "Link in die Zwischenablage kopiert",
+  "privacySettings": "Datenschutzeinstellungen",
+  "sendCrashLogs": "Absturzberichte senden",
+  "sendCrashLogsDescription": "Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden."
 }

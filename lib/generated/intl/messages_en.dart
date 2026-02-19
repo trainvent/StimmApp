@@ -531,6 +531,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Popular Petitions",
     ),
     "prioritySupport": MessageLookupByLibrary.simpleMessage("Priority support"),
+    "privacySettings": MessageLookupByLibrary.simpleMessage("Privacy Settings"),
     "proMember": MessageLookupByLibrary.simpleMessage("Pro Member"),
     "processId": MessageLookupByLibrary.simpleMessage("Process ID"),
     "products": MessageLookupByLibrary.simpleMessage("Products"),
@@ -593,6 +594,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
       "Send confirmation Email.",
+    ),
+    "sendCrashLogs": MessageLookupByLibrary.simpleMessage("Send Crash Logs"),
+    "sendCrashLogsDescription": MessageLookupByLibrary.simpleMessage(
+      "Help us improve the app by automatically sending crash reports.",
     ),
     "sendLoginLink": MessageLookupByLibrary.simpleMessage("Log in with Code"),
     "setUserDetails": MessageLookupByLibrary.simpleMessage("Set user details"),

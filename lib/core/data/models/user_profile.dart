@@ -13,6 +13,7 @@ class UserProfile {
   final bool? subscribedToPro;
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
+  final bool? sendCrashLogs;
 
   /// Returns the date when the subscription expires (30 days after purchase).
   DateTime? get subscriptionEndsAt {
@@ -54,6 +55,7 @@ class UserProfile {
     this.subscribedToPro,
     this.isVerified,
     this.gotVerifiedAt,
+    this.sendCrashLogs,
   });
 
   UserProfile copyWith({
@@ -77,6 +79,7 @@ class UserProfile {
     bool? subscribedToPro,
     bool? isVerified,
     DateTime? gotVerifiedAt,
+    bool? sendCrashLogs,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -99,6 +102,7 @@ class UserProfile {
       subscribedToPro: subscribedToPro ?? this.subscribedToPro,
       isVerified: isVerified ?? this.isVerified,
       gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
+      sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
     );
   }
 
@@ -124,6 +128,7 @@ class UserProfile {
       subscribedToPro: json['subscribedToPro'] as bool?,
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
+      sendCrashLogs: json['sendCrashLogs'] as bool?,
     );
   }
 
@@ -150,6 +155,7 @@ class UserProfile {
       'subscribedToPro': subscribedToPro,
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
+      'sendCrashLogs': sendCrashLogs,
     };
   }
 }

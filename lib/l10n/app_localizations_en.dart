@@ -1178,4 +1178,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkCopiedToClipboard => 'Link copied to clipboard';
+
+  @override
+  String get privacySettings => 'Privacy Settings';
+
+  @override
+  String get sendCrashLogs => 'Send Crash Logs';
+
+  @override
+  String get sendCrashLogsDescription =>
+      'Help us improve the app by automatically sending crash reports.';
 }

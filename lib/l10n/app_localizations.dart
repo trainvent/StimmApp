@@ -2299,6 +2299,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Link copied to clipboard'**
   String get linkCopiedToClipboard;
+
+  /// No description provided for @privacySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Settings'**
+  String get privacySettings;
+
+  /// No description provided for @sendCrashLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Crash Logs'**
+  String get sendCrashLogs;
+
+  /// No description provided for @sendCrashLogsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Help us improve the app by automatically sending crash reports.'**
+  String get sendCrashLogsDescription;
 }
 
 class _AppLocalizationsDelegate
