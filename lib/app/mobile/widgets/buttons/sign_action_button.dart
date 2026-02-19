@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/login_page.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/welcome_page.dart';
+import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
@@ -33,6 +34,7 @@ class SignActionButton extends StatelessWidget {
         final disabled = alreadySigned || loading;
 
         return ElevatedButton(
+          key: keys.petitionDetailPage.signButton,
           onPressed: disabled
               ? null
               : () async {

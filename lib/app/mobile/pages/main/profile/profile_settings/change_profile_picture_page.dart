@@ -159,7 +159,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
                     const SizedBox(
                       width: 128,
                       height: 128,
-                      child: TriangleLoadingIndicator(),
+                      child: CircularProgressIndicator(),
                     ),
                 ],
               ),

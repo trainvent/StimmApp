@@ -78,6 +78,10 @@ class VerificationWidgetKeys {
   final resendCodeButton = const Key('resendCodeButton');
 }
 
+class PetitionDetailPageKeys {
+  final signButton = const Key('signButton');
+}
+
 class Keys {
   final resetPasswordPage = ResetPasswordPageKeys();
   final loginPage = LoginPageKeys();
@@ -89,6 +93,7 @@ class Keys {
   final setNewPasswordPage = SetNewPasswordPageKeys();
   final deleteAccountPage = DeleteAccountPageKeys();
   final verificationWidget = VerificationWidgetKeys();
+  final petitionDetailPage = PetitionDetailPageKeys();
 }
 
 final keys = Keys();

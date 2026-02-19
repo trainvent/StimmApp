@@ -39,9 +39,11 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     } on AuthException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(e.message ?? S.of(context).verificationFailed);
+      _codeController.clear();
     } catch (e) {
       if (!mounted) return;
       showErrorSnackBar(S.of(context).anUnexpectedErrorOccurred);
+      _codeController.clear();
     }
   }
 
