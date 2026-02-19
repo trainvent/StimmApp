@@ -5,8 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
-import 'package:stimmapp/core/data/repositories/petition_repository.dart';
-import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
@@ -25,16 +23,6 @@ class AppBootstrap {
     await _initLocale();
     // initialize ads
     await _adService.initialize();
-
-    // Close expired petitions on startup if authenticated
-    if (authService.currentUser != null) {
-      try {
-        await PetitionRepository.create().closeExpiredPetitions();
-        await PollRepository.create().closeExpiredPolls();
-      } catch (e) {
-        debugPrint('[AppBootstrap] Error closing expired items: $e');
-      }
-    }
 
     // only create the composite notifier after persisted state is loaded
     _appStateNotifier = AppStateNotifier(

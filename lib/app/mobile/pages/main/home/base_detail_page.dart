@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/participants_list_page.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -88,7 +89,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
           if (item == null) return Center(child: Text(context.l10n.notFound));
 
           final now = DateTime.now();
-          final isExpired = item.expiresAt.isBefore(now);
+          final isExpiredByTime = !item.expiresAt.isAfter(now);
+          final isClosedByStatus = item.status == IConst.closed;
+          final isExpired = isClosedByStatus || isExpiredByTime;
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -103,17 +106,16 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
-                    children:
-                        item.tags.map((tagKey) {
-                          return Chip(
-                            label: Text(
-                              AppTagsHelper.getLocalizedTag(context, tagKey),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                          );
-                        }).toList(),
+                    children: item.tags.map((tagKey) {
+                      return Chip(
+                        label: Text(
+                          AppTagsHelper.getLocalizedTag(context, tagKey),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      );
+                    }).toList(),
                   ),
                 ],
                 const SizedBox(height: 16),
@@ -134,10 +136,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder:
-                                  (context) => ParticipantsListPage(
-                                    participantsStream: participantsStream!,
-                                  ),
+                              builder: (context) => ParticipantsListPage(
+                                participantsStream: participantsStream!,
+                              ),
                             ),
                           );
                         },
@@ -152,10 +153,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     context.l10n.closed,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.copyWith(color: Theme.of(context).colorScheme.error),
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 16),

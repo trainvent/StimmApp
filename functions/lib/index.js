@@ -36,7 +36,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkSubscriptions = void 0;
+exports.closeExpiredForms = exports.checkSubscriptions = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -87,6 +87,46 @@ exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", asyn
         await batch.commit();
     }
     console.log(`Subscription check complete. Revoked ${revokedCount} memberships.`);
+});
+exports.closeExpiredForms = (0, scheduler_1.onSchedule)("every 15 minutes", async () => {
+    const db = admin.firestore();
+    const now = new Date();
+    const targets = [
+        { name: 'petitions' },
+        { name: 'polls' },
+    ];
+    for (const target of targets) {
+        const snap = await db
+            .collection(target.name)
+            .where('status', '==', 'active')
+            .where('expiresAt', '<=', now)
+            .get();
+        if (snap.empty) {
+            console.log(`[closeExpiredForms] No expired active ${target.name}.`);
+            continue;
+        }
+        let batch = db.batch();
+        let opCount = 0;
+        let closedCount = 0;
+        for (const doc of snap.docs) {
+            batch.update(doc.ref, {
+                status: 'closed',
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            opCount++;
+            closedCount++;
+            // Keep margin below Firestore's 500 writes per batch limit.
+            if (opCount >= 400) {
+                await batch.commit();
+                batch = db.batch();
+                opCount = 0;
+            }
+        }
+        if (opCount > 0) {
+            await batch.commit();
+        }
+        console.log(`[closeExpiredForms] Closed ${closedCount} ${target.name}.`);
+    }
 });
 __exportStar(require("./user_cleanup"), exports);
 __exportStar(require("./admin"), exports);

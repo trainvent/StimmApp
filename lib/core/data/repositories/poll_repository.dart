@@ -163,19 +163,6 @@ class PollRepository {
     await batch.commit();
   }
 
-  Future<void> closeExpiredPolls() async {
-    final batch = _fs.instance.batch();
-    final expired = await _col()
-        .where('status', isEqualTo: 'active')
-        .where('expiresAt', isLessThan: DateTime.now())
-        .get();
-
-    for (final doc in expired.docs) {
-      batch.update(doc.reference, {'status': 'closed'});
-    }
-    await batch.commit();
-  }
-
   Future<void> delete(String id) async {
     await _col().doc(id).delete();
   }

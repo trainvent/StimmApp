@@ -69,8 +69,8 @@ async function sendEmail(email, code, type) {
         from: `"StimmApp Team" <${smtpMail}>`,
         to: email,
         subject: subject,
-        text: `Willkommen bei StimmApp!\n\nDein Code, ${actionText}, lautet: ${code}\n\nDieser Code läuft in 15 Minuten ab.`,
-        html: `<p>Willkommen bei StimmApp!</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>Dieser Code läuft in 15 Minuten ab.</p>`,
+        text: `Hallo,\n\nDein Code, ${actionText}, lautet: ${code}\n\nDieser Code läuft in 15 Minuten ab.`,
+        html: `<p>Hallo,</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>Dieser Code läuft in 15 Minuten ab.</p>`,
     };
     try {
         await transporter.sendMail(mailOptions);

@@ -48,19 +48,6 @@ class PetitionRepository {
     });
   }
 
-  Future<void> closeExpiredPetitions() async {
-    final batch = _fs.instance.batch();
-    final expired = await _col()
-        .where('status', isEqualTo: IConst.active)
-        .where('expiresAt', isLessThan: DateTime.now())
-        .get();
-
-    for (final doc in expired.docs) {
-      batch.update(doc.reference, {'status': 'closed'});
-    }
-    await batch.commit();
-  }
-
   Stream<Petition?> watch(String id) {
     final ref = _fs.docRef<Petition>(
       'petitions/$id',

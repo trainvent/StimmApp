@@ -63,6 +63,59 @@ export const checkSubscriptions = onSchedule("every day 00:00", async (event) =>
 	console.log(`Subscription check complete. Revoked ${revokedCount} memberships.`);
 });
 
+export const closeExpiredForms = onSchedule("every 15 minutes", async () => {
+	const db = admin.firestore();
+	const now = new Date();
+
+	type CollectionTarget = {
+		name: 'petitions' | 'polls';
+	};
+
+	const targets: CollectionTarget[] = [
+		{name: 'petitions'},
+		{name: 'polls'},
+	];
+
+	for (const target of targets) {
+		const snap = await db
+			.collection(target.name)
+			.where('status', '==', 'active')
+			.where('expiresAt', '<=', now)
+			.get();
+
+		if (snap.empty) {
+			console.log(`[closeExpiredForms] No expired active ${target.name}.`);
+			continue;
+		}
+
+		let batch = db.batch();
+		let opCount = 0;
+		let closedCount = 0;
+
+		for (const doc of snap.docs) {
+			batch.update(doc.ref, {
+				status: 'closed',
+				updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+			});
+			opCount++;
+			closedCount++;
+
+			// Keep margin below Firestore's 500 writes per batch limit.
+			if (opCount >= 400) {
+				await batch.commit();
+				batch = db.batch();
+				opCount = 0;
+			}
+		}
+
+		if (opCount > 0) {
+			await batch.commit();
+		}
+
+		console.log(`[closeExpiredForms] Closed ${closedCount} ${target.name}.`);
+	}
+});
+
 export * from './user_cleanup';
 export * from './admin';
 export * from './auth_code';
