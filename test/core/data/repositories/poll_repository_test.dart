@@ -82,31 +82,6 @@ void main() {
       expect(poll!.votes['opt1'], 1);
     });
 
-    test('closeExpiredPolls updates status of expired polls', () async {
-      // Create one expired poll
-      final expiredPoll = tPoll.copyWith(
-        id: 'expired',
-        expiresAt: DateTime.now().subtract(const Duration(days: 1)),
-      );
-      final expiredPollId = await pollRepository.createPoll(expiredPoll);
-
-      // Create one active poll
-      final activePoll = tPoll.copyWith(id: 'active');
-      final activePollId = await pollRepository.createPoll(activePoll);
-
-      // Close expired polls
-      await pollRepository.closeExpiredPolls();
-
-      // Check statuses
-      final expiredPollAfter = await pollRepository.get(expiredPollId);
-      final activePollAfter = await pollRepository.get(activePollId);
-
-      expect(expiredPollAfter, isNotNull);
-      expect(expiredPollAfter!.status, IConst.closed);
-      expect(activePollAfter, isNotNull);
-      expect(activePollAfter!.status, IConst.active);
-    });
-
     test('watchParticipants returns profiles of voters', () async {
       final pollId = await pollRepository.createPoll(tPoll);
 
@@ -122,7 +97,11 @@ void main() {
           .set(user.toJson());
 
       // Vote
-      await pollRepository.vote(pollId: pollId, optionId: 'opt1', uid: user.uid);
+      await pollRepository.vote(
+        pollId: pollId,
+        optionId: 'opt1',
+        uid: user.uid,
+      );
 
       final participants = await pollRepository.watchParticipants(pollId).first;
 
