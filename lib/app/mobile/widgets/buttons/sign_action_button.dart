@@ -6,6 +6,7 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/notifiers/notifiers.dart';
 
 class SignActionButton extends StatelessWidget {
   const SignActionButton({
@@ -14,12 +15,14 @@ class SignActionButton extends StatelessWidget {
     required this.participantsStream,
     required this.onAction,
     required this.successMessage,
+    this.askForReason = false,
   });
 
   final String label;
   final Stream<List<UserProfile>> participantsStream;
-  final Future<void> Function() onAction;
+  final Future<void> Function({String? reason}) onAction;
   final String successMessage;
+  final bool askForReason;
 
   @override
   Widget build(BuildContext context) {
@@ -48,30 +51,57 @@ class SignActionButton extends StatelessWidget {
                     );
                     // After bottom sheet closes, check if user is logged in
                     if (authService.currentUser != null) {
-                      try {
-                        await onAction();
-                        if (!context.mounted) return;
-                        showSuccessSnackBar(successMessage);
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        showErrorSnackBar(e.toString());
-                      }
+                      if (!context.mounted) return;
+                      await _handleSign(context);
                     }
                     return;
                   }
-                  try {
-                    await onAction();
-                    if (!context.mounted) return;
-                    showSuccessSnackBar(successMessage);
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    showErrorSnackBar(e.toString());
-                  }
+                  await _handleSign(context);
                 },
           child: Text(alreadySigned ? '⛔ $label ⛔' : label),
         );
       },
     );
+  }
+
+  Future<void> _handleSign(BuildContext context) async {
+    String? reason;
+    if (askForReason && showPetitionReasonNotifier.value) {
+      reason = await showDialog<String>(
+        context: context,
+        builder: (context) {
+          String tempReason = '';
+          return AlertDialog(
+            title: Text('Why are you signing? (Optional)'),
+            content: TextField(
+              onChanged: (value) => tempReason = value,
+              decoration: InputDecoration(
+                hintText: 'Enter your reason here...',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: Text('Skip'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, tempReason),
+                child: Text('Submit'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    try {
+      await onAction(reason: reason);
+      if (!context.mounted) return;
+      showSuccessSnackBar(successMessage);
+    } catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(e.toString());
+    }
   }
 }
 

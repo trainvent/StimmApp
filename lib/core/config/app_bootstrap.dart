@@ -21,6 +21,8 @@ class AppBootstrap {
     await _initThemeMode();
     // load persisted locale (if any) before creating composite notifier
     await _initLocale();
+    // load persisted petition reason setting
+    await _initPetitionReasonSetting();
     // initialize ads
     await _adService.initialize();
 
@@ -32,6 +34,7 @@ class AppBootstrap {
 
     // Persist runtime locale changes
     appLocale.addListener(_onLocaleChanged);
+    showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
 
     // Load profile URL when user signs in and clear on sign-out
     _authSub = authService.authStateChanges.listen((user) {
@@ -49,6 +52,7 @@ class AppBootstrap {
   void dispose() {
     _authSub?.cancel();
     appLocale.removeListener(_onLocaleChanged);
+    showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
     _appStateNotifier?.dispose();
   }
 
@@ -62,6 +66,11 @@ class AppBootstrap {
         : '${loc.languageCode}_${loc.countryCode}';
     await prefs.setString(IConst.localeKey, toSave);
     debugPrint('[AppBootstrap] persisted locale: $toSave');
+  }
+
+  void _onPetitionReasonChanged() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('showPetitionReason', showPetitionReasonNotifier.value);
   }
 
   Future<void> _initThemeMode() async {
@@ -79,6 +88,11 @@ class AppBootstrap {
       // Default to German on web if no preference is set
       appLocale.value = const Locale('de');
     }
+  }
+
+  Future<void> _initPetitionReasonSetting() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    showPetitionReasonNotifier.value = prefs.getBool('showPetitionReason') ?? false;
   }
 
   Locale? _localeFromString(String s) {

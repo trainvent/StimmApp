@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/base_detail_page.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/sign_action_button.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/app/mobile/widgets/buttons/sign_action_button.dart';
 
 class PollDetailPage extends StatefulWidget {
   const PollDetailPage({super.key, required this.id});
@@ -28,34 +28,31 @@ class _PollDetailPageState extends State<PollDetailPage> {
       sharePathSegment: 'poll',
       contentBuilder: (context, poll) {
         final total = poll.totalVotes;
-        return RadioGroup<String>(
-          groupValue: _selectedOptionId,
-          onChanged: (v) => setState(() => _selectedOptionId = v),
-          child: ListView(
-            children: [
-              ...poll.options.map((o) {
-                final count = poll.votes[o.id] ?? 0;
-                final pct = total == 0 ? 0 : (count / total * 100).round();
-                return ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text(o.label)),
-                      Text('$count • $pct%'),
-                    ],
-                  ),
-                  leading: Radio<String>(value: o.id),
-                  onTap: () => setState(() => _selectedOptionId = o.id),
-                );
-              }),
-            ],
-          ),
+        return ListView(
+          children: [
+            ...poll.options.map((o) {
+              final count = poll.votes[o.id] ?? 0;
+              final pct = total == 0 ? 0 : (count / total * 100).round();
+              return RadioListTile<String>(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: Text(o.label)),
+                    Text('$count • $pct%'),
+                  ],
+                ),
+                value: o.id,
+                groupValue: _selectedOptionId,
+                onChanged: (v) => setState(() => _selectedOptionId = v),
+              );
+            }),
+          ],
         );
       },
       bottomAction: SignActionButton(
         label: context.l10n.vote,
         participantsStream: repo.watchParticipants(widget.id),
-        onAction: () async {
+        onAction: ({String? reason}) async {
           final optionId = _selectedOptionId;
           if (optionId == null) return;
           final user = authService.currentUser!;

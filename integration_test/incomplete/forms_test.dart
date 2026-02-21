@@ -11,7 +11,6 @@ void main() {
   final l10n = AppLocalizationsDe();
   const email = String.fromEnvironment('TEST_EMAIL');
   const password = IConst.testSecurePassword;
-  const testCode = String.fromEnvironment('TEST_CODE');
 
   patrolTest(
     'onboarding validation test: invalid email, weak password, and mismatched passwords',

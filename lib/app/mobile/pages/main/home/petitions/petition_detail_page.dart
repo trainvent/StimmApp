@@ -18,6 +18,7 @@ class PetitionDetailPage extends StatelessWidget {
       appBarTitle: context.l10n.petitionDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(id),
+      signaturesStream: repo.watchSignatures(id),
       sharePathSegment: 'petition',
       contentBuilder: (context, p) {
         if (p.imageUrl != null) {
@@ -28,9 +29,10 @@ class PetitionDetailPage extends StatelessWidget {
       bottomAction: SignActionButton(
         label: context.l10n.sign,
         participantsStream: repo.watchParticipants(id),
-        onAction: () async {
+        askForReason: true,
+        onAction: ({String? reason}) async {
           final user = authService.currentUser!;
-          await repo.sign(id, user.uid);
+          await repo.sign(id, user.uid, reason: reason);
           if (context.mounted) Navigator.pop(context);
         },
         successMessage: context.l10n.signed,

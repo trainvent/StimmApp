@@ -21,6 +21,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
     required this.sharePathSegment,
     this.bottomAction,
     this.participantsStream,
+    this.signaturesStream,
     this.actions,
   });
 
@@ -30,6 +31,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   final Widget Function(BuildContext context, T item) contentBuilder;
   final Widget? bottomAction;
   final Stream<List<UserProfile>>? participantsStream;
+  final Stream<List<Map<String, dynamic>>>? signaturesStream;
   final List<Widget>? actions;
   final String sharePathSegment;
 
@@ -138,6 +140,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => ParticipantsListPage(
                                 participantsStream: participantsStream!,
+                                signaturesStream: signaturesStream,
                               ),
                             ),
                           );

@@ -109,6 +109,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ListTile(
+                title: Text('Show Petition Reason (Experimental)'),
+                trailing: ValueListenableBuilder<bool>(
+                  valueListenable: showPetitionReasonNotifier,
+                  builder: (context, value, child) {
+                    return Switch(
+                      value: value,
+                      onChanged: (newValue) {
+                        showPetitionReasonNotifier.value = newValue;
+                      },
+                    );
+                  },
+                ),
+              ),
+              ListTile(
                 title: Text(context.l10n.aboutThisApp),
                 onTap: () {
                   Navigator.push(
