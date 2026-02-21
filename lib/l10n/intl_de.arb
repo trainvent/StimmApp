@@ -426,5 +426,6 @@
   "privacySettings": "Datenschutzeinstellungen",
   "sendCrashLogs": "Absturzberichte senden",
   "sendCrashLogsDescription": "Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.",
-  "reasonYourSignature": "Reason your signature"
+  "reasonYourSignature": "Reason your signature",
+  "signatureReasoning": "signature reasoning"
 }

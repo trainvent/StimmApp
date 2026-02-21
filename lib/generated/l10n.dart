@@ -3133,6 +3133,16 @@ class S {
       args: [],
     );
   }
+
+  /// `signature reasoning`
+  String get signatureReasoning {
+    return Intl.message(
+      'signature reasoning',
+      name: 'signatureReasoning',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

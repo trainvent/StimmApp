@@ -420,5 +420,6 @@
   "privacySettings": "Privacy Settings",
   "sendCrashLogs": "Send Crash Logs",
   "sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports.",
-  "reasonYourSignature": "Reason your signature"
+  "reasonYourSignature": "Reason your signature",
+  "signatureReasoning": "signature reasoning"
 }

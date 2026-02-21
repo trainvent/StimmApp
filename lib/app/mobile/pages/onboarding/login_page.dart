@@ -32,13 +32,13 @@ class _LoginPageState extends State<LoginPage> {
 
   void signIn() async {
     // Capture localized messages before the async gap.
-    final successMessage = context.l10n.successfullyLoggedIn;
 
     try {
       await authService.signIn(
         email: controllerEm.text,
         password: controllerPw.text,
       );
+      if (mounted) popPage();
     } on AuthException catch (e) {
       errorMessage = e.toString();
       if (!mounted) return;

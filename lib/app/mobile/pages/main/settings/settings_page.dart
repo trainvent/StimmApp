@@ -56,18 +56,39 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               ListTile(
                 title: Text(context.l10n.colorTheme),
-                onTap: () async {
-                  isDarkModeNotifier.value = !isDarkModeNotifier.value;
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  await prefs.setBool('isDarkMode', isDarkModeNotifier.value);
+                onTap: () {
+                  // Cycle through themes: System -> Light -> Dark -> System
+                  final current = themeModeNotifier.value;
+                  ThemeMode next;
+                  switch (current) {
+                    case ThemeMode.system:
+                      next = ThemeMode.light;
+                      break;
+                    case ThemeMode.light:
+                      next = ThemeMode.dark;
+                      break;
+                    case ThemeMode.dark:
+                      next = ThemeMode.system;
+                      break;
+                  }
+                  themeModeNotifier.value = next;
                 },
-                trailing: ValueListenableBuilder(
-                  valueListenable: isDarkModeNotifier,
-                  builder: (context, isDarkMode, child) {
-                    return Icon(
-                      isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                    );
+                trailing: ValueListenableBuilder<ThemeMode>(
+                  valueListenable: themeModeNotifier,
+                  builder: (context, mode, child) {
+                    IconData icon;
+                    switch (mode) {
+                      case ThemeMode.system:
+                        icon = Icons.brightness_auto;
+                        break;
+                      case ThemeMode.light:
+                        icon = Icons.light_mode;
+                        break;
+                      case ThemeMode.dark:
+                        icon = Icons.dark_mode;
+                        break;
+                    }
+                    return Icon(icon);
                   },
                 ),
               ),
@@ -109,7 +130,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ListTile(
-                title: Text(S.of(context).reasonYourSignature),
+                title: Text(S.of(context).signatureReasoning),
                 trailing: ValueListenableBuilder<bool>(
                   valueListenable: showPetitionReasonNotifier,
                   builder: (context, value, child) {

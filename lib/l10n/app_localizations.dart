@@ -2323,6 +2323,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reason your signature'**
   String get reasonYourSignature;
+
+  /// No description provided for @signatureReasoning.
+  ///
+  /// In en, this message translates to:
+  /// **'signature reasoning'**
+  String get signatureReasoning;
 }
 
 class _AppLocalizationsDelegate

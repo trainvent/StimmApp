@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -29,14 +30,14 @@ class AppBootstrap {
 
     // only create the composite notifier after persisted state is loaded
     _appStateNotifier = AppStateNotifier(
-      isDarkModeNotifier.value,
+      themeModeNotifier.value,
       appLocale.value,
     );
 
     // Persist runtime locale changes
     appLocale.addListener(_onLocaleChanged);
     showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
-    isDarkModeNotifier.addListener(_onThemeChanged);
+    themeModeNotifier.addListener(_onThemeChanged);
 
     // Load profile URL when user signs in and clear on sign-out
     _authSub = authService.authStateChanges.listen((user) async {
@@ -55,7 +56,9 @@ class AppBootstrap {
               showPetitionReasonNotifier.value = profile.showPetitionReason!;
             }
             if (profile.themeMode != null) {
-              isDarkModeNotifier.value = profile.themeMode == 'dark';
+              themeModeNotifier.value = _themeModeFromString(profile.themeMode!);
+              // Sync legacy notifier for backward compatibility if needed
+              isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
             }
             if (profile.locale != null && profile.locale!.isNotEmpty) {
               appLocale.value = _localeFromString(profile.locale!);
@@ -74,7 +77,7 @@ class AppBootstrap {
     _authSub?.cancel();
     appLocale.removeListener(_onLocaleChanged);
     showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
-    isDarkModeNotifier.removeListener(_onThemeChanged);
+    themeModeNotifier.removeListener(_onThemeChanged);
     _appStateNotifier?.dispose();
   }
 
@@ -119,14 +122,18 @@ class AppBootstrap {
 
   void _onThemeChanged() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(IConst.themeModeKey, isDarkModeNotifier.value);
+    final modeStr = _themeModeToString(themeModeNotifier.value);
+    await prefs.setString(IConst.themeModeKey, modeStr);
+    
+    // Sync legacy notifier
+    isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
     
     // Sync to Firestore if logged in
     final user = authService.currentUser;
     if (user != null) {
       try {
         final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {'themeMode': isDarkModeNotifier.value ? 'dark' : 'light'});
+        await userRepo.update(user.uid, {'themeMode': modeStr});
       } catch (e) {
         debugPrint('[AppBootstrap] Error syncing theme to Firestore: $e');
       }
@@ -135,8 +142,33 @@ class AppBootstrap {
 
   Future<void> _initThemeMode() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? isDark = prefs.getBool(IConst.themeModeKey);
-    isDarkModeNotifier.value = isDark ?? false;
+    // Check for new string-based key first
+    final String? modeStr = prefs.getString(IConst.themeModeKey);
+    if (modeStr != null) {
+      themeModeNotifier.value = _themeModeFromString(modeStr);
+    } else {
+      // Fallback to old boolean key migration
+      final bool? isDark = prefs.getBool(IConst.themeModeKey); // Note: key collision if same key used
+      // Actually, IConst.themeModeKey is 'isDarkMode'. 
+      // If it was a bool before, getString might throw or return null.
+      // Let's handle migration carefully.
+      try {
+         // Try reading as bool (legacy)
+         final bool? isDarkLegacy = prefs.getBool(IConst.themeModeKey);
+         if (isDarkLegacy != null) {
+           themeModeNotifier.value = isDarkLegacy ? ThemeMode.dark : ThemeMode.light;
+           // Migrate to string immediately
+           await prefs.setString(IConst.themeModeKey, _themeModeToString(themeModeNotifier.value));
+         } else {
+           themeModeNotifier.value = ThemeMode.system;
+         }
+      } catch (e) {
+        // If it fails, it might be because it's already a string
+        final String? modeStr = prefs.getString(IConst.themeModeKey);
+        themeModeNotifier.value = _themeModeFromString(modeStr ?? 'system');
+      }
+    }
+    isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
   }
 
   Future<void> _initLocale() async {
@@ -160,5 +192,22 @@ class AppBootstrap {
     final parts = s.split('_');
     if (parts.length == 1) return Locale(parts[0]);
     return Locale(parts[0], parts[1]);
+  }
+
+  String _themeModeToString(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.dark: return 'dark';
+      case ThemeMode.light: return 'light';
+      case ThemeMode.system: return 'system';
+    }
+  }
+
+  ThemeMode _themeModeFromString(String s) {
+    switch (s) {
+      case 'dark': return ThemeMode.dark;
+      case 'light': return ThemeMode.light;
+      case 'system': return ThemeMode.system;
+      default: return ThemeMode.system;
+    }
   }
 }

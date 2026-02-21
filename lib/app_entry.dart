@@ -121,9 +121,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: isDarkModeNotifier,
-      builder: (context, isDark, child) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeModeNotifier,
+      builder: (context, themeMode, child) {
         return ValueListenableBuilder<Locale?>(
           valueListenable: appLocale,
           builder: (context, locale, child) {
@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> {
               title: IConst.appName,
               theme: AppTheme.light,
               darkTheme: AppTheme.dark,
-              themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+              themeMode: themeMode,
               locale: locale,
               builder: (context, child) {
                 return LayoutBuilder(

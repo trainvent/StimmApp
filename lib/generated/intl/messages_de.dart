@@ -653,6 +653,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Petition unterzeichnen",
     ),
     "signUpForPro": MessageLookupByLibrary.simpleMessage("Pro-Abo abschließen"),
+    "signatureReasoning": MessageLookupByLibrary.simpleMessage(
+      "signature reasoning",
+    ),
     "signatures": MessageLookupByLibrary.simpleMessage("Unterschriften"),
     "signed": MessageLookupByLibrary.simpleMessage("Unterzeichnet"),
     "signedOn": MessageLookupByLibrary.simpleMessage("Eingeloggt"),

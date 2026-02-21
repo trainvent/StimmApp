@@ -1206,4 +1206,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get reasonYourSignature => 'Reason your signature';
+
+  @override
+  String get signatureReasoning => 'signature reasoning';
 }

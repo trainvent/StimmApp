@@ -618,6 +618,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signPetition": MessageLookupByLibrary.simpleMessage("Sign Petition"),
     "signUpForPro": MessageLookupByLibrary.simpleMessage("Sign up for Pro"),
+    "signatureReasoning": MessageLookupByLibrary.simpleMessage(
+      "signature reasoning",
+    ),
     "signatures": MessageLookupByLibrary.simpleMessage("Signatures"),
     "signed": MessageLookupByLibrary.simpleMessage("Signed"),
     "signedOn": MessageLookupByLibrary.simpleMessage("Signed on "),

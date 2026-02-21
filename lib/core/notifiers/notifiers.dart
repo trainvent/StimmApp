@@ -21,6 +21,10 @@ class AppData {
 
 //leon
 ValueNotifier<int> selectedPageNotifier = ValueNotifier(0);
-ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true);
+// ThemeMode: system, light, dark
+ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.system);
+// Deprecated: kept for backward compatibility if needed, but should be removed eventually
+ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true); 
+
 final ValueNotifier<Locale?> appLocale = ValueNotifier<Locale?>(null);
 final ValueNotifier<bool> showPetitionReasonNotifier = ValueNotifier(false);

@@ -1,30 +1,30 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 
 class AppState {
-  final bool isDark;
+  final ThemeMode themeMode;
   final Locale? locale;
-  const AppState(this.isDark, this.locale);
+  const AppState(this.themeMode, this.locale);
 }
 
-/// Notifier that combines isDarkModeNotifier and appLocale into a single ValueListenable.
+/// Notifier that combines themeModeNotifier and appLocale into a single ValueListenable.
 class AppStateNotifier extends ValueNotifier<AppState> {
-  AppStateNotifier(bool isDark, Locale? locale)
-    : super(AppState(isDark, locale)) {
+  AppStateNotifier(ThemeMode themeMode, Locale? locale)
+    : super(AppState(themeMode, locale)) {
     _update = _updateImpl;
-    isDarkModeNotifier.addListener(_update);
+    themeModeNotifier.addListener(_update);
     appLocale.addListener(_update);
   }
 
   late final VoidCallback _update;
 
   void _updateImpl() {
-    value = AppState(isDarkModeNotifier.value, appLocale.value);
+    value = AppState(themeModeNotifier.value, appLocale.value);
   }
 
   @override
   void dispose() {
-    isDarkModeNotifier.removeListener(_update);
+    themeModeNotifier.removeListener(_update);
     appLocale.removeListener(_update);
     super.dispose();
   }
