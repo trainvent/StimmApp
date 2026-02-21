@@ -16,6 +16,7 @@ class Petition implements HomeItem {
   final DateTime createdAt;
   @override
   final DateTime expiresAt;
+  @override
   final String status;
   @override
   final String? state;

@@ -30,14 +30,11 @@ class _TestHomeItem implements HomeItem {
     required this.description,
     required this.status,
     required this.expiresAt,
-    this.state,
-    this.participantCount = 0,
-    this.tags = const [],
   });
 }
 
 void main() {
-  Future<void> _pumpPage(
+  Future<void> pumpPage(
     WidgetTester tester, {
     required _TestHomeItem item,
     Widget? bottomAction,
@@ -50,7 +47,7 @@ void main() {
           appBarTitle: 'Test',
           sharePathSegment: 'test',
           streamProvider: (_) => Stream<_TestHomeItem?>.value(item),
-          contentBuilder: (_, __) {
+          contentBuilder: (_, _) {
             return TextButton(
               onPressed: onContentTap,
               child: const Text('content_action'),
@@ -75,7 +72,7 @@ void main() {
       );
       var taps = 0;
 
-      await _pumpPage(
+      await pumpPage(
         tester,
         item: item,
         bottomAction: const Text('Action'),
@@ -102,7 +99,7 @@ void main() {
       );
       var taps = 0;
 
-      await _pumpPage(
+      await pumpPage(
         tester,
         item: item,
         bottomAction: const Text('Action'),
@@ -129,7 +126,7 @@ void main() {
       );
       var taps = 0;
 
-      await _pumpPage(
+      await pumpPage(
         tester,
         item: item,
         bottomAction: const Text('Action'),

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -15,7 +14,7 @@ void main() {
 
   patrolTest(
     'onboarding validation test: invalid email, weak password, and mismatched passwords',
-        ($) async {
+    ($) async {
       await initializeApp($);
       final validPassword = password.isNotEmpty
           ? password
