@@ -550,6 +550,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
       "Purchase successful!",
     ),
+    "reasonYourSignature": MessageLookupByLibrary.simpleMessage(
+      "Reason your signature",
+    ),
     "reasonsForSigning": MessageLookupByLibrary.simpleMessage(
       "Reasons for signing",
     ),

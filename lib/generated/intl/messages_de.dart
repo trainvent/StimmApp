@@ -574,6 +574,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
       "Kauf erfolgreich!",
     ),
+    "reasonYourSignature": MessageLookupByLibrary.simpleMessage(
+      "Reason your signature",
+    ),
     "reasonsForSigning": MessageLookupByLibrary.simpleMessage(
       "Gründe für die Unterzeichnung",
     ),

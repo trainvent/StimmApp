@@ -2317,6 +2317,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Help us improve the app by automatically sending crash reports.'**
   String get sendCrashLogsDescription;
+
+  /// No description provided for @reasonYourSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason your signature'**
+  String get reasonYourSignature;
 }
 
 class _AppLocalizationsDelegate

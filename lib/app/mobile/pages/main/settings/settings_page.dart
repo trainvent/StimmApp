@@ -109,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ListTile(
-                title: Text('Show Petition Reason (Experimental)'),
+                title: Text(S.of(context).reasonYourSignature),
                 trailing: ValueListenableBuilder<bool>(
                   valueListenable: showPetitionReasonNotifier,
                   builder: (context, value, child) {

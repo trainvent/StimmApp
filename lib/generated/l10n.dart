@@ -3123,6 +3123,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Reason your signature`
+  String get reasonYourSignature {
+    return Intl.message(
+      'Reason your signature',
+      name: 'reasonYourSignature',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -419,5 +419,6 @@
   "linkCopiedToClipboard": "Link copied to clipboard",
   "privacySettings": "Privacy Settings",
   "sendCrashLogs": "Send Crash Logs",
-  "sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports."
+  "sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports.",
+  "reasonYourSignature": "Reason your signature"
 }

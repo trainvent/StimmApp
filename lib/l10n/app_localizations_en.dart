@@ -1188,4 +1188,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sendCrashLogsDescription =>
       'Help us improve the app by automatically sending crash reports.';
+
+  @override
+  String get reasonYourSignature => 'Reason your signature';
 }
