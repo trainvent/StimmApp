@@ -39,10 +39,6 @@ class _LoginPageState extends State<LoginPage> {
         email: controllerEm.text,
         password: controllerPw.text,
       );
-      if (!mounted) return;
-      showSuccessSnackBar(successMessage);
-      // Only pop if sign in was successful
-      if (mounted) popPage();
     } on AuthException catch (e) {
       errorMessage = e.toString();
       if (!mounted) return;

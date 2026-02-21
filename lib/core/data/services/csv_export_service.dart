@@ -83,7 +83,7 @@ class CsvExportService {
     String petitionId,
   ) async {
     // Fetch signer profiles via the participants stream once
-    final profiles = await _petitionRepo.getParticipantsOnce(petitionId);
+    final results = await _petitionRepo.getParticipantsWithSignaturesOnce(petitionId);
     final rows = <List<String>>[];
     if (!context.mounted) {
       throw Exception('Context is no longer mounted');
@@ -94,14 +94,18 @@ class CsvExportService {
       context.l10n.surname,
       context.l10n.email,
       context.l10n.livingAddress,
+      'Reason',
     ]);
-    for (final p in profiles.whereType<UserProfile>()) {
+    for (final r in results) {
+      final p = r['profile'] as UserProfile;
+      final reason = r['reason'] as String? ?? '';
       rows.add([
         'signed',
         p.givenName ?? '',
         p.surname ?? '',
         p.email ?? '',
         p.address ?? '',
+        reason,
       ]);
     }
     final csv = _buildCsv(rows);

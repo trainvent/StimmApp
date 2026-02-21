@@ -72,7 +72,7 @@ class PetitionRepository {
     return docRef.id;
   }
 
-  Future<void> sign(String petitionId, String uid) async {
+  Future<void> sign(String petitionId, String uid, {String? reason}) async {
     final db = _fs.instance;
     final petitionRef = db.collection('petitions').doc(petitionId);
     final userRef = db.collection('users').doc(uid);
@@ -84,6 +84,7 @@ class PetitionRepository {
       txn.set(signatureRef, {
         'uid': uid,
         'signedAt': FieldValue.serverTimestamp(),
+        if (reason != null && reason.isNotEmpty) 'reason': reason,
       });
       txn.update(petitionRef, {'signatureCount': FieldValue.increment(1)});
       txn.set(userRef.collection('signedPetitions').doc(petitionId), {
@@ -91,6 +92,15 @@ class PetitionRepository {
         'signedAt': FieldValue.serverTimestamp(),
       });
     });
+  }
+
+  Stream<List<Map<String, dynamic>>> watchSignatures(String petitionId) {
+    return _fs.instance
+        .collection('petitions')
+        .doc(petitionId)
+        .collection('signatures')
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList());
   }
 
   Stream<List<UserProfile>> watchParticipants(String petitionId) {
@@ -109,6 +119,33 @@ class PetitionRepository {
           );
           return profiles.whereType<UserProfile>().toList();
         });
+  }
+
+  // Fetch participants once (used by CSV export)
+  Future<List<Map<String, dynamic>>> getParticipantsWithSignaturesOnce(String petitionId) async {
+    final snap = await _fs.instance
+        .collection('petitions')
+        .doc(petitionId)
+        .collection('signatures')
+        .get();
+    
+    final signatures = snap.docs.map((d) => d.data()).toList();
+    if (signatures.isEmpty) return [];
+
+    final userRepo = UserRepository.create();
+    final results = <Map<String, dynamic>>[];
+
+    for (final sig in signatures) {
+      final uid = sig['uid'] as String;
+      final profile = await userRepo.getById(uid);
+      if (profile != null) {
+        results.add({
+          'profile': profile,
+          'reason': sig['reason'],
+        });
+      }
+    }
+    return results;
   }
 
   // Fetch participants once (used by CSV export)
