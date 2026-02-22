@@ -28,25 +28,30 @@ class _PollDetailPageState extends State<PollDetailPage> {
       sharePathSegment: 'poll',
       contentBuilder: (context, poll) {
         final total = poll.totalVotes;
-        return ListView(
-          children: [
-            ...poll.options.map((o) {
-              final count = poll.votes[o.id] ?? 0;
-              final pct = total == 0 ? 0 : (count / total * 100).round();
-              return RadioListTile<String>(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: Text(o.label)),
-                    Text('$count • $pct%'),
-                  ],
-                ),
-                value: o.id,
-                groupValue: _selectedOptionId,
-                onChanged: (v) => setState(() => _selectedOptionId = v),
-              );
-            }),
-          ],
+        return RadioGroup<String>(
+          groupValue: _selectedOptionId,
+          onChanged: (v) => setState(() => _selectedOptionId = v),
+          child: ListView(
+            children: [
+              ...poll.options.map((o) {
+                final count = poll.votes[o.id] ?? 0;
+                final pct = total == 0 ? 0 : (count / total * 100).round();
+                return ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(o.label)),
+                      Text('$count • $pct%'),
+                    ],
+                  ),
+                  leading: Radio<String>(
+                    value: o.id,
+                  ),
+                  onTap: () => setState(() => _selectedOptionId = o.id),
+                );
+              }),
+            ],
+          ),
         );
       },
       bottomAction: SignActionButton(

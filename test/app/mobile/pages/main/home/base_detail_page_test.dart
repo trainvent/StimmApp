@@ -30,6 +30,9 @@ class _TestHomeItem implements HomeItem {
     required this.description,
     required this.status,
     required this.expiresAt,
+    this.state,
+    this.participantCount = 0,
+    this.tags = const [],
   });
 }
 
@@ -69,6 +72,9 @@ void main() {
         description: 'Desc',
         status: IConst.closed,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
+        state: 'NRW',
+        participantCount: 10,
+        tags: ['tag1'],
       );
       var taps = 0;
 
@@ -96,6 +102,9 @@ void main() {
         description: 'Desc',
         status: IConst.active,
         expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        state: 'NRW',
+        participantCount: 10,
+        tags: ['tag1'],
       );
       var taps = 0;
 
@@ -123,6 +132,9 @@ void main() {
         description: 'Desc',
         status: IConst.active,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
+        state: 'NRW',
+        participantCount: 10,
+        tags: ['tag1'],
       );
       var taps = 0;
 

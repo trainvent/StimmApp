@@ -37,8 +37,6 @@ void main() {
       // Now in Petition Detail Page
       await $(l10n.sign).waitUntilVisible();
 
-      // Verify signed (success snackbar or button change)
-
       // Go back to list
       await $(BackButton).tap();
       await $(l10n.closed).tap();
@@ -46,8 +44,7 @@ void main() {
 
       // Try to tap the first ListTile found in the scrollable list.
       await $(ListTile).at(0).tap();
-      
-      // Ensure the sign button is NOT visible
+
       await $(BackButton).tap();
       await $(keys.widgetTree.profileButton).tap();
       await $(keys.profilePage.logoutListTile).scrollTo().tap();

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -148,10 +147,6 @@ class AppBootstrap {
       themeModeNotifier.value = _themeModeFromString(modeStr);
     } else {
       // Fallback to old boolean key migration
-      final bool? isDark = prefs.getBool(IConst.themeModeKey); // Note: key collision if same key used
-      // Actually, IConst.themeModeKey is 'isDarkMode'. 
-      // If it was a bool before, getString might throw or return null.
-      // Let's handle migration carefully.
       try {
          // Try reading as bool (legacy)
          final bool? isDarkLegacy = prefs.getBool(IConst.themeModeKey);
