@@ -21,6 +21,17 @@ gcloud scheduler jobs run firebase-schedule-syncProdToDev-us-central1 --project=
 # clean up job
 gcloud scheduler jobs run firebase-schedule-cleanupOrphanedUsers-us-central1 --location=us-central1 --project=stimmapp-dev
 
+# ios complete reset
+flutter clean
+cd ios
+rm -rf Pods/ Podfile.lock .symlinks
+pod deintegrate
+cd ..
+flutter pub get
+cd ios
+pod install --repo-update
+cd ..
+
 # How to set up a dev channel
 ## Setting up i did not like for emailservice
 gcloud projects add-iam-policy-binding stimmapp-dev \
