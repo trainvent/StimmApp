@@ -14,7 +14,7 @@ void main() {
 
   patrolTest(
     'onboarding validation test: invalid email, weak password, and mismatched passwords',
-        ($) async {
+    ($) async {
       await initializeApp($);
       final validPassword = password.isNotEmpty
           ? password
