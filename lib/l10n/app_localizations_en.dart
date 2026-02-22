@@ -1194,4 +1194,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signatureReasoning => 'signature reasoning';
+
+  @override
+  String get whyAreYouSigning => 'Why are you signing?';
+
+  @override
+  String get enterYourReasonHere => 'Enter your reason here...';
 }

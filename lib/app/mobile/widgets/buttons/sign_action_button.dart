@@ -7,6 +7,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class SignActionButton extends StatelessWidget {
   const SignActionButton({
@@ -72,11 +73,11 @@ class SignActionButton extends StatelessWidget {
         builder: (context) {
           String tempReason = '';
           return AlertDialog(
-            title: Text('Why are you signing? (Optional)'),
+            title: Text(S.of(context).whyAreYouSigning),
             content: TextField(
               onChanged: (value) => tempReason = value,
               decoration: InputDecoration(
-                hintText: 'Enter your reason here...',
+                hintText: S.of(context).enterYourReasonHere,
               ),
             ),
             actions: [

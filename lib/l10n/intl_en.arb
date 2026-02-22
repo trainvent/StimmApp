@@ -421,5 +421,7 @@
   "sendCrashLogs": "Send Crash Logs",
   "sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports.",
   "reasonYourSignature": "Reason your signature",
-  "signatureReasoning": "signature reasoning"
+  "signatureReasoning": "signature reasoning",
+  "whyAreYouSigning": "Why are you signing?",
+  "enterYourReasonHere": "Enter your reason here..."
 }

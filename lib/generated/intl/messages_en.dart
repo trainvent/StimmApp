@@ -219,6 +219,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "enter Your Address",
     ),
     "enterYourEmail": MessageLookupByLibrary.simpleMessage("Enter your email"),
+    "enterYourReasonHere": MessageLookupByLibrary.simpleMessage(
+      "Enter your reason here...",
+    ),
     "entryNotYetImplemented": MessageLookupByLibrary.simpleMessage(
       "Lexicon entry not yet implemented",
     ),
@@ -745,6 +748,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "welcomeTo": MessageLookupByLibrary.simpleMessage("Welcome to "),
     "welcomeToPro": MessageLookupByLibrary.simpleMessage("Welcome to Pro!"),
+    "whyAreYouSigning": MessageLookupByLibrary.simpleMessage(
+      "Why are you signing?",
+    ),
     "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
       "Wrong password provided.",
     ),

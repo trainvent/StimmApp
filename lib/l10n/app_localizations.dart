@@ -2329,6 +2329,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'signature reasoning'**
   String get signatureReasoning;
+
+  /// No description provided for @whyAreYouSigning.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you signing?'**
+  String get whyAreYouSigning;
+
+  /// No description provided for @enterYourReasonHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your reason here...'**
+  String get enterYourReasonHere;
 }
 
 class _AppLocalizationsDelegate

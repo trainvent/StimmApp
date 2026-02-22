@@ -3143,6 +3143,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Why are you signing?`
+  String get whyAreYouSigning {
+    return Intl.message(
+      'Why are you signing?',
+      name: 'whyAreYouSigning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your reason here...`
+  String get enterYourReasonHere {
+    return Intl.message(
+      'Enter your reason here...',
+      name: 'enterYourReasonHere',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
