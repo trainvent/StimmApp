@@ -1,83 +1,72 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Flutter: Dev (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_dev.dart",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
-    },
-    {
-      "name": "Flutter: Prod (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
-    },
-    {
-      "name": "Flutter: Dev (Profile)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_dev.dart",
-      "flutterMode": "profile",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
-    },
-    {
-      "name": "Flutter: Prod (Profile)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "flutterMode": "profile",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
-    },
-    {
-      "name": "Flutter: Dev (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_dev.dart",
-      "flutterMode": "release",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
-    },
-    {
-      "name": "Flutter: Prod (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "flutterMode": "release",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
-    },
-    {
-      "name": "Flutter: Dev Web (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_dev.dart",
-      "deviceId": "chrome"
-    },
-    {
-      "name": "Flutter: Prod Web (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "deviceId": "chrome"
-    }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Flutter: Dev (Debug)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_dev.dart",
+			"args": [
+				"--flavor",
+				"dev"
+			]
+		},
+		{
+			"name": "Flutter: Dev Verbose (Debug)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_dev.dart",
+			"args": [
+				"--flavor",
+				"dev",
+				"-v"
+			]
+		},
+		{
+			"name": "Flutter: Prod (Debug)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"args": [
+				"--flavor",
+				"prod"
+			]
+		},
+		{
+			"name": "Flutter: Prod (Profile)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"flutterMode": "profile",
+			"args": [
+				"--flavor",
+				"prod"
+			]
+		},
+		{
+			"name": "Flutter: Prod (Release)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"flutterMode": "release",
+			"args": [
+				"--flavor",
+				"prod"
+			]
+		},
+		{
+			"name": "Flutter: Dev Web (Chrome)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_dev.dart",
+			"deviceId": "chrome"
+		},
+		{
+			"name": "Flutter: Prod Web (Chrome)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"deviceId": "chrome"
+		}
+	]
 }
