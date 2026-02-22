@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
@@ -35,14 +36,34 @@ class AppBootstrap {
     // Persist runtime locale changes
     appLocale.addListener(_onLocaleChanged);
     showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
+    isDarkModeNotifier.addListener(_onThemeChanged);
 
     // Load profile URL when user signs in and clear on sign-out
-    _authSub = authService.authStateChanges.listen((user) {
+    _authSub = authService.authStateChanges.listen((user) async {
       if (user != null) {
         ProfilePictureService.instance.loadProfileUrl(user.uid).catchError((e) {
           debugPrint('[AppBootstrap] Error loading profile URL: $e');
           return null;
         });
+        
+        // Sync settings from Firestore
+        try {
+          final userRepo = UserRepository.create();
+          final profile = await userRepo.getById(user.uid);
+          if (profile != null) {
+            if (profile.showPetitionReason != null) {
+              showPetitionReasonNotifier.value = profile.showPetitionReason!;
+            }
+            if (profile.themeMode != null) {
+              isDarkModeNotifier.value = profile.themeMode == 'dark';
+            }
+            if (profile.locale != null && profile.locale!.isNotEmpty) {
+              appLocale.value = _localeFromString(profile.locale!);
+            }
+          }
+        } catch (e) {
+          debugPrint('[AppBootstrap] Error syncing settings: $e');
+        }
       } else {
         ProfilePictureService.instance.profileUrlNotifier.value = null;
       }
@@ -53,6 +74,7 @@ class AppBootstrap {
     _authSub?.cancel();
     appLocale.removeListener(_onLocaleChanged);
     showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
+    isDarkModeNotifier.removeListener(_onThemeChanged);
     _appStateNotifier?.dispose();
   }
 
@@ -66,11 +88,49 @@ class AppBootstrap {
         : '${loc.languageCode}_${loc.countryCode}';
     await prefs.setString(IConst.localeKey, toSave);
     debugPrint('[AppBootstrap] persisted locale: $toSave');
+    
+    // Sync to Firestore if logged in
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {'locale': toSave});
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing locale to Firestore: $e');
+      }
+    }
   }
 
   void _onPetitionReasonChanged() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showPetitionReason', showPetitionReasonNotifier.value);
+    
+    // Sync to Firestore if logged in
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {'showPetitionReason': showPetitionReasonNotifier.value});
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing petition reason setting to Firestore: $e');
+      }
+    }
+  }
+
+  void _onThemeChanged() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(IConst.themeModeKey, isDarkModeNotifier.value);
+    
+    // Sync to Firestore if logged in
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {'themeMode': isDarkModeNotifier.value ? 'dark' : 'light'});
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing theme to Firestore: $e');
+      }
+    }
   }
 
   Future<void> _initThemeMode() async {

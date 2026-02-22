@@ -14,6 +14,11 @@ class UserProfile {
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
   final bool? sendCrashLogs;
+  
+  // Settings
+  final bool? showPetitionReason;
+  final String? themeMode; // 'light', 'dark', or null (system)
+  final String? locale; // 'en', 'de', etc.
 
   /// Returns the date when the subscription expires (30 days after purchase).
   DateTime? get subscriptionEndsAt {
@@ -56,6 +61,9 @@ class UserProfile {
     this.isVerified,
     this.gotVerifiedAt,
     this.sendCrashLogs,
+    this.showPetitionReason,
+    this.themeMode,
+    this.locale,
   });
 
   UserProfile copyWith({
@@ -80,6 +88,9 @@ class UserProfile {
     bool? isVerified,
     DateTime? gotVerifiedAt,
     bool? sendCrashLogs,
+    bool? showPetitionReason,
+    String? themeMode,
+    String? locale,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -103,6 +114,9 @@ class UserProfile {
       isVerified: isVerified ?? this.isVerified,
       gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
+      showPetitionReason: showPetitionReason ?? this.showPetitionReason,
+      themeMode: themeMode ?? this.themeMode,
+      locale: locale ?? this.locale,
     );
   }
 
@@ -129,6 +143,9 @@ class UserProfile {
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
       sendCrashLogs: json['sendCrashLogs'] as bool?,
+      showPetitionReason: json['showPetitionReason'] as bool?,
+      themeMode: json['themeMode'] as String?,
+      locale: json['locale'] as String?,
     );
   }
 
@@ -156,6 +173,9 @@ class UserProfile {
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
       'sendCrashLogs': sendCrashLogs,
+      'showPetitionReason': showPetitionReason,
+      'themeMode': themeMode,
+      'locale': locale,
     };
   }
 }

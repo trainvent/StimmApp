@@ -47,6 +47,10 @@ class UserRepository {
     );
   }
 
+  Future<void> update(String uid, Map<String, dynamic> data) async {
+    await _fs.instance.collection(DatabaseCollections.users).doc(uid).update(data);
+  }
+
   Future<void> delete(String uid) async {
     // Use repository helpers to remove user activity and close created items.
     final pollRepo = PollRepository.create();
