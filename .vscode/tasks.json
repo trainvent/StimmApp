@@ -1,115 +1,122 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Flutter: Pub Get",
-      "type": "shell",
-      "command": "flutter",
-      "args": ["pub", "get"],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Flutter: Clean",
-      "type": "shell",
-      "command": "flutter",
-      "args": ["clean"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Build Android AAB (Prod Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "appbundle",
-        "--release",
-        "--flavor",
-        "prod",
-        "-t",
-        "lib/main.dart"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Build Android AAB (Dev Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "appbundle",
-        "--release",
-        "--flavor",
-        "dev",
-        "-t",
-        "lib/main_dev.dart"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Build Android APK (Prod Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "apk",
-        "--release",
-        "--flavor",
-        "prod",
-        "-t",
-        "lib/main.dart"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Build Android APK (Dev Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "apk",
-        "--release",
-        "--flavor",
-        "dev",
-        "-t",
-        "lib/main_dev.dart"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Build iOS IPA (Prod Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "ipa",
-        "--release",
-        "-t",
-        "lib/main.dart"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Build iOS IPA (Dev Release)",
-      "type": "shell",
-      "command": "flutter",
-      "args": [
-        "build",
-        "ipa",
-        "--release",
-        "-t",
-        "lib/main_dev.dart"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Flutter: Pub Get",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"pub",
+				"get"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Flutter: Clean",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"clean"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android AAB (Prod Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"appbundle",
+				"--release",
+				"--flavor",
+				"prod",
+				"-t",
+				"lib/main.dart"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android AAB (Dev Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"appbundle",
+				"--release",
+				"--flavor",
+				"dev",
+				"-t",
+				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android APK (Prod Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--release",
+				"--flavor",
+				"prod",
+				"-t",
+				"lib/main.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android APK (Dev Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--release",
+				"--flavor",
+				"dev",
+				"-t",
+				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build iOS IPA (Prod Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ipa",
+				"--release",
+				"--flavor",
+				"prod",
+				"-t",
+				"lib/main.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build iOS IPA (Dev Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ipa",
+				"--release",
+				"-t",
+				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		}
+	]
 }
