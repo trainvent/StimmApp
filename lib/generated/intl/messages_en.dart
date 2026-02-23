@@ -61,6 +61,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to clear this draft?",
     ),
+    "areYouSureYouWantToDeleteThisForm": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this form?",
+    ),
     "areYouSureYouWantToDeleteThisPetition":
         MessageLookupByLibrary.simpleMessage(
           "Are you sure you want to delete this petition?",
@@ -93,6 +96,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "cancelSubscription": MessageLookupByLibrary.simpleMessage(
       "Cancel subscription",
+    ),
+    "cannotDeletePetitionHasSignatures": MessageLookupByLibrary.simpleMessage(
+      "Cannot delete: Petition has signatures.",
+    ),
+    "cannotDeletePollHasVotes": MessageLookupByLibrary.simpleMessage(
+      "Cannot delete: Poll has votes.",
     ),
     "changeLanguage": MessageLookupByLibrary.simpleMessage("Change Language"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Change password"),
@@ -169,6 +178,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteAccountWrongPassword": MessageLookupByLibrary.simpleMessage(
       "Wrong password provided.",
     ),
+    "deleteForm": MessageLookupByLibrary.simpleMessage("Delete Form"),
     "deleteMyAccount": MessageLookupByLibrary.simpleMessage(
       "Delete my account",
     ),
@@ -353,6 +363,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "noProMember": MessageLookupByLibrary.simpleMessage(
       "Nein, kein Pro-Mitglied",
     ),
+    "noRunningPetitionsFound": MessageLookupByLibrary.simpleMessage(
+      "No running petitions found.",
+    ),
+    "noRunningPollsFound": MessageLookupByLibrary.simpleMessage(
+      "No running polls found.",
+    ),
     "noTitle": MessageLookupByLibrary.simpleMessage("No Title"),
     "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
       "No user found for that email.",
@@ -409,6 +425,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition by"),
+    "petitionDeleted": MessageLookupByLibrary.simpleMessage("Petition deleted"),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petition details"),
     "petitionGuidelineDescription": MessageLookupByLibrary.simpleMessage(
       "petition guideline description",
@@ -482,6 +499,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Use your phone for registering, please",
     ),
     "poll": MessageLookupByLibrary.simpleMessage("Poll"),
+    "pollDeleted": MessageLookupByLibrary.simpleMessage("Poll deleted"),
     "pollDetails": MessageLookupByLibrary.simpleMessage("Poll details"),
     "pollGuidelineDescription": MessageLookupByLibrary.simpleMessage(
       "poll guideline description",
@@ -584,6 +602,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resubscribe": MessageLookupByLibrary.simpleMessage("Resubscribe"),
     "result": MessageLookupByLibrary.simpleMessage("Result"),
+    "runningForms": MessageLookupByLibrary.simpleMessage("Running Forms"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "scanAgain": MessageLookupByLibrary.simpleMessage("Scan Again"),
     "scanYourId": MessageLookupByLibrary.simpleMessage(

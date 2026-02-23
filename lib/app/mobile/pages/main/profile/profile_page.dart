@@ -324,7 +324,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   // Running forms
                   PointingListTile(
-                    title: const Text('Running Forms'),
+                    title: Text(S.of(context).runningForms),
                     onTap: () {
                       Navigator.push(
                         context,

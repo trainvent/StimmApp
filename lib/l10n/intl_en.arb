@@ -123,7 +123,6 @@
   "editPetition": "Edit Petition",
   "email": "Email",
   "emailVerification": "Email verification",
-  "emailVerifiedSuccessfully": "Email verified successfully!",
   "energy": "Energy",
   "english": "english",
   "enterCode": "Enter Code",
@@ -423,5 +422,14 @@
   "reasonYourSignature": "Reason your signature",
   "signatureReasoning": "signature reasoning",
   "whyAreYouSigning": "Why are you signing?",
-  "enterYourReasonHere": "Enter your reason here..."
+  "enterYourReasonHere": "Enter your reason here...",
+  "runningForms": "Running Forms",
+  "cannotDeletePetitionHasSignatures": "Cannot delete: Petition has signatures.",
+  "petitionDeleted": "Petition deleted",
+  "cannotDeletePollHasVotes": "Cannot delete: Poll has votes.",
+  "pollDeleted": "Poll deleted",
+  "deleteForm": "Delete Form",
+  "areYouSureYouWantToDeleteThisForm": "Are you sure you want to delete this form?",
+  "noRunningPetitionsFound": "No running petitions found.",
+  "noRunningPollsFound": "No running polls found."
 }

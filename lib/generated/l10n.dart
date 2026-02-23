@@ -734,16 +734,6 @@ class S {
     );
   }
 
-  /// `Email verified successfully!`
-  String get emailVerifiedSuccessfully {
-    return Intl.message(
-      'Email verified successfully!',
-      name: 'emailVerifiedSuccessfully',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Energy`
   String get energy {
     return Intl.message('Energy', name: 'energy', desc: '', args: []);
@@ -2534,6 +2524,16 @@ class S {
     );
   }
 
+  /// `Email verified successfully!`
+  String get emailVerifiedSuccessfully {
+    return Intl.message(
+      'Email verified successfully!',
+      name: 'emailVerifiedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Verification failed`
   String get verificationFailed {
     return Intl.message(
@@ -3159,6 +3159,91 @@ class S {
     return Intl.message(
       'Enter your reason here...',
       name: 'enterYourReasonHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Running Forms`
+  String get runningForms {
+    return Intl.message(
+      'Running Forms',
+      name: 'runningForms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot delete: Petition has signatures.`
+  String get cannotDeletePetitionHasSignatures {
+    return Intl.message(
+      'Cannot delete: Petition has signatures.',
+      name: 'cannotDeletePetitionHasSignatures',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Petition deleted`
+  String get petitionDeleted {
+    return Intl.message(
+      'Petition deleted',
+      name: 'petitionDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot delete: Poll has votes.`
+  String get cannotDeletePollHasVotes {
+    return Intl.message(
+      'Cannot delete: Poll has votes.',
+      name: 'cannotDeletePollHasVotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Poll deleted`
+  String get pollDeleted {
+    return Intl.message(
+      'Poll deleted',
+      name: 'pollDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Form`
+  String get deleteForm {
+    return Intl.message('Delete Form', name: 'deleteForm', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to delete this form?`
+  String get areYouSureYouWantToDeleteThisForm {
+    return Intl.message(
+      'Are you sure you want to delete this form?',
+      name: 'areYouSureYouWantToDeleteThisForm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No running petitions found.`
+  String get noRunningPetitionsFound {
+    return Intl.message(
+      'No running petitions found.',
+      name: 'noRunningPetitionsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No running polls found.`
+  String get noRunningPollsFound {
+    return Intl.message(
+      'No running polls found.',
+      name: 'noRunningPollsFound',
       desc: '',
       args: [],
     );

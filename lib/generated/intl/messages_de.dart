@@ -67,6 +67,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
       "Sind sie sicher das sie das Formular löschen wollen?",
     ),
+    "areYouSureYouWantToDeleteThisForm": MessageLookupByLibrary.simpleMessage(
+      "Sind Sie sicher, dass Sie dieses Formular löschen möchten?",
+    ),
     "areYouSureYouWantToDeleteThisPetition":
         MessageLookupByLibrary.simpleMessage(
           "Sind Sie sicher, dass Sie diese Petition löschen möchten?",
@@ -98,6 +101,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Registrierung abbrechen",
     ),
     "cancelSubscription": MessageLookupByLibrary.simpleMessage("Abo kündigen"),
+    "cannotDeletePetitionHasSignatures": MessageLookupByLibrary.simpleMessage(
+      "Kann nicht gelöscht werden: Petition hat Unterschriften.",
+    ),
+    "cannotDeletePollHasVotes": MessageLookupByLibrary.simpleMessage(
+      "Kann nicht gelöscht werden: Umfrage hat Stimmen.",
+    ),
     "changeLanguage": MessageLookupByLibrary.simpleMessage("Sprache ändern"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Passwort ändern"),
     "close": MessageLookupByLibrary.simpleMessage("Schließen"),
@@ -179,6 +188,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteAccountWrongPassword": MessageLookupByLibrary.simpleMessage(
       "Falsches Passwort.",
     ),
+    "deleteForm": MessageLookupByLibrary.simpleMessage("Formular löschen"),
     "deleteMyAccount": MessageLookupByLibrary.simpleMessage(
       "Mein Konto löschen",
     ),
@@ -234,7 +244,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Geben Sie Ihre E-Mail-Adresse ein",
     ),
     "enterYourReasonHere": MessageLookupByLibrary.simpleMessage(
-      "Enter your reason here...",
+      "Geben Sie hier Ihren Grund ein...",
     ),
     "entryNotYetImplemented": MessageLookupByLibrary.simpleMessage(
       "Lexikon-Eintrag noch nicht implementiert",
@@ -375,6 +385,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "noProMember": MessageLookupByLibrary.simpleMessage(
       "Nein, kein Pro-Mitglied",
     ),
+    "noRunningPetitionsFound": MessageLookupByLibrary.simpleMessage(
+      "Keine laufenden Petitionen gefunden.",
+    ),
+    "noRunningPollsFound": MessageLookupByLibrary.simpleMessage(
+      "Keine laufenden Umfragen gefunden.",
+    ),
     "noTitle": MessageLookupByLibrary.simpleMessage("Kein Titel"),
     "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
       "Kein dieser Email zugehöriger Nutzer gefunden.",
@@ -425,6 +441,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "petition": MessageLookupByLibrary.simpleMessage("Petition"),
     "petitionBy": MessageLookupByLibrary.simpleMessage("Petition von"),
+    "petitionDeleted": MessageLookupByLibrary.simpleMessage(
+      "Petition gelöscht",
+    ),
     "petitionDetails": MessageLookupByLibrary.simpleMessage("Petitionsdetails"),
     "petitionGuidelineDescription": MessageLookupByLibrary.simpleMessage(
       "Petitionen müssen den Richtlinien des Petitionsausschusses des Deutschen Bundestages entsprechen. Sie sollten ein Anliegen von allgemeinem Interesse behandeln und dürfen keine beleidigenden oder diskriminierenden Inhalte enthalten.",
@@ -498,6 +517,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bitte benutze dein Telefon zur Registrierung",
     ),
     "poll": MessageLookupByLibrary.simpleMessage("Umfrage"),
+    "pollDeleted": MessageLookupByLibrary.simpleMessage("Umfrage gelöscht"),
     "pollDetails": MessageLookupByLibrary.simpleMessage("Umfragedetails"),
     "pollGuidelineDescription": MessageLookupByLibrary.simpleMessage(
       "Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.",
@@ -578,7 +598,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Kauf erfolgreich!",
     ),
     "reasonYourSignature": MessageLookupByLibrary.simpleMessage(
-      "Reason your signature",
+      "Begründen Sie Ihre Unterschrift",
     ),
     "reasonsForSigning": MessageLookupByLibrary.simpleMessage(
       "Gründe für die Unterzeichnung",
@@ -614,6 +634,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resubscribe": MessageLookupByLibrary.simpleMessage("Erneut abonnieren"),
     "result": MessageLookupByLibrary.simpleMessage("Ergebnis"),
+    "runningForms": MessageLookupByLibrary.simpleMessage("Laufende Formulare"),
     "save": MessageLookupByLibrary.simpleMessage("Speichern"),
     "scanAgain": MessageLookupByLibrary.simpleMessage("Erneut scannen"),
     "scanYourId": MessageLookupByLibrary.simpleMessage(
@@ -657,7 +678,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signUpForPro": MessageLookupByLibrary.simpleMessage("Pro-Abo abschließen"),
     "signatureReasoning": MessageLookupByLibrary.simpleMessage(
-      "signature reasoning",
+      "Begründung der Unterschrift",
     ),
     "signatures": MessageLookupByLibrary.simpleMessage("Unterschriften"),
     "signed": MessageLookupByLibrary.simpleMessage("Unterzeichnet"),
@@ -797,7 +818,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Willkommen als Pro-Mitglied!",
     ),
     "whyAreYouSigning": MessageLookupByLibrary.simpleMessage(
-      "Why are you signing?",
+      "Warum unterzeichnen Sie?",
     ),
     "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
       "Falsches Passwort eingegeben.",

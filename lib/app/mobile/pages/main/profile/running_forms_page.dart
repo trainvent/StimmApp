@@ -10,6 +10,7 @@ import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
+import 'package:stimmapp/generated/l10n.dart';
 
 class RunningFormsPage extends StatefulWidget {
   const RunningFormsPage({super.key});
@@ -62,7 +63,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
     final hasNoSignatures = petition.signatureCount == 0;
 
     if (!hasNoSignatures) {
-      showErrorSnackBar('Cannot delete: Petition has signatures.');
+      showErrorSnackBar(S.of(context).cannotDeletePetitionHasSignatures);
       return;
     }
 
@@ -71,7 +72,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
       await PetitionRepository.create().delete(petition.id);
       QuotaUpdateNotifier.instance.notify();
       if (mounted) {
-        showSuccessSnackBar('Petition deleted');
+        showSuccessSnackBar(S.of(context).petitionDeleted);
       }
     }
   }
@@ -80,7 +81,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
     final hasNoVotes = poll.totalVotes == 0;
 
     if (!hasNoVotes) {
-      showErrorSnackBar('Cannot delete: Poll has votes.');
+      showErrorSnackBar(S.of(context).cannotDeletePollHasVotes);
       return;
     }
 
@@ -89,7 +90,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
       await PollRepository.create().delete(poll.id);
       QuotaUpdateNotifier.instance.notify();
       if (mounted) {
-        showSuccessSnackBar('Poll deleted');
+        showSuccessSnackBar(S.of(context).pollDeleted);
       }
     }
   }
@@ -98,8 +99,8 @@ class _RunningFormsPageState extends State<RunningFormsPage>
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Form'),
-        content: const Text('Are you sure you want to delete this form?'),
+        title: Text(S.of(context).deleteForm),
+        content: Text(S.of(context).areYouSureYouWantToDeleteThisForm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -118,7 +119,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Running Forms'),
+        title: Text(S.of(context).runningForms),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -145,7 +146,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {
-          return const Center(child: Text('No running petitions found.'));
+          return Center(child: Text(S.of(context).noRunningPetitionsFound));
         }
         return ListView.separated(
           itemCount: items.length,
@@ -183,7 +184,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {
-          return const Center(child: Text('No running polls found.'));
+          return Center(child: Text(S.of(context).noRunningPollsFound));
         }
         return ListView.separated(
           itemCount: items.length,

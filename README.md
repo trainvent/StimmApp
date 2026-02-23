@@ -18,3 +18,7 @@ Dadurch können aussagekräftige Standpunkte entstehen und verlässliche Umfrage
 
 ## Regeln für Entwickler
 - autentifizierungsgetriebenes Benutzermanagment
+
+## Lizenz
+Dieses Projekt ist unter der **GNU General Public License v3.0** lizenziert.
+Siehe `LICENSE`.
