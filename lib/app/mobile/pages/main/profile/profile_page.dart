@@ -39,23 +39,22 @@ class ProfilePage extends StatelessWidget {
       final notifier = ValueNotifier<String?>(null);
       await showDialog(
         context: context,
-        builder:
-            (context) => SelectionNotifierDialog<String>(
-              notifier: notifier,
-              title: 'Select Payment Provider',
-              options: const ['Google Play'],
-              optionLabel: (context, option) => option,
-              onConfirm: (selected) async {
-                if (selected == 'Google Play') {
-                  final uri = Uri.parse(
-                    'https://play.google.com/store/account/subscriptions',
-                  );
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  }
-                }
-              },
-            ),
+        builder: (context) => SelectionNotifierDialog<String>(
+          notifier: notifier,
+          title: 'Select Payment Provider',
+          options: const ['Google Play'],
+          optionLabel: (context, option) => option,
+          onConfirm: (selected) async {
+            if (selected == 'Google Play') {
+              final uri = Uri.parse(
+                'https://play.google.com/store/account/subscriptions',
+              );
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+            }
+          },
+        ),
       );
     } else {
       final Uri uri;
@@ -240,7 +239,9 @@ class ProfilePage extends StatelessWidget {
                               await PurchasesService.instance.syncAppUser(uid);
                               await PurchasesService.instance
                                   .refreshCustomerInfo();
-                              if (!context.mounted) {return;}
+                              if (!context.mounted) {
+                                return;
+                              }
                               await PurchasesService.instance.presentPaywall(
                                 context: context,
                               );
