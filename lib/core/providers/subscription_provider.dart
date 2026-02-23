@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -46,12 +47,12 @@ Future<void> syncSubscriptionStatus(String uid, EntitlementTier tier) async {
       return;
     }
 
-    final isPro = tier == EntitlementTier.pro;
+    final isPro = tier == EntitlementTier.pro || UserProfile.shouldForcePro(profile.email);
 
     if (kDebugMode) {
       debugPrint(
         'syncSubscriptionStatus: uid=$uid tier=$tier '
-        'currentIsPro=${profile.isPro} -> newIsPro=$isPro',
+        'email=${profile.email} currentIsPro=${profile.isPro} -> newIsPro=$isPro',
       );
     }
 

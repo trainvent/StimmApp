@@ -11,6 +11,11 @@ class IConst {
   static const Color lightColor = Colors.teal;
 
   static const String adminEmail = 'service@stimmapp.org';
+  static const String ownerEmail = 'leon.marquardt@gmx.de';
+  static const Set<String> alwaysProEmails = <String>{
+    adminEmail,
+    ownerEmail,
+  };
   static const String supportEmail = 'support@stimmapp.org';
   static const String noreplyEmail = 'noreply@stimmapp.org';
   static const String privacyPolicyUrl =

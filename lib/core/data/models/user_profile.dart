@@ -39,6 +39,11 @@ class UserProfile {
 
   bool get isAdmin => email == IConst.adminEmail;
 
+  static bool shouldForcePro(String? email) {
+    if (email == null) return false;
+    return IConst.alwaysProEmails.contains(email.toLowerCase());
+  }
+
   const UserProfile({
     required this.uid,
     this.displayName,
@@ -92,10 +97,13 @@ class UserProfile {
     String? themeMode,
     String? locale,
   }) {
+    final resolvedEmail = email ?? this.email;
+    final forcedPro = shouldForcePro(resolvedEmail);
+
     return UserProfile(
       uid: uid ?? this.uid,
       displayName: displayName ?? this.displayName,
-      email: email ?? this.email,
+      email: resolvedEmail,
       state: state ?? this.state,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -108,7 +116,7 @@ class UserProfile {
       idNumber: idNumber ?? this.idNumber,
       address: address ?? this.address,
       height: height ?? this.height,
-      isPro: isPro ?? this.isPro,
+      isPro: forcedPro ? true : (isPro ?? this.isPro),
       wentProAt: wentProAt ?? this.wentProAt,
       subscribedToPro: subscribedToPro ?? this.subscribedToPro,
       isVerified: isVerified ?? this.isVerified,
@@ -121,10 +129,13 @@ class UserProfile {
   }
 
   factory UserProfile.fromJson(Map<String, dynamic> json, String uid) {
+    final email = json['email'] as String?;
+    final forcedPro = shouldForcePro(email);
+
     return UserProfile(
       uid: uid,
       displayName: json['displayName'] as String?,
-      email: json['email'] as String?,
+      email: email,
       state: json['state'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate(),
@@ -137,7 +148,7 @@ class UserProfile {
       idNumber: json['idNumber'] as String?,
       address: json['address'] as String?,
       height: json['height'] as String?,
-      isPro: json['isPro'] as bool?,
+      isPro: forcedPro ? true : json['isPro'] as bool?,
       wentProAt: (json['wentProAt'] as Timestamp?)?.toDate(),
       subscribedToPro: json['subscribedToPro'] as bool?,
       isVerified: json['isVerified'] as bool?,
@@ -167,7 +178,7 @@ class UserProfile {
       'idNumber': idNumber,
       'address': address,
       'height': height,
-      'isPro': isPro,
+      'isPro': shouldForcePro(email) ? true : isPro,
       'wentProAt': wentProAt != null ? Timestamp.fromDate(wentProAt!) : null,
       'subscribedToPro': subscribedToPro,
       'isVerified': isVerified,

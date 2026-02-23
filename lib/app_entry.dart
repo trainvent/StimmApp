@@ -139,7 +139,7 @@ class _MyAppState extends State<MyApp> {
                   builder: (context, constraints) {
                     // Enforce a maximum aspect ratio of 2/3 (mobile-like)
                     // If the screen is wider than this ratio, constrain the width.
-                    final maxAllowedWidth = constraints.maxHeight * (2 / 3);
+                    final maxAllowedWidth = constraints.maxHeight * (5 / 6);
                     if (constraints.maxWidth > maxAllowedWidth) {
                       return ColoredBox(
                         color: Colors.black, // Background for the empty space
