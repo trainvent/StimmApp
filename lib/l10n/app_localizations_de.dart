@@ -1245,7 +1245,4 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noRunningPollsFound => 'Keine laufenden Umfragen gefunden.';
-
-  @override
-  String get selectPaymentProvider => 'Zahlungsanbieter auswählen';
 }

@@ -2395,12 +2395,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No running polls found.'**
   String get noRunningPollsFound;
-
-  /// No description provided for @selectPaymentProvider.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Payment Provider'**
-  String get selectPaymentProvider;
 }
 
 class _AppLocalizationsDelegate

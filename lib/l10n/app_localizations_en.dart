@@ -1229,7 +1229,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRunningPollsFound => 'No running polls found.';
-
-  @override
-  String get selectPaymentProvider => 'Select Payment Provider';
 }
