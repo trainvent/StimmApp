@@ -12,10 +12,7 @@ class IConst {
 
   static const String adminEmail = 'service@stimmapp.org';
   static const String ownerEmail = 'leon.marquardt@gmx.de';
-  static const Set<String> alwaysProEmails = <String>{
-    adminEmail,
-    ownerEmail,
-  };
+  static const Set<String> alwaysProEmails = <String>{adminEmail, ownerEmail};
   static const String supportEmail = 'support@stimmapp.org';
   static const String noreplyEmail = 'noreply@stimmapp.org';
   static const String privacyPolicyUrl =
@@ -51,4 +48,9 @@ class IConst {
   static const String testSurname = "NPC";
   static const String testLivingAddress =
       "Hauptbahnhof, Bielefeld, Deutschland";
+
+  static const String surveyTutorial =
+      'https://www.bpb.de/system/files/dokument_pdf/M%2001.04%20Fragebogenerstellung_3.pdf';
+  static const String petitionTutorial =
+      'https://epetitionen.bundestag.de/epet/peteinreichen.html';
 }

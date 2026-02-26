@@ -268,9 +268,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailVerification => 'Email verification';
 
   @override
-  String get emailVerifiedSuccessfully => 'Email verified successfully!';
-
-  @override
   String get energy => 'Energy';
 
   @override
@@ -959,6 +956,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterAValid6digitCode => 'Please enter a valid 6-digit code';
 
   @override
+  String get emailVerifiedSuccessfully => 'Email verified successfully!';
+
+  @override
   String get verificationFailed => 'Verification failed';
 
   @override
@@ -1200,4 +1200,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterYourReasonHere => 'Enter your reason here...';
+
+  @override
+  String get runningForms => 'Running Forms';
+
+  @override
+  String get cannotDeletePetitionHasSignatures =>
+      'Cannot delete: Petition has signatures.';
+
+  @override
+  String get petitionDeleted => 'Petition deleted';
+
+  @override
+  String get cannotDeletePollHasVotes => 'Cannot delete: Poll has votes.';
+
+  @override
+  String get pollDeleted => 'Poll deleted';
+
+  @override
+  String get deleteForm => 'Delete Form';
+
+  @override
+  String get areYouSureYouWantToDeleteThisForm =>
+      'Are you sure you want to delete this form?';
+
+  @override
+  String get noRunningPetitionsFound => 'No running petitions found.';
+
+  @override
+  String get noRunningPollsFound => 'No running polls found.';
 }

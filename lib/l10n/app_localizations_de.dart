@@ -271,9 +271,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emailVerification => 'E-Mail-Bestätigung';
 
   @override
-  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
-
-  @override
   String get energy => 'Energie';
 
   @override
@@ -971,6 +968,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte geben Sie einen gültigen 6-stelligen Code ein';
 
   @override
+  String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
+
+  @override
   String get verificationFailed => 'Verifizierung fehlgeschlagen';
 
   @override
@@ -1205,14 +1205,44 @@ class AppLocalizationsDe extends AppLocalizations {
       'Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.';
 
   @override
-  String get reasonYourSignature => 'Reason your signature';
+  String get reasonYourSignature => 'Begründen Sie Ihre Unterschrift';
 
   @override
-  String get signatureReasoning => 'signature reasoning';
+  String get signatureReasoning => 'Begründung der Unterschrift';
 
   @override
-  String get whyAreYouSigning => 'Why are you signing?';
+  String get whyAreYouSigning => 'Warum unterzeichnen Sie?';
 
   @override
-  String get enterYourReasonHere => 'Enter your reason here...';
+  String get enterYourReasonHere => 'Geben Sie hier Ihren Grund ein...';
+
+  @override
+  String get runningForms => 'Laufende Formulare';
+
+  @override
+  String get cannotDeletePetitionHasSignatures =>
+      'Kann nicht gelöscht werden: Petition hat Unterschriften.';
+
+  @override
+  String get petitionDeleted => 'Petition gelöscht';
+
+  @override
+  String get cannotDeletePollHasVotes =>
+      'Kann nicht gelöscht werden: Umfrage hat Stimmen.';
+
+  @override
+  String get pollDeleted => 'Umfrage gelöscht';
+
+  @override
+  String get deleteForm => 'Formular löschen';
+
+  @override
+  String get areYouSureYouWantToDeleteThisForm =>
+      'Sind Sie sicher, dass Sie dieses Formular löschen möchten?';
+
+  @override
+  String get noRunningPetitionsFound => 'Keine laufenden Petitionen gefunden.';
+
+  @override
+  String get noRunningPollsFound => 'Keine laufenden Umfragen gefunden.';
 }

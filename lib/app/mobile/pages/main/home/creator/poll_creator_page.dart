@@ -150,7 +150,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     return BaseCreatorPage(
       title: context.l10n.createPoll,
       tutorialSteps: PollTutorialHelper.getSteps(context),
-      sourceUrl: 'https://www.bpb.de/system/files/dokument_pdf/M%2001.04%20Fragebogenerstellung_3.pdf',
       onSubmit: _createPoll,
       additionalBottomFields: [
         const SizedBox(height: 20),

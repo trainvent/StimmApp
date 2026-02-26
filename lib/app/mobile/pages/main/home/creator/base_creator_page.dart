@@ -14,7 +14,6 @@ class BaseCreatorPage extends StatefulWidget {
     super.key,
     required this.title,
     required this.tutorialSteps,
-    required this.sourceUrl,
     required this.onSubmit,
     this.additionalTopFields,
     this.additionalBottomFields,
@@ -22,14 +21,14 @@ class BaseCreatorPage extends StatefulWidget {
 
   final String title;
   final List<dynamic> tutorialSteps; // Can be String or PollTutorialStep
-  final String sourceUrl;
   final Future<void> Function({
     required String title,
     required String description,
     required List<String> tags,
     required bool isStateDependent,
     required int durationDays,
-  }) onSubmit;
+  })
+  onSubmit;
   final List<Widget>? additionalTopFields;
   final List<Widget>? additionalBottomFields;
 
@@ -76,9 +75,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     if (mounted) {
       setState(() {
         if (draftTitle != null) _titleController.text = draftTitle;
-        if (draftDescription != null) _descriptionController.text = draftDescription;
+        if (draftDescription != null)
+          _descriptionController.text = draftDescription;
         if (draftTags != null) _selectedTags = draftTags;
-        if (draftStateDependent != null) _isStateDependent = draftStateDependent;
+        if (draftStateDependent != null)
+          _isStateDependent = draftStateDependent;
         if (draftDuration != null) _durationDays = draftDuration;
       });
     }
@@ -87,7 +88,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   Future<void> _saveDraft() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('${_draftKey}_title', _titleController.text);
-    await prefs.setString('${_draftKey}_description', _descriptionController.text);
+    await prefs.setString(
+      '${_draftKey}_description',
+      _descriptionController.text,
+    );
     await prefs.setStringList('${_draftKey}_tags', _selectedTags);
     await prefs.setBool('${_draftKey}_stateDependent', _isStateDependent);
     await prefs.setInt('${_draftKey}_duration', _durationDays);
@@ -169,7 +173,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: widget.tutorialSteps.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final step = widget.tutorialSteps[index];
                           if (step is String) {
@@ -177,9 +182,17 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                             return Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                const Text(
+                                  '• ',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                                 Expanded(
-                                  child: Text(step, style: Theme.of(context).textTheme.bodyMedium),
+                                  child: Text(
+                                    step,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  ),
                                 ),
                               ],
                             );
@@ -188,13 +201,25 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                             // Assuming dynamic access or we define a common interface/type
                             // For now, let's assume it has title and description properties
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4.0,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(step.title, style: Theme.of(context).textTheme.titleMedium),
+                                  Text(
+                                    step.title,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
                                   const SizedBox(height: 4),
-                                  Text(step.description, style: Theme.of(context).textTheme.bodyMedium),
+                                  Text(
+                                    step.description,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  ),
                                 ],
                               ),
                             );
@@ -202,18 +227,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final url = Uri.parse(widget.sourceUrl);
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            }
-                          },
-                          icon: const Icon(Icons.description),
-                          label: Text(context.l10n.viewInstitutionalGuide),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -255,7 +268,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: Text(context.l10n.delete),
-                  content: Text(S.of(context).areYouSureYouWantToClearThisDraft),
+                  content: Text(
+                    S.of(context).areYouSureYouWantToClearThisDraft,
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -286,7 +301,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           child: ListView(
             children: [
               const SizedBox(height: 30),
-              if (widget.additionalTopFields != null) ...widget.additionalTopFields!,
+              if (widget.additionalTopFields != null)
+                ...widget.additionalTopFields!,
               TextFormField(
                 controller: _titleController,
                 maxLength: AppLimits.maxTitleLength,
@@ -327,7 +343,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 },
               ),
               const SizedBox(height: 20),
-              Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.tags,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               TagSelector(
                 selectedTags: _selectedTags,
@@ -339,7 +358,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 },
               ),
               const SizedBox(height: 20),
-              Text(context.l10n.daysLeft, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.daysLeft,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               Slider(
                 value: _durationDays.toDouble(),
                 min: 1,
@@ -367,13 +389,12 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 10),
-              if (widget.additionalBottomFields != null) ...widget.additionalBottomFields!,
+              if (widget.additionalBottomFields != null)
+                ...widget.additionalBottomFields!,
               Builder(
                 builder: (context) {
                   return ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : _handleSubmit,
+                    onPressed: _isLoading ? null : _handleSubmit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -381,7 +402,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                         ? TriangleLoadingIndicator(
                             size: 20,
                             showFill: false,
-                            strokeColor: Theme.of(context).colorScheme.onPrimary,
+                            strokeColor: Theme.of(
+                              context,
+                            ).colorScheme.onPrimary,
                           )
                         : Text(
                             widget.title,

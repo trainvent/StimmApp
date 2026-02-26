@@ -140,7 +140,9 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
 
       await PublishingQuotaService.instance.incrementPetition();
 
-      final petitionId = await PetitionRepository.create().createPetition(petition);
+      final petitionId = await PetitionRepository.create().createPetition(
+        petition,
+      );
 
       if (mounted) {
         showSuccessSnackBar(context.l10n.createdPetition + petitionId);
@@ -166,7 +168,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     return BaseCreatorPage(
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
-      sourceUrl: 'https://epetitionen.bundestag.de/epet/peteinreichen.html',
       onSubmit: _createPetition,
       additionalTopFields: [
         if (_user?.isPro == true) ...[

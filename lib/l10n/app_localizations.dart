@@ -590,12 +590,6 @@ abstract class AppLocalizations {
   /// **'Email verification'**
   String get emailVerification;
 
-  /// No description provided for @emailVerifiedSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Email verified successfully!'**
-  String get emailVerifiedSuccessfully;
-
   /// No description provided for @energy.
   ///
   /// In en, this message translates to:
@@ -1916,6 +1910,12 @@ abstract class AppLocalizations {
   /// **'Please enter a valid 6-digit code'**
   String get pleaseEnterAValid6digitCode;
 
+  /// No description provided for @emailVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified successfully!'**
+  String get emailVerifiedSuccessfully;
+
   /// No description provided for @verificationFailed.
   ///
   /// In en, this message translates to:
@@ -2341,6 +2341,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your reason here...'**
   String get enterYourReasonHere;
+
+  /// No description provided for @runningForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Running Forms'**
+  String get runningForms;
+
+  /// No description provided for @cannotDeletePetitionHasSignatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete: Petition has signatures.'**
+  String get cannotDeletePetitionHasSignatures;
+
+  /// No description provided for @petitionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Petition deleted'**
+  String get petitionDeleted;
+
+  /// No description provided for @cannotDeletePollHasVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete: Poll has votes.'**
+  String get cannotDeletePollHasVotes;
+
+  /// No description provided for @pollDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll deleted'**
+  String get pollDeleted;
+
+  /// No description provided for @deleteForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Form'**
+  String get deleteForm;
+
+  /// No description provided for @areYouSureYouWantToDeleteThisForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this form?'**
+  String get areYouSureYouWantToDeleteThisForm;
+
+  /// No description provided for @noRunningPetitionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No running petitions found.'**
+  String get noRunningPetitionsFound;
+
+  /// No description provided for @noRunningPollsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No running polls found.'**
+  String get noRunningPollsFound;
 }
 
 class _AppLocalizationsDelegate
