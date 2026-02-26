@@ -8,7 +8,6 @@ class PetitionTutorialHelper {
       context.l10n.petitionTutorialStep2,
       context.l10n.petitionTutorialStep3,
       context.l10n.petitionTutorialStep4,
-      context.l10n.petitionTutorialStep5,
     ];
   }
 }
