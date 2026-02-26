@@ -7,7 +7,6 @@ import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/generated/l10n.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BaseCreatorPage extends StatefulWidget {
   const BaseCreatorPage({
@@ -75,11 +74,13 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     if (mounted) {
       setState(() {
         if (draftTitle != null) _titleController.text = draftTitle;
-        if (draftDescription != null)
+        if (draftDescription != null) {
           _descriptionController.text = draftDescription;
+        }
         if (draftTags != null) _selectedTags = draftTags;
-        if (draftStateDependent != null)
+        if (draftStateDependent != null) {
           _isStateDependent = draftStateDependent;
+        }
         if (draftDuration != null) _durationDays = draftDuration;
       });
     }
