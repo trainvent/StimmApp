@@ -1,5 +1,5 @@
 # flutter pub run flutter_launcher_icons
-define: &img_path "assets/images/StimmApp_Logo.png"
+define: &img_path "assets/images/AppIcon.png"
 flutter_launcher_icons:
   image_path: *img_path
 
