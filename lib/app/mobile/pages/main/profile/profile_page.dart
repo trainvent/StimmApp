@@ -247,34 +247,7 @@ class ProfilePage extends StatelessWidget {
                               );
                             },
                           ),
-                          _buildDetailTile(
-                            key: keys.profilePage.idApprovedListTile,
-                            context,
-                            context.l10n.userProfileVerified,
-                            userProfile.isVerified == true
-                                ? context.l10n.yes
-                                : context.l10n.no,
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text(context.l10n.userProfileVerified),
-                                  content: Text(
-                                    S
-                                        .of(context)
-                                        .weCannotProvideSecureVerificationYetButWeAreWorking,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            //TODO: route to verificationPage once Ausweisapp Client is in place
-                          ),
+                          //TODO: route to verificationPage once Ausweisapp Client is in place
                           if (userProfile.isAdmin) ...[
                             const SizedBox(height: 20.0),
                             PointingListTile(
