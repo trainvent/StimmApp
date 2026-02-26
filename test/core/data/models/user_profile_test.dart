@@ -38,6 +38,9 @@ void main() {
       'isVerified': false,
       'gotVerifiedAt': null,
       'sendCrashLogs': true,
+      'showPetitionReason': null,
+      'themeMode': null,
+      'locale': null,
     };
 
     test('fromJson creates a UserProfile object from a map', () {
@@ -75,9 +78,7 @@ void main() {
     });
 
     test('subscriptionEndsAt returns correct date', () {
-      final proUser = userProfile.copyWith(
-        wentProAt: DateTime(2023, 1, 1),
-      );
+      final proUser = userProfile.copyWith(wentProAt: DateTime(2023, 1, 1));
       expect(
         proUser.subscriptionEndsAt,
         DateTime(2023, 1, 31),
@@ -92,7 +93,7 @@ void main() {
       // Ideally, we should import IConst, but for this test we can just check the logic if we knew the constant value.
       // Since I cannot see IConst here, I will rely on the property logic.
       // Let's just test the property behavior if we set the email.
-      
+
       // Note: This test depends on the actual value of IConst.adminEmail.
       // If IConst.adminEmail is 'service@stimmapp.org':
       final adminUser = userProfile.copyWith(email: 'service@stimmapp.org');
