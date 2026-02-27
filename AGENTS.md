@@ -124,3 +124,15 @@ patrol test -t integration_test/simple_flow_test.dart
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
 *   [ ] Build App Bundle: `flutter build appbundle --release --flavor prod`.
+
+# CI / iOS build hints:
+# - Ensure CI runs: `flutter pub get` before any `pod install`.
+# - To reproduce failing archive locally:
+#     flutter pub get
+#     flutter build ios --no-codesign
+#     cd ios && pod install --repo-update
+#     (then run the exact xcodebuild command from your CI to see detailed logs)
+# - Use the included debug helper: ios/ci_debug.sh
+#   make it executable: chmod +x ios/ci_debug.sh
+#   run locally or as an extra Xcode Cloud step to collect xcresult and logs.
+

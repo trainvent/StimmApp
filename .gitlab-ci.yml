@@ -1,0 +1,53 @@
+stages:
+  - build
+
+variables:
+  LC_ALL: "en_US.UTF-8"
+  LANG: "en_US.UTF-8"
+
+ios_build:
+  stage: build
+  tags:
+    - macos  # ensure your runner is macOS with Xcode
+  before_script:
+    - echo "Xcode:"
+    - xcodebuild -version
+    - sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+    # Install Flutter if not preinstalled on the runner.
+    # Prefer pinning to a specific version to match local.
+    - git clone https://github.com/flutter/flutter.git -b stable $CI_PROJECT_DIR/flutter
+    - export PATH="$CI_PROJECT_DIR/flutter/bin:$PATH"
+    - flutter --version
+    - flutter doctor -v
+
+    # CocoaPods (if not preinstalled)
+    - sudo gem install cocoapods
+    - pod --version
+
+  script:
+    # Fetch Dart/Flutter deps
+    - flutter pub get
+
+    # Pre-generate iOS artifacts (produces ios/Flutter/Generated.xcconfig)
+    - flutter build ios --release --no-codesign --flavor prod
+
+    # Install Pods inside ios directory (creates Pods workspace & xcfilelists)
+    - cd ios
+    - pod repo update || true
+    - pod install
+    - cd ..
+
+    # Archive using the workspace
+    - xcodebuild -workspace ios/Runner.xcworkspace
+                 -scheme Runner
+                 -configuration Release
+                 -sdk iphoneos
+                 -archivePath build/Runner.xcarchive
+                 archive CODE_SIGNING_ALLOWED=NO
+
+  artifacts:
+    when: always
+    paths:
+      - build/Runner.xcarchive
+    expire_in: 1 week
