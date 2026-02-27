@@ -718,7 +718,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectFromGallery => 'Aus Galerie wählen';
 
   @override
-  String get sendLoginLink => 'Log in with Code';
+  String get sendLoginLink => 'Login Link abschicken';
 
   @override
   String get setUserDetails => 'Benutzerdaten festlegen';
@@ -1166,7 +1166,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get passwordMustBeAtLeast8CharactersLong =>
-      'Password must be at least 8 characters long';
+      'Passwort muss mindestens 8 Character lang sein';
 
   @override
   String passwordValidation(String type) {
@@ -1245,4 +1245,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noRunningPollsFound => 'Keine laufenden Umfragen gefunden.';
+
+  @override
+  String get selectPaymentProvider => 'Zahlungsanbieter auswählen';
 }

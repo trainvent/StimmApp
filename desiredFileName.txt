@@ -1,6 +1,1 @@
-{
-  "de": [
-    "sendLoginLink",
-    "passwordMustBeAtLeast8CharactersLong"
-  ]
-}
+{}
