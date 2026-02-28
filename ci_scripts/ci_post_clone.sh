@@ -1,11 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
-WORKSPACE_ROOT="${CI_WORKSPACE:-$PWD}"
-FLUTTER_CHANNEL="$(awk -F'"' '/channel:/ {print $2}' "$WORKSPACE_ROOT/.metadata")"
-FLUTTER_REVISION="$(awk -F'"' '/revision:/ {print $2}' "$WORKSPACE_ROOT/.metadata")"
-FLUTTER_DIR="$WORKSPACE_ROOT/.xcode-cloud/flutter"
+REPO_ROOT="${CI_PRIMARY_REPOSITORY_PATH:-$(cd "$(dirname "$0")/.." && pwd)}"
+FLUTTER_CHANNEL="$(awk -F'"' '/channel:/ {print $2}' "$REPO_ROOT/.metadata")"
+FLUTTER_REVISION="$(awk -F'"' '/revision:/ {print $2}' "$REPO_ROOT/.metadata")"
+FLUTTER_DIR="$REPO_ROOT/.xcode-cloud/flutter"
 FLAVOR="${STIMMAPP_FLAVOR:-prod}"
+
+echo "ci_post_clone.sh"
+echo "repo root: $REPO_ROOT"
+echo "scheme: ${CI_XCODE_SCHEME:-unknown}"
+echo "action: ${CI_XCODEBUILD_ACTION:-unknown}"
 
 mkdir -p "$(dirname "$FLUTTER_DIR")"
 
@@ -24,7 +29,7 @@ flutter --version
 flutter config --no-analytics
 flutter precache --ios
 
-cd "$WORKSPACE_ROOT"
+cd "$REPO_ROOT"
 flutter pub get
 flutter build ios --release --no-codesign --flavor "$FLAVOR"
 
