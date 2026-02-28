@@ -34,4 +34,4 @@ flutter pub get
 flutter build ios --release --no-codesign --flavor "$FLAVOR"
 
 cd ios
-pod install --repo-update
+pod install
