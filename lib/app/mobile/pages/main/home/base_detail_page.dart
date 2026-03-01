@@ -45,7 +45,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () async {
-              final link = 'https://trainvent.com/$sharePathSegment/$id';
+              final link = 'https://stimmapp.eu/$sharePathSegment/$id';
 
               if (kIsWeb) {
                 await Clipboard.setData(ClipboardData(text: link));

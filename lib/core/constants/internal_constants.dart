@@ -16,10 +16,10 @@ class IConst {
   static const String supportEmail = 'support@trainvent.com';
   static const String noreplyEmail = 'noreply@trainvent.com';
   static const String privacyPolicyUrl =
-      'https://www.trainvent.com/privacy-policy';
+      'https://www.stimmapp.eu/privacy-policy';
   static const String termsOfServiceUrl =
-      'https://www.trainvent.com/terms-of-service';
-  static const String faqUrl = 'https://www.trainvent.com/faq';
+      'https://www.stimmapp.eu/terms-of-service';
+  static const String faqUrl = 'https://www.stimmapp.eu/faq';
 
   static const String revenueCatApiKeyDevAndroid =
       'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
