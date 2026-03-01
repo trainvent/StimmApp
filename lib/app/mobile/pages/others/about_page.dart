@@ -34,7 +34,7 @@ class AboutPage extends StatelessWidget {
       const Contributor(
         name: 'Team LeEd',
         role: 'Core Development',
-        email: 'contact@stimmapp.org',
+        email: 'contact@trainvent.com',
       ),
       const Contributor(
         name: 'Yannic',
@@ -54,7 +54,7 @@ class AboutPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 40),
-          Center(child:Image.asset("assets/images/cropped-LeLogo.png")),
+          Center(child: Image.asset("assets/images/cropped-LeLogo.png")),
           const SizedBox(height: 10),
           Center(
             child: Text(context.l10n.stimmapp, style: AppTextStyles.xxlBold),
@@ -126,7 +126,9 @@ class AboutPage extends StatelessWidget {
               icon: const Icon(Icons.business),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: contributor.linkedin!));
-                showSuccessSnackBar(S.of(context).linkedinLinkCopiedToClipboard);
+                showSuccessSnackBar(
+                  S.of(context).linkedinLinkCopiedToClipboard,
+                );
               },
             ),
         ],

@@ -2,7 +2,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
 // Hardcoded admin email matching IConst.adminEmail in your Dart code
-const ADMIN_EMAIL = 'service@stimmapp.org';
+const ADMIN_EMAIL = 'service@trainvent.com';
 
 export const deleteUserByAdmin = onCall(async (request) => {
 	// 1. Ensure the caller is authenticated

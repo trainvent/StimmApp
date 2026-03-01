@@ -39,7 +39,7 @@ const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
 const params_1 = require("firebase-functions/params");
 const db = admin.firestore();
-const smtpMail = process.env.SMTP_MAIL || "noreply@stimmapp.org";
+const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
 const smtpPassword = (0, params_1.defineSecret)('SMTP_PASSWORD');
 const smtpHost = process.env.SMPT_SERVER || "smtp.ionos.de";
 // Generate a random 6-digit code

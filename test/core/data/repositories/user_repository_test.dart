@@ -82,8 +82,8 @@ void main() {
       );
     });
 
-    test('isAdmin is true for service@stimmapp.org', () {
-      const admin = UserProfile(uid: 'admin', email: 'service@stimmapp.org');
+    test('isAdmin is true for service@trainvent.com', () {
+      const admin = UserProfile(uid: 'admin', email: 'service@trainvent.com');
       expect(admin.isAdmin, isTrue);
     });
 

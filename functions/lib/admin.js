@@ -37,7 +37,7 @@ exports.deleteUserByAdmin = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 // Hardcoded admin email matching IConst.adminEmail in your Dart code
-const ADMIN_EMAIL = 'service@stimmapp.org';
+const ADMIN_EMAIL = 'service@trainvent.com';
 exports.deleteUserByAdmin = (0, https_1.onCall)(async (request) => {
     // 1. Ensure the caller is authenticated
     if (!request.auth) {

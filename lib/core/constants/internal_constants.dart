@@ -10,16 +10,16 @@ class IConst {
   static const Color appColor = Colors.green;
   static const Color lightColor = Colors.teal;
 
-  static const String adminEmail = 'service@stimmapp.org';
+  static const String adminEmail = 'service@trainvent.com';
   static const String ownerEmail = 'leon.marquardt@gmx.de';
   static const Set<String> alwaysProEmails = <String>{adminEmail, ownerEmail};
-  static const String supportEmail = 'support@stimmapp.org';
-  static const String noreplyEmail = 'noreply@stimmapp.org';
+  static const String supportEmail = 'support@trainvent.com';
+  static const String noreplyEmail = 'noreply@trainvent.com';
   static const String privacyPolicyUrl =
-      'https://www.stimmapp.org/privacy-policy';
+      'https://www.trainvent.com/privacy-policy';
   static const String termsOfServiceUrl =
-      'https://www.stimmapp.org/terms-of-service';
-  static const String faqUrl = 'https://www.stimmapp.org/faq';
+      'https://www.trainvent.com/terms-of-service';
+  static const String faqUrl = 'https://www.trainvent.com/faq';
 
   static const String revenueCatApiKeyDevAndroid =
       'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
