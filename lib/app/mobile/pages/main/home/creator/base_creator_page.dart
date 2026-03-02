@@ -245,7 +245,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               child: IgnorePointer(
                 child: Image.asset(
                   'assets/images/form_guy_teaching.png',
-                  width: screenWidth / 3, // 1/3 of screen width
+                  width: screenWidth / 4, // 1/3 of screen width
                   fit: BoxFit.contain,
                 ),
               ),
