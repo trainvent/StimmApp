@@ -75,10 +75,12 @@ android {
         create("dev") {
             dimension = "env"
             applicationIdSuffix = ".dev"
+            manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
             resValue("string", "app_name", "StimmApp Dev")
         }
         create("prod") {
             dimension = "env"
+            manifestPlaceholders["deepLinkHost"] = "stimmapp.eu"
             resValue("string", "app_name", "StimmApp")
         }
     }

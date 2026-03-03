@@ -5,8 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/participants_list_page.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:stimmapp/core/data/di/service_locator.dart';
+import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -35,6 +38,8 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   final List<Widget>? actions;
   final String sharePathSegment;
 
+  DatabaseService get _databaseService => locator.databaseService;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,23 +50,34 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () async {
-              final link = 'https://stimmapp.eu/$sharePathSegment/$id';
+              final link = '${Environment.shareBaseUrl}/$sharePathSegment/$id';
+              final shareText = '${context.l10n.shareThis}: $link';
+              final shareSubject = context.l10n.share;
+              final linkCopiedText = context.l10n.linkCopiedToClipboard;
+              final messenger = ScaffoldMessenger.of(context);
 
               if (kIsWeb) {
                 await Clipboard.setData(ClipboardData(text: link));
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(context.l10n.linkCopiedToClipboard)),
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(linkCopiedText)),
                   );
                 }
                 return;
               }
 
               try {
-                // ignore: deprecated_member_use
-                await Share.share(
-                  '${context.l10n.shareThis}: $link',
-                  subject: context.l10n.share,
+                try {
+                  await _databaseService.disableNetwork();
+                } catch (e) {
+                  debugPrint('Failed to disable Firestore network: $e');
+                }
+
+                await SharePlus.instance.share(
+                  ShareParams(
+                    text: shareText,
+                    subject: shareSubject,
+                  ),
                 );
               } catch (e) {
                 debugPrint('Share failed: $e');
@@ -69,12 +85,14 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   // Fallback: Copy to clipboard
                   await Clipboard.setData(ClipboardData(text: link));
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.linkCopiedToClipboard),
-                      ),
-                    );
+                    messenger.showSnackBar(SnackBar(content: Text(linkCopiedText)));
                   }
+                }
+              } finally {
+                try {
+                  await _databaseService.enableNetwork();
+                } catch (e) {
+                  debugPrint('Failed to re-enable Firestore network: $e');
                 }
               }
             },
