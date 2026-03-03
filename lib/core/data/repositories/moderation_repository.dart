@@ -34,12 +34,17 @@ class ModerationRepository {
   }
 
   Stream<List<ModerationReport>> watchOpenReports({int limit = 100}) {
-    return _fs.watchCol(
-      _reports()
-          .where('status', isEqualTo: 'open')
-          .orderBy('createdAt', descending: true),
-      limit: limit,
-    );
+    return _fs
+        .watchCol(
+          _reports().orderBy('createdAt', descending: true),
+          limit: limit,
+        )
+        .map(
+          (reports) => reports
+              .where((report) => report.status == 'open')
+              .take(limit)
+              .toList(),
+        );
   }
 
   Future<void> submitReport({

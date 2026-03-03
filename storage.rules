@@ -1,4 +1,4 @@
-npm install --save firebase-functions@latestrules_version = '2';
+rules_version = '2';
 
 // Craft rules based on data in your Firestore database
 // allow write: if firestore.get(

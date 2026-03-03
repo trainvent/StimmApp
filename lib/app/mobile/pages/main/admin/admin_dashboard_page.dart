@@ -55,6 +55,9 @@ class ModerationReportsTab extends StatelessWidget {
     return StreamBuilder<List<ModerationReport>>(
       stream: repo.watchOpenReports(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Reports failed to load: ${snapshot.error}'));
+        }
         if (!snapshot.hasData) {
           return const Center(child: TriangleLoadingIndicator());
         }
