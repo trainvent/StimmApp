@@ -105,6 +105,35 @@ class _MyAppState extends State<MyApp> {
   final AppBootstrap _bootstrap = AppBootstrap();
   bool _initialized = false;
 
+  String _initialRouteName() {
+    if (kIsWeb) {
+      final path = Uri.base.path;
+      return path.isEmpty ? '/' : path;
+    }
+
+    final routeName = PlatformDispatcher.instance.defaultRouteName;
+    return routeName.isEmpty ? '/' : routeName;
+  }
+
+  Widget? _pageForRouteName(String? routeName) {
+    if (routeName == null || routeName.isEmpty || routeName == '/') {
+      return null;
+    }
+
+    final uri = Uri.parse(routeName);
+    if (uri.pathSegments.length != 2) return null;
+
+    final id = uri.pathSegments[1];
+    switch (uri.pathSegments[0]) {
+      case 'petition':
+        return PetitionDetailPage(id: id);
+      case 'poll':
+        return PollDetailPage(id: id);
+      default:
+        return null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -121,6 +150,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final initialRouteName = _initialRouteName();
+
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeModeNotifier,
       builder: (context, themeMode, child) {
@@ -156,22 +187,12 @@ class _MyAppState extends State<MyApp> {
                 );
               },
               onGenerateRoute: (settings) {
-                if (settings.name != null) {
-                  final uri = Uri.parse(settings.name!);
-                  if (uri.pathSegments.length == 2) {
-                    final id = uri.pathSegments[1];
-                    if (uri.pathSegments[0] == 'petition') {
-                      return MaterialPageRoute(
-                        builder: (context) => PetitionDetailPage(id: id),
-                        settings: settings,
-                      );
-                    } else if (uri.pathSegments[0] == 'poll') {
-                      return MaterialPageRoute(
-                        builder: (context) => PollDetailPage(id: id),
-                        settings: settings,
-                      );
-                    }
-                  }
+                final page = _pageForRouteName(settings.name);
+                if (page != null) {
+                  return MaterialPageRoute(
+                    builder: (context) => page,
+                    settings: settings,
+                  );
                 }
                 return null;
               },
@@ -184,9 +205,9 @@ class _MyAppState extends State<MyApp> {
               ],
               supportedLocales: AppLocalizations.supportedLocales,
               debugShowCheckedModeBanner: false,
-              home: _initialized
-                  ? const InitAppLayout()
-                  : const AppLoadingPage(),
+              home: !_initialized
+                  ? const AppLoadingPage()
+                  : _pageForRouteName(initialRouteName) ?? const InitAppLayout(),
             );
 
             if (Environment.isDev) {

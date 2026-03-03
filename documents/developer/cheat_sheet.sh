@@ -1,7 +1,10 @@
 # general rules
 
-# how to prepare deploy
+# how to prepare prod web deploy
 flutter build web --release --target lib/main.dart
+
+# how to prepare dev web deploy
+flutter build web --release --target lib/main_dev.dart
 
 # create appbundle for 
 flutter build appbundle --release --flavor prod
