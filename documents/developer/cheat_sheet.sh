@@ -1,21 +1,42 @@
-# general rules
+# quick rules
+# - dev host: https://stimmapp-dev.web.app
+# - prod host: https://stimmapp.eu
+# - dev web must be built with lib/main_dev.dart
+# - prod web must be built with lib/main.dart
 
-# how to prepare prod web deploy
-flutter build web --release --target lib/main.dart
-
-# how to prepare dev web deploy
-flutter build web --release --target lib/main_dev.dart
-
-# create appbundle for 
-flutter build appbundle --release --flavor prod
-
-# how to debug
+# dev: local web debug
 flutter run --debug -d chrome -t lib/main_dev.dart
 
-# run a single patrol test
+# dev: build web bundle for deploy
+./ci_scripts/build_web_dev.sh
+
+# dev: deploy web bundle
+firebase deploy --only hosting --project stimmapp-dev
+
+# dev: android app debug run
+flutter run --debug --flavor dev -t lib/main_dev.dart
+
+# dev: test links with
+# https://stimmapp-dev.web.app/petition/<id>
+# https://stimmapp-dev.web.app/poll/<id>
+
+# prod: build web bundle for deploy
+./ci_scripts/build_web_prod.sh
+
+# prod: deploy web bundle
+firebase deploy --only hosting --project stimmapp-f0141
+
+# prod: build Android release bundle
+flutter build appbundle --release --flavor prod -t lib/main.dart
+
+# prod: test links with
+# https://stimmapp.eu/petition/<id>
+# https://stimmapp.eu/poll/<id>
+
+# common: run a single patrol test
 patrol test --target integration_test/
 
-# set a secret to store hidden data
+# common: set a secret to store hidden data
 firebase functions:secrets:set
 
 # sync dev with prod

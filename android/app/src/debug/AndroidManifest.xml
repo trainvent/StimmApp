@@ -5,6 +5,7 @@
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application>
+        <!-- Debug-only alias so local dev builds can claim the dev web host. -->
         <activity-alias
             android:name="de.lemarq.stimmapp.DebugDeepLinkActivity"
             android:exported="true"
