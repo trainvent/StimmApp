@@ -12,6 +12,7 @@ class Petition implements HomeItem {
   @override
   final List<String> tags;
   final int signatureCount;
+  @override
   final String createdBy;
   final DateTime createdAt;
   @override

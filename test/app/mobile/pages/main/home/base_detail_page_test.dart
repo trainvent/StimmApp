@@ -14,6 +14,8 @@ class _TestHomeItem implements HomeItem {
   @override
   final String description;
   @override
+  final String createdBy = 'test-user';
+  @override
   final String status;
   @override
   final String? state;
