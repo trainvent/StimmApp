@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/widget_tree.dart';
+import 'package:stimmapp/app/mobile/pages/onboarding/community_guidelines_page.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/set_user_details_page.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/welcome_page.dart'
@@ -66,10 +67,13 @@ class AuthLayout extends ConsumerWidget {
 
         return userProfileState.when(
           data: (profile) {
-            if (profile != null) {
-              return const WidgetTree();
+            if (profile == null) {
+              return const SetUserDetailsPage();
             }
-            return const SetUserDetailsPage();
+            if (profile.acceptedCommunityRulesAt == null) {
+              return CommunityGuidelinesPage(profile: profile);
+            }
+            return const WidgetTree();
           },
           loading: () => const AppLoadingPage(),
           error: (error, stack) => Center(child: Text('Error: $error')),

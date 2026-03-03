@@ -7,6 +7,7 @@ import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:uuid/uuid.dart';
@@ -70,6 +71,20 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
+
+    final moderationInputs = <String?>[
+      title,
+      description,
+      ..._optionControllers.map((controller) => controller.text),
+    ];
+    if (ContentModerationService.instance.containsObjectionableContent(
+      moderationInputs,
+    )) {
+      showErrorSnackBar(
+        'Please remove abusive or objectionable language before publishing.',
+      );
       return;
     }
 

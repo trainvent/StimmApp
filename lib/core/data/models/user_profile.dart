@@ -14,7 +14,8 @@ class UserProfile {
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
   final bool? sendCrashLogs;
-  
+  final DateTime? acceptedCommunityRulesAt;
+
   // Settings
   final bool? showPetitionReason;
   final String? themeMode; // 'light', 'dark', or null (system)
@@ -66,6 +67,7 @@ class UserProfile {
     this.isVerified,
     this.gotVerifiedAt,
     this.sendCrashLogs,
+    this.acceptedCommunityRulesAt,
     this.showPetitionReason,
     this.themeMode,
     this.locale,
@@ -93,6 +95,7 @@ class UserProfile {
     bool? isVerified,
     DateTime? gotVerifiedAt,
     bool? sendCrashLogs,
+    DateTime? acceptedCommunityRulesAt,
     bool? showPetitionReason,
     String? themeMode,
     String? locale,
@@ -122,6 +125,8 @@ class UserProfile {
       isVerified: isVerified ?? this.isVerified,
       gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
+      acceptedCommunityRulesAt:
+          acceptedCommunityRulesAt ?? this.acceptedCommunityRulesAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
       themeMode: themeMode ?? this.themeMode,
       locale: locale ?? this.locale,
@@ -154,6 +159,8 @@ class UserProfile {
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
       sendCrashLogs: json['sendCrashLogs'] as bool?,
+      acceptedCommunityRulesAt: (json['acceptedCommunityRulesAt'] as Timestamp?)
+          ?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
       themeMode: json['themeMode'] as String?,
       locale: json['locale'] as String?,
@@ -184,6 +191,9 @@ class UserProfile {
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
       'sendCrashLogs': sendCrashLogs,
+      'acceptedCommunityRulesAt': acceptedCommunityRulesAt != null
+          ? Timestamp.fromDate(acceptedCommunityRulesAt!)
+          : null,
       'showPetitionReason': showPetitionReason,
       'themeMode': themeMode,
       'locale': locale,
