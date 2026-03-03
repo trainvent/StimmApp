@@ -9,14 +9,17 @@ import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SetUserDetailsPage extends StatefulWidget {
   const SetUserDetailsPage({super.key});
@@ -37,6 +40,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   String errorMessage = '';
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
+  bool _acceptedCommunityRules = false;
 
   @override
   void dispose() {
@@ -63,7 +67,25 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       }
 
       if (_selectedState == null) {
-        showErrorSnackBar(S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress);
+        showErrorSnackBar(
+          S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress,
+        );
+        return;
+      }
+
+      if (!_acceptedCommunityRules) {
+        showErrorSnackBar(
+          'Please accept the community rules and terms before continuing.',
+        );
+        return;
+      }
+
+      if (ContentModerationService.instance.containsObjectionableContent(
+        <String?>[controllerDisplayName.text],
+      )) {
+        showErrorSnackBar(
+          'Please remove abusive or objectionable language from your public name.',
+        );
         return;
       }
 
@@ -82,6 +104,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         givenName: controllerGivenName.text,
         dateOfBirth: _selectedDateOfBirth,
         address: controllerAddress.text,
+        acceptedCommunityRulesAt: DateTime.now(),
       );
 
       await UserRepository.create().upsert(profile);
@@ -141,6 +164,16 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   }
 
   final _textController = TextEditingController();
+
+  Future<void> _openUrl(String url) async {
+    final ok = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok) {
+      showErrorSnackBar('Could not open link.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,6 +285,34 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                     ),
                     const SizedBox(height: 10),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: _acceptedCommunityRules,
+                      onChanged: (value) {
+                        setState(() {
+                          _acceptedCommunityRules = value ?? false;
+                        });
+                      },
+                      title: const Text(
+                        'I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.',
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Wrap(
+                        spacing: 8,
+                        children: [
+                          TextButton(
+                            onPressed: () => _openUrl(IConst.termsOfServiceUrl),
+                            child: const Text('Terms'),
+                          ),
+                          TextButton(
+                            onPressed: () => _openUrl(IConst.privacyPolicyUrl),
+                            child: const Text('Privacy'),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -265,7 +326,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                   setState(() {
                     _autoValidateMode = AutovalidateMode.onUserInteraction;
                   });
-                  
+
                   // Update controllerAddress with _textController.text before validating
                   controllerAddress.text = _textController.text;
 
@@ -275,7 +336,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     _formKey.currentState!.validate();
                     return;
                   }
-                  
+
                   if (!_formKey.currentState!.validate()) {
                     return;
                   } else {

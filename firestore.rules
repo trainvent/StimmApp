@@ -24,6 +24,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isOwner(userId) || isAdmin();
 
+      match /blockedUsers/{blockedUserId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
       // Explicitly handle subcollections for history
       match /signedPetitions/{docId} {
         allow read, write: if isOwner(userId) || isAdmin();
@@ -39,13 +43,20 @@ service cloud.firestore {
       }
     }
 
-    // Petitions & Polls: Public Read/Write (Temporary)
+    // Petitions & Polls
     match /petitions/{document=**} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAuthenticated() || isAdmin();
     }
 
     match /polls/{document=**} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAuthenticated() || isAdmin();
+    }
+
+    match /moderationReports/{reportId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
 
     // Verification Codes: Blocked

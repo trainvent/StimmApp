@@ -1,15 +1,17 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/models/poll.dart';
-import 'package:stimmapp/core/data/models/petition.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
-import 'package:stimmapp/core/data/repositories/poll_repository.dart';
-import 'package:stimmapp/core/data/repositories/petition_repository.dart';
-import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/data/models/moderation_report.dart';
+import 'package:stimmapp/core/data/models/petition.dart';
+import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
+import 'package:stimmapp/core/data/repositories/poll_repository.dart';
+import 'package:stimmapp/core/data/repositories/petition_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
 class AdminDashboardPage extends StatelessWidget {
@@ -18,12 +20,13 @@ class AdminDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.l10n.adminDashboard),
           bottom: TabBar(
             tabs: [
+              const Tab(text: 'Reports'),
               Tab(text: context.l10n.users),
               Tab(text: context.l10n.polls),
               Tab(text: context.l10n.petitions),
@@ -31,9 +34,59 @@ class AdminDashboardPage extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          children: [UserListTab(), PollListTab(), PetitionListTab()],
+          children: [
+            ModerationReportsTab(),
+            UserListTab(),
+            PollListTab(),
+            PetitionListTab(),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class ModerationReportsTab extends StatelessWidget {
+  const ModerationReportsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = ModerationRepository.create();
+    return StreamBuilder<List<ModerationReport>>(
+      stream: repo.watchOpenReports(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: TriangleLoadingIndicator());
+        }
+        final reports = snapshot.data!;
+        if (reports.isEmpty) {
+          return const Center(child: Text('No open reports.'));
+        }
+        return ListView.builder(
+          itemCount: reports.length,
+          itemBuilder: (context, index) {
+            final report = reports[index];
+            return ListTile(
+              title: Text('${report.contentType} • ${report.reason}'),
+              subtitle: Text(
+                'Reported user: ${report.reportedUserId}\n'
+                'Content: ${report.contentId}\n'
+                '${report.details ?? 'No additional details.'}',
+              ),
+              isThreeLine: true,
+              trailing: IconButton(
+                icon: const Icon(Icons.check_circle_outline),
+                onPressed: () async {
+                  await repo.resolveReport(report.id);
+                  if (context.mounted) {
+                    showSuccessSnackBar('Report marked as resolved.');
+                  }
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

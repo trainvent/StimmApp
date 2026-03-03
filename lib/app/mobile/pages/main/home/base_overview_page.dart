@@ -7,6 +7,7 @@ import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -59,18 +60,22 @@ class _BaseOverviewPageState<T extends HomeItem>
         // Use a local state for the dialog to allow updating selection before confirming
         List<String> tempSelectedTags = List.from(_selectedTags);
         bool tempOnlyMyPublications = _onlyMyPublications;
-        
+
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(context.l10n.settings), // Using "Settings" or "Filter"
+              title: Text(
+                context.l10n.settings,
+              ), // Using "Settings" or "Filter"
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SwitchListTile(
-                      title: Text(context.l10n.myPetitions), // Reusing "My Petitions" or similar key for "My Publications"
+                      title: Text(
+                        context.l10n.myPetitions,
+                      ), // Reusing "My Petitions" or similar key for "My Publications"
                       value: tempOnlyMyPublications,
                       onChanged: (val) {
                         setState(() {
@@ -80,7 +85,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                       contentPadding: EdgeInsets.zero,
                     ),
                     const Divider(),
-                    Text(context.l10n.tags, style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      context.l10n.tags,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 8),
                     TagSelector(
                       selectedTags: tempSelectedTags,
@@ -131,91 +139,85 @@ class _BaseOverviewPageState<T extends HomeItem>
           return const Center(child: TriangleLoadingIndicator());
         }
         final userProfile = userSnap.data;
-        return StreamBuilder<List<T>>(
-          stream: widget.streamProvider(_query, status),
-          builder: (context, snap) {
-            if (snap.connectionState == ConnectionState.waiting) {
-              return const Center(child: TriangleLoadingIndicator());
-            }
-            var items = snap.data ?? const [];
-            
-            // Filter by state
-            if (userProfile != null) {
-              items = items.where((p) {
-                return p.state == null || p.state == userProfile.state;
-              }).toList();
-            }
-
-            // Filter by "My Publications"
-            if (_onlyMyPublications) {
-              final currentUid = authService.currentUser?.uid;
-              if (currentUid != null) {
-                items = items.where((item) {
-                  // Assuming HomeItem has createdBy or we check dynamic
-                  // HomeItem doesn't have createdBy in the abstract class yet, 
-                  // but Petition and Poll do.
-                  final dynamic dynamicItem = item;
-                  try {
-                    return dynamicItem.createdBy == currentUid;
-                  } catch (e) {
-                    return false;
-                  }
-                }).toList();
-              }
-            }
-
-            // Filter by tags
-            if (_selectedTags.isNotEmpty) {
-              items = items.where((item) {
-                final dynamic dynamicItem = item;
-                try {
-                  final List<String> itemTags = (dynamicItem.tags as List<dynamic>).cast<String>();
-                  return itemTags.any((tag) => _selectedTags.contains(tag));
-                } catch (e) {
-                  return true; 
+        final currentUid = authService.currentUser?.uid;
+        final blockedIdsStream = currentUid == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : ModerationRepository.create().watchBlockedUserIds(currentUid);
+        return StreamBuilder<Set<String>>(
+          stream: blockedIdsStream,
+          builder: (context, blockedSnap) {
+            final blockedIds = blockedSnap.data ?? const <String>{};
+            return StreamBuilder<List<T>>(
+              stream: widget.streamProvider(_query, status),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: TriangleLoadingIndicator());
                 }
-              }).toList();
-            }
+                var items = snap.data ?? const [];
 
-            if (items.isEmpty) {
-              return Center(child: Text(context.l10n.noData));
-            }
-            final showAds = !(userProfile?.isPro ?? false) && !kIsWeb;
-            final standardAdCount = showAds
-                ? (items.length / _itemsPerAd).floor()
-                : 0;
-            // Ensure at least one ad is shown if the list is short but not empty.
-            final showFallbackAd =
-                showAds && items.isNotEmpty && standardAdCount == 0;
-            final totalCount =
-                items.length + standardAdCount + (showFallbackAd ? 1 : 0);
+                if (userProfile != null) {
+                  items = items.where((p) {
+                    return p.state == null || p.state == userProfile.state;
+                  }).toList();
+                }
 
-            return ListView.builder(
-              itemCount: totalCount,
-              itemBuilder: (context, index) {
-                if (!showAds) {
-                  return Column(
-                    children: [
-                      widget.itemBuilder(context, items[index]),
-                      const Divider(height: 1),
-                    ],
-                  );
+                if (blockedIds.isNotEmpty) {
+                  items = items
+                      .where((item) => !blockedIds.contains(item.createdBy))
+                      .toList();
                 }
-                final isAdTile =
-                    (index + 1) % (_itemsPerAd + 1) == 0 ||
-                    (showFallbackAd && index == totalCount - 1);
-                if (isAdTile) {
-                  return const BannerAdWidget();
-                } else {
-                  final adSlot = (index + 1) ~/ (_itemsPerAd + 1);
-                  final itemIndex = index - adSlot;
-                  return Column(
-                    children: [
-                      widget.itemBuilder(context, items[itemIndex]),
-                      const Divider(height: 1),
-                    ],
-                  );
+
+                if (_onlyMyPublications && currentUid != null) {
+                  items = items
+                      .where((item) => item.createdBy == currentUid)
+                      .toList();
                 }
+
+                if (_selectedTags.isNotEmpty) {
+                  items = items.where((item) {
+                    return item.tags.any((tag) => _selectedTags.contains(tag));
+                  }).toList();
+                }
+
+                if (items.isEmpty) {
+                  return Center(child: Text(context.l10n.noData));
+                }
+                final showAds = !(userProfile?.isPro ?? false) && !kIsWeb;
+                final standardAdCount = showAds
+                    ? (items.length / _itemsPerAd).floor()
+                    : 0;
+                final showFallbackAd =
+                    showAds && items.isNotEmpty && standardAdCount == 0;
+                final totalCount =
+                    items.length + standardAdCount + (showFallbackAd ? 1 : 0);
+
+                return ListView.builder(
+                  itemCount: totalCount,
+                  itemBuilder: (context, index) {
+                    if (!showAds) {
+                      return Column(
+                        children: [
+                          widget.itemBuilder(context, items[index]),
+                          const Divider(height: 1),
+                        ],
+                      );
+                    }
+                    final isAdTile =
+                        (index + 1) % (_itemsPerAd + 1) == 0 ||
+                        (showFallbackAd && index == totalCount - 1);
+                    if (isAdTile) {
+                      return const BannerAdWidget();
+                    }
+                    final adSlot = (index + 1) ~/ (_itemsPerAd + 1);
+                    final itemIndex = index - adSlot;
+                    return Column(
+                      children: [
+                        widget.itemBuilder(context, items[itemIndex]),
+                        const Divider(height: 1),
+                      ],
+                    );
+                  },
+                );
               },
             );
           },

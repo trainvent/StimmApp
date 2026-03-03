@@ -18,7 +18,7 @@ class IConst {
   static const String privacyPolicyUrl =
       'https://www.stimmapp.org/privacy-policy';
   static const String termsOfServiceUrl =
-      'https://www.stimmapp.org/terms-of-service';
+      'https://www.stimmapp.org/nutzungsbedingungen.html';
   static const String faqUrl = 'https://www.stimmapp.org/faq';
 
   static const String revenueCatApiKeyDevAndroid =

@@ -9,6 +9,8 @@ import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
+import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
@@ -23,6 +25,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
     this.participantsStream,
     this.signaturesStream,
     this.actions,
+    this.topRightActionBuilder,
   });
 
   final String id;
@@ -33,6 +36,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   final Stream<List<UserProfile>>? participantsStream;
   final Stream<List<Map<String, dynamic>>>? signaturesStream;
   final List<Widget>? actions;
+  final Widget Function(BuildContext context, T item)? topRightActionBuilder;
   final String sharePathSegment;
 
   @override
@@ -89,91 +93,124 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
           }
           final item = snap.data;
           if (item == null) return Center(child: Text(context.l10n.notFound));
+          final currentUid = authService.currentUser?.uid;
+          final blockedIdsStream = currentUid == null
+              ? Stream<Set<String>>.value(const <String>{})
+              : ModerationRepository.create().watchBlockedUserIds(currentUid);
 
-          final now = DateTime.now();
-          final isExpiredByTime = !item.expiresAt.isAfter(now);
-          final isClosedByStatus = item.status == IConst.closed;
-          final isExpired = isClosedByStatus || isExpiredByTime;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (item.state != null && item.state!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Chip(label: Text(context.l10n.relatedToState(item.state!))),
-                ],
-                if (item.tags.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: item.tags.map((tagKey) {
-                      return Chip(
-                        label: Text(
-                          AppTagsHelper.getLocalizedTag(context, tagKey),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                      );
-                    }).toList(),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(item.description),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${context.l10n.participants}: ${item.participantCount}',
+          return StreamBuilder<Set<String>>(
+            stream: blockedIdsStream,
+            builder: (context, blockedSnap) {
+              final blockedIds = blockedSnap.data ?? const <String>{};
+              if (blockedIds.contains(item.createdBy)) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'This content is hidden because you blocked this user.',
+                      textAlign: TextAlign.center,
                     ),
-                    if (participantsStream != null)
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ParticipantsListPage(
-                                participantsStream: participantsStream!,
-                                signaturesStream: signaturesStream,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(context.l10n.viewParticipants),
+                  ),
+                );
+              }
+
+              final now = DateTime.now();
+              final isExpiredByTime = !item.expiresAt.isAfter(now);
+              final isClosedByStatus = item.status == IConst.closed;
+              final isExpired = isClosedByStatus || isExpiredByTime;
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (item.state != null && item.state!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Chip(
+                        label: Text(context.l10n.relatedToState(item.state!)),
                       ),
+                    ],
+                    if (item.tags.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        children: item.tags.map((tagKey) {
+                          return Chip(
+                            label: Text(
+                              AppTagsHelper.getLocalizedTag(context, tagKey),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.title,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                        if (topRightActionBuilder != null)
+                          topRightActionBuilder!(context, item),
+                      ],
+                    ),
+                    Text(item.description),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${context.l10n.participants}: ${item.participantCount}',
+                        ),
+                        if (participantsStream != null)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ParticipantsListPage(
+                                    participantsStream: participantsStream!,
+                                    signaturesStream: signaturesStream,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(context.l10n.viewParticipants),
+                          ),
+                      ],
+                    ),
+                    Text(
+                      '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
+                    ),
+                    if (isExpired) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        context.l10n.closed,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: AbsorbPointer(
+                        absorbing: isExpired,
+                        child: contentBuilder(context, item),
+                      ),
+                    ),
+                    if (!isExpired && bottomAction != null) ...[
+                      const SizedBox(height: 16),
+                      SizedBox(width: double.infinity, child: bottomAction!),
+                    ],
                   ],
                 ),
-                Text(
-                  '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
-                ),
-                if (isExpired) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    context.l10n.closed,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Expanded(
-                  child: AbsorbPointer(
-                    absorbing: isExpired,
-                    child: contentBuilder(context, item),
-                  ),
-                ),
-                if (!isExpired && bottomAction != null) ...[
-                  const SizedBox(height: 16),
-                  SizedBox(width: double.infinity, child: bottomAction!),
-                ],
-              ],
-            ),
+              );
+            },
           );
         },
       ),

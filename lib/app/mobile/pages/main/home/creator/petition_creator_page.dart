@@ -13,6 +13,7 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/data/services/storage_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -92,6 +93,15 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
+
+    if (ContentModerationService.instance.containsObjectionableContent(
+      <String?>[title, description],
+    )) {
+      showErrorSnackBar(
+        'Please remove abusive or objectionable language before publishing.',
+      );
       return;
     }
 
