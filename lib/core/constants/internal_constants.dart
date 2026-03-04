@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/config/environment.dart';
 
 class IConst {
   static const String themeModeKey = 'isDarkMode';
   static const String localeKey = 'locale';
-  static const String appName = 'StimmApp';
   static const String active = 'active';
   static const String closed = 'closed';
 
@@ -13,22 +13,7 @@ class IConst {
   static const String adminEmail = 'service@trainvent.com';
   static const String ownerEmail = 'leon.marquardt@gmx.de';
   static const Set<String> alwaysProEmails = <String>{adminEmail, ownerEmail};
-  static const String supportEmail = 'support@trainvent.com';
   static const String noreplyEmail = 'noreply@trainvent.com';
-  static const String privacyPolicyUrl =
-      'https://www.stimmapp.eu/privacy-policy';
-  static const String termsOfServiceUrl =
-      'https://www.stimmapp.eu/terms-of-service';
-  static const String faqUrl = 'https://www.stimmapp.eu/faq';
-
-  static const String revenueCatApiKeyDevAndroid =
-      'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
-  static const String revenueCatApiKeyDevIos =
-      'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
-  static const String revenueCatApiKeyProdAndroid =
-      'goog_gaOrZloplZgSgUVWiKGRXUXyFXF';
-  static const String revenueCatApiKeyProdIos =
-      'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ';
 
   // Google Places API Key.
   // If your Firebase API key is restricted and doesn't work for Places,
@@ -53,4 +38,18 @@ class IConst {
       'https://www.bpb.de/system/files/dokument_pdf/M%2001.04%20Fragebogenerstellung_3.pdf';
   static const String petitionTutorial =
       'https://epetitionen.bundestag.de/epet/peteinreichen.html';
+
+  static String get appName => Environment.appName;
+  static String get supportEmail => Environment.supportEmail;
+  static String get privacyPolicyUrl => Environment.privacyPolicyUrl;
+  static String get termsOfServiceUrl => Environment.termsOfServiceUrl;
+  static String get faqUrl => Environment.faqUrl;
+  static String get revenueCatApiKeyDevAndroid =>
+      Environment.config.revenueCatApiKeyDevAndroid;
+  static String get revenueCatApiKeyDevIos =>
+      Environment.config.revenueCatApiKeyDevIos;
+  static String get revenueCatApiKeyProdAndroid =>
+      Environment.config.revenueCatApiKeyProdAndroid;
+  static String get revenueCatApiKeyProdIos =>
+      Environment.config.revenueCatApiKeyProdIos;
 }

@@ -36,7 +36,6 @@ android {
     defaultConfig {
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
-        applicationId = "de.lemarq.stimmapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -69,19 +68,29 @@ android {
         }
     }
 
-    flavorDimensions += "env"
+    flavorDimensions += "app"
 
     productFlavors {
-        create("dev") {
-            dimension = "env"
-            applicationIdSuffix = ".dev"
+        create("stimmappDev") {
+            dimension = "app"
+            applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
+            manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
             resValue("string", "app_name", "StimmApp Dev")
         }
-        create("prod") {
-            dimension = "env"
+        create("stimmappProd") {
+            dimension = "app"
+            applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.eu"
+            manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.eu"
             resValue("string", "app_name", "StimmApp")
+        }
+        create("vivotProd") {
+            dimension = "app"
+            applicationId = "com.trainvent.vivot"
+            manifestPlaceholders["deepLinkHost"] = "vivot.net"
+            manifestPlaceholders["debugDeepLinkHost"] = "vivot.net"
+            resValue("string", "app_name", "Vivot")
         }
     }
 

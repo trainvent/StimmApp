@@ -5,6 +5,7 @@ import 'package:stimmapp/app/mobile/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/neon_padding_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -57,7 +58,7 @@ class AboutPage extends StatelessWidget {
           Center(child: Image.asset("assets/images/cropped-LeLogo.png")),
           const SizedBox(height: 10),
           Center(
-            child: Text(context.l10n.stimmapp, style: AppTextStyles.xxlBold),
+            child: Text(IConst.appName, style: AppTextStyles.xxlBold),
           ),
           const SizedBox(height: 40),
           NeonPaddingWidget(

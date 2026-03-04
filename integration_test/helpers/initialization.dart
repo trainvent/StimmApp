@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:patrol/patrol.dart';
 import 'package:stimmapp/app_entry.dart';
+import 'package:stimmapp/core/config/brand_config.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/firebase/firebase_options_dev.dart' as dev;
@@ -15,7 +16,7 @@ import 'package:stimmapp/core/errors/error_log_tool.dart';
 Future<void> initializeApp(PatrolIntegrationTester $) async {
   // Initialize app environment
   WidgetsFlutterBinding.ensureInitialized();
-  Environment.init(EnvironmentType.dev);
+  Environment.init(BrandConfig.stimmappDev);
   if (kIsWeb) usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 

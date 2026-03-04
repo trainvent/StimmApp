@@ -4,6 +4,7 @@ import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/select_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -65,28 +66,34 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                   child: Center(
                     child: Column(
                       children: [
-                        Text(_selectedState!),
-                        const SizedBox(height: 20),
+                        if (Environment.supportsStateScope &&
+                            _selectedState != null) ...[
+                          Text(_selectedState!),
+                          const SizedBox(height: 20),
+                        ],
                         GooglePlacesAddressWidget(
                           controller: _controllerAddress,
                           onStateChanged: (state) {
-                            if (state != null) {
+                            if (Environment.supportsStateScope &&
+                                state != null) {
                               setState(() {
                                 _selectedState = state;
                               });
                             }
                           },
                         ),
-                        const SizedBox(height: 20),
-                        SelectAddressWidget(
-                          selectedState: _selectedState,
-                          onStateChanged: (newValue) {
-                            setState(() {
-                              _selectedState = newValue;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
+                        if (Environment.supportsStateScope) ...[
+                          const SizedBox(height: 20),
+                          SelectAddressWidget(
+                            selectedState: _selectedState,
+                            onStateChanged: (newValue) {
+                              setState(() {
+                                _selectedState = newValue;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                         Text(
                           errorMessage,
                           style: AppTextStyles.m.copyWith(
@@ -119,7 +126,9 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                 final userProfile = await userRepository.getById(uid);
                 final updatedProfile = (userProfile ?? UserProfile(uid: uid))
                     .copyWith(
-                      state: _selectedState,
+                      state: Environment.supportsStateScope
+                          ? _selectedState
+                          : null,
                       address: _controllerAddress.text,
                     );
                 await userRepository.upsert(updatedProfile);

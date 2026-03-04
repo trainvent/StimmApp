@@ -9,6 +9,7 @@ import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -66,7 +67,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         return;
       }
 
-      if (_selectedState == null) {
+      if (Environment.supportsStateScope && _selectedState == null) {
         showErrorSnackBar(
           S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress,
         );
@@ -98,7 +99,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         uid: currentUser.uid,
         email: currentUser.email,
         displayName: controllerDisplayName.text,
-        state: _selectedState,
+        state: Environment.supportsStateScope ? _selectedState : null,
         createdAt: DateTime.now(),
         surname: controllerSurname.text,
         givenName: controllerGivenName.text,
@@ -266,13 +267,15 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    Text(_selectedState ?? context.l10n.state),
-                    const SizedBox(height: 10),
+                    if (Environment.supportsStateScope) ...[
+                      Text(_selectedState ?? context.l10n.state),
+                      const SizedBox(height: 10),
+                    ],
                     GooglePlacesAddressWidget(
                       key: const Key('addressTextField'),
                       controller: _textController,
                       onStateChanged: (state) {
-                        if (state != null) {
+                        if (Environment.supportsStateScope && state != null) {
                           setState(() {
                             _selectedState = state;
                           });

@@ -18,7 +18,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="stimmapp-dev.web.app"
+                    android:host="${debugDeepLinkHost}"
                     android:pathPrefix="/petition" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -29,7 +29,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="stimmapp-dev.web.app"
+                    android:host="${debugDeepLinkHost}"
                     android:pathPrefix="/poll" />
             </intent-filter>
         </activity-alias>

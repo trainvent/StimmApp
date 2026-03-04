@@ -7,10 +7,13 @@ project 'Runner', {
   'Debug' => :debug,
   'Debug-dev' => :debug,
   'Debug-prod' => :debug,
+  'Debug-vivotProd' => :debug,
   'Profile' => :release,
   'Profile-prod' => :release,
+  'Profile-vivotProd' => :release,
   'Release' => :release,
   'Release-prod' => :release,
+  'Release-vivotProd' => :release,
 }
 
 def flutter_root

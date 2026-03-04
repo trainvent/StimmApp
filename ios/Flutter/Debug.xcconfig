@@ -1,3 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
 GAD_APPLICATION_IDENTIFIER=ca-app-pub-5296065079333841~8760518694
+APP_DISPLAY_NAME=StimmApp
+APP_BUNDLE_NAME=stimmapp

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -43,6 +44,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   bool _isStateDependent = false;
   bool _isLoading = false;
   int _durationDays = 28; // Default duration
+  bool get _supportsStateScope => Environment.supportsStateScope;
 
   @override
   void initState() {
@@ -79,7 +81,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         }
         if (draftTags != null) _selectedTags = draftTags;
         if (draftStateDependent != null) {
-          _isStateDependent = draftStateDependent;
+          _isStateDependent = _supportsStateScope ? draftStateDependent : false;
         }
         if (draftDuration != null) _durationDays = draftDuration;
       });
@@ -142,7 +144,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
-        isStateDependent: _isStateDependent,
+        isStateDependent: _supportsStateScope ? _isStateDependent : false,
         durationDays: _durationDays,
       );
       await _clearDraft(); // Clear draft on successful submission
@@ -378,18 +380,20 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               ),
               Center(child: Text('$_durationDays days')),
               const SizedBox(height: 10),
-              CheckboxListTile(
-                title: Text(context.l10n.stateDependent),
-                value: _isStateDependent,
-                onChanged: (newValue) {
-                  setState(() {
-                    _isStateDependent = newValue!;
-                  });
-                  _saveDraft();
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              const SizedBox(height: 10),
+              if (_supportsStateScope) ...[
+                CheckboxListTile(
+                  title: Text(context.l10n.stateDependent),
+                  value: _isStateDependent,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _isStateDependent = newValue!;
+                    });
+                    _saveDraft();
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+                const SizedBox(height: 10),
+              ],
               if (widget.additionalBottomFields != null)
                 ...widget.additionalBottomFields!,
               Builder(

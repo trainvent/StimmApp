@@ -18,6 +18,7 @@ import 'package:stimmapp/app/mobile/widgets/pointing_list_tile.dart';
 import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -198,11 +199,12 @@ class ProfilePage extends StatelessWidget {
                               );
                             },
                           ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.state,
-                            userProfile.state,
-                          ),
+                          if (Environment.supportsStateScope)
+                            _buildDetailTile(
+                              context,
+                              context.l10n.state,
+                              userProfile.state,
+                            ),
                           _buildDetailTile(
                             key: keys.profilePage.changeEmailListTile,
                             context,

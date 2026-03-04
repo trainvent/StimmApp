@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "67384688969",
+    "project_id": "vivot-prod",
+    "storage_bucket": "vivot-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67384688969:android:88a1de7997a1e235da5a98",
+        "android_client_info": {
+          "package_name": "com.trainvent.vivot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhAM2kX7m0gmk91ZX4B_96ddQfyGR0-mE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
