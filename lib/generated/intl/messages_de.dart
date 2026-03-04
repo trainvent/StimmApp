@@ -423,6 +423,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Passwort erfolgreich geändert",
     ),
+    "passwordMustBeAtLeast8CharactersLong":
+        MessageLookupByLibrary.simpleMessage(
+          "Passwort muss mindestens 8 Character lang sein",
+        ),
     "passwordValidation": m2,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
@@ -649,6 +653,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Aus Galerie wählen",
     ),
+    "selectPaymentProvider": MessageLookupByLibrary.simpleMessage(
+      "Zahlungsanbieter auswählen",
+    ),
     "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
       "Sende Bestätigungs-E-Mail",
     ),
@@ -657,6 +664,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sendCrashLogsDescription": MessageLookupByLibrary.simpleMessage(
       "Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.",
+    ),
+    "sendLoginLink": MessageLookupByLibrary.simpleMessage(
+      "Login Link abschicken",
     ),
     "setUserDetails": MessageLookupByLibrary.simpleMessage(
       "Benutzerdaten festlegen",

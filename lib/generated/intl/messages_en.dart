@@ -617,6 +617,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Select from Gallery",
     ),
+    "selectPaymentProvider": MessageLookupByLibrary.simpleMessage(
+      "Select Payment Provider",
+    ),
     "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
       "Send confirmation Email.",
     ),

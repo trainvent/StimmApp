@@ -3248,6 +3248,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Select Payment Provider`
+  String get selectPaymentProvider {
+    return Intl.message(
+      'Select Payment Provider',
+      name: 'selectPaymentProvider',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
