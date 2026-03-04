@@ -7,6 +7,7 @@ import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 
 class PollDetailPage extends StatefulWidget {
   const PollDetailPage({super.key, required this.id});
@@ -30,8 +31,31 @@ class _PollDetailPageState extends State<PollDetailPage> {
       sharePathSegment: 'poll',
       topRightActionBuilder: (context, poll) {
         final currentUid = authService.currentUser?.uid;
-        if (currentUid == null || currentUid == poll.createdBy) {
+        if (currentUid == null) {
           return const SizedBox.shrink();
+        }
+        if (currentUid == poll.createdBy) {
+          final canDelete = poll.totalVotes == 0;
+          return PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'delete') {
+                await _deletePoll(context, poll);
+              }
+            },
+            itemBuilder: (context) => canDelete
+                ? [
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text(context.l10n.deleteForm),
+                    ),
+                  ]
+                : [
+                    PopupMenuItem<String>(
+                      enabled: false,
+                      child: Text(context.l10n.noFittingOptions),
+                    ),
+                  ],
+          );
         }
         return PopupMenuButton<String>(
           onSelected: (value) async {
@@ -41,12 +65,15 @@ class _PollDetailPageState extends State<PollDetailPage> {
               await _confirmBlockUser(context, poll);
             }
           },
-          itemBuilder: (context) => const [
+          itemBuilder: (context) => [
             PopupMenuItem<String>(
               value: 'report',
-              child: Text('Report content'),
+              child: Text(context.l10n.reportContent),
             ),
-            PopupMenuItem<String>(value: 'block', child: Text('Block user')),
+            PopupMenuItem<String>(
+              value: 'block',
+              child: Text(context.l10n.blockUser),
+            ),
           ],
         );
       },
@@ -91,6 +118,42 @@ class _PollDetailPageState extends State<PollDetailPage> {
     );
   }
 
+  Future<void> _deletePoll(BuildContext context, Poll poll) async {
+    if (poll.totalVotes != 0) {
+      showErrorSnackBar(context.l10n.cannotDeletePollHasVotes);
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.deleteForm),
+        content: Text(context.l10n.areYouSureYouWantToDeleteThisForm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) {
+      return;
+    }
+
+    await PollRepository.create().delete(poll.id);
+    QuotaUpdateNotifier.instance.notify();
+    if (context.mounted) {
+      showSuccessSnackBar(context.l10n.pollDeleted);
+      Navigator.of(context).pop();
+    }
+  }
+
   Future<void> _showReportDialog(BuildContext context, Poll poll) async {
     final detailsController = TextEditingController();
     String selectedReason = 'harassment';
@@ -99,33 +162,46 @@ class _PollDetailPageState extends State<PollDetailPage> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
+            final reportContent = context.l10n.reportContent;
+            final additionalDetailsOptional =
+                context.l10n.additionalDetailsOptional;
+            final cancel = context.l10n.cancel;
+            final submit = context.l10n.submit;
+            final harassmentOrBullying = context.l10n.harassmentOrBullying;
+            final hateSpeech = context.l10n.hateSpeech;
+            final sexualOrExplicitContent =
+                context.l10n.sexualOrExplicitContent;
+            final violenceOrThreats = context.l10n.violenceOrThreats;
+            final misinformationOrFraud = context.l10n.misinformationOrFraud;
+            final reportSubmittedReview24Hours =
+                context.l10n.reportSubmittedReview24Hours;
             return AlertDialog(
-              title: const Text('Report content'),
+              title: Text(reportContent),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<String>(
                     initialValue: selectedReason,
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: 'harassment',
-                        child: Text('Harassment or bullying'),
+                        child: Text(harassmentOrBullying),
                       ),
                       DropdownMenuItem(
                         value: 'hate_speech',
-                        child: Text('Hate speech'),
+                        child: Text(hateSpeech),
                       ),
                       DropdownMenuItem(
                         value: 'sexual_content',
-                        child: Text('Sexual or explicit content'),
+                        child: Text(sexualOrExplicitContent),
                       ),
                       DropdownMenuItem(
                         value: 'violence',
-                        child: Text('Violence or threats'),
+                        child: Text(violenceOrThreats),
                       ),
                       DropdownMenuItem(
                         value: 'misinformation',
-                        child: Text('Misinformation or fraud'),
+                        child: Text(misinformationOrFraud),
                       ),
                     ],
                     onChanged: (value) {
@@ -138,8 +214,8 @@ class _PollDetailPageState extends State<PollDetailPage> {
                   TextField(
                     controller: detailsController,
                     maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'Additional details (optional)',
+                    decoration: InputDecoration(
+                      labelText: additionalDetailsOptional,
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -148,7 +224,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(cancel),
                 ),
                 FilledButton(
                   onPressed: () async {
@@ -166,12 +242,10 @@ class _PollDetailPageState extends State<PollDetailPage> {
                     );
                     if (context.mounted) {
                       Navigator.of(context).pop();
-                      showSuccessSnackBar(
-                        'Report submitted. We review reports within 24 hours.',
-                      );
+                      showSuccessSnackBar(reportSubmittedReview24Hours);
                     }
                   },
-                  child: const Text('Submit'),
+                  child: Text(submit),
                 ),
               ],
             );
@@ -186,19 +260,20 @@ class _PollDetailPageState extends State<PollDetailPage> {
     final shouldBlock = await showDialog<bool>(
       context: context,
       builder: (context) {
+        final blockUser = context.l10n.blockUser;
+        final blockUserDescription = context.l10n.blockUserDescription;
+        final cancel = context.l10n.cancel;
         return AlertDialog(
-          title: const Text('Block user'),
-          content: const Text(
-            'This will hide this user\'s content from your feed immediately and notify the StimmApp team for review.',
-          ),
+          title: Text(blockUser),
+          content: Text(blockUserDescription),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Block user'),
+              child: Text(blockUser),
             ),
           ],
         );
@@ -221,7 +296,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
       details: 'User blocked from poll detail page.',
     );
     if (context.mounted) {
-      showSuccessSnackBar('User blocked. Their content is now hidden.');
+      showSuccessSnackBar(context.l10n.userBlockedContentHidden);
       Navigator.of(context).pop();
     }
   }

@@ -14,6 +14,8 @@ class _TestHomeItem implements HomeItem {
   @override
   final String description;
   @override
+  final String createdBy;
+  @override
   final String status;
   @override
   final String? state;
@@ -28,6 +30,7 @@ class _TestHomeItem implements HomeItem {
     required this.id,
     required this.title,
     required this.description,
+    required this.createdBy,
     required this.status,
     required this.expiresAt,
     this.state,
@@ -42,6 +45,7 @@ void main() {
     required _TestHomeItem item,
     Widget? bottomAction,
     VoidCallback? onContentTap,
+    Widget? topRightAction,
   }) async {
     await tester.pumpWidget(
       createTestWidget(
@@ -57,6 +61,9 @@ void main() {
             );
           },
           bottomAction: bottomAction,
+          topRightActionBuilder: topRightAction == null
+              ? null
+              : (context, item) => topRightAction,
         ),
       ),
     );
@@ -70,6 +77,7 @@ void main() {
         id: '1',
         title: 'Title',
         description: 'Desc',
+        createdBy: 'user-1',
         status: IConst.closed,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
         state: 'NRW',
@@ -100,6 +108,7 @@ void main() {
         id: '2',
         title: 'Title',
         description: 'Desc',
+        createdBy: 'user-1',
         status: IConst.active,
         expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
         state: 'NRW',
@@ -130,6 +139,7 @@ void main() {
         id: '3',
         title: 'Title',
         description: 'Desc',
+        createdBy: 'user-1',
         status: IConst.active,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
         state: 'NRW',
@@ -150,6 +160,33 @@ void main() {
       expect(find.text('Closed'), findsNothing);
       expect(find.text('Action'), findsOneWidget);
       expect(taps, 1);
+    },
+  );
+
+  testWidgets(
+    'renders top right action in the app bar actions area',
+    (tester) async {
+      final item = _TestHomeItem(
+        id: '4',
+        title: 'Title',
+        description: 'Desc',
+        createdBy: 'user-1',
+        status: IConst.active,
+        expiresAt: DateTime.now().add(const Duration(days: 1)),
+      );
+
+      await pumpPage(
+        tester,
+        item: item,
+        topRightAction: IconButton(
+          key: const Key('overflow_action'),
+          onPressed: () {},
+          icon: const Icon(Icons.more_vert),
+        ),
+      );
+
+      expect(find.byKey(const Key('overflow_action')), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
     },
   );
 }

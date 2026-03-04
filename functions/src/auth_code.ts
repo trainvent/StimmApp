@@ -5,9 +5,26 @@ import { defineSecret } from "firebase-functions/params";
 
 const db = admin.firestore();
 
+const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
 const smtpPassword = defineSecret('SMTP_PASSWORD');
 const smtpHost = process.env.SMPT_SERVER || "smtp.ionos.de";
+
+function normalizeEmail(email: string) {
+	return email.trim().toLowerCase();
+}
+
+async function assertEmailNotKicked(email: string) {
+	const normalizedEmail = normalizeEmail(email);
+	const kickedUserSnap = await db.collection(KICKED_USERS_COLLECTION).doc(normalizedEmail).get();
+	if (kickedUserSnap.exists) {
+		throw new HttpsError(
+			'permission-denied',
+			'This email address is no longer eligible to use StimmApp.',
+		);
+	}
+}
+
 // Generate a random 6-digit code
 function generateCode(): string {
 	return Math.floor(100000 + Math.random() * 900000).toString();
@@ -147,6 +164,7 @@ export const sendLoginCode = onCall({ secrets: [smtpPassword] }, async (request)
 	if (!email) {
 		throw new HttpsError('invalid-argument', 'Email is required.');
 	}
+	await assertEmailNotKicked(email);
 
 	const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
 	const testEmail = process.env.TEST_EMAIL;
@@ -226,6 +244,7 @@ export const verifyLoginCode = onCall(async (request) => {
 	if (!email || !code) {
 		throw new HttpsError('invalid-argument', 'Email and code are required.');
 	}
+	await assertEmailNotKicked(email);
 
 	let uid;
 	try {
@@ -286,4 +305,14 @@ export const verifyLoginCode = onCall(async (request) => {
 	}
 
 	return { success: true, token: token };
+});
+
+export const assertSignupEligible = onCall(async (request) => {
+	const email = request.data.email as string | undefined;
+	if (!email) {
+		throw new HttpsError('invalid-argument', 'Email is required.');
+	}
+
+	await assertEmailNotKicked(email);
+	return { success: true };
 });

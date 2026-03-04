@@ -132,8 +132,10 @@ playwright-report/
 # assets
 /screenshots
 
-# Setup documents
-/documents/setup/
+# private or unimportant documents
+/docs/setup/
+/docs/logs/
+
 
 # Firebase cache
 /.firebase/

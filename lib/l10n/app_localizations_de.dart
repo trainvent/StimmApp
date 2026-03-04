@@ -88,7 +88,60 @@ class AppLocalizationsDe extends AppLocalizations {
   String get backToLogin => 'Zurück zur Anmeldung';
 
   @override
+  String get blockedUsers => 'Blockierte Nutzer';
+
+  @override
+  String get blockedUsersEmpty => 'Du hast bisher niemanden blockiert.';
+
+  @override
+  String get blockedUsersLoadError =>
+      'Blockierte Nutzer konnten nicht geladen werden';
+
+  @override
+  String get blockedContentHidden =>
+      'Dieser Inhalt ist ausgeblendet, weil du diesen Nutzer blockiert hast.';
+
+  @override
   String get cancel => 'Abbrechen';
+
+  @override
+  String get reportContent => 'Inhalt melden';
+
+  @override
+  String get blockUser => 'Nutzer blockieren';
+
+  @override
+  String get blockUserDescription =>
+      'Dadurch werden die Inhalte dieses Nutzers sofort aus deinem Feed ausgeblendet und das StimmApp-Team zur Prüfung informiert.';
+
+  @override
+  String get additionalDetailsOptional => 'Zusätzliche Details (optional)';
+
+  @override
+  String get reportSubmittedReview24Hours =>
+      'Meldung eingereicht. Wir prüfen Meldungen innerhalb von 24 Stunden.';
+
+  @override
+  String get userBlockedContentHidden =>
+      'Nutzer blockiert. Seine Inhalte sind jetzt ausgeblendet.';
+
+  @override
+  String get harassmentOrBullying => 'Belästigung oder Mobbing';
+
+  @override
+  String get hateSpeech => 'Hassrede';
+
+  @override
+  String get sexualOrExplicitContent => 'Sexuelle oder explizite Inhalte';
+
+  @override
+  String get violenceOrThreats => 'Gewalt oder Drohungen';
+
+  @override
+  String get misinformationOrFraud => 'Falschinformationen oder Betrug';
+
+  @override
+  String get submit => 'Senden';
 
   @override
   String get cancelProSubscription => 'Pro-Abo kündigen';
@@ -505,6 +558,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noOptions => 'Keine Optionen';
+
+  @override
+  String get noFittingOptions => 'Keine passenden Optionen';
 
   @override
   String get noProMember => 'Nein, kein Pro-Mitglied';
@@ -958,6 +1014,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noEmail => 'Keine E-Mail';
 
   @override
+  String get unknownUser => 'Unbekannter Nutzer';
+
+  @override
   String get petitionTitleInUseAlready => 'Petitionstitel bereits vergeben';
 
   @override
@@ -985,6 +1044,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get verify => 'Verifizieren';
+
+  @override
+  String get unblock => 'Blockierung aufheben';
+
+  @override
+  String get unblockedUserSuccessfully => 'Nutzer erfolgreich entsperrt.';
 
   @override
   String get hello => 'Hallo';

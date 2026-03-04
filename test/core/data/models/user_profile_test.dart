@@ -38,6 +38,7 @@ void main() {
       'isVerified': false,
       'gotVerifiedAt': null,
       'sendCrashLogs': true,
+      'acceptedCommunityRulesAt': null,
       'showPetitionReason': null,
       'themeMode': null,
       'locale': null,

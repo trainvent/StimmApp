@@ -44,6 +44,14 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
 
   DatabaseService get _databaseService => locator.databaseService;
 
+  String? _safeCurrentUid() {
+    try {
+      return authService.currentUser?.uid;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,6 +109,17 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
               }
             },
           ),
+          if (topRightActionBuilder != null)
+            StreamBuilder<T?>(
+              stream: streamProvider(id),
+              builder: (context, snapshot) {
+                final item = snapshot.data;
+                if (item == null) {
+                  return const SizedBox.shrink();
+                }
+                return topRightActionBuilder!(context, item);
+              },
+            ),
         ],
       ),
       body: StreamBuilder<T?>(
@@ -111,7 +130,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
           }
           final item = snap.data;
           if (item == null) return Center(child: Text(context.l10n.notFound));
-          final currentUid = authService.currentUser?.uid;
+          final currentUid = _safeCurrentUid();
           final blockedIdsStream = currentUid == null
               ? Stream<Set<String>>.value(const <String>{})
               : ModerationRepository.create().watchBlockedUserIds(currentUid);
@@ -125,7 +144,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      'This content is hidden because you blocked this user.',
+                      context.l10n.blockedContentHidden,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -174,8 +193,6 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
-                        if (topRightActionBuilder != null)
-                          topRightActionBuilder!(context, item),
                       ],
                     ),
                     Text(item.description),

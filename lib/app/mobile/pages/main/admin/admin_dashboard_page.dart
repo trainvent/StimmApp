@@ -167,7 +167,7 @@ class _ModerationReportReviewPageState
         title: Text(
           contentMissing
               ? 'Dismiss missing report'
-              : 'Remove content and warn user',
+              : 'Remove content and kick user out',
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -176,7 +176,7 @@ class _ModerationReportReviewPageState
             Text(
               contentMissing
                   ? 'The reported content no longer exists. This will resolve the report and remove it from the admin queue.'
-                  : 'This removes the live content, archives it in Firestore, resolves the report, and sends the creator a warning email.',
+                  : 'This removes the live content, archives it in Firestore, resolves the report, emails the creator, and deletes their account.',
             ),
             if (!contentMissing) ...[
               const SizedBox(height: 16),
@@ -221,7 +221,7 @@ class _ModerationReportReviewPageState
       showSuccessSnackBar(
         contentMissing
             ? 'Report dismissed. The missing content is no longer in the queue.'
-            : 'Content removed and user notified.',
+            : 'Content removed, user notified, and account deleted.',
       );
       Navigator.of(context).pop();
     } catch (e) {

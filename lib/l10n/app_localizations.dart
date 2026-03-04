@@ -242,11 +242,107 @@ abstract class AppLocalizations {
   /// **'Back to Login'**
   String get backToLogin;
 
+  /// No description provided for @blockedUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked users'**
+  String get blockedUsers;
+
+  /// No description provided for @blockedUsersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not blocked anyone.'**
+  String get blockedUsersEmpty;
+
+  /// No description provided for @blockedUsersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load blocked users'**
+  String get blockedUsersLoadError;
+
+  /// No description provided for @blockedContentHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This content is hidden because you blocked this user.'**
+  String get blockedContentHidden;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// No description provided for @reportContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Report content'**
+  String get reportContent;
+
+  /// No description provided for @blockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Block user'**
+  String get blockUser;
+
+  /// No description provided for @blockUserDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This will hide this user\'s content from your feed immediately and notify the StimmApp team for review.'**
+  String get blockUserDescription;
+
+  /// No description provided for @additionalDetailsOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details (optional)'**
+  String get additionalDetailsOptional;
+
+  /// No description provided for @reportSubmittedReview24Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted. We review reports within 24 hours.'**
+  String get reportSubmittedReview24Hours;
+
+  /// No description provided for @userBlockedContentHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked. Their content is now hidden.'**
+  String get userBlockedContentHidden;
+
+  /// No description provided for @harassmentOrBullying.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment or bullying'**
+  String get harassmentOrBullying;
+
+  /// No description provided for @hateSpeech.
+  ///
+  /// In en, this message translates to:
+  /// **'Hate speech'**
+  String get hateSpeech;
+
+  /// No description provided for @sexualOrExplicitContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual or explicit content'**
+  String get sexualOrExplicitContent;
+
+  /// No description provided for @violenceOrThreats.
+  ///
+  /// In en, this message translates to:
+  /// **'Violence or threats'**
+  String get violenceOrThreats;
+
+  /// No description provided for @misinformationOrFraud.
+  ///
+  /// In en, this message translates to:
+  /// **'Misinformation or fraud'**
+  String get misinformationOrFraud;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 
   /// No description provided for @cancelProSubscription.
   ///
@@ -1033,6 +1129,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'no options'**
   String get noOptions;
+
+  /// No description provided for @noFittingOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'No fitting options'**
+  String get noFittingOptions;
 
   /// No description provided for @noProMember.
   ///
@@ -1892,6 +1994,12 @@ abstract class AppLocalizations {
   /// **'No Email'**
   String get noEmail;
 
+  /// No description provided for @unknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown user'**
+  String get unknownUser;
+
   /// No description provided for @petitionTitleInUseAlready.
   ///
   /// In en, this message translates to:
@@ -1945,6 +2053,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verify'**
   String get verify;
+
+  /// No description provided for @unblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get unblock;
+
+  /// No description provided for @unblockedUserSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'User unblocked.'**
+  String get unblockedUserSuccessfully;
 
   /// No description provided for @hello.
   ///

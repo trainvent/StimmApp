@@ -87,7 +87,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToLogin => 'Back to Login';
 
   @override
+  String get blockedUsers => 'Blocked users';
+
+  @override
+  String get blockedUsersEmpty => 'You have not blocked anyone.';
+
+  @override
+  String get blockedUsersLoadError => 'Failed to load blocked users';
+
+  @override
+  String get blockedContentHidden =>
+      'This content is hidden because you blocked this user.';
+
+  @override
   String get cancel => 'Cancel';
+
+  @override
+  String get reportContent => 'Report content';
+
+  @override
+  String get blockUser => 'Block user';
+
+  @override
+  String get blockUserDescription =>
+      'This will hide this user\'s content from your feed immediately and notify the StimmApp team for review.';
+
+  @override
+  String get additionalDetailsOptional => 'Additional details (optional)';
+
+  @override
+  String get reportSubmittedReview24Hours =>
+      'Report submitted. We review reports within 24 hours.';
+
+  @override
+  String get userBlockedContentHidden =>
+      'User blocked. Their content is now hidden.';
+
+  @override
+  String get harassmentOrBullying => 'Harassment or bullying';
+
+  @override
+  String get hateSpeech => 'Hate speech';
+
+  @override
+  String get sexualOrExplicitContent => 'Sexual or explicit content';
+
+  @override
+  String get violenceOrThreats => 'Violence or threats';
+
+  @override
+  String get misinformationOrFraud => 'Misinformation or fraud';
+
+  @override
+  String get submit => 'Submit';
 
   @override
   String get cancelProSubscription => 'Cancel Pro Subscription';
@@ -501,6 +553,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noOptions => 'no options';
+
+  @override
+  String get noFittingOptions => 'No fitting options';
 
   @override
   String get noProMember => 'Nein, kein Pro-Mitglied';
@@ -947,6 +1002,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noEmail => 'No Email';
 
   @override
+  String get unknownUser => 'Unknown user';
+
+  @override
   String get petitionTitleInUseAlready => 'petition title in use already';
 
   @override
@@ -973,6 +1031,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verify => 'Verify';
+
+  @override
+  String get unblock => 'Unblock';
+
+  @override
+  String get unblockedUserSuccessfully => 'User unblocked.';
 
   @override
   String get hello => 'hello';

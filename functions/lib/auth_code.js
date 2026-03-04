@@ -33,15 +33,26 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyLoginCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
+exports.assertSignupEligible = exports.verifyLoginCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
 const params_1 = require("firebase-functions/params");
 const db = admin.firestore();
+const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
 const smtpPassword = (0, params_1.defineSecret)('SMTP_PASSWORD');
 const smtpHost = process.env.SMPT_SERVER || "smtp.ionos.de";
+function normalizeEmail(email) {
+    return email.trim().toLowerCase();
+}
+async function assertEmailNotKicked(email) {
+    const normalizedEmail = normalizeEmail(email);
+    const kickedUserSnap = await db.collection(KICKED_USERS_COLLECTION).doc(normalizedEmail).get();
+    if (kickedUserSnap.exists) {
+        throw new https_1.HttpsError('permission-denied', 'This email address is no longer eligible to use StimmApp.');
+    }
+}
 // Generate a random 6-digit code
 function generateCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -163,6 +174,7 @@ exports.sendLoginCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'Email is required.');
     }
+    await assertEmailNotKicked(email);
     const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
     const testEmail = process.env.TEST_EMAIL;
     console.log(`[DEBUG] sendLoginCode: email='${email}'`);
@@ -228,6 +240,7 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
     if (!email || !code) {
         throw new https_1.HttpsError('invalid-argument', 'Email and code are required.');
     }
+    await assertEmailNotKicked(email);
     let uid;
     try {
         const userRecord = await admin.auth().getUserByEmail(email);
@@ -282,5 +295,13 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
         console.warn("Failed to update emailVerified (non-fatal):", e);
     }
     return { success: true, token: token };
+});
+exports.assertSignupEligible = (0, https_1.onCall)(async (request) => {
+    const email = request.data.email;
+    if (!email) {
+        throw new https_1.HttpsError('invalid-argument', 'Email is required.');
+    }
+    await assertEmailNotKicked(email);
+    return { success: true };
 });
 //# sourceMappingURL=auth_code.js.map

@@ -4,5 +4,6 @@ class DatabaseCollections {
   static const polls = 'polls';
   static const votes = 'votes';
   static const blockedUsers = 'blockedUsers';
+  static const kickedUsers = 'kickedUsers';
   static const moderationReports = 'moderationReports';
 }

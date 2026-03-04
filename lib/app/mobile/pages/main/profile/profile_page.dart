@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/form_export_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
@@ -295,6 +296,22 @@ class ProfilePage extends StatelessWidget {
                         ),
                       );
                     },
+                  ),
+                  PointingListTile(
+                    key: keys.profilePage.blockedUsersListTile,
+                    title: Text(context.l10n.blockedUsers),
+                    onTap: currentUser == null
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlockedUsersPage(
+                                  userId: currentUser.uid,
+                                ),
+                              ),
+                            );
+                          },
                   ),
                   // Running forms
                   PointingListTile(

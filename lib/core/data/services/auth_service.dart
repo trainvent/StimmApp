@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -5,12 +7,35 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 final AuthService authService = AuthService();
 
 class AuthService {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFunctions functions = FirebaseFunctions.instance;
+  AuthService({
+    FirebaseAuth? firebaseAuth,
+    FirebaseFunctions? functions,
+  })  : _firebaseAuth = firebaseAuth,
+        _functions = functions;
 
-  User? get currentUser => firebaseAuth.currentUser;
+  final FirebaseAuth? _firebaseAuth;
+  final FirebaseFunctions? _functions;
 
-  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
+  FirebaseAuth get firebaseAuth => _firebaseAuth ?? FirebaseAuth.instance;
+  FirebaseFunctions get functions => _functions ?? FirebaseFunctions.instance;
+
+  // Widget tests often exercise UI without Firebase initialization.
+  // In that case we degrade to an anonymous state instead of crashing.
+  User? get currentUser {
+    try {
+      return firebaseAuth.currentUser;
+    } on Exception {
+      return null;
+    }
+  }
+
+  Stream<User?> get authStateChanges {
+    try {
+      return firebaseAuth.authStateChanges();
+    } on Exception {
+      return Stream<User?>.value(null);
+    }
+  }
 
   Future<UserCredential> signIn({
     required String email,
@@ -31,6 +56,7 @@ class AuthService {
     required String password,
   }) async {
     try {
+      await assertSignupEligible(email: email);
       final cred = await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -40,6 +66,20 @@ class AuthService {
       return cred;
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
+    }
+  }
+
+  Future<void> assertSignupEligible({
+    required String email,
+  }) async {
+    try {
+      await functions.httpsCallable('assertSignupEligible').call({
+        'email': email.trim(),
+      });
+    } on FirebaseFunctionsException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
     }
   }
 

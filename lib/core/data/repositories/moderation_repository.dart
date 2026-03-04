@@ -3,7 +3,18 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/moderation_report.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+
+class BlockedUserProfile {
+  const BlockedUserProfile({
+    required this.userId,
+    this.profile,
+  });
+
+  final String userId;
+  final UserProfile? profile;
+}
 
 class ModerationRepository {
   ModerationRepository(this._fs);
@@ -99,6 +110,38 @@ class ModerationRepository {
     ).snapshots().map((snapshot) => snapshot.docs.map((doc) => doc.id).toSet());
   }
 
+  Stream<List<BlockedUserProfile>> watchBlockedUsers(String userId) {
+    return _blockedUsers(userId).snapshots().asyncMap((snapshot) async {
+      final blockedUserIds = snapshot.docs.map((doc) => doc.id).toList();
+      if (blockedUserIds.isEmpty) {
+        return const <BlockedUserProfile>[];
+      }
+
+      final profiles = await Future.wait(
+        blockedUserIds.map((blockedUserId) => locator.databaseService
+            .colRef<UserProfile>(
+              DatabaseCollections.users,
+              fromFirestore: (snap, _) => UserProfile.fromJson(
+                snap.data() as Map<String, dynamic>,
+                snap.id,
+              ),
+              toFirestore: (model, _) => model.toJson(),
+            )
+            .doc(blockedUserId)
+            .get()
+            .then((snap) => snap.data())),
+      );
+
+      return List<BlockedUserProfile>.generate(
+        blockedUserIds.length,
+        (index) => BlockedUserProfile(
+          userId: blockedUserIds[index],
+          profile: profiles[index],
+        ),
+      );
+    });
+  }
+
   Stream<List<ModerationReport>> watchOpenReports({int limit = 100}) {
     return _fs
         .watchCol(
@@ -158,6 +201,13 @@ class ModerationRepository {
       details: details,
       source: 'block',
     );
+  }
+
+  Future<void> unblockUser({
+    required String blockerId,
+    required String blockedUserId,
+  }) async {
+    await _blockedUsers(blockerId).doc(blockedUserId).delete();
   }
 
   Future<void> resolveReport(String reportId) async {
