@@ -51,7 +51,11 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
       // Navigate to the new code-based confirmation page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const EmailConfirmationPage()),
+        MaterialPageRoute(
+          builder: (context) => const EmailConfirmationPage(
+            sendCodeOnLoad: true,
+          ),
+        ),
       );
     } on AuthException catch (e) {
       setState(() {

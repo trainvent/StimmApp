@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 
 final AuthService authService = AuthService();
@@ -57,13 +58,10 @@ class AuthService {
   }) async {
     try {
       await assertSignupEligible(email: email);
-      final cred = await firebaseAuth.createUserWithEmailAndPassword(
+      return await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // Instead of sending a link, we request a code via Cloud Functions
-      await sendVerificationCode();
-      return cred;
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
     }
@@ -77,9 +75,22 @@ class AuthService {
         'email': email.trim(),
       });
     } on FirebaseFunctionsException catch (e) {
-      throw AuthException(
-        FirebaseAuthException(code: e.code, message: e.message),
+      // The ban check should only block signup when the backend explicitly
+      // denies the email. Missing/unavailable/internal callable failures should
+      // not prevent account creation.
+      if (e.code == 'permission-denied') {
+        throw AuthException(
+          FirebaseAuthException(code: e.code, message: e.message),
+        );
+      }
+      debugPrint(
+        'assertSignupEligible skipped due to backend error '
+        '(code: ${e.code}, message: ${e.message})',
       );
+      return;
+    } catch (e) {
+      debugPrint('assertSignupEligible skipped due to unexpected error: $e');
+      return;
     }
   }
 
@@ -87,7 +98,9 @@ class AuthService {
     try {
       await firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      throw AuthException(e);
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
     }
   }
 

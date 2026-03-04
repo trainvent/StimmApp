@@ -458,6 +458,12 @@ abstract class AppLocalizations {
   /// **'Could not open paywall'**
   String get couldNotOpenPaywall;
 
+  /// No description provided for @couldNotOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open link.'**
+  String get couldNotOpenLink;
+
   /// No description provided for @createNewPetitionDescription.
   ///
   /// In en, this message translates to:
@@ -1358,6 +1364,12 @@ abstract class AppLocalizations {
   /// **'Priority support'**
   String get prioritySupport;
 
+  /// No description provided for @communityRulesAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.'**
+  String get communityRulesAcceptance;
+
   /// No description provided for @proMember.
   ///
   /// In en, this message translates to:
@@ -1501,6 +1513,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// No description provided for @terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get terms;
+
+  /// No description provided for @privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacy;
 
   /// No description provided for @scanAgain.
   ///

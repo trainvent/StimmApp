@@ -202,6 +202,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get couldNotOpenPaywall => 'Paywall konnte nicht geöffnet werden';
 
   @override
+  String get couldNotOpenLink => 'Link konnte nicht geöffnet werden.';
+
+  @override
   String get createNewPetitionDescription => 'Erstelle eine neue Petition';
 
   @override
@@ -678,6 +681,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get prioritySupport => 'Prioritätssupport';
 
   @override
+  String get communityRulesAcceptance =>
+      'Ich stimme den Nutzungsbedingungen zu und verstehe, dass StimmApp keine anstößigen Inhalte oder missbräuchliches Verhalten toleriert.';
+
+  @override
   String get proMember => 'Pro-Mitglied';
 
   @override
@@ -751,6 +758,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get save => 'Speichern';
+
+  @override
+  String get terms => 'AGB';
+
+  @override
+  String get privacy => 'Datenschutz';
 
   @override
   String get scanAgain => 'Erneut scannen';

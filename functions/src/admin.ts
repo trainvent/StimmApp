@@ -173,6 +173,7 @@ async function storeKickedUser(params: {
 	db: admin.firestore.Firestore;
 	uid: string;
 	email: string;
+	removalId: string;
 	reportId: string;
 	contentId: string;
 	contentType: string;
@@ -185,6 +186,7 @@ async function storeKickedUser(params: {
 		email: params.email,
 		normalizedEmail,
 		uid: params.uid,
+		removalId: params.removalId,
 		reportId: params.reportId,
 		contentId: params.contentId,
 		contentType: params.contentType,
@@ -336,7 +338,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 	}
 	const contentTitle = (contentData.title as string | undefined) ?? contentId;
 
-	await db.collection('removed').add({
+	const removalRef = await db.collection('removedForms').add({
 		originalCollection: sourceCollection,
 		originalId: contentId,
 		contentType,
@@ -385,6 +387,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 			db,
 			uid: reportedUserId,
 			email: creatorEmail,
+			removalId: removalRef.id,
 			reportId,
 			contentId,
 			contentType,

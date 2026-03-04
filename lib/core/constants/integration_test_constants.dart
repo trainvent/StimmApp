@@ -50,6 +50,7 @@ class SetUserDetailsPageKeys {
   final displayNameTextField = const Key('displayNameTextField');
   final dateOfBirthTextField = const Key('dateOfBirthTextField');
   final addressTextField = const Key('addressTextField');
+  final agreenmentCheckboxListTile = const Key('agreenmentCheckboxListTile');
 }
 
 class ResetPasswordPageKeys {

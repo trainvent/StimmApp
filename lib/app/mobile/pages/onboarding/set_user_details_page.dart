@@ -166,12 +166,13 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final _textController = TextEditingController();
 
   Future<void> _openUrl(String url) async {
+    final couldNotOpenLink = context.l10n.couldNotOpenLink;
     final ok = await launchUrl(
       Uri.parse(url),
       mode: LaunchMode.externalApplication,
     );
     if (!ok) {
-      showErrorSnackBar('Could not open link.');
+      showErrorSnackBar(couldNotOpenLink);
     }
   }
 
@@ -286,6 +287,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     CheckboxListTile(
+                      key: const Key('agreenmentCheckboxListTile'),
                       contentPadding: EdgeInsets.zero,
                       value: _acceptedCommunityRules,
                       onChanged: (value) {
@@ -293,9 +295,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                           _acceptedCommunityRules = value ?? false;
                         });
                       },
-                      title: const Text(
-                        'I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.',
-                      ),
+                      title: Text(context.l10n.communityRulesAcceptance),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
@@ -304,11 +304,11 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                         children: [
                           TextButton(
                             onPressed: () => _openUrl(IConst.termsOfServiceUrl),
-                            child: const Text('Terms'),
+                            child: Text(context.l10n.terms),
                           ),
                           TextButton(
                             onPressed: () => _openUrl(IConst.privacyPolicyUrl),
-                            child: const Text('Privacy'),
+                            child: Text(context.l10n.privacy),
                           ),
                         ],
                       ),

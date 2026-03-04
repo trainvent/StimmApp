@@ -58,7 +58,9 @@ void main() {
       // Since we can't easily check snackbar content with just keys, we proceed to correct code.
 
       // Try correct code - enterText replaces content by default
-      await $(keys.verificationWidget.verificationCodeTextField).waitUntilVisible();
+      await $(
+        keys.verificationWidget.verificationCodeTextField,
+      ).waitUntilVisible();
       await $(
         keys.verificationWidget.verificationCodeTextField,
       ).enterText(testCode);
@@ -161,9 +163,7 @@ Future<void> regNOut(
   await $(keys.onboardingPage.registerButton).tap();
 
   // Verification Code
-  await $(
-    keys.verificationWidget.verificationCodeTextField,
-  ).waitUntilVisible();
+  await $(keys.verificationWidget.verificationCodeTextField).waitUntilVisible();
   $.log("verification code field found");
   await $(
     keys.verificationWidget.verificationCodeTextField,
@@ -185,11 +185,11 @@ Future<void> regNOut(
   await $(RegExp('Bielefeld')).waitUntilVisible();
   await $(RegExp('Bielefeld')).tap();
   await $(RegExp('Nordrhein')).waitUntilVisible();
+  await $(keys.setUserDetailsPage.agreenmentCheckboxListTile).tap();
   await $(keys.setUserDetailsPage.saveButton).tap();
 
   // Logout
   await $(keys.widgetTree.profileButton).tap();
   await $(keys.profilePage.logoutListTile).scrollTo().tap();
   await $(keys.profilePage.confirmLogoutButton).tap();
-
 }

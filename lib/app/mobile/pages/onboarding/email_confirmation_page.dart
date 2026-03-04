@@ -6,7 +6,12 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
 class EmailConfirmationPage extends StatefulWidget {
-  const EmailConfirmationPage({super.key});
+  const EmailConfirmationPage({
+    super.key,
+    this.sendCodeOnLoad = false,
+  });
+
+  final bool sendCodeOnLoad;
 
   @override
   State<EmailConfirmationPage> createState() => _EmailConfirmationPageState();
@@ -14,6 +19,16 @@ class EmailConfirmationPage extends StatefulWidget {
 
 class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   final TextEditingController _codeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.sendCodeOnLoad) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _resendCode(showSuccessFeedback: false);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -47,11 +62,13 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     }
   }
 
-  Future<void> _resendCode() async {
+  Future<void> _resendCode({bool showSuccessFeedback = true}) async {
     try {
       await authService.sendVerificationCode();
       if (!mounted) return;
-      showSuccessSnackBar(S.of(context).verificationCodeResent);
+      if (showSuccessFeedback) {
+        showSuccessSnackBar(S.of(context).verificationCodeResent);
+      }
     } on AuthException catch (e) {
       if (!mounted) return;
       showErrorSnackBar(e.message ?? S.of(context).failedToResendCode);

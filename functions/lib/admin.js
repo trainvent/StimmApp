@@ -164,6 +164,7 @@ async function storeKickedUser(params) {
         email: params.email,
         normalizedEmail,
         uid: params.uid,
+        removalId: params.removalId,
         reportId: params.reportId,
         contentId: params.contentId,
         contentType: params.contentType,
@@ -283,7 +284,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
         }
     }
     const contentTitle = (_h = contentData.title) !== null && _h !== void 0 ? _h : contentId;
-    await db.collection('removed').add({
+    const removalRef = await db.collection('removedForms').add({
         originalCollection: sourceCollection,
         originalId: contentId,
         contentType,
@@ -325,6 +326,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
             db,
             uid: reportedUserId,
             email: creatorEmail,
+            removalId: removalRef.id,
             reportId,
             contentId,
             contentType,
