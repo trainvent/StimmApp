@@ -163,30 +163,29 @@ void main() {
     },
   );
 
-  testWidgets(
-    'renders top right action in the app bar actions area',
-    (tester) async {
-      final item = _TestHomeItem(
-        id: '4',
-        title: 'Title',
-        description: 'Desc',
-        createdBy: 'user-1',
-        status: IConst.active,
-        expiresAt: DateTime.now().add(const Duration(days: 1)),
-      );
+  testWidgets('renders top right action in the app bar actions area', (
+    tester,
+  ) async {
+    final item = _TestHomeItem(
+      id: '4',
+      title: 'Title',
+      description: 'Desc',
+      createdBy: 'user-1',
+      status: IConst.active,
+      expiresAt: DateTime.now().add(const Duration(days: 1)),
+    );
 
-      await pumpPage(
-        tester,
-        item: item,
-        topRightAction: IconButton(
-          key: const Key('overflow_action'),
-          onPressed: () {},
-          icon: const Icon(Icons.more_vert),
-        ),
-      );
+    await pumpPage(
+      tester,
+      item: item,
+      topRightAction: IconButton(
+        key: const Key('overflow_action'),
+        onPressed: () {},
+        icon: const Icon(Icons.more_vert),
+      ),
+    );
 
-      expect(find.byKey(const Key('overflow_action')), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
-    },
-  );
+    expect(find.byKey(const Key('overflow_action')), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+  });
 }
