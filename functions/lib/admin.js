@@ -38,12 +38,18 @@ const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
 const params_1 = require("firebase-functions/params");
+const brand_1 = require("./brand");
 // Hardcoded admin email matching IConst.adminEmail in your Dart code
 const ADMIN_EMAIL = 'service@trainvent.com';
 const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
+const smtpUser = process.env.SMTP_USER || smtpMail;
 const smtpPassword = (0, params_1.defineSecret)('SMTP_PASSWORD');
-const smtpHost = process.env.SMPT_SERVER || "smtp.strato.de";
+const smtpHost = process.env.SMTP_SERVER || process.env.SMPT_SERVER || "smtp.strato.de";
+const smtpPort = Number(process.env.SMTP_PORT || 465);
+const smtpSecure = process.env.SMTP_SECURE
+    ? process.env.SMTP_SECURE === 'true'
+    : smtpPort === 465;
 function normalizeEmail(email) {
     return email.trim().toLowerCase();
 }
@@ -74,71 +80,108 @@ async function createTransporter() {
     }
     return nodemailer.createTransport({
         host: smtpHost,
-        port: 587,
-        secure: false,
-        requireTLS: true,
+        port: smtpPort,
+        secure: smtpSecure,
+        requireTLS: !smtpSecure,
         auth: {
-            user: smtpMail,
+            user: smtpUser,
             pass: password,
         },
     });
 }
 async function sendModerationNoticeEmail(params) {
     const transporter = await createTransporter();
+    const brand = (0, brand_1.getBrandRuntimeConfig)();
     const { to, contentType, contentTitle, reportId, reason, adminMessage } = params;
     const optionalMessage = (adminMessage === null || adminMessage === void 0 ? void 0 : adminMessage.trim())
-        ? `\n\nZusätzliche Nachricht des Teams:\n${adminMessage.trim()}`
+        ? brand.locale === "en"
+            ? `\n\nAdditional message from the team:\n${adminMessage.trim()}`
+            : `\n\nZusätzliche Nachricht des Teams:\n${adminMessage.trim()}`
         : '';
     const optionalMessageHtml = (adminMessage === null || adminMessage === void 0 ? void 0 : adminMessage.trim())
-        ? `<p><strong>Zusätzliche Nachricht des Teams:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
+        ? brand.locale === "en"
+            ? `<p><strong>Additional message from the team:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
+            : `<p><strong>Zusätzliche Nachricht des Teams:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
         : '';
     await transporter.sendMail({
-        from: `"StimmApp Team" <${smtpMail}>`,
+        from: `"${brand.teamName}" <${smtpMail}>`,
         to,
-        subject: 'Dein StimmApp-Konto wurde entfernt',
-        text: `Hallo,\n\n` +
-            `dein ${contentType} "${contentTitle}" wurde nach einer Meldung durch unser Team entfernt.\n` +
-            `Referenz: ${reportId}\n` +
-            `Meldegrund: ${reason}\n\n` +
-            `Dein StimmApp-Konto wurde aufgrund dieses Verstoßes entfernt. Eine erneute Registrierung mit dieser E-Mail-Adresse ist nicht möglich.` +
-            optionalMessage,
-        html: `<p>Hallo,</p>` +
-            `<p>dein <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde nach einer Meldung durch unser Team entfernt.</p>` +
-            `<p><strong>Referenz:</strong> ${reportId}<br><strong>Meldegrund:</strong> ${reason}</p>` +
-            `<p>Dein StimmApp-Konto wurde aufgrund dieses Verstoßes entfernt. Eine erneute Registrierung mit dieser E-Mail-Adresse ist nicht möglich.</p>` +
-            optionalMessageHtml,
+        subject: brand.locale === "en"
+            ? `Your ${brand.appName} account was removed`
+            : `Dein ${brand.appName}-Konto wurde entfernt`,
+        text: brand.locale === "en"
+            ? `Hello,\n\n` +
+                `your ${contentType} "${contentTitle}" was removed after being reviewed by our team.\n` +
+                `Reference: ${reportId}\n` +
+                `Reason: ${reason}\n\n` +
+                `Your ${brand.appName} account was removed because of this violation. Registering again with this email address is not permitted.` +
+                optionalMessage
+            : `Hallo,\n\n` +
+                `dein ${contentType} "${contentTitle}" wurde nach einer Meldung durch unser Team entfernt.\n` +
+                `Referenz: ${reportId}\n` +
+                `Meldegrund: ${reason}\n\n` +
+                `Dein ${brand.appName}-Konto wurde aufgrund dieses Verstoßes entfernt. Eine erneute Registrierung mit dieser E-Mail-Adresse ist nicht möglich.` +
+                optionalMessage,
+        html: brand.locale === "en"
+            ? `<p>Hello,</p>` +
+                `<p>your <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" was removed after being reviewed by our team.</p>` +
+                `<p><strong>Reference:</strong> ${reportId}<br><strong>Reason:</strong> ${reason}</p>` +
+                `<p>Your ${brand.appName} account was removed because of this violation. Registering again with this email address is not permitted.</p>` +
+                optionalMessageHtml
+            : `<p>Hallo,</p>` +
+                `<p>dein <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde nach einer Meldung durch unser Team entfernt.</p>` +
+                `<p><strong>Referenz:</strong> ${reportId}<br><strong>Meldegrund:</strong> ${reason}</p>` +
+                `<p>Dein ${brand.appName}-Konto wurde aufgrund dieses Verstoßes entfernt. Eine erneute Registrierung mit dieser E-Mail-Adresse ist nicht möglich.</p>` +
+                optionalMessageHtml,
     });
 }
 async function sendReporterResolutionEmail(params) {
     const transporter = await createTransporter();
+    const brand = (0, brand_1.getBrandRuntimeConfig)();
     const { to, contentType, contentTitle, reportId, resolution, adminMessage } = params;
     const issueConfirmed = resolution === 'confirmed';
-    const subject = issueConfirmed
-        ? 'Deine Meldung auf StimmApp wurde bestätigt'
-        : 'Update zu deiner Meldung auf StimmApp';
-    const messageText = issueConfirmed
-        ? `deine Meldung zu ${contentType} "${contentTitle}" wurde durch unser Team geprüft und bestätigt. Wir haben das Problem gelöst.`
-        : `deine Meldung zu ${contentType} "${contentTitle}" wurde durch unser Team geprüft. Wir konnten keinen Verstoß feststellen, daher bleibt der Inhalt online.`;
-    const messageHtml = issueConfirmed
-        ? `deine Meldung zu <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde durch unser Team geprüft und bestätigt. Wir haben das Problem gelöst.`
-        : `deine Meldung zu <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde durch unser Team geprüft. Wir konnten keinen Verstoß feststellen, daher bleibt der Inhalt online.`;
+    const subject = brand.locale === "en"
+        ? issueConfirmed
+            ? `Your report on ${brand.appName} was confirmed`
+            : `Update on your report on ${brand.appName}`
+        : issueConfirmed
+            ? `Deine Meldung auf ${brand.appName} wurde bestätigt`
+            : `Update zu deiner Meldung auf ${brand.appName}`;
+    const messageText = brand.locale === "en"
+        ? issueConfirmed
+            ? `your report about ${contentType} "${contentTitle}" was reviewed and confirmed by our team. We resolved the issue.`
+            : `your report about ${contentType} "${contentTitle}" was reviewed by our team. We could not confirm a violation, so the content remains online.`
+        : issueConfirmed
+            ? `deine Meldung zu ${contentType} "${contentTitle}" wurde durch unser Team geprüft und bestätigt. Wir haben das Problem gelöst.`
+            : `deine Meldung zu ${contentType} "${contentTitle}" wurde durch unser Team geprüft. Wir konnten keinen Verstoß feststellen, daher bleibt der Inhalt online.`;
+    const messageHtml = brand.locale === "en"
+        ? issueConfirmed
+            ? `your report about <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" was reviewed and confirmed by our team. We resolved the issue.`
+            : `your report about <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" was reviewed by our team. We could not confirm a violation, so the content remains online.`
+        : issueConfirmed
+            ? `deine Meldung zu <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde durch unser Team geprüft und bestätigt. Wir haben das Problem gelöst.`
+            : `deine Meldung zu <strong>${contentType}</strong> "<strong>${contentTitle}</strong>" wurde durch unser Team geprüft. Wir konnten keinen Verstoß feststellen, daher bleibt der Inhalt online.`;
     const optionalMessage = (adminMessage === null || adminMessage === void 0 ? void 0 : adminMessage.trim())
-        ? `\n\nZusätzliche Nachricht des Teams:\n${adminMessage.trim()}`
+        ? brand.locale === "en"
+            ? `\n\nAdditional message from the team:\n${adminMessage.trim()}`
+            : `\n\nZusätzliche Nachricht des Teams:\n${adminMessage.trim()}`
         : '';
     const optionalMessageHtml = (adminMessage === null || adminMessage === void 0 ? void 0 : adminMessage.trim())
-        ? `<p><strong>Zusätzliche Nachricht des Teams:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
+        ? brand.locale === "en"
+            ? `<p><strong>Additional message from the team:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
+            : `<p><strong>Zusätzliche Nachricht des Teams:</strong><br>${adminMessage.trim().replace(/\n/g, '<br>')}</p>`
         : '';
     await transporter.sendMail({
-        from: `"StimmApp Team" <${smtpMail}>`,
+        from: `"${brand.teamName}" <${smtpMail}>`,
         to,
         subject,
-        text: `Hallo,\n\n` +
+        text: `${brand.locale === "en" ? "Hello" : "Hallo"},\n\n` +
             `${messageText}\n\n` +
-            `Referenz: ${reportId}` +
+            `${brand.locale === "en" ? "Reference" : "Referenz"}: ${reportId}` +
             optionalMessage,
-        html: `<p>Hallo,</p>` +
+        html: `<p>${brand.locale === "en" ? "Hello" : "Hallo"},</p>` +
             `<p>${messageHtml}</p>` +
-            `<p><strong>Referenz:</strong> ${reportId}</p>` +
+            `<p><strong>${brand.locale === "en" ? "Reference" : "Referenz"}:</strong> ${reportId}</p>` +
             optionalMessageHtml,
     });
 }

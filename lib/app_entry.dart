@@ -83,10 +83,12 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   );
 
   locator.init();
-  await PurchasesService.instance.init(
-    apiKey: _resolveRevenueCatApiKey(),
-    appUserId: authService.currentUser?.uid,
-  );
+  if (!kIsWeb) {
+    await PurchasesService.instance.init(
+      apiKey: _resolveRevenueCatApiKey(),
+      appUserId: authService.currentUser?.uid,
+    );
+  }
   if (!kIsWeb && kDebugMode) {
     await authService.setSettings(appVerificationDisabledForTesting: true);
   }

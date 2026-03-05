@@ -120,10 +120,17 @@ patrol test -t integration_test/simple_flow_test.dart
 
 ## 7. Release Checklist
 *   [ ] Increment `version` in `pubspec.yaml`.
-*   [ ] Ensure `IConst.appName` is correct ("StimmApp").
+*   [ ] Ensure the selected flavor and entrypoint match the target brand.
+*   [ ] StimmApp prod: `flutter build appbundle --release --flavor stimmappProd -t lib/main.dart`
+*   [ ] Vivot prod: `flutter build appbundle --release --flavor vivotProd -t lib/main_vivot.dart`
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
-*   [ ] Build App Bundle: `flutter build appbundle --release --flavor prod`.
+*   [ ] Functions deploy target is correct: `firebase deploy --only functions --project <alias>`
+
+## 8. Firebase Aliases
+*   `dev` -> `stimmapp-dev`
+*   `prod` -> `stimmapp-f0141`
+*   `vivotProd` -> `vivot-prod`
 
 # CI / iOS build hints:
 # - Ensure CI runs: `flutter pub get` before any `pod install`.
@@ -135,4 +142,3 @@ patrol test -t integration_test/simple_flow_test.dart
 # - Use the included debug helper: ios/ci_debug.sh
 #   make it executable: chmod +x ios/ci_debug.sh
 #   run locally or as an extra Xcode Cloud step to collect xcresult and logs.
-

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -171,9 +172,16 @@ class AppBootstrap {
     final String? localeStr = prefs.getString(IConst.localeKey);
     if (localeStr != null && localeStr.isNotEmpty) {
       appLocale.value = _localeFromString(localeStr);
-    } else if (kIsWeb) {
-      // Default to German on web if no preference is set
-      appLocale.value = const Locale('de');
+    } else {
+      final defaultLocale = Environment.isVivot
+          ? const Locale('en')
+          : const Locale('de');
+      appLocale.value = defaultLocale;
+      if (kIsWeb) {
+        debugPrint(
+          '[AppBootstrap] no stored locale, defaulting web locale to ${defaultLocale.languageCode}',
+        );
+      }
     }
   }
 

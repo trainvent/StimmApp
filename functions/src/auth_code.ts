@@ -2,13 +2,19 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
 import { defineSecret } from "firebase-functions/params";
+import { getBrandRuntimeConfig } from "./brand";
 
 const db = admin.firestore();
 
 const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
+const smtpUser = process.env.SMTP_USER || smtpMail;
 const smtpPassword = defineSecret('SMTP_PASSWORD');
-const smtpHost = process.env.SMPT_SERVER || "smtp.ionos.de";
+const smtpHost = process.env.SMTP_SERVER || process.env.SMPT_SERVER || "smtp.strato.de";
+const smtpPort = Number(process.env.SMTP_PORT || 465);
+const smtpSecure = process.env.SMTP_SECURE
+	? process.env.SMTP_SECURE === 'true'
+	: smtpPort === 465;
 
 function normalizeEmail(email: string) {
 	return email.trim().toLowerCase();
@@ -18,9 +24,12 @@ async function assertEmailNotKicked(email: string) {
 	const normalizedEmail = normalizeEmail(email);
 	const kickedUserSnap = await db.collection(KICKED_USERS_COLLECTION).doc(normalizedEmail).get();
 	if (kickedUserSnap.exists) {
+		const brand = getBrandRuntimeConfig();
 		throw new HttpsError(
 			'permission-denied',
-			'This email address is no longer eligible to use StimmApp.',
+			brand.locale === 'en'
+				? `This email address is no longer eligible to use ${brand.appName}.`
+				: `Diese E-Mail-Adresse ist nicht mehr für ${brand.appName} zugelassen.`,
 		);
 	}
 }
@@ -32,7 +41,8 @@ function generateCode(): string {
 
 async function sendEmail(email: string, code: string, type: 'verification' | 'login') {
 	const password = smtpPassword.value();
-	console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}`);
+	const brand = getBrandRuntimeConfig();
+	console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}. Host: ${smtpHost}. User: ${smtpUser}.`);
 
 	if (!password) {
 		console.error("SMTP_PASSWORD is not set in environment variables.");
@@ -41,24 +51,41 @@ async function sendEmail(email: string, code: string, type: 'verification' | 'lo
 
 	const transporter = nodemailer.createTransport({
 		host: smtpHost,
-		port: 587,
-		secure: false, // Explicitly false for STARTTLS
-		requireTLS: true, // Enforce STARTTLS
+		port: smtpPort,
+		secure: smtpSecure,
+		requireTLS: !smtpSecure,
 		auth: {
-			user: smtpMail,
+			user: smtpUser,
 			pass: password,
 		},
 	} as nodemailer.TransportOptions);
 
-	const subject = type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode';
-	const actionText = type === 'login' ? 'um dich bei StimmApp anzumelden' : 'um deine E-Mail zu bestätigen';
+	const subject = brand.locale === 'en'
+		? (type === 'login' ? 'Your login code' : 'Your verification code')
+		: (type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode');
+	const actionText = brand.locale === 'en'
+		? (type === 'login'
+			? `to sign in to ${brand.appName}`
+			: 'to verify your email address')
+		: (type === 'login'
+			? `um dich bei ${brand.appName} anzumelden`
+			: 'um deine E-Mail zu bestätigen');
+	const greeting = brand.locale === 'en' ? 'Hello' : 'Hallo';
+	const expiresText = brand.locale === 'en'
+		? 'This code expires in 15 minutes.'
+		: 'Dieser Code läuft in 15 Minuten ab.';
+	const teamName = brand.teamName;
 
 	const mailOptions = {
-		from: `"StimmApp Team" <${smtpMail}>`,
+		from: `"${teamName}" <${smtpMail}>`,
 		to: email,
 		subject: subject,
-		text: `Hallo,\n\nDein Code, ${actionText}, lautet: ${code}\n\nDieser Code läuft in 15 Minuten ab.`,
-		html: `<p>Hallo,</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>Dieser Code läuft in 15 Minuten ab.</p>`,
+		text: brand.locale === 'en'
+			? `${greeting},\n\nYour code, ${actionText}, is: ${code}\n\n${expiresText}`
+			: `${greeting},\n\nDein Code, ${actionText}, lautet: ${code}\n\n${expiresText}`,
+		html: brand.locale === 'en'
+			? `<p>${greeting},</p><p>Your code, ${actionText}, is: <strong>${code}</strong></p><p>${expiresText}</p>`
+			: `<p>${greeting},</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>${expiresText}</p>`,
 	};
 
 	try {

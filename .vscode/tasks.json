@@ -30,7 +30,7 @@
 				"appbundle",
 				"--release",
 				"--flavor",
-				"prod",
+				"stimmappProd",
 				"-t",
 				"lib/main.dart"
 			],
@@ -49,9 +49,25 @@
 				"appbundle",
 				"--release",
 				"--flavor",
-				"dev",
+				"stimmappDev",
 				"-t",
 				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android AAB (Vivot Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"appbundle",
+				"--release",
+				"--flavor",
+				"vivotProd",
+				"-t",
+				"lib/main_vivot.dart"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -65,7 +81,7 @@
 				"apk",
 				"--release",
 				"--flavor",
-				"prod",
+				"stimmappProd",
 				"-t",
 				"lib/main.dart"
 			],
@@ -81,9 +97,25 @@
 				"apk",
 				"--release",
 				"--flavor",
-				"dev",
+				"stimmappDev",
 				"-t",
 				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Android APK (Vivot Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--release",
+				"--flavor",
+				"vivotProd",
+				"-t",
+				"lib/main_vivot.dart"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -97,7 +129,7 @@
 				"ipa",
 				"--release",
 				"--flavor",
-				"prod",
+				"stimmappProd",
 				"-t",
 				"lib/main.dart"
 			],
@@ -112,8 +144,26 @@
 				"build",
 				"ipa",
 				"--release",
+				"--flavor",
+				"stimmappDev",
 				"-t",
 				"lib/main_dev.dart"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build iOS IPA (Vivot Release)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ipa",
+				"--release",
+				"--flavor",
+				"vivotProd",
+				"-t",
+				"lib/main_vivot.dart"
 			],
 			"group": "build",
 			"problemMatcher": []

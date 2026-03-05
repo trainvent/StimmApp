@@ -2,70 +2,109 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Flutter: Dev (Debug)",
+			"name": "Flutter: StimmApp Dev (Debug)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
-				"dev"
+				"stimmappDev"
 			]
 		},
 		{
-			"name": "Flutter: Dev Verbose (Debug)",
+			"name": "Flutter: StimmApp Dev Verbose (Debug)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
-				"dev",
+				"stimmappDev",
 				"-v"
 			]
 		},
 		{
-			"name": "Flutter: Prod (Debug)",
+			"name": "Flutter: StimmApp Prod (Debug)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
 			"args": [
 				"--flavor",
-				"prod"
+				"stimmappProd"
 			]
 		},
 		{
-			"name": "Flutter: Prod (Profile)",
+			"name": "Flutter: StimmApp Prod (Profile)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
 			"flutterMode": "profile",
 			"args": [
 				"--flavor",
-				"prod"
+				"stimmappProd"
 			]
 		},
 		{
-			"name": "Flutter: Prod (Release)",
+			"name": "Flutter: StimmApp Prod (Release)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
 			"flutterMode": "release",
 			"args": [
 				"--flavor",
-				"prod"
+				"stimmappProd"
 			]
 		},
 		{
-			"name": "Flutter: Dev Web (Chrome)",
+			"name": "Flutter: Vivot Prod (Debug)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_vivot.dart",
+			"args": [
+				"--flavor",
+				"vivotProd"
+			]
+		},
+		{
+			"name": "Flutter: Vivot Prod (Profile)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_vivot.dart",
+			"flutterMode": "profile",
+			"args": [
+				"--flavor",
+				"vivotProd"
+			]
+		},
+		{
+			"name": "Flutter: Vivot Prod (Release)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_vivot.dart",
+			"flutterMode": "release",
+			"args": [
+				"--flavor",
+				"vivotProd"
+			]
+		},
+		{
+			"name": "Flutter: StimmApp Dev Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
 			"deviceId": "chrome"
 		},
 		{
-			"name": "Flutter: Prod Web (Chrome)",
+			"name": "Flutter: StimmApp Prod Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
+			"deviceId": "chrome"
+		},
+		{
+			"name": "Flutter: Vivot Prod Web (Chrome)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_vivot.dart",
 			"deviceId": "chrome"
 		}
 	]
