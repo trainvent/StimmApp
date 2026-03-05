@@ -48,6 +48,80 @@ function assertAdmin(request: Parameters<typeof onCall>[0] extends never ? never
 	}
 }
 
+type BackfillCollectionResult = {
+	collection: 'petitions' | 'polls';
+	scanned: number;
+	updated: number;
+};
+
+async function backfillMissingCountryCode(params: {
+	db: admin.firestore.Firestore;
+	collection: 'petitions' | 'polls';
+	countryCode: string;
+	dryRun: boolean;
+}): Promise<BackfillCollectionResult> {
+	const { db, collection, countryCode, dryRun } = params;
+	const pageSize = 500;
+	const commitChunkSize = 350;
+
+	let scanned = 0;
+	let updated = 0;
+	let lastDoc: admin.firestore.QueryDocumentSnapshot | null = null;
+	let batch = db.batch();
+	let pendingWrites = 0;
+
+	while (true) {
+		let query = db
+			.collection(collection)
+			.orderBy(admin.firestore.FieldPath.documentId())
+			.limit(pageSize);
+		if (lastDoc) {
+			query = query.startAfter(lastDoc);
+		}
+
+		const snap = await query.get();
+		if (snap.empty) {
+			break;
+		}
+
+		for (const doc of snap.docs) {
+			scanned++;
+			const data = doc.data() as { countryCode?: unknown };
+			const raw = data.countryCode;
+			const normalized = typeof raw === 'string' ? raw.trim().toUpperCase() : '';
+			const missingCountryCode = raw == null || normalized.length === 0;
+			if (!missingCountryCode) {
+				continue;
+			}
+
+			updated++;
+			if (!dryRun) {
+				batch.update(doc.ref, {
+					countryCode,
+					updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+				});
+				pendingWrites++;
+				if (pendingWrites >= commitChunkSize) {
+					await batch.commit();
+					batch = db.batch();
+					pendingWrites = 0;
+				}
+			}
+		}
+
+		lastDoc = snap.docs[snap.docs.length - 1];
+		if (snap.size < pageSize) {
+			break;
+		}
+	}
+
+	if (!dryRun && pendingWrites > 0) {
+		await batch.commit();
+	}
+
+	return { collection, scanned, updated };
+}
+
 async function createTransporter() {
 	const password = smtpPassword.value();
 	if (!password) {
@@ -259,6 +333,48 @@ export const deleteUserByAdmin = onCall(async (request) => {
 		console.error("Error deleting user:", error);
 		throw new HttpsError('internal', 'Unable to delete user.');
 	}
+});
+
+export const backfillFormCountryCode = onCall(async (request) => {
+	assertAdmin(request);
+
+	const requestedCountryCode = request.data?.countryCode;
+	const countryCode = typeof requestedCountryCode === 'string' && requestedCountryCode.trim().length > 0
+		? requestedCountryCode.trim().toUpperCase()
+		: 'DE';
+	const dryRun = request.data?.dryRun !== false;
+
+	if (countryCode.length != 2) {
+		throw new HttpsError('invalid-argument', 'countryCode must be a 2-letter ISO country code.');
+	}
+
+	const db = admin.firestore();
+	const [petitionsResult, pollsResult] = await Promise.all([
+		backfillMissingCountryCode({
+			db,
+			collection: 'petitions',
+			countryCode,
+			dryRun,
+		}),
+		backfillMissingCountryCode({
+			db,
+			collection: 'polls',
+			countryCode,
+			dryRun,
+		}),
+	]);
+
+	const totalScanned = petitionsResult.scanned + pollsResult.scanned;
+	const totalUpdated = petitionsResult.updated + pollsResult.updated;
+
+	return {
+		success: true,
+		dryRun,
+		countryCode,
+		totalScanned,
+		totalUpdated,
+		collections: [petitionsResult, pollsResult],
+	};
 });
 
 export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request) => {

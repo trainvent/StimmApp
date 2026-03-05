@@ -161,9 +161,11 @@ class _BaseOverviewPageState<T extends HomeItem>
                 if (userCountryCode != null && userCountryCode.isNotEmpty) {
                   items = items.where((p) {
                     final itemCountryCode = p.countryCode?.toUpperCase();
-                    return itemCountryCode == null ||
-                        itemCountryCode.isEmpty ||
-                        itemCountryCode == userCountryCode;
+                    if (itemCountryCode == null || itemCountryCode.isEmpty) {
+                      // Legacy forms without countryCode are treated as DE-only.
+                      return userCountryCode == 'DE';
+                    }
+                    return itemCountryCode == userCountryCode;
                   }).toList();
                 }
 

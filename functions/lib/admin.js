@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.moderateReport = exports.deleteUserByAdmin = void 0;
+exports.moderateReport = exports.backfillFormCountryCode = exports.deleteUserByAdmin = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
@@ -72,6 +72,60 @@ function assertAdmin(request) {
     if (callerEmail !== ADMIN_EMAIL) {
         throw new https_1.HttpsError('permission-denied', 'Only admins can perform this action.');
     }
+}
+async function backfillMissingCountryCode(params) {
+    const { db, collection, countryCode, dryRun } = params;
+    const pageSize = 500;
+    const commitChunkSize = 350;
+    let scanned = 0;
+    let updated = 0;
+    let lastDoc = null;
+    let batch = db.batch();
+    let pendingWrites = 0;
+    while (true) {
+        let query = db
+            .collection(collection)
+            .orderBy(admin.firestore.FieldPath.documentId())
+            .limit(pageSize);
+        if (lastDoc) {
+            query = query.startAfter(lastDoc);
+        }
+        const snap = await query.get();
+        if (snap.empty) {
+            break;
+        }
+        for (const doc of snap.docs) {
+            scanned++;
+            const data = doc.data();
+            const raw = data.countryCode;
+            const normalized = typeof raw === 'string' ? raw.trim().toUpperCase() : '';
+            const missingCountryCode = raw == null || normalized.length === 0;
+            if (!missingCountryCode) {
+                continue;
+            }
+            updated++;
+            if (!dryRun) {
+                batch.update(doc.ref, {
+                    countryCode,
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+                pendingWrites++;
+                if (pendingWrites >= commitChunkSize) {
+                    await batch.commit();
+                    batch = db.batch();
+                    pendingWrites = 0;
+                }
+            }
+        }
+        lastDoc = snap.docs[snap.docs.length - 1];
+        if (snap.size < pageSize) {
+            break;
+        }
+    }
+    if (!dryRun && pendingWrites > 0) {
+        await batch.commit();
+    }
+    return { collection, scanned, updated };
 }
 async function createTransporter() {
     const password = smtpPassword.value();
@@ -235,6 +289,43 @@ exports.deleteUserByAdmin = (0, https_1.onCall)(async (request) => {
         console.error("Error deleting user:", error);
         throw new https_1.HttpsError('internal', 'Unable to delete user.');
     }
+});
+exports.backfillFormCountryCode = (0, https_1.onCall)(async (request) => {
+    var _a, _b;
+    assertAdmin(request);
+    const requestedCountryCode = (_a = request.data) === null || _a === void 0 ? void 0 : _a.countryCode;
+    const countryCode = typeof requestedCountryCode === 'string' && requestedCountryCode.trim().length > 0
+        ? requestedCountryCode.trim().toUpperCase()
+        : 'DE';
+    const dryRun = ((_b = request.data) === null || _b === void 0 ? void 0 : _b.dryRun) !== false;
+    if (countryCode.length != 2) {
+        throw new https_1.HttpsError('invalid-argument', 'countryCode must be a 2-letter ISO country code.');
+    }
+    const db = admin.firestore();
+    const [petitionsResult, pollsResult] = await Promise.all([
+        backfillMissingCountryCode({
+            db,
+            collection: 'petitions',
+            countryCode,
+            dryRun,
+        }),
+        backfillMissingCountryCode({
+            db,
+            collection: 'polls',
+            countryCode,
+            dryRun,
+        }),
+    ]);
+    const totalScanned = petitionsResult.scanned + pollsResult.scanned;
+    const totalUpdated = petitionsResult.updated + pollsResult.updated;
+    return {
+        success: true,
+        dryRun,
+        countryCode,
+        totalScanned,
+        totalUpdated,
+        collections: [petitionsResult, pollsResult],
+    };
 });
 exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (request) => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
