@@ -29,6 +29,7 @@ void main() {
       'expiresAt': timestamp,
       'status': 'active',
       'titleLowercase': 'test petition',
+      'countryCode': null,
       'state': null,
       'imageUrl': null,
     };
@@ -51,6 +52,7 @@ void main() {
         expect(result.createdAt.year, petition.createdAt.year);
         expect(result.expiresAt, petition.expiresAt);
         expect(result.status, petition.status);
+        expect(result.countryCode, petition.countryCode);
         expect(result.state, petition.state);
       },
     );

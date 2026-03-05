@@ -52,6 +52,17 @@ class AppBootstrap {
           final userRepo = UserRepository.create();
           final profile = await userRepo.getById(user.uid);
           if (profile != null) {
+            final countryCode = profile.countryCode?.toUpperCase();
+            final hasState =
+                profile.state != null && profile.state!.trim().isNotEmpty;
+            if (countryCode != null && countryCode != 'DE' && hasState) {
+              // Self-heal stale profile data: outside Germany, state must be null.
+              unawaited(
+                userRepo.update(user.uid, {'state': null}).catchError((e) {
+                  debugPrint('[AppBootstrap] Error clearing stale state: $e');
+                }),
+              );
+            }
             if (profile.showPetitionReason != null) {
               showPetitionReasonNotifier.value = profile.showPetitionReason!;
             }

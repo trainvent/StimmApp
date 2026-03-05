@@ -31,6 +31,8 @@ class Poll implements HomeItem {
   @override
   final String status;
   @override
+  final String? countryCode;
+  @override
   final String? state;
 
   Poll({
@@ -44,6 +46,7 @@ class Poll implements HomeItem {
     required this.createdAt,
     required this.expiresAt,
     this.status = IConst.active,
+    this.countryCode,
     this.state,
   });
 
@@ -63,6 +66,7 @@ class Poll implements HomeItem {
     DateTime? createdAt,
     DateTime? expiresAt,
     String? status,
+    String? countryCode,
     String? state,
   }) {
     return Poll(
@@ -76,6 +80,7 @@ class Poll implements HomeItem {
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
       status: status ?? this.status,
+      countryCode: countryCode ?? this.countryCode,
       state: state ?? this.state,
     );
   }
@@ -104,6 +109,7 @@ class Poll implements HomeItem {
           (data['expiresAt'] as Timestamp?)?.toDate() ??
           createdAt.add(const Duration(days: 7)),
       status: (data['status'] ?? IConst.active) as String,
+      countryCode: (data['countryCode'] as String?)?.toUpperCase(),
       state: data['state'] as String?,
     );
   }
@@ -120,6 +126,7 @@ class Poll implements HomeItem {
       'expiresAt': Timestamp.fromDate(p.expiresAt),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
+      'countryCode': p.countryCode?.toUpperCase(),
       'state': p.state,
     };
   }

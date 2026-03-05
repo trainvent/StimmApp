@@ -155,6 +155,18 @@ class _BaseOverviewPageState<T extends HomeItem>
                 }
                 var items = snap.data ?? const [];
 
+                final userCountryCode =
+                    userProfile?.countryCode?.toUpperCase() ??
+                    (userProfile?.supportsStateScope == true ? 'DE' : null);
+                if (userCountryCode != null && userCountryCode.isNotEmpty) {
+                  items = items.where((p) {
+                    final itemCountryCode = p.countryCode?.toUpperCase();
+                    return itemCountryCode == null ||
+                        itemCountryCode.isEmpty ||
+                        itemCountryCode == userCountryCode;
+                  }).toList();
+                }
+
                 if (userProfile?.supportsStateScope == true) {
                   final userState = userProfile?.state;
                   items = items.where((p) {

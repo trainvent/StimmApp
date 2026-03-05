@@ -18,6 +18,8 @@ class _TestHomeItem implements HomeItem {
   @override
   final String status;
   @override
+  String? get countryCode => null;
+  @override
   final String? state;
   @override
   final DateTime expiresAt;

@@ -114,11 +114,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         }
       }
 
+      final userProfile = await UserRepository.create().getById(
+        currentUser.uid,
+      );
+      final countryCode =
+          userProfile?.countryCode?.toUpperCase() ??
+          (userProfile?.supportsStateScope == true ? 'DE' : null);
       String? state;
-      if (isStateDependent) {
-        final userProfile = await UserRepository.create().getById(
-          currentUser.uid,
-        );
+      if (isStateDependent && userProfile?.supportsStateScope == true) {
         state = userProfile?.state;
       }
 
@@ -133,6 +136,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
         status: IConst.active,
+        countryCode: countryCode,
         state: state,
         imageUrl: imageUrl,
       );

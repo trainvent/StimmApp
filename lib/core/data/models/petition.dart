@@ -20,6 +20,8 @@ class Petition implements HomeItem {
   @override
   final String status;
   @override
+  final String? countryCode;
+  @override
   final String? state;
   final String? imageUrl;
 
@@ -33,6 +35,7 @@ class Petition implements HomeItem {
     required this.createdAt,
     required this.expiresAt,
     this.status = IConst.active,
+    this.countryCode,
     this.state,
     this.imageUrl,
   });
@@ -50,6 +53,7 @@ class Petition implements HomeItem {
     DateTime? createdAt,
     DateTime? expiresAt,
     String? status,
+    String? countryCode,
     String? state,
     String? imageUrl,
   }) {
@@ -63,6 +67,7 @@ class Petition implements HomeItem {
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
       status: status ?? this.status,
+      countryCode: countryCode ?? this.countryCode,
       state: state ?? this.state,
       imageUrl: imageUrl ?? this.imageUrl,
     );
@@ -87,6 +92,7 @@ class Petition implements HomeItem {
           (data['expiresAt'] as Timestamp?)?.toDate() ??
           createdAt.add(const Duration(days: 28)),
       status: (data['status'] ?? IConst.active) as String,
+      countryCode: (data['countryCode'] as String?)?.toUpperCase(),
       state: data['state'] as String?,
       imageUrl: data['imageUrl'] as String?,
     );
@@ -103,6 +109,7 @@ class Petition implements HomeItem {
       'expiresAt': Timestamp.fromDate(p.expiresAt),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
+      'countryCode': p.countryCode?.toUpperCase(),
       'state': p.state,
       'imageUrl': p.imageUrl,
     };

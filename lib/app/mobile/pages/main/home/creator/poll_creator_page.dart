@@ -104,11 +104,14 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
           )
           .toList();
 
+      final userProfile = await UserRepository.create().getById(
+        currentUser.uid,
+      );
+      final countryCode =
+          userProfile?.countryCode?.toUpperCase() ??
+          (userProfile?.supportsStateScope == true ? 'DE' : null);
       String? state;
-      if (isStateDependent) {
-        final userProfile = await UserRepository.create().getById(
-          currentUser.uid,
-        );
+      if (isStateDependent && userProfile?.supportsStateScope == true) {
         state = userProfile?.state;
       }
 
@@ -123,6 +126,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         createdBy: currentUser.uid,
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
+        countryCode: countryCode,
         state: state,
       );
 

@@ -47,6 +47,7 @@ void main() {
       'expiresAt': timestamp,
       'status': 'active',
       'titleLowercase': 'test poll',
+      'countryCode': null,
       'state': null,
     };
 
@@ -68,6 +69,7 @@ void main() {
         // Timestamps are not identical, but should be close
         expect(result.createdAt.year, poll.createdAt.year);
         expect(result.expiresAt, poll.expiresAt);
+        expect(result.countryCode, poll.countryCode);
       },
     );
 
