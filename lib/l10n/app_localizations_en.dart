@@ -1309,4 +1309,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectPaymentProvider => 'Select Payment Provider';
+
+  @override
+  String get communityRules => 'Community Rules';
+
+  @override
+  String get communityRulesZeroTolerance =>
+      'StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.';
+
+  @override
+  String get communityRulesAgreementNotice =>
+      'By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.';
+
+  @override
+  String get acceptCommunityRulesBeforeContinuing =>
+      'Please accept the community rules and terms before continuing.';
+
+  @override
+  String get openTermsOfService => 'Open Terms of Service';
+
+  @override
+  String get openPrivacyPolicy => 'Open Privacy Policy';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get removeAbusiveLanguageFromPublicName =>
+      'Please remove abusive or objectionable language from your public name.';
+
+  @override
+  String get newUser => 'New User';
+
+  @override
+  String databaseError(String code, String message) {
+    return 'Database error ($code): $message';
+  }
+
+  @override
+  String unexpectedErrorWithDetails(String error) {
+    return 'Unexpected error: $error';
+  }
+
+  @override
+  String couldNotSaveYourAcceptance(String error) {
+    return 'Could not save your acceptance: $error';
+  }
 }

@@ -2545,6 +2545,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Payment Provider'**
   String get selectPaymentProvider;
+
+  /// No description provided for @communityRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Rules'**
+  String get communityRules;
+
+  /// No description provided for @communityRulesZeroTolerance.
+  ///
+  /// In en, this message translates to:
+  /// **'StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.'**
+  String get communityRulesZeroTolerance;
+
+  /// No description provided for @communityRulesAgreementNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.'**
+  String get communityRulesAgreementNotice;
+
+  /// No description provided for @acceptCommunityRulesBeforeContinuing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the community rules and terms before continuing.'**
+  String get acceptCommunityRulesBeforeContinuing;
+
+  /// No description provided for @openTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Terms of Service'**
+  String get openTermsOfService;
+
+  /// No description provided for @openPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Privacy Policy'**
+  String get openPrivacyPolicy;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @removeAbusiveLanguageFromPublicName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please remove abusive or objectionable language from your public name.'**
+  String get removeAbusiveLanguageFromPublicName;
+
+  /// No description provided for @newUser.
+  ///
+  /// In en, this message translates to:
+  /// **'New User'**
+  String get newUser;
+
+  /// No description provided for @databaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Database error ({code}): {message}'**
+  String databaseError(String code, String message);
+
+  /// No description provided for @unexpectedErrorWithDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error: {error}'**
+  String unexpectedErrorWithDetails(String error);
+
+  /// No description provided for @couldNotSaveYourAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your acceptance: {error}'**
+  String couldNotSaveYourAcceptance(String error);
 }
 
 class _AppLocalizationsDelegate

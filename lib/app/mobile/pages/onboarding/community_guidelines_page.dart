@@ -4,6 +4,7 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommunityGuidelinesPage extends StatefulWidget {
@@ -24,15 +25,13 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
     final uri = Uri.parse(url);
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      showErrorSnackBar('Could not open link.');
+      showErrorSnackBar(context.l10n.couldNotOpenLink);
     }
   }
 
   Future<void> _accept() async {
     if (!_accepted) {
-      showErrorSnackBar(
-        'Please accept the community rules and terms before continuing.',
-      );
+      showErrorSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
       return;
     }
 
@@ -42,17 +41,16 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
         widget.profile.copyWith(acceptedCommunityRulesAt: DateTime.now()),
       );
     } catch (e) {
-      showErrorSnackBar('Could not save your acceptance: $e');
-      if (mounted) {
-        setState(() => _saving = false);
-      }
+      if (!mounted) return;
+      showErrorSnackBar(context.l10n.couldNotSaveYourAcceptance(e.toString()));
+      setState(() => _saving = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Community Rules')),
+      appBar: AppBar(title: Text(context.l10n.communityRules)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -60,21 +58,19 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.',
+                context.l10n.communityRulesZeroTolerance,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.',
-              ),
+              Text(context.l10n.communityRulesAgreementNotice),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => _openUrl(IConst.termsOfServiceUrl),
-                child: const Text('Open Terms of Service'),
+                child: Text(context.l10n.openTermsOfService),
               ),
               TextButton(
                 onPressed: () => _openUrl(IConst.privacyPolicyUrl),
-                child: const Text('Open Privacy Policy'),
+                child: Text(context.l10n.openPrivacyPolicy),
               ),
               const SizedBox(height: 16),
               CheckboxListTile(
@@ -82,15 +78,15 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
                 value: _accepted,
                 onChanged: (value) =>
                     setState(() => _accepted = value ?? false),
-                title: const Text(
-                  'I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.',
-                ),
+                title: Text(context.l10n.communityRulesAcceptance),
               ),
               const Spacer(),
               SizedBox(
                 width: double.infinity,
                 child: ButtonWidget(
-                  label: _saving ? 'Saving...' : 'Continue',
+                  label: _saving
+                      ? context.l10n.saving
+                      : context.l10n.continueText,
                   callback: _saving ? null : _accept,
                 ),
               ),

@@ -20,26 +20,36 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'de';
 
-  static String m0(firstName, lastName) =>
+  static String m0(error) =>
+      "Deine Zustimmung konnte nicht gespeichert werden: ${error}";
+
+  static String m1(code, message) => "Datenbankfehler (${code}): ${message}";
+
+  static String m2(firstName, lastName) =>
       "Wilkommen ${firstName} ${lastName}!";
 
-  static String m1(newMessages) =>
+  static String m3(newMessages) =>
       "Sie haben ${Intl.plural(newMessages, zero: 'Keine neuen Nachrichten', one: 'Eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
-  static String m2(type) =>
+  static String m4(type) =>
       "Das Passwort muss mindestens ein ${Intl.select(type, {'uppercase': 'Großbuchstabe', 'lowercase': 'Kleinbuchstabe', 'number': 'Zahl', 'special': 'Sonderzeichen', 'other': 'gültiges Zeichen'})} enthalten";
 
-  static String m3(state) => "Bezogen auf ${state}";
+  static String m5(state) => "Bezogen auf ${state}";
 
-  static String m4(date) => "Gültig bis";
+  static String m6(error) => "Unerwarteter Fehler: ${error}";
 
-  static String m5(email) =>
+  static String m7(date) => "Gültig bis";
+
+  static String m8(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("Über"),
     "aboutThisApp": MessageLookupByLibrary.simpleMessage("Über diese App"),
+    "acceptCommunityRulesBeforeContinuing": MessageLookupByLibrary.simpleMessage(
+      "Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.",
+    ),
     "active": MessageLookupByLibrary.simpleMessage("Aktiv"),
     "activityHistory": MessageLookupByLibrary.simpleMessage(
       "Aktivitätsverlauf",
@@ -49,6 +59,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addImage": MessageLookupByLibrary.simpleMessage("Bild hinzufügen"),
     "addOption": MessageLookupByLibrary.simpleMessage("Option hinzufügen"),
+    "additionalDetailsOptional": MessageLookupByLibrary.simpleMessage(
+      "Zusätzliche Details (optional)",
+    ),
     "address": MessageLookupByLibrary.simpleMessage("Anschrift"),
     "addressUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Anschrift erfolgreich aktualisiert",
@@ -93,6 +106,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "backSide": MessageLookupByLibrary.simpleMessage("Rückseite"),
     "backToLogin": MessageLookupByLibrary.simpleMessage("Zurück zur Anmeldung"),
+    "blockUser": MessageLookupByLibrary.simpleMessage("Nutzer blockieren"),
+    "blockUserDescription": MessageLookupByLibrary.simpleMessage(
+      "Dadurch werden die Inhalte dieses Nutzers sofort aus deinem Feed ausgeblendet und das StimmApp-Team zur Prüfung informiert.",
+    ),
+    "blockedContentHidden": MessageLookupByLibrary.simpleMessage(
+      "Dieser Inhalt ist ausgeblendet, weil du diesen Nutzer blockiert hast.",
+    ),
+    "blockedUsers": MessageLookupByLibrary.simpleMessage("Blockierte Nutzer"),
+    "blockedUsersEmpty": MessageLookupByLibrary.simpleMessage(
+      "Du hast bisher niemanden blockiert.",
+    ),
+    "blockedUsersLoadError": MessageLookupByLibrary.simpleMessage(
+      "Blockierte Nutzer konnten nicht geladen werden",
+    ),
     "cancel": MessageLookupByLibrary.simpleMessage("Abbrechen"),
     "cancelProSubscription": MessageLookupByLibrary.simpleMessage(
       "Pro-Abo kündigen",
@@ -114,6 +141,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorMode": MessageLookupByLibrary.simpleMessage("Farbmodus"),
     "colorTheme": MessageLookupByLibrary.simpleMessage("Farbthema"),
     "comments": MessageLookupByLibrary.simpleMessage("Kommentare"),
+    "communityRules": MessageLookupByLibrary.simpleMessage("Community-Regeln"),
+    "communityRulesAcceptance": MessageLookupByLibrary.simpleMessage(
+      "Ich stimme den Nutzungsbedingungen zu und verstehe, dass StimmApp keine anstößigen Inhalte oder missbräuchliches Verhalten toleriert.",
+    ),
+    "communityRulesAgreementNotice": MessageLookupByLibrary.simpleMessage(
+      "Wenn du fortfährst, stimmst du den Nutzungsbedingungen zu und bestätigst, dass du nur rechtmäßige und respektvolle Inhalte veröffentlichst. Gemeldete missbräuchliche Inhalte können entfernt und missbräuchliche Nutzer gesperrt oder dauerhaft entfernt werden.",
+    ),
+    "communityRulesZeroTolerance": MessageLookupByLibrary.simpleMessage(
+      "StimmApp toleriert keine anstößigen Inhalte, Belästigung, Hassrede, sexuelle Ausbeutung oder missbräuchliches Verhalten.",
+    ),
     "confirm": MessageLookupByLibrary.simpleMessage("Bestätigen"),
     "confirmAndFinish": MessageLookupByLibrary.simpleMessage(
       "Bestätigen & Fertigstellen",
@@ -130,9 +167,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "consumption": MessageLookupByLibrary.simpleMessage("Verbrauch"),
     "continueNext": MessageLookupByLibrary.simpleMessage("Weiter"),
     "continueText": MessageLookupByLibrary.simpleMessage("Weiter"),
+    "couldNotOpenLink": MessageLookupByLibrary.simpleMessage(
+      "Link konnte nicht geöffnet werden.",
+    ),
     "couldNotOpenPaywall": MessageLookupByLibrary.simpleMessage(
       "Paywall konnte nicht geöffnet werden",
     ),
+    "couldNotSaveYourAcceptance": m0,
     "createNewPetitionDescription": MessageLookupByLibrary.simpleMessage(
       "Erstelle eine neue Petition",
     ),
@@ -165,6 +206,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dailyHabit": MessageLookupByLibrary.simpleMessage("Tägliche Gewohnheit"),
     "darkMode": MessageLookupByLibrary.simpleMessage("Dunkler Modus"),
+    "databaseError": m1,
     "dateOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsdatum"),
     "daysLeft": MessageLookupByLibrary.simpleMessage("Verbleibende Tage"),
     "delete": MessageLookupByLibrary.simpleMessage("löschen"),
@@ -311,9 +353,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "growthStartsWithin": MessageLookupByLibrary.simpleMessage(
       "Wachstum beginnt von innen",
     ),
+    "harassmentOrBullying": MessageLookupByLibrary.simpleMessage(
+      "Belästigung oder Mobbing",
+    ),
+    "hateSpeech": MessageLookupByLibrary.simpleMessage("Hassrede"),
     "height": MessageLookupByLibrary.simpleMessage("Größe"),
     "hello": MessageLookupByLibrary.simpleMessage("Hallo"),
-    "helloAndWelcome": m0,
+    "helloAndWelcome": m2,
     "hintTextTags": MessageLookupByLibrary.simpleMessage(
       "z.B. umwelt, verkehr",
     ),
@@ -353,6 +399,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "membershipStatus": MessageLookupByLibrary.simpleMessage(
       "Mitgliedschaftsstatus",
     ),
+    "misinformationOrFraud": MessageLookupByLibrary.simpleMessage(
+      "Falschinformationen oder Betrug",
+    ),
     "moreBenefitsToBeAddedLater": MessageLookupByLibrary.simpleMessage(
       "Weitere Vorteile folgen",
     ),
@@ -363,8 +412,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Namensänderung fehlgeschlagen",
     ),
     "nationality": MessageLookupByLibrary.simpleMessage("Staatsangehörigkeit"),
-    "newMessages": m1,
+    "newMessages": m3,
     "newPassword": MessageLookupByLibrary.simpleMessage("Neues Passwort"),
+    "newUser": MessageLookupByLibrary.simpleMessage("Neuer Benutzer"),
     "newUsername": MessageLookupByLibrary.simpleMessage("Neuer Benutzername"),
     "nickname": MessageLookupByLibrary.simpleMessage("Spitzname"),
     "no": MessageLookupByLibrary.simpleMessage("Nein"),
@@ -376,6 +426,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noEmail": MessageLookupByLibrary.simpleMessage("Keine E-Mail"),
     "noExpiredItems": MessageLookupByLibrary.simpleMessage(
       "Keine abgelaufenen Einträge",
+    ),
+    "noFittingOptions": MessageLookupByLibrary.simpleMessage(
+      "Keine passenden Optionen",
     ),
     "noImageSelected": MessageLookupByLibrary.simpleMessage(
       "Kein Bild ausgewählt",
@@ -408,6 +461,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSignedUpYet": MessageLookupByLibrary.simpleMessage(
       "Noch nicht registriert? Passwort vergessen?",
     ),
+    "openPrivacyPolicy": MessageLookupByLibrary.simpleMessage(
+      "Datenschutzerklärung öffnen",
+    ),
+    "openTermsOfService": MessageLookupByLibrary.simpleMessage(
+      "Nutzungsbedingungen öffnen",
+    ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option ist erforderlich",
@@ -427,7 +486,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Passwort muss mindestens 8 Character lang sein",
         ),
-    "passwordValidation": m2,
+    "passwordValidation": m4,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
     ),
@@ -578,6 +637,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "prioritySupport": MessageLookupByLibrary.simpleMessage(
       "Prioritätssupport",
     ),
+    "privacy": MessageLookupByLibrary.simpleMessage("Datenschutz"),
     "privacySettings": MessageLookupByLibrary.simpleMessage(
       "Datenschutzeinstellungen",
     ),
@@ -615,8 +675,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto registrieren",
     ),
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
-    "relatedToState": m3,
+    "relatedToState": m5,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
+    "removeAbusiveLanguageFromPublicName": MessageLookupByLibrary.simpleMessage(
+      "Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.",
+    ),
+    "reportContent": MessageLookupByLibrary.simpleMessage("Inhalt melden"),
+    "reportSubmittedReview24Hours": MessageLookupByLibrary.simpleMessage(
+      "Meldung eingereicht. Wir prüfen Meldungen innerhalb von 24 Stunden.",
+    ),
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Login Code anfordern",
     ),
@@ -640,6 +707,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "result": MessageLookupByLibrary.simpleMessage("Ergebnis"),
     "runningForms": MessageLookupByLibrary.simpleMessage("Laufende Formulare"),
     "save": MessageLookupByLibrary.simpleMessage("Speichern"),
+    "saving": MessageLookupByLibrary.simpleMessage("Speichern..."),
     "scanAgain": MessageLookupByLibrary.simpleMessage("Erneut scannen"),
     "scanYourId": MessageLookupByLibrary.simpleMessage(
       "Bitte scannen Sie Ihren deutschen Personalausweis",
@@ -672,6 +740,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzerdaten festlegen",
     ),
     "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
+    "sexualOrExplicitContent": MessageLookupByLibrary.simpleMessage(
+      "Sexuelle oder explizite Inhalte",
+    ),
     "share": MessageLookupByLibrary.simpleMessage("Teilen"),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Petition teilen"),
     "shareThis": MessageLookupByLibrary.simpleMessage("Teile dies"),
@@ -705,6 +776,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bundesland erfolgreich aktualisiert",
     ),
     "stimmapp": MessageLookupByLibrary.simpleMessage("stimmapp"),
+    "submit": MessageLookupByLibrary.simpleMessage("Senden"),
     "subscriptionCancelledAccessWillRemainUntilExpiry":
         MessageLookupByLibrary.simpleMessage(
           "Abo gekündigt. Zugriff bleibt bis zum Ablauf erhalten.",
@@ -735,6 +807,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tagsRequired": MessageLookupByLibrary.simpleMessage(
       "Mindestens ein Tag ist erforderlich",
     ),
+    "terms": MessageLookupByLibrary.simpleMessage("AGB"),
     "testingWidgetsHere": MessageLookupByLibrary.simpleMessage(
       "Widgets testen",
     ),
@@ -757,7 +830,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Titel ist zu kurz"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
+    "unblock": MessageLookupByLibrary.simpleMessage("Blockierung aufheben"),
+    "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Nutzer erfolgreich entsperrt.",
+    ),
+    "unexpectedErrorWithDetails": m6,
     "unknownError": MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
+    "unknownUser": MessageLookupByLibrary.simpleMessage("Unbekannter Nutzer"),
     "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
       "Anschrift ändern",
     ),
@@ -768,6 +847,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzernamen aktualisieren",
     ),
     "updates": MessageLookupByLibrary.simpleMessage("Updates"),
+    "userBlockedContentHidden": MessageLookupByLibrary.simpleMessage(
+      "Nutzer blockiert. Seine Inhalte sind jetzt ausgeblendet.",
+    ),
     "userNotAvailable": MessageLookupByLibrary.simpleMessage(
       "Benutzer nicht verfügbar",
     ),
@@ -784,14 +866,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzername erfolgreich geändert",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m4,
+    "validUntil": m7,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m5,
+    "verificationEmailSentTo": m8,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),
@@ -803,6 +885,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewLicenses": MessageLookupByLibrary.simpleMessage("Lizenzen anzeigen"),
     "viewParticipants": MessageLookupByLibrary.simpleMessage(
       "Teilnehmer anzeigen",
+    ),
+    "violenceOrThreats": MessageLookupByLibrary.simpleMessage(
+      "Gewalt oder Drohungen",
     ),
     "vote": MessageLookupByLibrary.simpleMessage("Abstimmen"),
     "voted": MessageLookupByLibrary.simpleMessage("Abgestimmt"),

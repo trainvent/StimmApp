@@ -76,24 +76,20 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       }
 
       if (!_acceptedCommunityRules) {
-        showErrorSnackBar(
-          'Please accept the community rules and terms before continuing.',
-        );
+        showErrorSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
         return;
       }
 
       if (ContentModerationService.instance.containsObjectionableContent(
         <String?>[controllerDisplayName.text],
       )) {
-        showErrorSnackBar(
-          'Please remove abusive or objectionable language from your public name.',
-        );
+        showErrorSnackBar(context.l10n.removeAbusiveLanguageFromPublicName);
         return;
       }
 
       // Update username (display name) - using email part as default
       await authService.updateUsername(
-        username: currentUser.email?.split('@')[0] ?? 'New User',
+        username: currentUser.email?.split('@')[0] ?? context.l10n.newUser,
       );
 
       final profile = UserProfile(
@@ -149,8 +145,10 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       showErrorSnackBar(errorMessage);
     } on DatabaseException catch (e) {
       setState(() {
-        errorMessage =
-            'Database error (${e.code}): ${e.message ?? S.of(context).unknownError}';
+        errorMessage = context.l10n.databaseError(
+          e.code,
+          e.message ?? S.of(context).unknownError,
+        );
       });
       debugPrintStack(
         label: 'saveUserDetails database error',
@@ -159,7 +157,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       showErrorSnackBar(errorMessage);
     } catch (e, st) {
       setState(() {
-        errorMessage = 'Unexpected error: $e';
+        errorMessage = context.l10n.unexpectedErrorWithDetails(e.toString());
       });
       debugPrintStack(label: 'saveUserDetails error', stackTrace: st);
       showErrorSnackBar(errorMessage);

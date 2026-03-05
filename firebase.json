@@ -32,6 +32,26 @@
     ],
     "rewrites": [
       {
+        "source": "/faq",
+        "destination": "/faq.html"
+      },
+      {
+        "source": "/privacy-policy",
+        "destination": "/privacy_policy.html"
+      },
+      {
+        "source": "/terms-of-service",
+        "destination": "/terms-of-service.html"
+      },
+      {
+        "source": "/privacy",
+        "destination": "/privacy_policy.html"
+      },
+      {
+        "source": "/terms",
+        "destination": "/terms-of-service.html"
+      },
+      {
         "source": "/support",
         "destination": "/support.html"
       },

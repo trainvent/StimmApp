@@ -254,9 +254,154 @@ class S {
     );
   }
 
+  /// `Blocked users`
+  String get blockedUsers {
+    return Intl.message(
+      'Blocked users',
+      name: 'blockedUsers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have not blocked anyone.`
+  String get blockedUsersEmpty {
+    return Intl.message(
+      'You have not blocked anyone.',
+      name: 'blockedUsersEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load blocked users`
+  String get blockedUsersLoadError {
+    return Intl.message(
+      'Failed to load blocked users',
+      name: 'blockedUsersLoadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This content is hidden because you blocked this user.`
+  String get blockedContentHidden {
+    return Intl.message(
+      'This content is hidden because you blocked this user.',
+      name: 'blockedContentHidden',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Cancel`
   String get cancel {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `Report content`
+  String get reportContent {
+    return Intl.message(
+      'Report content',
+      name: 'reportContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Block user`
+  String get blockUser {
+    return Intl.message('Block user', name: 'blockUser', desc: '', args: []);
+  }
+
+  /// `This will hide this user's content from your feed immediately and notify the StimmApp team for review.`
+  String get blockUserDescription {
+    return Intl.message(
+      'This will hide this user\'s content from your feed immediately and notify the StimmApp team for review.',
+      name: 'blockUserDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Additional details (optional)`
+  String get additionalDetailsOptional {
+    return Intl.message(
+      'Additional details (optional)',
+      name: 'additionalDetailsOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report submitted. We review reports within 24 hours.`
+  String get reportSubmittedReview24Hours {
+    return Intl.message(
+      'Report submitted. We review reports within 24 hours.',
+      name: 'reportSubmittedReview24Hours',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User blocked. Their content is now hidden.`
+  String get userBlockedContentHidden {
+    return Intl.message(
+      'User blocked. Their content is now hidden.',
+      name: 'userBlockedContentHidden',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Harassment or bullying`
+  String get harassmentOrBullying {
+    return Intl.message(
+      'Harassment or bullying',
+      name: 'harassmentOrBullying',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hate speech`
+  String get hateSpeech {
+    return Intl.message('Hate speech', name: 'hateSpeech', desc: '', args: []);
+  }
+
+  /// `Sexual or explicit content`
+  String get sexualOrExplicitContent {
+    return Intl.message(
+      'Sexual or explicit content',
+      name: 'sexualOrExplicitContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Violence or threats`
+  String get violenceOrThreats {
+    return Intl.message(
+      'Violence or threats',
+      name: 'violenceOrThreats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Misinformation or fraud`
+  String get misinformationOrFraud {
+    return Intl.message(
+      'Misinformation or fraud',
+      name: 'misinformationOrFraud',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submit`
+  String get submit {
+    return Intl.message('Submit', name: 'submit', desc: '', args: []);
   }
 
   /// `Cancel Pro Subscription`
@@ -399,6 +544,16 @@ class S {
     return Intl.message(
       'Could not open paywall',
       name: 'couldNotOpenPaywall',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not open link.`
+  String get couldNotOpenLink {
+    return Intl.message(
+      'Could not open link.',
+      name: 'couldNotOpenLink',
       desc: '',
       args: [],
     );
@@ -1299,6 +1454,16 @@ class S {
     return Intl.message('no options', name: 'noOptions', desc: '', args: []);
   }
 
+  /// `No fitting options`
+  String get noFittingOptions {
+    return Intl.message(
+      'No fitting options',
+      name: 'noFittingOptions',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Nein, kein Pro-Mitglied`
   String get noProMember {
     return Intl.message(
@@ -1614,6 +1779,16 @@ class S {
     );
   }
 
+  /// `I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.`
+  String get communityRulesAcceptance {
+    return Intl.message(
+      'I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.',
+      name: 'communityRulesAcceptance',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Pro Member`
   String get proMember {
     return Intl.message('Pro Member', name: 'proMember', desc: '', args: []);
@@ -1807,6 +1982,16 @@ class S {
   /// `Save`
   String get save {
     return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Terms`
+  String get terms {
+    return Intl.message('Terms', name: 'terms', desc: '', args: []);
+  }
+
+  /// `Privacy`
+  String get privacy {
+    return Intl.message('Privacy', name: 'privacy', desc: '', args: []);
   }
 
   /// `Scan Again`
@@ -2494,6 +2679,16 @@ class S {
     return Intl.message('No Email', name: 'noEmail', desc: '', args: []);
   }
 
+  /// `Unknown user`
+  String get unknownUser {
+    return Intl.message(
+      'Unknown user',
+      name: 'unknownUser',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `petition title in use already`
   String get petitionTitleInUseAlready {
     return Intl.message(
@@ -2577,6 +2772,21 @@ class S {
   /// `Verify`
   String get verify {
     return Intl.message('Verify', name: 'verify', desc: '', args: []);
+  }
+
+  /// `Unblock`
+  String get unblock {
+    return Intl.message('Unblock', name: 'unblock', desc: '', args: []);
+  }
+
+  /// `User unblocked.`
+  String get unblockedUserSuccessfully {
+    return Intl.message(
+      'User unblocked.',
+      name: 'unblockedUserSuccessfully',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `hello`
@@ -3256,6 +3466,116 @@ class S {
       name: 'selectPaymentProvider',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Community Rules`
+  String get communityRules {
+    return Intl.message(
+      'Community Rules',
+      name: 'communityRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.`
+  String get communityRulesZeroTolerance {
+    return Intl.message(
+      'StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.',
+      name: 'communityRulesZeroTolerance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.`
+  String get communityRulesAgreementNotice {
+    return Intl.message(
+      'By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.',
+      name: 'communityRulesAgreementNotice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please accept the community rules and terms before continuing.`
+  String get acceptCommunityRulesBeforeContinuing {
+    return Intl.message(
+      'Please accept the community rules and terms before continuing.',
+      name: 'acceptCommunityRulesBeforeContinuing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Terms of Service`
+  String get openTermsOfService {
+    return Intl.message(
+      'Open Terms of Service',
+      name: 'openTermsOfService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Privacy Policy`
+  String get openPrivacyPolicy {
+    return Intl.message(
+      'Open Privacy Policy',
+      name: 'openPrivacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saving...`
+  String get saving {
+    return Intl.message('Saving...', name: 'saving', desc: '', args: []);
+  }
+
+  /// `Please remove abusive or objectionable language from your public name.`
+  String get removeAbusiveLanguageFromPublicName {
+    return Intl.message(
+      'Please remove abusive or objectionable language from your public name.',
+      name: 'removeAbusiveLanguageFromPublicName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New User`
+  String get newUser {
+    return Intl.message('New User', name: 'newUser', desc: '', args: []);
+  }
+
+  /// `Database error ({code}): {message}`
+  String databaseError(String code, String message) {
+    return Intl.message(
+      'Database error ($code): $message',
+      name: 'databaseError',
+      desc: '',
+      args: [code, message],
+    );
+  }
+
+  /// `Unexpected error: {error}`
+  String unexpectedErrorWithDetails(String error) {
+    return Intl.message(
+      'Unexpected error: $error',
+      name: 'unexpectedErrorWithDetails',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Could not save your acceptance: {error}`
+  String couldNotSaveYourAcceptance(String error) {
+    return Intl.message(
+      'Could not save your acceptance: $error',
+      name: 'couldNotSaveYourAcceptance',
+      desc: '',
+      args: [error],
     );
   }
 }

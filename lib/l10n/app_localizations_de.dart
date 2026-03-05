@@ -1326,4 +1326,50 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get selectPaymentProvider => 'Zahlungsanbieter auswählen';
+
+  @override
+  String get communityRules => 'Community-Regeln';
+
+  @override
+  String get communityRulesZeroTolerance =>
+      'StimmApp toleriert keine anstößigen Inhalte, Belästigung, Hassrede, sexuelle Ausbeutung oder missbräuchliches Verhalten.';
+
+  @override
+  String get communityRulesAgreementNotice =>
+      'Wenn du fortfährst, stimmst du den Nutzungsbedingungen zu und bestätigst, dass du nur rechtmäßige und respektvolle Inhalte veröffentlichst. Gemeldete missbräuchliche Inhalte können entfernt und missbräuchliche Nutzer gesperrt oder dauerhaft entfernt werden.';
+
+  @override
+  String get acceptCommunityRulesBeforeContinuing =>
+      'Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.';
+
+  @override
+  String get openTermsOfService => 'Nutzungsbedingungen öffnen';
+
+  @override
+  String get openPrivacyPolicy => 'Datenschutzerklärung öffnen';
+
+  @override
+  String get saving => 'Speichern...';
+
+  @override
+  String get removeAbusiveLanguageFromPublicName =>
+      'Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.';
+
+  @override
+  String get newUser => 'Neuer Benutzer';
+
+  @override
+  String databaseError(String code, String message) {
+    return 'Datenbankfehler ($code): $message';
+  }
+
+  @override
+  String unexpectedErrorWithDetails(String error) {
+    return 'Unerwarteter Fehler: $error';
+  }
+
+  @override
+  String couldNotSaveYourAcceptance(String error) {
+    return 'Deine Zustimmung konnte nicht gespeichert werden: $error';
+  }
 }

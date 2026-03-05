@@ -456,5 +456,41 @@
 	"areYouSureYouWantToDeleteThisForm": "Are you sure you want to delete this form?",
 	"noRunningPetitionsFound": "No running petitions found.",
 	"noRunningPollsFound": "No running polls found.",
-	"selectPaymentProvider": "Select Payment Provider"
+	"selectPaymentProvider": "Select Payment Provider",
+	"communityRules": "Community Rules",
+	"communityRulesZeroTolerance": "StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.",
+	"communityRulesAgreementNotice": "By continuing, you agree to the Terms of Service and confirm that you will only publish lawful, respectful content. Reported abusive content may be removed and abusive users may be suspended or permanently removed.",
+	"acceptCommunityRulesBeforeContinuing": "Please accept the community rules and terms before continuing.",
+	"openTermsOfService": "Open Terms of Service",
+	"openPrivacyPolicy": "Open Privacy Policy",
+	"saving": "Saving...",
+	"removeAbusiveLanguageFromPublicName": "Please remove abusive or objectionable language from your public name.",
+	"newUser": "New User",
+	"databaseError": "Database error ({code}): {message}",
+	"@databaseError": {
+		"placeholders": {
+			"code": {
+				"type": "String"
+			},
+			"message": {
+				"type": "String"
+			}
+		}
+	},
+	"unexpectedErrorWithDetails": "Unexpected error: {error}",
+	"@unexpectedErrorWithDetails": {
+		"placeholders": {
+			"error": {
+				"type": "String"
+			}
+		}
+	},
+	"couldNotSaveYourAcceptance": "Could not save your acceptance: {error}",
+	"@couldNotSaveYourAcceptance": {
+		"placeholders": {
+			"error": {
+				"type": "String"
+			}
+		}
+	}
 }
