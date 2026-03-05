@@ -173,16 +173,28 @@ class AppBootstrap {
     if (localeStr != null && localeStr.isNotEmpty) {
       appLocale.value = _localeFromString(localeStr);
     } else {
-      final defaultLocale = Environment.isVivot
-          ? const Locale('en')
-          : const Locale('de');
+      final defaultLocale = kIsWeb
+          ? _defaultWebLocaleByHost()
+          : (Environment.isVivot ? const Locale('en') : const Locale('de'));
       appLocale.value = defaultLocale;
       if (kIsWeb) {
         debugPrint(
-          '[AppBootstrap] no stored locale, defaulting web locale to ${defaultLocale.languageCode}',
+          '[AppBootstrap] no stored locale, defaulting web locale to '
+          '${defaultLocale.languageCode} for host ${Uri.base.host}',
         );
       }
     }
+  }
+
+  Locale _defaultWebLocaleByHost() {
+    final host = Uri.base.host.toLowerCase();
+    if (host == 'stimmapp.net' || host.endsWith('.stimmapp.net')) {
+      return const Locale('de');
+    }
+    if (host == 'vivot.net' || host.endsWith('.vivot.net')) {
+      return const Locale('en');
+    }
+    return Environment.isVivot ? const Locale('en') : const Locale('de');
   }
 
   Future<void> _initPetitionReasonSetting() async {

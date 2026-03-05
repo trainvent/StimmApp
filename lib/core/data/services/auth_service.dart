@@ -174,7 +174,11 @@ class AuthService {
 
   Future<void> sendVerificationCode() async {
     try {
-      await functions.httpsCallable('sendVerificationCode').call();
+      final locale = PlatformDispatcher.instance.locale;
+      await functions.httpsCallable('sendVerificationCode').call({
+        'locale': locale.languageCode,
+        'countryCode': locale.countryCode,
+      });
     } on FirebaseFunctionsException catch (e) {
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
@@ -200,7 +204,12 @@ class AuthService {
 
   Future<void> sendLoginCode(String email) async {
     try {
-      await functions.httpsCallable('sendLoginCode').call({'email': email});
+      final locale = PlatformDispatcher.instance.locale;
+      await functions.httpsCallable('sendLoginCode').call({
+        'email': email,
+        'locale': locale.languageCode,
+        'countryCode': locale.countryCode,
+      });
     } on FirebaseFunctionsException catch (e) {
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),

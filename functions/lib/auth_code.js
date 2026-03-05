@@ -52,6 +52,58 @@ const smtpSecure = process.env.SMTP_SECURE
 function normalizeEmail(email) {
     return email.trim().toLowerCase();
 }
+function resolveMailLocale(params) {
+    var _a, _b;
+    if (((_a = params.countryCodeHint) === null || _a === void 0 ? void 0 : _a.toUpperCase()) === 'DE') {
+        return 'de';
+    }
+    const normalizedLocale = (_b = params.localeHint) === null || _b === void 0 ? void 0 : _b.trim().toLowerCase();
+    if (normalizedLocale === null || normalizedLocale === void 0 ? void 0 : normalizedLocale.startsWith('de')) {
+        return 'de';
+    }
+    if (normalizedLocale === null || normalizedLocale === void 0 ? void 0 : normalizedLocale.startsWith('en')) {
+        return 'en';
+    }
+    return params.fallbackLocale;
+}
+function getMailRuntimeConfig(locale) {
+    if (locale === 'de') {
+        return {
+            appName: 'StimmApp',
+            teamName: 'StimmApp Team',
+            locale: 'de',
+        };
+    }
+    return {
+        appName: 'Vivot',
+        teamName: 'Vivot Team',
+        locale: 'en',
+    };
+}
+async function resolveMailConfig(params) {
+    const fallback = (0, brand_1.getBrandRuntimeConfig)().locale;
+    let localeHint = params.localeHint;
+    let countryCodeHint = params.countryCodeHint;
+    if (params.uid && (!localeHint || !countryCodeHint)) {
+        try {
+            const profileSnap = await db.collection('users').doc(params.uid).get();
+            if (profileSnap.exists) {
+                const data = profileSnap.data();
+                localeHint = localeHint !== null && localeHint !== void 0 ? localeHint : data === null || data === void 0 ? void 0 : data.locale;
+                countryCodeHint = countryCodeHint !== null && countryCodeHint !== void 0 ? countryCodeHint : data === null || data === void 0 ? void 0 : data.countryCode;
+            }
+        }
+        catch (e) {
+            console.warn(`[MAIL CONFIG] Failed to load user profile for ${params.uid}:`, e);
+        }
+    }
+    const locale = resolveMailLocale({
+        localeHint,
+        countryCodeHint,
+        fallbackLocale: fallback,
+    });
+    return getMailRuntimeConfig(locale);
+}
 async function assertEmailNotKicked(email) {
     const normalizedEmail = normalizeEmail(email);
     const kickedUserSnap = await db.collection(KICKED_USERS_COLLECTION).doc(normalizedEmail).get();
@@ -66,10 +118,9 @@ async function assertEmailNotKicked(email) {
 function generateCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
-async function sendEmail(email, code, type) {
+async function sendEmail(email, code, type, mailConfig) {
     const password = smtpPassword.value();
-    const brand = (0, brand_1.getBrandRuntimeConfig)();
-    console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}. Host: ${smtpHost}. User: ${smtpUser}.`);
+    console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}. Host: ${smtpHost}. User: ${smtpUser}. Locale: ${mailConfig.locale}.`);
     if (!password) {
         console.error("SMTP_PASSWORD is not set in environment variables.");
         throw new https_1.HttpsError('internal', 'Email configuration error.');
@@ -84,29 +135,29 @@ async function sendEmail(email, code, type) {
             pass: password,
         },
     });
-    const subject = brand.locale === 'en'
+    const subject = mailConfig.locale === 'en'
         ? (type === 'login' ? 'Your login code' : 'Your verification code')
         : (type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode');
-    const actionText = brand.locale === 'en'
+    const actionText = mailConfig.locale === 'en'
         ? (type === 'login'
-            ? `to sign in to ${brand.appName}`
+            ? `to sign in to ${mailConfig.appName}`
             : 'to verify your email address')
         : (type === 'login'
-            ? `um dich bei ${brand.appName} anzumelden`
+            ? `um dich bei ${mailConfig.appName} anzumelden`
             : 'um deine E-Mail zu bestätigen');
-    const greeting = brand.locale === 'en' ? 'Hello' : 'Hallo';
-    const expiresText = brand.locale === 'en'
+    const greeting = mailConfig.locale === 'en' ? 'Hello' : 'Hallo';
+    const expiresText = mailConfig.locale === 'en'
         ? 'This code expires in 15 minutes.'
         : 'Dieser Code läuft in 15 Minuten ab.';
-    const teamName = brand.teamName;
+    const teamName = mailConfig.teamName;
     const mailOptions = {
         from: `"${teamName}" <${smtpMail}>`,
         to: email,
         subject: subject,
-        text: brand.locale === 'en'
+        text: mailConfig.locale === 'en'
             ? `${greeting},\n\nYour code, ${actionText}, is: ${code}\n\n${expiresText}`
             : `${greeting},\n\nDein Code, ${actionText}, lautet: ${code}\n\n${expiresText}`,
-        html: brand.locale === 'en'
+        html: mailConfig.locale === 'en'
             ? `<p>${greeting},</p><p>Your code, ${actionText}, is: <strong>${code}</strong></p><p>${expiresText}</p>`
             : `<p>${greeting},</p><p>Dein Code, ${actionText}, lautet: <strong>${code}</strong></p><p>${expiresText}</p>`,
     };
@@ -119,7 +170,7 @@ async function sendEmail(email, code, type) {
         throw new https_1.HttpsError('internal', `Failed to send email: ${error}`);
     }
 }
-async function storeCode(uid, email, type) {
+async function storeCode(uid, email, type, mailConfig) {
     const code = generateCode();
     const expirationTime = Date.now() + 15 * 60 * 1000; // 15 minutes from now
     try {
@@ -136,7 +187,7 @@ async function storeCode(uid, email, type) {
         throw new https_1.HttpsError('internal', 'Database error.');
     }
     console.log(`[${type.toUpperCase()}] Code for ${email}: ${code}`);
-    await sendEmail(email, code, type);
+    await sendEmail(email, code, type, mailConfig);
 }
 async function verifyCodeLogic(uid, code, email) {
     console.log(`[VERIFY LOGIC] Verifying code for uid: ${uid}, email: ${email}`);
@@ -182,6 +233,7 @@ async function verifyCodeLogic(uid, code, email) {
  * Call this after creating the account or when requesting a new code.
  */
 exports.sendVerificationCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (request) => {
+    var _a, _b;
     if (!request.auth) {
         throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
@@ -189,7 +241,14 @@ exports.sendVerificationCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, 
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'User does not have an email address.');
     }
-    await storeCode(request.auth.uid, email, 'verification');
+    const localeHint = (_a = request.data) === null || _a === void 0 ? void 0 : _a.locale;
+    const countryCodeHint = (_b = request.data) === null || _b === void 0 ? void 0 : _b.countryCode;
+    const mailConfig = await resolveMailConfig({
+        uid: request.auth.uid,
+        localeHint,
+        countryCodeHint,
+    });
+    await storeCode(request.auth.uid, email, 'verification', mailConfig);
     return { success: true, message: 'Verification code sent.' };
 });
 /**
@@ -197,6 +256,7 @@ exports.sendVerificationCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, 
  * Publicly callable.
  */
 exports.sendLoginCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (request) => {
+    var _a, _b;
     const { email } = request.data;
     if (!email) {
         throw new https_1.HttpsError('invalid-argument', 'Email is required.');
@@ -214,6 +274,8 @@ exports.sendLoginCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (
             return { success: true, message: 'Login code sent (Test Backdoor).' };
         }
     }
+    const localeHint = (_a = request.data) === null || _a === void 0 ? void 0 : _a.locale;
+    const countryCodeHint = (_b = request.data) === null || _b === void 0 ? void 0 : _b.countryCode;
     let uid;
     try {
         const userRecord = await admin.auth().getUserByEmail(email);
@@ -223,7 +285,12 @@ exports.sendLoginCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (
         console.error("User lookup failed:", error);
         throw new https_1.HttpsError('not-found', 'No user found with this email.');
     }
-    await storeCode(uid, email, 'login');
+    const mailConfig = await resolveMailConfig({
+        uid,
+        localeHint,
+        countryCodeHint,
+    });
+    await storeCode(uid, email, 'login', mailConfig);
     return { success: true, message: 'Login code sent.' };
 });
 /**

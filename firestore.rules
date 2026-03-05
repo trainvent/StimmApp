@@ -16,13 +16,54 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function hasStateValue(data) {
+      return data.keys().hasAny(['state']) &&
+             data.state is string &&
+             data.state.size() > 0;
+    }
+
+    function hasCountryCode(data) {
+      return data.keys().hasAny(['countryCode']) &&
+             data.countryCode is string &&
+             data.countryCode.size() > 0;
+    }
+
+    function supportsStateScope(data) {
+      return (hasCountryCode(data) && data.countryCode == 'DE') ||
+             (!hasCountryCode(data) && hasStateValue(data));
+    }
+
+    function hasValidUserStateCountry(data) {
+      // DE users (and legacy users with existing state but no countryCode)
+      // may keep a non-empty state. Others must keep state empty/null/absent.
+      return supportsStateScope(data)
+        ? hasStateValue(data)
+        : (!data.keys().hasAny(['state']) || data.state == null || data.state == '');
+    }
+
+    function requesterSupportsStateScope() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             supportsStateScope(
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data
+             );
+    }
+
+    function hasValidContentState(data) {
+      // Outside DE scope, content cannot be state-scoped.
+      return requesterSupportsStateScope()
+        ? true
+        : (!data.keys().hasAny(['state']) || data.state == null || data.state == '');
+    }
+
     // --- Collection Rules ---
 
     // Users Collection
     match /users/{userId} {
       // Main Profile: Public Read, Owner Write
       allow read: if true;
-      allow write: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin() ||
+                    (isOwner(userId) && hasValidUserStateCountry(request.resource.data));
 
       match /blockedUsers/{blockedUserId} {
         allow read, write: if isOwner(userId) || isAdmin();
@@ -46,12 +87,14 @@ service cloud.firestore {
     // Petitions & Polls
     match /petitions/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated() || isAdmin();
+      allow write: if isAdmin() ||
+                    (isAuthenticated() && hasValidContentState(request.resource.data));
     }
 
     match /polls/{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated() || isAdmin();
+      allow write: if isAdmin() ||
+                    (isAuthenticated() && hasValidContentState(request.resource.data));
     }
 
     match /moderationReports/{reportId} {

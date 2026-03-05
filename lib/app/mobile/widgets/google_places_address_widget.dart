@@ -9,11 +9,15 @@ class GooglePlacesAddressWidget extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onStateChanged,
+    this.onCountryCodeChanged,
+    this.countries,
     this.validator,
   });
 
   final TextEditingController controller;
   final ValueChanged<String?> onStateChanged;
+  final ValueChanged<String?>? onCountryCodeChanged;
+  final List<String>? countries;
   final String? Function(String?)? validator;
 
   @override
@@ -21,7 +25,7 @@ class GooglePlacesAddressWidget extends StatelessWidget {
     return GooglePlacesAutoCompleteTextFormField(
       config: GoogleApiConfig(
         apiKey: IConst.googlePlacesApiKey,
-        countries: const ['de'],
+        countries: countries ?? const <String>[],
         debounceTime: 400,
       ),
       textEditingController: controller,
@@ -46,8 +50,11 @@ class GooglePlacesAddressWidget extends StatelessWidget {
         );
         if (prediction.placeId != null) {
           final service = GooglePlacesService(IConst.googlePlacesApiKey);
-          final state = await service.getStateFromPlaceId(prediction.placeId!);
-          onStateChanged(state);
+          final info = await service.getAddressInfoFromPlaceId(
+            prediction.placeId!,
+          );
+          onStateChanged(info.state);
+          onCountryCodeChanged?.call(info.countryCode);
         }
       },
       minInputLength: 2,

@@ -9,7 +9,6 @@ import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -38,10 +37,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final TextEditingController controllerAddress = TextEditingController();
   DateTime? _selectedDateOfBirth;
   String? _selectedState;
+  String? _selectedCountryCode;
   String errorMessage = '';
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
   bool _acceptedCommunityRules = false;
+  bool get _requiresStateScope => _selectedCountryCode == 'DE';
 
   @override
   void dispose() {
@@ -67,7 +68,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         return;
       }
 
-      if (Environment.supportsStateScope && _selectedState == null) {
+      if (_requiresStateScope && _selectedState == null) {
         showErrorSnackBar(
           S.of(context).weFailedToGetYourStatePleaseProofreadYourLivingaddress,
         );
@@ -99,7 +100,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         uid: currentUser.uid,
         email: currentUser.email,
         displayName: controllerDisplayName.text,
-        state: Environment.supportsStateScope ? _selectedState : null,
+        state: _requiresStateScope ? _selectedState : null,
+        countryCode: _selectedCountryCode,
         createdAt: DateTime.now(),
         surname: controllerSurname.text,
         givenName: controllerGivenName.text,
@@ -267,7 +269,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    if (Environment.supportsStateScope) ...[
+                    if (_requiresStateScope) ...[
                       Text(_selectedState ?? context.l10n.state),
                       const SizedBox(height: 10),
                     ],
@@ -275,11 +277,17 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       key: const Key('addressTextField'),
                       controller: _textController,
                       onStateChanged: (state) {
-                        if (Environment.supportsStateScope && state != null) {
-                          setState(() {
-                            _selectedState = state;
-                          });
-                        }
+                        setState(() {
+                          _selectedState = state;
+                        });
+                      },
+                      onCountryCodeChanged: (countryCode) {
+                        setState(() {
+                          _selectedCountryCode = countryCode?.toUpperCase();
+                          if (_selectedCountryCode != 'DE') {
+                            _selectedState = null;
+                          }
+                        });
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {

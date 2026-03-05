@@ -155,9 +155,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                 }
                 var items = snap.data ?? const [];
 
-                if (userProfile != null) {
+                if (userProfile?.supportsStateScope == true) {
+                  final userState = userProfile?.state;
                   items = items.where((p) {
-                    return p.state == null || p.state == userProfile.state;
+                    return p.state == null || p.state == userState;
                   }).toList();
                 }
 

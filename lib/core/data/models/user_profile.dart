@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 
+const Object _unset = Object();
+
 class UserProfile {
   final String uid;
   final String? displayName;
   final String? email;
   final String? state;
+  final String? countryCode;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool? isPro;
@@ -39,6 +42,9 @@ class UserProfile {
   final String? height;
 
   bool get isAdmin => email == IConst.adminEmail;
+  bool get supportsStateScope =>
+      countryCode?.toUpperCase() == 'DE' ||
+      (countryCode == null && state != null && state!.isNotEmpty);
 
   static bool shouldForcePro(String? email) {
     if (email == null) return false;
@@ -50,6 +56,7 @@ class UserProfile {
     this.displayName,
     this.email,
     this.state,
+    this.countryCode,
     this.createdAt,
     this.updatedAt,
     this.surname,
@@ -77,7 +84,8 @@ class UserProfile {
     String? uid,
     String? displayName,
     String? email,
-    String? state,
+    Object? state = _unset,
+    Object? countryCode = _unset,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? surname,
@@ -107,7 +115,10 @@ class UserProfile {
       uid: uid ?? this.uid,
       displayName: displayName ?? this.displayName,
       email: resolvedEmail,
-      state: state ?? this.state,
+      state: identical(state, _unset) ? this.state : state as String?,
+      countryCode: identical(countryCode, _unset)
+          ? this.countryCode
+          : countryCode as String?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       surname: surname ?? this.surname,
@@ -142,6 +153,7 @@ class UserProfile {
       displayName: json['displayName'] as String?,
       email: email,
       state: json['state'] as String?,
+      countryCode: (json['countryCode'] as String?)?.toUpperCase(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate(),
       surname: json['surname'] as String?,
@@ -172,6 +184,7 @@ class UserProfile {
       'displayName': displayName,
       'email': email,
       'state': state,
+      'countryCode': countryCode?.toUpperCase(),
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
       'surname': surname,

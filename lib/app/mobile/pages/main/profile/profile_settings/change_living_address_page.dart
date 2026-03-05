@@ -4,7 +4,6 @@ import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/select_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -22,9 +21,11 @@ class ChangeLivingAddressPage extends StatefulWidget {
 class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
     with WidgetsBindingObserver {
   String? _selectedState;
+  String? _selectedCountryCode;
   final TextEditingController _controllerAddress = TextEditingController();
   String errorMessage = '';
   final _formKey = GlobalKey<FormState>();
+  bool get _requiresStateScope => _selectedCountryCode == 'DE';
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
     if (userProfile != null) {
       setState(() {
         _selectedState = userProfile.state;
+        _selectedCountryCode = userProfile.countryCode;
         _controllerAddress.text = userProfile.address ?? '';
       });
     }
@@ -66,23 +68,27 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                   child: Center(
                     child: Column(
                       children: [
-                        if (Environment.supportsStateScope &&
-                            _selectedState != null) ...[
+                        if (_requiresStateScope && _selectedState != null) ...[
                           Text(_selectedState!),
                           const SizedBox(height: 20),
                         ],
                         GooglePlacesAddressWidget(
                           controller: _controllerAddress,
                           onStateChanged: (state) {
-                            if (Environment.supportsStateScope &&
-                                state != null) {
-                              setState(() {
-                                _selectedState = state;
-                              });
-                            }
+                            setState(() {
+                              _selectedState = state;
+                            });
+                          },
+                          onCountryCodeChanged: (countryCode) {
+                            setState(() {
+                              _selectedCountryCode = countryCode?.toUpperCase();
+                              if (_selectedCountryCode != 'DE') {
+                                _selectedState = null;
+                              }
+                            });
                           },
                         ),
-                        if (Environment.supportsStateScope) ...[
+                        if (_requiresStateScope) ...[
                           const SizedBox(height: 20),
                           SelectAddressWidget(
                             selectedState: _selectedState,
@@ -118,6 +124,12 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
               showErrorSnackBar(context.l10n.enterSomething);
               return;
             }
+            if (_requiresStateScope && _selectedState == null) {
+              showErrorSnackBar(
+                context.l10n.weFailedToGetYourStatePleaseProofreadYourLivingaddress,
+              );
+              return;
+            }
             if (_formKey.currentState!.validate()) {
               final successMessage = context.l10n.addressUpdatedSuccessfully;
               try {
@@ -126,9 +138,8 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                 final userProfile = await userRepository.getById(uid);
                 final updatedProfile = (userProfile ?? UserProfile(uid: uid))
                     .copyWith(
-                      state: Environment.supportsStateScope
-                          ? _selectedState
-                          : null,
+                      state: _requiresStateScope ? _selectedState : null,
+                      countryCode: _selectedCountryCode,
                       address: _controllerAddress.text,
                     );
                 await userRepository.upsert(updatedProfile);

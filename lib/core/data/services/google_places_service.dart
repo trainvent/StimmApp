@@ -2,13 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/german_states.dart';
 
+class PlaceAddressInfo {
+  const PlaceAddressInfo({this.state, this.countryCode});
+
+  final String? state;
+  final String? countryCode;
+}
+
 class GooglePlacesService {
   final Dio _dio = Dio();
   final String _apiKey;
 
   GooglePlacesService(this._apiKey);
 
-  Future<String?> getStateFromPlaceId(String placeId) async {
+  Future<PlaceAddressInfo> getAddressInfoFromPlaceId(String placeId) async {
     try {
       final url =
           'https://places.googleapis.com/v1/places/$placeId?fields=addressComponents&key=$_apiKey';
@@ -18,20 +25,35 @@ class GooglePlacesService {
         final List<dynamic>? addressComponents =
             response.data['addressComponents'];
         if (addressComponents != null) {
-          for (var component in addressComponents) {
+          String? state;
+          String? countryCode;
+
+          for (final component in addressComponents) {
             final List<dynamic>? types = component['types'];
-            if (types != null &&
-                types.contains('administrative_area_level_1')) {
+            if (types == null) {
+              continue;
+            }
+            if (types.contains('administrative_area_level_1')) {
               final String? stateName = component['longText'];
-              return _matchState(stateName);
+              state = _matchState(stateName);
+            }
+            if (types.contains('country')) {
+              countryCode = (component['shortText'] as String?)?.toUpperCase();
             }
           }
+
+          return PlaceAddressInfo(state: state, countryCode: countryCode);
         }
       }
     } catch (e) {
       debugPrint('Error fetching place details: $e');
     }
-    return null;
+    return const PlaceAddressInfo();
+  }
+
+  Future<String?> getStateFromPlaceId(String placeId) async {
+    final info = await getAddressInfoFromPlaceId(placeId);
+    return info.state;
   }
 
   String? _matchState(String? stateName) {

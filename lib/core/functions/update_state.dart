@@ -7,8 +7,12 @@ Future<void> updateState(String state) async {
   final uid = authService.currentUser!.uid;
   final userProfile = await userRepository.getById(uid);
   if (userProfile != null) {
-    await userRepository.upsert(userProfile.copyWith(state: state));
+    await userRepository.upsert(
+      userProfile.copyWith(state: state, countryCode: 'DE'),
+    );
   } else {
-    await userRepository.upsert(UserProfile(uid: uid, state: state));
+    await userRepository.upsert(
+      UserProfile(uid: uid, state: state, countryCode: 'DE'),
+    );
   }
 }

@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
-import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -42,13 +42,14 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
   bool _isStateDependent = false;
+  bool _supportsStateScope = false;
   bool _isLoading = false;
   int _durationDays = 28; // Default duration
-  bool get _supportsStateScope => Environment.supportsStateScope;
 
   @override
   void initState() {
     super.initState();
+    _loadStateScope();
     _loadDraft();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
@@ -64,6 +65,24 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   }
 
   String get _draftKey => 'draft_${widget.title}';
+
+  Future<void> _loadStateScope() async {
+    final uid = authService.currentUser?.uid;
+    if (uid == null) {
+      return;
+    }
+    final profile = await UserRepository.create().getById(uid);
+    if (!mounted || profile == null) {
+      return;
+    }
+    setState(() {
+      _supportsStateScope = profile.supportsStateScope;
+      if (!_supportsStateScope) {
+        _isStateDependent = false;
+      }
+    });
+    await _loadDraft();
+  }
 
   Future<void> _loadDraft() async {
     final prefs = await SharedPreferences.getInstance();

@@ -21,6 +21,7 @@ void main() {
       'displayName': 'Test User',
       'email': 'test@example.com',
       'state': 'Hessen',
+      'countryCode': null,
       'createdAt': timestamp,
       'updatedAt': timestamp,
       'surname': null,
@@ -52,6 +53,7 @@ void main() {
       expect(result.createdAt, userProfile.createdAt);
       expect(result.updatedAt, userProfile.updatedAt);
       expect(result.state, userProfile.state);
+      expect(result.countryCode, userProfile.countryCode);
       expect(result.idNumber, userProfile.idNumber);
       expect(result.isPro, userProfile.isPro);
       expect(result.wentProAt, userProfile.wentProAt);
