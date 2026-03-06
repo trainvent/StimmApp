@@ -46,7 +46,7 @@ class AppBootstrap {
           debugPrint('[AppBootstrap] Error loading profile URL: $e');
           return null;
         });
-        
+
         // Sync settings from Firestore
         try {
           final userRepo = UserRepository.create();
@@ -67,9 +67,12 @@ class AppBootstrap {
               showPetitionReasonNotifier.value = profile.showPetitionReason!;
             }
             if (profile.themeMode != null) {
-              themeModeNotifier.value = _themeModeFromString(profile.themeMode!);
+              themeModeNotifier.value = _themeModeFromString(
+                profile.themeMode!,
+              );
               // Sync legacy notifier for backward compatibility if needed
-              isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
+              isDarkModeNotifier.value =
+                  themeModeNotifier.value == ThemeMode.dark;
             }
             if (profile.locale != null && profile.locale!.isNotEmpty) {
               appLocale.value = _localeFromString(profile.locale!);
@@ -94,6 +97,10 @@ class AppBootstrap {
 
   void _onLocaleChanged() async {
     final Locale? loc = appLocale.value;
+    Environment.applyBrandForLocale(
+      locale: loc,
+      webHost: kIsWeb ? Uri.base.host : null,
+    );
     final prefs = await SharedPreferences.getInstance();
     final String toSave = (loc == null)
         ? ''
@@ -102,7 +109,7 @@ class AppBootstrap {
         : '${loc.languageCode}_${loc.countryCode}';
     await prefs.setString(IConst.localeKey, toSave);
     debugPrint('[AppBootstrap] persisted locale: $toSave');
-    
+
     // Sync to Firestore if logged in
     final user = authService.currentUser;
     if (user != null) {
@@ -118,15 +125,19 @@ class AppBootstrap {
   void _onPetitionReasonChanged() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showPetitionReason', showPetitionReasonNotifier.value);
-    
+
     // Sync to Firestore if logged in
     final user = authService.currentUser;
     if (user != null) {
       try {
         final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {'showPetitionReason': showPetitionReasonNotifier.value});
+        await userRepo.update(user.uid, {
+          'showPetitionReason': showPetitionReasonNotifier.value,
+        });
       } catch (e) {
-        debugPrint('[AppBootstrap] Error syncing petition reason setting to Firestore: $e');
+        debugPrint(
+          '[AppBootstrap] Error syncing petition reason setting to Firestore: $e',
+        );
       }
     }
   }
@@ -135,10 +146,10 @@ class AppBootstrap {
     final prefs = await SharedPreferences.getInstance();
     final modeStr = _themeModeToString(themeModeNotifier.value);
     await prefs.setString(IConst.themeModeKey, modeStr);
-    
+
     // Sync legacy notifier
     isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
-    
+
     // Sync to Firestore if logged in
     final user = authService.currentUser;
     if (user != null) {
@@ -160,15 +171,20 @@ class AppBootstrap {
     } else {
       // Fallback to old boolean key migration
       try {
-         // Try reading as bool (legacy)
-         final bool? isDarkLegacy = prefs.getBool(IConst.themeModeKey);
-         if (isDarkLegacy != null) {
-           themeModeNotifier.value = isDarkLegacy ? ThemeMode.dark : ThemeMode.light;
-           // Migrate to string immediately
-           await prefs.setString(IConst.themeModeKey, _themeModeToString(themeModeNotifier.value));
-         } else {
-           themeModeNotifier.value = ThemeMode.system;
-         }
+        // Try reading as bool (legacy)
+        final bool? isDarkLegacy = prefs.getBool(IConst.themeModeKey);
+        if (isDarkLegacy != null) {
+          themeModeNotifier.value = isDarkLegacy
+              ? ThemeMode.dark
+              : ThemeMode.light;
+          // Migrate to string immediately
+          await prefs.setString(
+            IConst.themeModeKey,
+            _themeModeToString(themeModeNotifier.value),
+          );
+        } else {
+          themeModeNotifier.value = ThemeMode.system;
+        }
       } catch (e) {
         // If it fails, it might be because it's already a string
         final String? modeStr = prefs.getString(IConst.themeModeKey);
@@ -186,7 +202,7 @@ class AppBootstrap {
     } else {
       final defaultLocale = kIsWeb
           ? _defaultWebLocaleByHost()
-          : (Environment.isVivot ? const Locale('en') : const Locale('de'));
+          : _defaultMobileLocaleByDevice();
       appLocale.value = defaultLocale;
       if (kIsWeb) {
         debugPrint(
@@ -195,6 +211,10 @@ class AppBootstrap {
         );
       }
     }
+    Environment.applyBrandForLocale(
+      locale: appLocale.value,
+      webHost: kIsWeb ? Uri.base.host : null,
+    );
   }
 
   Locale _defaultWebLocaleByHost() {
@@ -205,12 +225,25 @@ class AppBootstrap {
     if (host == 'vivot.net' || host.endsWith('.vivot.net')) {
       return const Locale('en');
     }
-    return Environment.isVivot ? const Locale('en') : const Locale('de');
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final countryCode = locale.countryCode?.toUpperCase();
+    return countryCode != null && countryCode != 'DE'
+        ? const Locale('en')
+        : const Locale('de');
+  }
+
+  Locale _defaultMobileLocaleByDevice() {
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final countryCode = locale.countryCode?.toUpperCase();
+    return countryCode != null && countryCode != 'DE'
+        ? const Locale('en')
+        : const Locale('de');
   }
 
   Future<void> _initPetitionReasonSetting() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    showPetitionReasonNotifier.value = prefs.getBool('showPetitionReason') ?? false;
+    showPetitionReasonNotifier.value =
+        prefs.getBool('showPetitionReason') ?? false;
   }
 
   Locale? _localeFromString(String s) {
@@ -222,18 +255,25 @@ class AppBootstrap {
 
   String _themeModeToString(ThemeMode mode) {
     switch (mode) {
-      case ThemeMode.dark: return 'dark';
-      case ThemeMode.light: return 'light';
-      case ThemeMode.system: return 'system';
+      case ThemeMode.dark:
+        return 'dark';
+      case ThemeMode.light:
+        return 'light';
+      case ThemeMode.system:
+        return 'system';
     }
   }
 
   ThemeMode _themeModeFromString(String s) {
     switch (s) {
-      case 'dark': return ThemeMode.dark;
-      case 'light': return ThemeMode.light;
-      case 'system': return ThemeMode.system;
-      default: return ThemeMode.system;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'light':
+        return ThemeMode.light;
+      case 'system':
+        return ThemeMode.system;
+      default:
+        return ThemeMode.system;
     }
   }
 }

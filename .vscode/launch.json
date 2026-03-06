@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Flutter: StimmApp Dev (Debug)",
+			"name": "Flutter: StimmApp Dev (Debug Android)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
@@ -12,18 +12,17 @@
 			]
 		},
 		{
-			"name": "Flutter: StimmApp Dev Verbose (Debug)",
+			"name": "Flutter: StimmApp Dev (Debug iOS)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
-				"stimmappDev",
-				"-v"
+				"dev"
 			]
 		},
 		{
-			"name": "Flutter: StimmApp Prod (Debug)",
+			"name": "Flutter: StimmApp Prod (Debug Android)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
@@ -33,57 +32,24 @@
 			]
 		},
 		{
-			"name": "Flutter: StimmApp Prod (Profile)",
+			"name": "Flutter: StimmApp Prod (Debug iOS)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"args": [
+				"--flavor",
+				"prod"
+			]
+		},
+		{
+			"name": "Flutter: StimmApp Prod (Profile iOS)",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
 			"flutterMode": "profile",
 			"args": [
 				"--flavor",
-				"stimmappProd"
-			]
-		},
-		{
-			"name": "Flutter: StimmApp Prod (Release)",
-			"request": "launch",
-			"type": "dart",
-			"program": "lib/main.dart",
-			"flutterMode": "release",
-			"args": [
-				"--flavor",
-				"stimmappProd"
-			]
-		},
-		{
-			"name": "Flutter: Vivot Prod (Debug)",
-			"request": "launch",
-			"type": "dart",
-			"program": "lib/main_vivot.dart",
-			"args": [
-				"--flavor",
-				"vivotProd"
-			]
-		},
-		{
-			"name": "Flutter: Vivot Prod (Profile)",
-			"request": "launch",
-			"type": "dart",
-			"program": "lib/main_vivot.dart",
-			"flutterMode": "profile",
-			"args": [
-				"--flavor",
-				"vivotProd"
-			]
-		},
-		{
-			"name": "Flutter: Vivot Prod (Release)",
-			"request": "launch",
-			"type": "dart",
-			"program": "lib/main_vivot.dart",
-			"flutterMode": "release",
-			"args": [
-				"--flavor",
-				"vivotProd"
+				"prod"
 			]
 		},
 		{
@@ -98,13 +64,6 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
-			"deviceId": "chrome"
-		},
-		{
-			"name": "Flutter: Vivot Prod Web (Chrome)",
-			"request": "launch",
-			"type": "dart",
-			"program": "lib/main_vivot.dart",
 			"deviceId": "chrome"
 		}
 	]
