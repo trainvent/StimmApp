@@ -71,14 +71,14 @@ android {
     flavorDimensions += "app"
 
     productFlavors {
-        create("stimmappDev") {
+        create("dev") {
             dimension = "app"
             applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
             resValue("string", "app_name", "StimmApp Dev")
         }
-        create("stimmappProd") {
+        create("prod") {
             dimension = "app"
             applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.eu"

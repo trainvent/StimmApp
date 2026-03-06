@@ -147,22 +147,6 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build Android AAB (Vivot Release)",
-			"type": "shell",
-			"command": "flutter",
-			"args": [
-				"build",
-				"appbundle",
-				"--release",
-				"--flavor",
-				"vivotProd",
-				"-t",
-				"lib/main_vivot.dart"
-			],
-			"group": "build",
-			"problemMatcher": []
-		},
-		{
 			"label": "Build Android APK (Prod Release)",
 			"type": "shell",
 			"command": "flutter",
@@ -195,22 +179,6 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build Android APK (Vivot Release)",
-			"type": "shell",
-			"command": "flutter",
-			"args": [
-				"build",
-				"apk",
-				"--release",
-				"--flavor",
-				"vivotProd",
-				"-t",
-				"lib/main_vivot.dart"
-			],
-			"group": "build",
-			"problemMatcher": []
-		},
-		{
 			"label": "Build iOS IPA (Prod Release)",
 			"type": "shell",
 			"command": "flutter",
@@ -238,22 +206,6 @@
 				"dev",
 				"-t",
 				"lib/main_dev.dart"
-			],
-			"group": "build",
-			"problemMatcher": []
-		},
-		{
-			"label": "Build iOS IPA (Vivot Release)",
-			"type": "shell",
-			"command": "flutter",
-			"args": [
-				"build",
-				"ipa",
-				"--release",
-				"--flavor",
-				"vivotProd",
-				"-t",
-				"lib/main_vivot.dart"
 			],
 			"group": "build",
 			"problemMatcher": []
