@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -44,6 +45,10 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
   }
 
   Future<void> _uploadAndSave() async {
+    if (Environment.isDev) {
+      showErrorSnackBar('Profile pictures are disabled in dev mode');
+      return;
+    }
     if (_imageFile == null) {
       showErrorSnackBar(context.l10n.noImageSelected);
       return;
@@ -113,7 +118,18 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
         preview = Image.file(File(_imageFile!.path), fit: BoxFit.cover);
       }
     } else if (currentUrl != null) {
-      preview = Image.network(currentUrl, fit: BoxFit.cover);
+      preview = Image.network(
+        currentUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Center(
+          child: Text(
+            (authService.currentUser?.displayName ?? '').isNotEmpty
+                ? authService.currentUser!.displayName![0].toUpperCase()
+                : '?',
+            style: AppTextStyles.xxlBold,
+          ),
+        ),
+      );
     }
 
     return Scaffold(

@@ -26,14 +26,6 @@ class IConst {
 
   static const String imapServer = "imap.ionos.de";
 
-  static const String testMail = "testLeMarq@gmx.de";
-  static const String testSecurePassword = "8dsDk3,2a";
-  static const String testweakPassword = "12345678";
-  static const String testName = "Dummy";
-  static const String testSurname = "NPC";
-  static const String testLivingAddress =
-      "Hauptbahnhof, Bielefeld, Deutschland";
-
   static const String surveyTutorial =
       'https://www.bpb.de/system/files/dokument_pdf/M%2001.04%20Fragebogenerstellung_3.pdf';
   static const String petitionTutorial =
@@ -52,4 +44,12 @@ class IConst {
       Environment.config.revenueCatApiKeyProdAndroid;
   static String get revenueCatApiKeyProdIos =>
       Environment.config.revenueCatApiKeyProdIos;
+
+  static const String testMail = "testLeMarq@gmx.de";
+  static const String testSecurePassword = "8dsDk3,2a";
+  static const String testweakPassword = "12345678";
+  static const String testName = "Dummy";
+  static const String testSurname = "NPC";
+  static const String testLivingAddress =
+      "Hauptbahnhof, Bielefeld, Deutschland";
 }

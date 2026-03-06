@@ -49,8 +49,18 @@ class WidgetTree extends StatelessWidget {
                 icon: currentUrl != null
                     ? CircleAvatar(
                         radius: 18,
-                        backgroundImage: NetworkImage(currentUrl),
                         backgroundColor: Colors.transparent,
+                        child: ClipOval(
+                          child: Image.network(
+                            currentUrl,
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.person, size: 18);
+                            },
+                          ),
+                        ),
                       )
                     : const CircleAvatar(
                         radius: 18,

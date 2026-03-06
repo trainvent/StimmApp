@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 
 class HeroWidget extends StatelessWidget {
@@ -27,7 +28,7 @@ class HeroWidget extends StatelessWidget {
         builder: (context, constraints) {
           // Calculate 1/3 of the available width
           final size = constraints.maxWidth / 3;
-          
+
           return Center(
             child: SizedBox(
               width: size,
@@ -45,9 +46,17 @@ class HeroWidget extends StatelessWidget {
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  AppAssets.defaultAvatar,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                );
+                              },
                             )
                           : Image.asset(
-                              'assets/images/default_avatar.png',
+                              AppAssets.defaultAvatar,
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
@@ -85,7 +94,9 @@ class HeroWidget extends StatelessWidget {
                         child: Icon(
                           Icons.edit,
                           size: 16,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ),

@@ -9,7 +9,9 @@ import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -110,30 +112,31 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
 
       AppData.isAuthConnected.value = true; // Signal that auth is connected
 
-      // Try to upload a default profile picture from assets.
-      try {
-        // Load asset bytes
-        final bytes = await rootBundle.load('assets/images/default_avatar.png');
-        final Uint8List list = bytes.buffer.asUint8List();
+      // In dev/sandbox we can run without Storage to keep costs minimal.
+      if (!Environment.isDev) {
+        // Try to upload a default profile picture from assets.
+        try {
+          final bytes = await rootBundle.load(AppAssets.defaultAvatar);
+          final Uint8List list = bytes.buffer.asUint8List();
 
-        final xFile = XFile.fromData(
-          list,
-          name: 'default_avatar.png',
-          mimeType: 'image/png',
-        );
+          final xFile = XFile.fromData(
+            list,
+            name: 'default_avatar.png',
+            mimeType: 'image/png',
+          );
 
-        // Upload using the service (updates Firestore and notifier internally)
-        await ProfilePictureService.instance.uploadProfilePicture(
-          currentUser.uid,
-          xFile,
-          onProgress: (p) {
-            if (!mounted) return;
-            if ((p - _progress).abs() > 0.01) setState(() => _progress = p);
-          },
-        );
-      } catch (e, st) {
-        // don't block registration for asset/upload failures — log for debugging
-        debugPrint('Default avatar upload failed: $e\n$st');
+          await ProfilePictureService.instance.uploadProfilePicture(
+            currentUser.uid,
+            xFile,
+            onProgress: (p) {
+              if (!mounted) return;
+              if ((p - _progress).abs() > 0.01) setState(() => _progress = p);
+            },
+          );
+        } catch (e, st) {
+          // Don't block registration for asset/upload failures.
+          debugPrint('Default avatar upload failed: $e\n$st');
+        }
       }
 
       if (!mounted) return;

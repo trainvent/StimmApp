@@ -12,4 +12,5 @@ class AppAssets {
   static const String lottieRocket = 'assets/lotties/rocket.json';
   static const String lottieSnake = 'assets/lotties/snake.json';
   static const String lottieYeah = 'assets/lotties/yeah.json';
+  static const String defaultAvatar = 'assets/images/default_avatar.png';
 }
