@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/german_states.dart';
 
 class PlaceAddressInfo {
-  const PlaceAddressInfo({this.state, this.countryCode});
+  const PlaceAddressInfo({this.state, this.countryCode, this.town});
 
   final String? state;
   final String? countryCode;
+  final String? town;
 }
 
 class GooglePlacesService {
@@ -27,6 +28,7 @@ class GooglePlacesService {
         if (addressComponents != null) {
           String? state;
           String? countryCode;
+          String? town;
 
           for (final component in addressComponents) {
             final List<dynamic>? types = component['types'];
@@ -40,9 +42,19 @@ class GooglePlacesService {
             if (types.contains('country')) {
               countryCode = (component['shortText'] as String?)?.toUpperCase();
             }
+            if (town == null &&
+                (types.contains('locality') ||
+                    types.contains('postal_town') ||
+                    types.contains('administrative_area_level_3'))) {
+              town = component['longText'] as String?;
+            }
           }
 
-          return PlaceAddressInfo(state: state, countryCode: countryCode);
+          return PlaceAddressInfo(
+            state: state,
+            countryCode: countryCode,
+            town: town,
+          );
         }
       }
     } catch (e) {

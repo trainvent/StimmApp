@@ -26,6 +26,8 @@ class _TestHomeItem implements HomeItem {
   @override
   String? get stateOrRegion => state;
   @override
+  String? get town => null;
+  @override
   String? get city => null;
   @override
   final String? state;

@@ -2414,6 +2414,12 @@ abstract class AppLocalizations {
   /// **'Password must be at least 8 characters long'**
   String get passwordMustBeAtLeast8CharactersLong;
 
+  /// No description provided for @town.
+  ///
+  /// In en, this message translates to:
+  /// **'town'**
+  String get town;
+
   /// Password validation messages
   ///
   /// In en, this message translates to:

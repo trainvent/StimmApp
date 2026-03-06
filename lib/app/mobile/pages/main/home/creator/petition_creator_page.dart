@@ -90,7 +90,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     required String scopeType,
     String? scopeCountryCode,
     String? scopeStateOrRegion,
-    String? scopeCity,
+    String? scopeTown,
     required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
@@ -139,7 +139,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         scopeType: scopeType,
         countryCode: resolvedCountryCode,
         stateOrRegion: scopeStateOrRegion,
-        city: scopeCity,
+        town: scopeTown,
         imageUrl: imageUrl,
       );
 

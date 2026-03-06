@@ -40,7 +40,7 @@ class Poll implements HomeItem {
   @override
   final String? stateOrRegion;
   @override
-  final String? city;
+  final String? town;
 
   Poll({
     required this.id,
@@ -58,11 +58,16 @@ class Poll implements HomeItem {
     this.countryCode,
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
-    this.city,
-  }) : stateOrRegion = stateOrRegion ?? state;
+    String? town,
+    @Deprecated('Use town') String? city,
+  }) : stateOrRegion = stateOrRegion ?? state,
+       town = town ?? city;
 
   @override
   String? get state => stateOrRegion;
+
+  @override
+  String? get city => town;
 
   int get totalVotes => votes.values.fold(0, (a, b) => a + b);
 
@@ -85,7 +90,8 @@ class Poll implements HomeItem {
     String? countryCode,
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
-    String? city,
+    String? town,
+    @Deprecated('Use town') String? city,
   }) {
     return Poll(
       id: id ?? this.id,
@@ -102,7 +108,7 @@ class Poll implements HomeItem {
       continentCode: continentCode ?? this.continentCode,
       countryCode: countryCode ?? this.countryCode,
       stateOrRegion: stateOrRegion ?? state ?? this.stateOrRegion,
-      city: city ?? this.city,
+      town: town ?? city ?? this.town,
     );
   }
 
@@ -117,14 +123,16 @@ class Poll implements HomeItem {
     final countryCode = (data['countryCode'] as String?)?.toUpperCase();
     final stateOrRegion =
         data['stateOrRegion'] as String? ?? data['state'] as String?;
-    final city = data['city'] as String?;
+    final town = data['town'] as String? ?? data['city'] as String?;
     final scopeType = rawScopeType != null && rawScopeType.isNotEmpty
         ? formScopeTypeToFirestore(parseFormScopeType(rawScopeType))
-        : (stateOrRegion != null && stateOrRegion.isNotEmpty
+        : (town != null && town.isNotEmpty
+              ? formScopeTypeToFirestore(FormScopeType.city)
+              : (stateOrRegion != null && stateOrRegion.isNotEmpty
               ? formScopeTypeToFirestore(FormScopeType.stateOrRegion)
               : (countryCode != null && countryCode.isNotEmpty
                     ? formScopeTypeToFirestore(FormScopeType.country)
-                    : formScopeTypeToFirestore(FormScopeType.global)));
+                    : formScopeTypeToFirestore(FormScopeType.global))));
 
     return Poll(
       id: snap.id,
@@ -147,7 +155,7 @@ class Poll implements HomeItem {
       continentCode: data['continentCode'] as String?,
       countryCode: countryCode,
       stateOrRegion: stateOrRegion,
-      city: city,
+      town: town,
     );
   }
 
@@ -169,7 +177,8 @@ class Poll implements HomeItem {
       'stateOrRegion': p.stateOrRegion,
       // Legacy compatibility for clients still reading `state`.
       'state': p.stateOrRegion,
-      'city': p.city,
+      'town': p.town,
+      'city': p.town,
     };
   }
 }

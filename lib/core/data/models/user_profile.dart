@@ -39,6 +39,7 @@ class UserProfile {
   final DateTime? expiryDate;
   final String? idNumber;
   final String? address;
+  final String? town;
   final String? height;
 
   bool get isAdmin => email == IConst.adminEmail;
@@ -67,6 +68,7 @@ class UserProfile {
     this.expiryDate,
     this.idNumber,
     this.address,
+    this.town,
     this.height,
     this.isPro,
     this.wentProAt,
@@ -96,6 +98,7 @@ class UserProfile {
     DateTime? expiryDate,
     String? idNumber,
     String? address,
+    String? town,
     String? height,
     bool? isPro,
     DateTime? wentProAt,
@@ -129,6 +132,7 @@ class UserProfile {
       expiryDate: expiryDate ?? this.expiryDate,
       idNumber: idNumber ?? this.idNumber,
       address: address ?? this.address,
+      town: town ?? this.town,
       height: height ?? this.height,
       isPro: forcedPro ? true : (isPro ?? this.isPro),
       wentProAt: wentProAt ?? this.wentProAt,
@@ -164,6 +168,7 @@ class UserProfile {
       expiryDate: (json['expiryDate'] as Timestamp?)?.toDate(),
       idNumber: json['idNumber'] as String?,
       address: json['address'] as String?,
+      town: json['town'] as String? ?? json['city'] as String?,
       height: json['height'] as String?,
       isPro: forcedPro ? true : json['isPro'] as bool?,
       wentProAt: (json['wentProAt'] as Timestamp?)?.toDate(),
@@ -197,6 +202,7 @@ class UserProfile {
       'expiryDate': expiryDate != null ? Timestamp.fromDate(expiryDate!) : null,
       'idNumber': idNumber,
       'address': address,
+      'town': town,
       'height': height,
       'isPro': shouldForcePro(email) ? true : isPro,
       'wentProAt': wentProAt != null ? Timestamp.fromDate(wentProAt!) : null,

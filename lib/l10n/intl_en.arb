@@ -435,6 +435,7 @@
 			}
 		}
 	},
+	"town": "town",
 	"passwordValidation": "Password must contain at least one {type, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character} other{valid character}}",
 	"delete": "delete",
 	"areYouSureYouWantToClearThisDraft": "Are you sure you want to clear this draft?",

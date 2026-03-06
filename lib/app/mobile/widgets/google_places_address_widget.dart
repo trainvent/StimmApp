@@ -9,6 +9,7 @@ class GooglePlacesAddressWidget extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onStateChanged,
+    this.onTownChanged,
     this.onCountryCodeChanged,
     this.countries,
     this.validator,
@@ -16,6 +17,7 @@ class GooglePlacesAddressWidget extends StatelessWidget {
 
   final TextEditingController controller;
   final ValueChanged<String?> onStateChanged;
+  final ValueChanged<String?>? onTownChanged;
   final ValueChanged<String?>? onCountryCodeChanged;
   final List<String>? countries;
   final String? Function(String?)? validator;
@@ -54,6 +56,7 @@ class GooglePlacesAddressWidget extends StatelessWidget {
             prediction.placeId!,
           );
           onStateChanged(info.state);
+          onTownChanged?.call(info.town);
           onCountryCodeChanged?.call(info.countryCode);
         }
       },

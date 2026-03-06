@@ -205,6 +205,11 @@ class ProfilePage extends StatelessWidget {
                               userProfile.state,
                             ),
                           _buildDetailTile(
+                            context,
+                            context.l10n.town,
+                            userProfile.town,
+                          ),
+                          _buildDetailTile(
                             key: keys.profilePage.changeEmailListTile,
                             context,
                             context.l10n.email,
@@ -307,9 +312,8 @@ class ProfilePage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BlockedUsersPage(
-                                  userId: currentUser.uid,
-                                ),
+                                builder: (context) =>
+                                    BlockedUsersPage(userId: currentUser.uid),
                               ),
                             );
                           },

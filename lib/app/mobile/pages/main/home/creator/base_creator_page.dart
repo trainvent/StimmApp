@@ -29,7 +29,7 @@ class BaseCreatorPage extends StatefulWidget {
     required String scopeType,
     String? scopeCountryCode,
     String? scopeStateOrRegion,
-    String? scopeCity,
+    String? scopeTown,
     required int durationDays,
   })
   onSubmit;
@@ -46,7 +46,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
   FormScopeType _selectedScope = FormScopeType.country;
-  final TextEditingController _scopeCityController = TextEditingController();
+  final TextEditingController _scopeTownController = TextEditingController();
   bool _supportsStateScope = false;
   String? _profileCountryCode;
   String? _profileStateOrRegion;
@@ -60,17 +60,17 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     _loadDraft();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
-    _scopeCityController.addListener(_saveDraft);
+    _scopeTownController.addListener(_saveDraft);
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_saveDraft);
     _descriptionController.removeListener(_saveDraft);
-    _scopeCityController.removeListener(_saveDraft);
+    _scopeTownController.removeListener(_saveDraft);
     _titleController.dispose();
     _descriptionController.dispose();
-    _scopeCityController.dispose();
+    _scopeTownController.dispose();
     super.dispose();
   }
 
@@ -105,7 +105,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     final draftDescription = prefs.getString('${_draftKey}_description');
     final draftTags = prefs.getStringList('${_draftKey}_tags');
     final draftScopeType = prefs.getString('${_draftKey}_scopeType');
-    final draftCity = prefs.getString('${_draftKey}_scopeCity');
+    final draftTown =
+        prefs.getString('${_draftKey}_scopeTown') ??
+        prefs.getString('${_draftKey}_scopeCity');
     final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
     final draftDuration = prefs.getInt('${_draftKey}_duration');
 
@@ -130,7 +132,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
             _selectedScope == FormScopeType.stateOrRegion) {
           _selectedScope = FormScopeType.country;
         }
-        if (draftCity != null) _scopeCityController.text = draftCity;
+        if (draftTown != null) _scopeTownController.text = draftTown;
         if (draftDuration != null) _durationDays = draftDuration;
       });
     }
@@ -148,7 +150,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       '${_draftKey}_scopeType',
       formScopeTypeToFirestore(_selectedScope),
     );
-    await prefs.setString('${_draftKey}_scopeCity', _scopeCityController.text);
+    await prefs.setString('${_draftKey}_scopeTown', _scopeTownController.text);
+    await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.setInt('${_draftKey}_duration', _durationDays);
   }
@@ -159,6 +162,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_description');
     await prefs.remove('${_draftKey}_tags');
     await prefs.remove('${_draftKey}_scopeType');
+    await prefs.remove('${_draftKey}_scopeTown');
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.remove('${_draftKey}_duration');
@@ -171,7 +175,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _descriptionController.clear();
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
-      _scopeCityController.clear();
+      _scopeTownController.clear();
       _durationDays = 28;
     });
   }
@@ -197,8 +201,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
     if (_selectedScope == FormScopeType.city &&
-        _scopeCityController.text.trim().isEmpty) {
-      showErrorSnackBar('Please enter a city');
+        _scopeTownController.text.trim().isEmpty) {
+      showErrorSnackBar('Please enter a town');
       return;
     }
     if (_selectedScope != FormScopeType.global &&
@@ -209,7 +213,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     final scopeType = formScopeTypeToFirestore(_selectedScope);
     String? scopeCountryCode;
     String? scopeStateOrRegion;
-    String? scopeCity;
+    String? scopeTown;
     switch (_selectedScope) {
       case FormScopeType.global:
         break;
@@ -225,7 +229,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.city:
         scopeCountryCode = _profileCountryCode;
         scopeStateOrRegion = _profileStateOrRegion;
-        scopeCity = _scopeCityController.text.trim();
+        scopeTown = _scopeTownController.text.trim();
         break;
     }
 
@@ -239,7 +243,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         scopeType: scopeType,
         scopeCountryCode: scopeCountryCode,
         scopeStateOrRegion: scopeStateOrRegion,
-        scopeCity: scopeCity,
+        scopeTown: scopeTown,
         durationDays: _durationDays,
       );
       await _clearDraft(); // Clear draft on successful submission
@@ -364,7 +368,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.stateOrRegion:
         return 'State / Region';
       case FormScopeType.city:
-        return 'City';
+        return 'Town';
     }
   }
 
@@ -527,15 +531,15 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               const SizedBox(height: 10),
               if (_selectedScope == FormScopeType.city) ...[
                 TextFormField(
-                  controller: _scopeCityController,
+                  controller: _scopeTownController,
                   decoration: const InputDecoration(
-                    labelText: 'City',
+                    labelText: 'Town',
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (_selectedScope == FormScopeType.city &&
                         (value == null || value.trim().isEmpty)) {
-                      return 'Please enter a city';
+                      return 'Please enter a town';
                     }
                     return null;
                   },

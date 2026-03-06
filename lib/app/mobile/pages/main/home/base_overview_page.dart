@@ -136,18 +136,23 @@ class _BaseOverviewPageState<T extends HomeItem>
         userProfile?.countryCode?.toUpperCase() ??
         (userProfile?.supportsStateScope == true ? 'DE' : null);
     final userStateOrRegion = userProfile?.state;
+    final userTown = userProfile?.town?.trim().toLowerCase();
     final itemCountryCode = item.countryCode?.toUpperCase();
     final itemStateOrRegion = item.stateOrRegion;
+    final itemTown = item.town?.trim().toLowerCase();
 
     final hasLegacyScopeData =
         (itemCountryCode != null && itemCountryCode.isNotEmpty) ||
-        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty);
+        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) ||
+        (itemTown != null && itemTown.isNotEmpty);
     final normalizedScopeType = item.scopeType.isEmpty
-        ? (hasLegacyScopeData
-              ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
-                    ? 'stateOrRegion'
-                    : 'country')
-              : 'global')
+        ? (itemTown != null && itemTown.isNotEmpty
+              ? 'city'
+              : (hasLegacyScopeData
+                    ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
+                          ? 'stateOrRegion'
+                          : 'country')
+                    : 'global'))
         : item.scopeType;
 
     switch (normalizedScopeType) {
@@ -170,15 +175,18 @@ class _BaseOverviewPageState<T extends HomeItem>
         }
         return userStateOrRegion == itemStateOrRegion;
       case 'city':
-        // City scoping is optional in the current app.
-        // Without a user city in profile, fallback to country/state checks.
+      case 'town':
         if (userCountryCode == null || userCountryCode.isEmpty) return false;
         if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
         if (userCountryCode != itemCountryCode) return false;
-        if (itemStateOrRegion == null || itemStateOrRegion.isEmpty) {
+        if (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) {
+          if (userStateOrRegion != itemStateOrRegion) return false;
+        }
+        if (itemTown == null || itemTown.isEmpty) {
           return true;
         }
-        return userStateOrRegion == itemStateOrRegion;
+        if (userTown == null || userTown.isEmpty) return false;
+        return userTown == itemTown;
       default:
         return true;
     }

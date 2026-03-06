@@ -1232,6 +1232,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password must be at least 8 characters long';
 
   @override
+  String get town => 'town';
+
+  @override
   String passwordValidation(String type) {
     String _temp0 = intl.Intl.selectLogic(type, {
       'uppercase': 'uppercase letter',

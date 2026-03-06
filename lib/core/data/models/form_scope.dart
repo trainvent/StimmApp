@@ -11,6 +11,7 @@ FormScopeType parseFormScopeType(String? raw) {
     case 'stateOrRegion':
       return FormScopeType.stateOrRegion;
     case 'city':
+    case 'town':
       return FormScopeType.city;
     default:
       return FormScopeType.global;

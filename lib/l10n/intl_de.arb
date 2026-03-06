@@ -417,6 +417,7 @@
 	"petitionTutorialStep5": "Bei Erreichen von 30.000 Unterschriften erhält der Petent das Recht, sein Anliegen in einer öffentlichen Anhörung vorzutragen.",
 	"limitThisPetitionToYourState": "Diese Petition auf Ihr Bundesland beschränken?",
 	"source": "Quelle",
+	"town": "Bezirk",
 	"viewInstitutionalGuide": "Institutionellen Leitfaden ansehen",
 	"weCannotProvideSecureVerificationYetButWeAreWorking": "Wir können noch keine sichere Verifizierung anbieten, arbeiten aber daran.",
 	"enterVerificationCode": "Bestätigungscode eingeben",

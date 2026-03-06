@@ -22,6 +22,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
     with WidgetsBindingObserver {
   String? _selectedState;
   String? _selectedCountryCode;
+  String? _selectedTown;
   final TextEditingController _controllerAddress = TextEditingController();
   String errorMessage = '';
   final _formKey = GlobalKey<FormState>();
@@ -45,6 +46,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
       setState(() {
         _selectedState = userProfile.state;
         _selectedCountryCode = userProfile.countryCode;
+        _selectedTown = userProfile.town;
         _controllerAddress.text = userProfile.address ?? '';
       });
     }
@@ -77,6 +79,11 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                           onStateChanged: (state) {
                             setState(() {
                               _selectedState = state;
+                            });
+                          },
+                          onTownChanged: (town) {
+                            setState(() {
+                              _selectedTown = town;
                             });
                           },
                           onCountryCodeChanged: (countryCode) {
@@ -124,6 +131,10 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
               showErrorSnackBar(context.l10n.enterSomething);
               return;
             }
+            if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
+              showErrorSnackBar('Please select an address with a town');
+              return;
+            }
             if (_requiresStateScope && _selectedState == null) {
               showErrorSnackBar(
                 context.l10n.weFailedToGetYourStatePleaseProofreadYourLivingaddress,
@@ -141,6 +152,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                       state: _requiresStateScope ? _selectedState : null,
                       countryCode: _selectedCountryCode,
                       address: _controllerAddress.text,
+                      town: _selectedTown,
                     );
                 await userRepository.upsert(updatedProfile);
               } catch (e) {

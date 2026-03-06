@@ -40,6 +40,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   DateTime? _selectedDateOfBirth;
   String? _selectedState;
   String? _selectedCountryCode;
+  String? _selectedTown;
   String errorMessage = '';
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
@@ -67,6 +68,11 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
 
       if (controllerAddress.text.trim().isEmpty) {
         showErrorSnackBar(S.of(context).faultyInput);
+        return;
+      }
+
+      if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
+        showErrorSnackBar('Please select an address with a town');
         return;
       }
 
@@ -105,6 +111,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         givenName: controllerGivenName.text,
         dateOfBirth: _selectedDateOfBirth,
         address: controllerAddress.text,
+        town: _selectedTown,
         acceptedCommunityRulesAt: DateTime.now(),
       );
 
@@ -166,8 +173,6 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       showErrorSnackBar(errorMessage);
     }
   }
-
-  final _textController = TextEditingController();
 
   Future<void> _openUrl(String url) async {
     final couldNotOpenLink = context.l10n.couldNotOpenLink;
@@ -276,10 +281,15 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ],
                     GooglePlacesAddressWidget(
                       key: const Key('addressTextField'),
-                      controller: _textController,
+                      controller: controllerAddress,
                       onStateChanged: (state) {
                         setState(() {
                           _selectedState = state;
+                        });
+                      },
+                      onTownChanged: (town) {
+                        setState(() {
+                          _selectedTown = town;
                         });
                       },
                       onCountryCodeChanged: (countryCode) {
@@ -293,6 +303,9 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return S.of(context).faultyInput;
+                        }
+                        if (_selectedTown == null || _selectedTown!.isEmpty) {
+                          return 'Please select an address with a town';
                         }
                         return null;
                       },
@@ -339,10 +352,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     _autoValidateMode = AutovalidateMode.onUserInteraction;
                   });
 
-                  // Update controllerAddress with _textController.text before validating
-                  controllerAddress.text = _textController.text;
-
-                  if (_textController.text.trim().isEmpty) {
+                  if (controllerAddress.text.trim().isEmpty) {
                     showErrorSnackBar(S.of(context).faultyInput);
                     // Force validation to show error on address field if it has a validator
                     _formKey.currentState!.validate();

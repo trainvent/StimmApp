@@ -29,7 +29,7 @@ class Petition implements HomeItem {
   @override
   final String? stateOrRegion;
   @override
-  final String? city;
+  final String? town;
   final String? imageUrl;
 
   Petition({
@@ -47,12 +47,17 @@ class Petition implements HomeItem {
     this.countryCode,
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
-    this.city,
+    String? town,
+    @Deprecated('Use town') String? city,
     this.imageUrl,
-  }) : stateOrRegion = stateOrRegion ?? state;
+  }) : stateOrRegion = stateOrRegion ?? state,
+       town = town ?? city;
 
   @override
   String? get state => stateOrRegion;
+
+  @override
+  String? get city => town;
 
   @override
   int get participantCount => signatureCount;
@@ -72,7 +77,8 @@ class Petition implements HomeItem {
     String? countryCode,
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
-    String? city,
+    String? town,
+    @Deprecated('Use town') String? city,
     String? imageUrl,
   }) {
     return Petition(
@@ -89,7 +95,7 @@ class Petition implements HomeItem {
       continentCode: continentCode ?? this.continentCode,
       countryCode: countryCode ?? this.countryCode,
       stateOrRegion: stateOrRegion ?? state ?? this.stateOrRegion,
-      city: city ?? this.city,
+      town: town ?? city ?? this.town,
       imageUrl: imageUrl ?? this.imageUrl,
     );
   }
@@ -105,14 +111,16 @@ class Petition implements HomeItem {
     final countryCode = (data['countryCode'] as String?)?.toUpperCase();
     final stateOrRegion =
         data['stateOrRegion'] as String? ?? data['state'] as String?;
-    final city = data['city'] as String?;
+    final town = data['town'] as String? ?? data['city'] as String?;
     final scopeType = rawScopeType != null && rawScopeType.isNotEmpty
         ? formScopeTypeToFirestore(parseFormScopeType(rawScopeType))
-        : (stateOrRegion != null && stateOrRegion.isNotEmpty
+        : (town != null && town.isNotEmpty
+              ? formScopeTypeToFirestore(FormScopeType.city)
+              : (stateOrRegion != null && stateOrRegion.isNotEmpty
               ? formScopeTypeToFirestore(FormScopeType.stateOrRegion)
               : (countryCode != null && countryCode.isNotEmpty
                     ? formScopeTypeToFirestore(FormScopeType.country)
-                    : formScopeTypeToFirestore(FormScopeType.global)));
+                    : formScopeTypeToFirestore(FormScopeType.global))));
 
     return Petition(
       id: snap.id,
@@ -130,7 +138,7 @@ class Petition implements HomeItem {
       continentCode: data['continentCode'] as String?,
       countryCode: countryCode,
       stateOrRegion: stateOrRegion,
-      city: city,
+      town: town,
       imageUrl: data['imageUrl'] as String?,
     );
   }
@@ -152,7 +160,8 @@ class Petition implements HomeItem {
       'stateOrRegion': p.stateOrRegion,
       // Legacy compatibility for clients still reading `state`.
       'state': p.stateOrRegion,
-      'city': p.city,
+      'town': p.town,
+      'city': p.town,
       'imageUrl': p.imageUrl,
     };
   }
