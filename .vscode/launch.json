@@ -5,6 +5,7 @@
 			"name": "Flutter: StimmApp Dev (Debug)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
@@ -15,6 +16,7 @@
 			"name": "Flutter: StimmApp Dev Verbose (Debug)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
@@ -26,6 +28,7 @@
 			"name": "Flutter: StimmApp Prod (Debug)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main.dart",
 			"args": [
 				"--flavor",
@@ -36,6 +39,7 @@
 			"name": "Flutter: StimmApp Prod (Profile)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main.dart",
 			"flutterMode": "profile",
 			"args": [
@@ -47,6 +51,7 @@
 			"name": "Flutter: StimmApp Prod (Release)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main.dart",
 			"flutterMode": "release",
 			"args": [
@@ -58,6 +63,7 @@
 			"name": "Flutter: Vivot Prod (Debug)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_vivot.dart",
 			"args": [
 				"--flavor",
@@ -68,6 +74,7 @@
 			"name": "Flutter: Vivot Prod (Profile)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_vivot.dart",
 			"flutterMode": "profile",
 			"args": [
@@ -79,6 +86,7 @@
 			"name": "Flutter: Vivot Prod (Release)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_vivot.dart",
 			"flutterMode": "release",
 			"args": [

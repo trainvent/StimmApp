@@ -2,6 +2,96 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Android: Start AVD (Medium_Phone_API_36.1)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/vscode_avd.sh",
+				"ensure-any",
+				"Medium_Phone_API_36.1"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Wait For Emulator Boot (Medium_Phone_API_36.1)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"true"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Ensure Emulator Ready",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Android: Start AVD (Medium_Phone_API_36.1)",
+				"Android: Wait For Emulator Boot (Medium_Phone_API_36.1)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Start AVD (Medium_Tablet)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/vscode_avd.sh",
+				"ensure-specific",
+				"Medium_Tablet"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Wait For Emulator Boot (Medium_Tablet)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"true"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Ensure Medium Tablet Ready",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Android: Start AVD (Medium_Tablet)",
+				"Android: Wait For Emulator Boot (Medium_Tablet)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Start AVD (small_tablet)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/vscode_avd.sh",
+				"ensure-specific",
+				"small_tablet"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Wait For Emulator Boot (small_tablet)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"true"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Android: Ensure Small Tablet Ready",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Android: Start AVD (small_tablet)",
+				"Android: Wait For Emulator Boot (small_tablet)"
+			],
+			"problemMatcher": []
+		},
+		{
 			"label": "Flutter: Pub Get",
 			"type": "shell",
 			"command": "flutter",
