@@ -17,7 +17,7 @@ flutter run --debug -d chrome -t lib/main_dev.dart
 firebase deploy --only hosting --project stimmapp-dev
 
 # dev: android app debug run
-flutter run --debug --flavor stimmappDev -t lib/main_dev.dart
+flutter run --debug --flavor dev -t lib/main_dev.dart
 
 # dev: test links with
 # https://stimmapp-dev.web.app/petition/<id>
@@ -30,7 +30,7 @@ flutter run --debug --flavor stimmappDev -t lib/main_dev.dart
 firebase deploy --only hosting --project stimmapp-f0141
 
 # prod: build Android release bundle
-flutter build appbundle --release --flavor stimmappProd -t lib/main.dart
+flutter build appbundle --release --flavor prod -t lib/main.dart
 
 # prod: test links with
 # https://stimmapp.eu/petition/<id>

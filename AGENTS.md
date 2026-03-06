@@ -121,7 +121,7 @@ patrol test -t integration_test/simple_flow_test.dart
 ## 7. Release Checklist
 *   [ ] Increment `version` in `pubspec.yaml`.
 *   [ ] Ensure the selected flavor and entrypoint match the target brand.
-*   [ ] StimmApp prod: `flutter build appbundle --release --flavor stimmappProd -t lib/main.dart`
+*   [ ] StimmApp prod: `flutter build appbundle --release --flavor prod -t lib/main.dart`
 *   [ ] Vivot prod: `flutter build appbundle --release --flavor vivotProd -t lib/main_vivot.dart`
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
