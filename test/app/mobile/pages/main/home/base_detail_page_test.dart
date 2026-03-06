@@ -18,7 +18,15 @@ class _TestHomeItem implements HomeItem {
   @override
   final String status;
   @override
+  String get scopeType => 'global';
+  @override
+  String? get continentCode => null;
+  @override
   String? get countryCode => null;
+  @override
+  String? get stateOrRegion => state;
+  @override
+  String? get city => null;
   @override
   final String? state;
   @override

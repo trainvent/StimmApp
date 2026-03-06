@@ -5,7 +5,7 @@
 # - dev web must be built with lib/main_dev.dart
 # - prod web must be built with lib/main.dart
 # - vivot mobile must be built with lib/main_vivot.dart
-# - firebase aliases: dev, prod, vivotProd
+# - firebase aliases: dev, prod, prod
 
 # dev: local web debug
 flutter run --debug -d chrome -t lib/main_dev.dart
@@ -37,13 +37,13 @@ flutter build appbundle --release --flavor prod -t lib/main.dart
 # https://stimmapp.eu/poll/<id>
 
 # vivot: android debug run
-flutter run --debug --flavor vivotProd -t lib/main_vivot.dart
+flutter run --debug --flavor prod -t lib/main_vivot.dart
 
 # vivot: build Android release bundle
-flutter build appbundle --release --flavor vivotProd -t lib/main_vivot.dart
+flutter build appbundle --release --flavor prod -t lib/main_vivot.dart
 
 # vivot: build iOS archive/ipa on macOS
-flutter build ipa --release --flavor vivotProd -t lib/main_vivot.dart
+flutter build ipa --release --flavor prod -t lib/main_vivot.dart
 
 # vivot: test links with
 # https://vivot.net/petition/<id>
@@ -66,7 +66,7 @@ firebase deploy --only functions --project vivot-prod
 # firebase: deploy functions per alias
 firebase deploy --only functions --project dev
 firebase deploy --only functions --project prod
-firebase deploy --only functions --project vivotProd
+firebase deploy --only functions --project prod
 
 # firebase: set SMTP secret for Vivot
 firebase functions:secrets:set SMTP_PASSWORD --project vivot-prod

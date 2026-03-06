@@ -131,6 +131,59 @@ class _BaseOverviewPageState<T extends HomeItem>
     );
   }
 
+  bool _isVisibleForUser({required T item, required UserProfile? userProfile}) {
+    final userCountryCode =
+        userProfile?.countryCode?.toUpperCase() ??
+        (userProfile?.supportsStateScope == true ? 'DE' : null);
+    final userStateOrRegion = userProfile?.state;
+    final itemCountryCode = item.countryCode?.toUpperCase();
+    final itemStateOrRegion = item.stateOrRegion;
+
+    final hasLegacyScopeData =
+        (itemCountryCode != null && itemCountryCode.isNotEmpty) ||
+        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty);
+    final normalizedScopeType = item.scopeType.isEmpty
+        ? (hasLegacyScopeData
+              ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
+                    ? 'stateOrRegion'
+                    : 'country')
+              : 'global')
+        : item.scopeType;
+
+    switch (normalizedScopeType) {
+      case 'global':
+        return true;
+      case 'continent':
+        // Continent support is optional in the current app.
+        // Treat this as globally visible until user continent is modeled.
+        return true;
+      case 'country':
+        if (userCountryCode == null || userCountryCode.isEmpty) return false;
+        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
+        return userCountryCode == itemCountryCode;
+      case 'stateOrRegion':
+        if (userCountryCode == null || userCountryCode.isEmpty) return false;
+        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
+        if (userCountryCode != itemCountryCode) return false;
+        if (itemStateOrRegion == null || itemStateOrRegion.isEmpty) {
+          return true;
+        }
+        return userStateOrRegion == itemStateOrRegion;
+      case 'city':
+        // City scoping is optional in the current app.
+        // Without a user city in profile, fallback to country/state checks.
+        if (userCountryCode == null || userCountryCode.isEmpty) return false;
+        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
+        if (userCountryCode != itemCountryCode) return false;
+        if (itemStateOrRegion == null || itemStateOrRegion.isEmpty) {
+          return true;
+        }
+        return userStateOrRegion == itemStateOrRegion;
+      default:
+        return true;
+    }
+  }
+
   Widget _buildItemList(String status) {
     return FutureBuilder<UserProfile?>(
       future: _userProfileFuture,
@@ -154,27 +207,14 @@ class _BaseOverviewPageState<T extends HomeItem>
                   return const Center(child: TriangleLoadingIndicator());
                 }
                 var items = snap.data ?? const [];
-
-                final userCountryCode =
-                    userProfile?.countryCode?.toUpperCase() ??
-                    (userProfile?.supportsStateScope == true ? 'DE' : null);
-                if (userCountryCode != null && userCountryCode.isNotEmpty) {
-                  items = items.where((p) {
-                    final itemCountryCode = p.countryCode?.toUpperCase();
-                    if (itemCountryCode == null || itemCountryCode.isEmpty) {
-                      // Legacy forms without countryCode are treated as DE-only.
-                      return userCountryCode == 'DE';
-                    }
-                    return itemCountryCode == userCountryCode;
-                  }).toList();
-                }
-
-                if (userProfile?.supportsStateScope == true) {
-                  final userState = userProfile?.state;
-                  items = items.where((p) {
-                    return p.state == null || p.state == userState;
-                  }).toList();
-                }
+                items = items
+                    .where(
+                      (item) => _isVisibleForUser(
+                        item: item,
+                        userProfile: userProfile,
+                      ),
+                    )
+                    .toList();
 
                 if (blockedIds.isNotEmpty) {
                   items = items

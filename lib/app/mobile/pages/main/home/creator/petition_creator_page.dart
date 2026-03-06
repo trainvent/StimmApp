@@ -87,7 +87,10 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     required String title,
     required String description,
     required List<String> tags,
-    required bool isStateDependent,
+    required String scopeType,
+    String? scopeCountryCode,
+    String? scopeStateOrRegion,
+    String? scopeCity,
     required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
@@ -117,13 +120,10 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       final userProfile = await UserRepository.create().getById(
         currentUser.uid,
       );
-      final countryCode =
+      final resolvedCountryCode =
+          scopeCountryCode?.toUpperCase() ??
           userProfile?.countryCode?.toUpperCase() ??
           (userProfile?.supportsStateScope == true ? 'DE' : null);
-      String? state;
-      if (isStateDependent && userProfile?.supportsStateScope == true) {
-        state = userProfile?.state;
-      }
 
       final now = DateTime.now();
       final petition = Petition(
@@ -136,8 +136,10 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
         status: IConst.active,
-        countryCode: countryCode,
-        state: state,
+        scopeType: scopeType,
+        countryCode: resolvedCountryCode,
+        stateOrRegion: scopeStateOrRegion,
+        city: scopeCity,
         imageUrl: imageUrl,
       );
 

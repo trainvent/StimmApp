@@ -122,7 +122,6 @@ patrol test -t integration_test/simple_flow_test.dart
 *   [ ] Increment `version` in `pubspec.yaml`.
 *   [ ] Ensure the selected flavor and entrypoint match the target brand.
 *   [ ] StimmApp prod: `flutter build appbundle --release --flavor prod -t lib/main.dart`
-*   [ ] Vivot prod: `flutter build appbundle --release --flavor vivotProd -t lib/main_vivot.dart`
 *   [ ] Verify `googlePlacesApiKey` is restricted.
 *   [ ] Run integration tests.
 *   [ ] Functions deploy target is correct: `firebase deploy --only functions --project <alias>`
@@ -130,7 +129,6 @@ patrol test -t integration_test/simple_flow_test.dart
 ## 8. Firebase Aliases
 *   `dev` -> `stimmapp-dev`
 *   `prod` -> `stimmapp-f0141`
-*   `vivotProd` -> `vivot-prod`
 
 # CI / iOS build hints:
 # - Ensure CI runs: `flutter pub get` before any `pod install`.

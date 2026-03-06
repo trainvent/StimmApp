@@ -1,8 +1,6 @@
 {
-  "projects": {
-    "default": "stimmapp-dev",
-    "dev": "stimmapp-dev",
-    "prod": "stimmapp-f0141",
-    "vivotProd": "vivot-prod"
-  }
-}
+	"projects": {
+		"default": "stimmapp-dev",
+		"dev": "stimmapp-dev",
+		"prod": "stimmapp-f0141",
+	}

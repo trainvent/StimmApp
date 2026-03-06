@@ -4,7 +4,11 @@ abstract class HomeItem {
   String get description;
   String get createdBy;
   String get status;
+  String get scopeType;
+  String? get continentCode;
   String? get countryCode;
+  String? get stateOrRegion;
+  String? get city;
   String? get state;
   DateTime get expiresAt;
   int get participantCount;

@@ -65,7 +65,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     required String title,
     required String description,
     required List<String> tags,
-    required bool isStateDependent,
+    required String scopeType,
+    String? scopeCountryCode,
+    String? scopeStateOrRegion,
+    String? scopeCity,
     required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
@@ -107,13 +110,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       final userProfile = await UserRepository.create().getById(
         currentUser.uid,
       );
-      final countryCode =
+      final resolvedCountryCode =
+          scopeCountryCode?.toUpperCase() ??
           userProfile?.countryCode?.toUpperCase() ??
           (userProfile?.supportsStateScope == true ? 'DE' : null);
-      String? state;
-      if (isStateDependent && userProfile?.supportsStateScope == true) {
-        state = userProfile?.state;
-      }
 
       final now = DateTime.now();
       final poll = Poll(
@@ -126,8 +126,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         createdBy: currentUser.uid,
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
-        countryCode: countryCode,
-        state: state,
+        scopeType: scopeType,
+        countryCode: resolvedCountryCode,
+        stateOrRegion: scopeStateOrRegion,
+        city: scopeCity,
       );
 
       List<Poll> matchedTitles = await PollRepository.create()

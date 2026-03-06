@@ -1,11 +1,6 @@
-enum AppFlavor {
-  stimmappDev,
-  stimmappProd,
-  vivotDev,
-  vivotProd,
-}
+enum AppFlavor { stimmappDev, stimmappProd }
 
-enum AppBrand { stimmapp, vivot }
+enum AppBrand { stimmapp }
 
 class BrandConfig {
   const BrandConfig({
@@ -37,8 +32,8 @@ class BrandConfig {
   final String revenueCatApiKeyProdIos;
 
   bool get isDev => switch (flavor) {
-    AppFlavor.stimmappDev || AppFlavor.vivotDev => true,
-    AppFlavor.stimmappProd || AppFlavor.vivotProd => false,
+    AppFlavor.stimmappDev => true,
+    AppFlavor.stimmappProd => false,
   };
 
   bool get isProd => !isDev;
@@ -69,36 +64,6 @@ class BrandConfig {
     termsOfServiceUrl: 'https://www.stimmapp.eu/terms-of-service',
     faqUrl: 'https://www.stimmapp.eu/faq',
     shareHost: 'stimmapp.eu',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
-  );
-
-  static const BrandConfig vivotDev = BrandConfig(
-    flavor: AppFlavor.vivotDev,
-    brand: AppBrand.vivot,
-    appName: 'Vivot Dev',
-    supportEmail: 'support@trainvent.com',
-    privacyPolicyUrl: 'https://vivot.net/privacy',
-    termsOfServiceUrl: 'https://vivot.net/terms',
-    faqUrl: 'https://vivot.net/faq',
-    shareHost: 'vivot-dev.web.app',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
-  );
-
-  static const BrandConfig vivotProd = BrandConfig(
-    flavor: AppFlavor.vivotProd,
-    brand: AppBrand.vivot,
-    appName: 'Vivot',
-    supportEmail: 'support@trainvent.com',
-    privacyPolicyUrl: 'https://vivot.net/privacy',
-    termsOfServiceUrl: 'https://vivot.net/terms',
-    faqUrl: 'https://vivot.net/faq',
-    shareHost: 'vivot.net',
     revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
     revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
     revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',

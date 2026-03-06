@@ -1,6 +1,0 @@
-#include "Release.xcconfig"
-FLUTTER_TARGET=lib/main_vivot.dart
-GAD_APPLICATION_IDENTIFIER=ca-app-pub-5296065079333841~8760518694
-DEEP_LINK_HOST=vivot.net
-APP_DISPLAY_NAME=Vivot
-APP_BUNDLE_NAME=vivot

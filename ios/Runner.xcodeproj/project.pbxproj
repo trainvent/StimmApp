@@ -49,9 +49,9 @@
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		21AC46D7BA49FB1E74012A59 /* Pods-Runner.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-prod.xcconfig"; sourceTree = "<group>"; };
-		21AC46D7BA49FB1E74012A60 /* Pods-Runner.release-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-vivotProd.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-vivotProd.xcconfig"; sourceTree = "<group>"; };
+		21AC46D7BA49FB1E74012A60 /* Pods-Runner.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-prod.xcconfig"; sourceTree = "<group>"; };
 		22BF40647E927753B68C4255 /* Pods-RunnerTests.profile-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile-prod.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile-prod.xcconfig"; sourceTree = "<group>"; };
-		22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile-vivotProd.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile-vivotProd.xcconfig"; sourceTree = "<group>"; };
+		22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile-prod.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile-prod.xcconfig"; sourceTree = "<group>"; };
 		328C2A9F50A849D8D8FA063A /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,20 +76,20 @@
 		AA11BB22CC33DD44EE55FF04 /* Debug-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Debug-prod.xcconfig"; path = "Flutter/Debug-prod.xcconfig"; sourceTree = "<group>"; };
 		AA11BB22CC33DD44EE55FF05 /* Release-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Release-prod.xcconfig"; path = "Flutter/Release-prod.xcconfig"; sourceTree = "<group>"; };
 		AA11BB22CC33DD44EE55FF06 /* Profile-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Profile-prod.xcconfig"; path = "Flutter/Profile-prod.xcconfig"; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE55FF07 /* Debug-vivotProd.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Debug-vivotProd.xcconfig"; path = "Flutter/Debug-vivotProd.xcconfig"; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE55FF08 /* Release-vivotProd.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Release-vivotProd.xcconfig"; path = "Flutter/Release-vivotProd.xcconfig"; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE55FF09 /* Profile-vivotProd.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Profile-vivotProd.xcconfig"; path = "Flutter/Profile-vivotProd.xcconfig"; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF07 /* Debug-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Debug-prod.xcconfig"; path = "Flutter/Debug-prod.xcconfig"; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF08 /* Release-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Release-prod.xcconfig"; path = "Flutter/Release-prod.xcconfig"; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF09 /* Profile-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Profile-prod.xcconfig"; path = "Flutter/Profile-prod.xcconfig"; sourceTree = "<group>"; };
 		BA9597C3AD748FBDDFA77EF5 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE8A92689E9D46F7AAC9468D /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		C1A8F8812F83A7A100D5C001 /* Profile.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Profile.xcconfig; path = Flutter/Profile.xcconfig; sourceTree = "<group>"; };
 		C60F9A9CB9207523E15C4BDA /* Pods-Runner.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-dev.xcconfig"; sourceTree = "<group>"; };
 		CC0BC3D5060D2C9CFFC90EA0 /* Pods-Runner.profile-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-prod.xcconfig"; sourceTree = "<group>"; };
-		CC0BC3D5060D2C9CFFC90EA1 /* Pods-Runner.profile-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-vivotProd.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-vivotProd.xcconfig"; sourceTree = "<group>"; };
-		C60F9A9CB9207523E15C4BDB /* Pods-Runner.debug-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-vivotProd.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-vivotProd.xcconfig"; sourceTree = "<group>"; };
+		CC0BC3D5060D2C9CFFC90EA1 /* Pods-Runner.profile-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-prod.xcconfig"; sourceTree = "<group>"; };
+		C60F9A9CB9207523E15C4BDB /* Pods-Runner.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-prod.xcconfig"; sourceTree = "<group>"; };
 		DFBAAD3F5BF5A6AB823E5B0F /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		F8A1F309BCB976BBD10B136F /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
-		F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug-vivotProd.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug-vivotProd.xcconfig"; sourceTree = "<group>"; };
-		BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-vivotProd.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release-vivotProd.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release-vivotProd.xcconfig"; sourceTree = "<group>"; };
+		F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug-prod.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug-prod.xcconfig"; sourceTree = "<group>"; };
+		BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release-prod.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release-prod.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,13 +136,13 @@
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				AA11BB22CC33DD44EE55FF01 /* Debug-dev.xcconfig */,
 				AA11BB22CC33DD44EE55FF04 /* Debug-prod.xcconfig */,
-				AA11BB22CC33DD44EE55FF07 /* Debug-vivotProd.xcconfig */,
+				AA11BB22CC33DD44EE55FF07 /* Debug-prod.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
 				AA11BB22CC33DD44EE55FF05 /* Release-prod.xcconfig */,
-				AA11BB22CC33DD44EE55FF08 /* Release-vivotProd.xcconfig */,
+				AA11BB22CC33DD44EE55FF08 /* Release-prod.xcconfig */,
 				C1A8F8812F83A7A100D5C001 /* Profile.xcconfig */,
 				AA11BB22CC33DD44EE55FF06 /* Profile-prod.xcconfig */,
-				AA11BB22CC33DD44EE55FF09 /* Profile-vivotProd.xcconfig */,
+				AA11BB22CC33DD44EE55FF09 /* Profile-prod.xcconfig */,
 				9740EEB31CF90195004384FC /* Generated.xcconfig */,
 			);
 			name = Flutter;
@@ -193,22 +193,22 @@
 				78F2B067A94AEF045E8441BA /* Pods-Runner.release.xcconfig */,
 				3A2901ABD1C5D7BD2D6BA6E4 /* Pods-Runner.profile.xcconfig */,
 				C60F9A9CB9207523E15C4BDA /* Pods-Runner.debug-dev.xcconfig */,
-				C60F9A9CB9207523E15C4BDB /* Pods-Runner.debug-vivotProd.xcconfig */,
+				C60F9A9CB9207523E15C4BDB /* Pods-Runner.debug-prod.xcconfig */,
 				0F789BE4CDB2FFD9BC92F330 /* Pods-Runner.debug-prod.xcconfig */,
 				21AC46D7BA49FB1E74012A59 /* Pods-Runner.release-prod.xcconfig */,
-				21AC46D7BA49FB1E74012A60 /* Pods-Runner.release-vivotProd.xcconfig */,
+				21AC46D7BA49FB1E74012A60 /* Pods-Runner.release-prod.xcconfig */,
 				CC0BC3D5060D2C9CFFC90EA0 /* Pods-Runner.profile-prod.xcconfig */,
-				CC0BC3D5060D2C9CFFC90EA1 /* Pods-Runner.profile-vivotProd.xcconfig */,
+				CC0BC3D5060D2C9CFFC90EA1 /* Pods-Runner.profile-prod.xcconfig */,
 				F8A1F309BCB976BBD10B136F /* Pods-RunnerTests.debug.xcconfig */,
-				F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-vivotProd.xcconfig */,
+				F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-prod.xcconfig */,
 				BE8A92689E9D46F7AAC9468D /* Pods-RunnerTests.release.xcconfig */,
-				BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-vivotProd.xcconfig */,
+				BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-prod.xcconfig */,
 				DFBAAD3F5BF5A6AB823E5B0F /* Pods-RunnerTests.profile.xcconfig */,
 				468501939EDDE8CC2741D81C /* Pods-RunnerTests.debug-dev.xcconfig */,
 				11174E9A9F9CD853F9570155 /* Pods-RunnerTests.debug-prod.xcconfig */,
 				061E62ED64CD36132DB0C217 /* Pods-RunnerTests.release-prod.xcconfig */,
 				22BF40647E927753B68C4255 /* Pods-RunnerTests.profile-prod.xcconfig */,
-				22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-vivotProd.xcconfig */,
+				22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-prod.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -846,7 +846,7 @@
 			};
 			name = "Profile-prod";
 		};
-		BB11BB22CC33DD44EE55FF07 /* Debug-vivotProd */ = {
+		BB11BB22CC33DD44EE55FF07 /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -859,9 +859,9 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = "Debug-vivotProd";
+			name = "Debug-prod";
 		};
-		BB11BB22CC33DD44EE55FF08 /* Release-vivotProd */ = {
+		BB11BB22CC33DD44EE55FF08 /* Release-prod */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -873,9 +873,9 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = "Release-vivotProd";
+			name = "Release-prod";
 		};
-		BB11BB22CC33DD44EE55FF09 /* Profile-vivotProd */ = {
+		BB11BB22CC33DD44EE55FF09 /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -887,7 +887,7 @@
 				SUPPORTED_PLATFORMS = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = "Profile-vivotProd";
+			name = "Profile-prod";
 		};
 		CC11BB22CC33DD44EE55FF01 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
@@ -1001,9 +1001,9 @@
 			};
 			name = "Profile-prod";
 		};
-		CC11BB22CC33DD44EE55FF07 /* Debug-vivotProd */ = {
+		CC11BB22CC33DD44EE55FF07 /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA11BB22CC33DD44EE55FF07 /* Debug-vivotProd.xcconfig */;
+			baseConfigurationReference = AA11BB22CC33DD44EE55FF07 /* Debug-prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = AppIcon;
@@ -1028,11 +1028,11 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Debug-vivotProd";
+			name = "Debug-prod";
 		};
-		CC11BB22CC33DD44EE55FF08 /* Release-vivotProd */ = {
+		CC11BB22CC33DD44EE55FF08 /* Release-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA11BB22CC33DD44EE55FF08 /* Release-vivotProd.xcconfig */;
+			baseConfigurationReference = AA11BB22CC33DD44EE55FF08 /* Release-prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = AppIcon;
@@ -1055,11 +1055,11 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Release-vivotProd";
+			name = "Release-prod";
 		};
-		CC11BB22CC33DD44EE55FF09 /* Profile-vivotProd */ = {
+		CC11BB22CC33DD44EE55FF09 /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA11BB22CC33DD44EE55FF09 /* Profile-vivotProd.xcconfig */;
+			baseConfigurationReference = AA11BB22CC33DD44EE55FF09 /* Profile-prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = AppIcon;
@@ -1082,7 +1082,7 @@
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = "Profile-vivotProd";
+			name = "Profile-prod";
 		};
 		DD11BB22CC33DD44EE55FF01 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
@@ -1156,9 +1156,9 @@
 			};
 			name = "Profile-prod";
 		};
-		DD11BB22CC33DD44EE55FF07 /* Debug-vivotProd */ = {
+		DD11BB22CC33DD44EE55FF07 /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-vivotProd.xcconfig */;
+			baseConfigurationReference = F8A1F309BCB976BBD10B1370 /* Pods-RunnerTests.debug-prod.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1173,11 +1173,11 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
-			name = "Debug-vivotProd";
+			name = "Debug-prod";
 		};
-		DD11BB22CC33DD44EE55FF08 /* Release-vivotProd */ = {
+		DD11BB22CC33DD44EE55FF08 /* Release-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-vivotProd.xcconfig */;
+			baseConfigurationReference = BE8A92689E9D46F7AAC9468E /* Pods-RunnerTests.release-prod.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1190,11 +1190,11 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
-			name = "Release-vivotProd";
+			name = "Release-prod";
 		};
-		DD11BB22CC33DD44EE55FF09 /* Profile-vivotProd */ = {
+		DD11BB22CC33DD44EE55FF09 /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-vivotProd.xcconfig */;
+			baseConfigurationReference = 22BF40647E927753B68C4256 /* Pods-RunnerTests.profile-prod.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1207,7 +1207,7 @@
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
-			name = "Profile-vivotProd";
+			name = "Profile-prod";
 		};
 /* End XCBuildConfiguration section */
 
@@ -1222,9 +1222,9 @@
 				DD11BB22CC33DD44EE55FF04 /* Debug-prod */,
 				DD11BB22CC33DD44EE55FF05 /* Release-prod */,
 				DD11BB22CC33DD44EE55FF06 /* Profile-prod */,
-				DD11BB22CC33DD44EE55FF07 /* Debug-vivotProd */,
-				DD11BB22CC33DD44EE55FF08 /* Release-vivotProd */,
-				DD11BB22CC33DD44EE55FF09 /* Profile-vivotProd */,
+				DD11BB22CC33DD44EE55FF07 /* Debug-prod */,
+				DD11BB22CC33DD44EE55FF08 /* Release-prod */,
+				DD11BB22CC33DD44EE55FF09 /* Profile-prod */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1239,9 +1239,9 @@
 				BB11BB22CC33DD44EE55FF04 /* Debug-prod */,
 				BB11BB22CC33DD44EE55FF05 /* Release-prod */,
 				BB11BB22CC33DD44EE55FF06 /* Profile-prod */,
-				BB11BB22CC33DD44EE55FF07 /* Debug-vivotProd */,
-				BB11BB22CC33DD44EE55FF08 /* Release-vivotProd */,
-				BB11BB22CC33DD44EE55FF09 /* Profile-vivotProd */,
+				BB11BB22CC33DD44EE55FF07 /* Debug-prod */,
+				BB11BB22CC33DD44EE55FF08 /* Release-prod */,
+				BB11BB22CC33DD44EE55FF09 /* Profile-prod */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1256,9 +1256,9 @@
 				CC11BB22CC33DD44EE55FF04 /* Debug-prod */,
 				CC11BB22CC33DD44EE55FF05 /* Release-prod */,
 				CC11BB22CC33DD44EE55FF06 /* Profile-prod */,
-				CC11BB22CC33DD44EE55FF07 /* Debug-vivotProd */,
-				CC11BB22CC33DD44EE55FF08 /* Release-vivotProd */,
-				CC11BB22CC33DD44EE55FF09 /* Profile-vivotProd */,
+				CC11BB22CC33DD44EE55FF07 /* Debug-prod */,
+				CC11BB22CC33DD44EE55FF08 /* Release-prod */,
+				CC11BB22CC33DD44EE55FF09 /* Profile-prod */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

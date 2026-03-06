@@ -8,7 +8,7 @@
 		android:enableOnBackInvokedCallback="true">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5296065079333841~8760518694"/>
+            android:value="${adMobAppId}"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

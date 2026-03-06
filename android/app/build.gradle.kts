@@ -76,6 +76,9 @@ android {
             applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
+            // Use official AdMob test app id for development builds.
+            manifestPlaceholders["adMobAppId"] =
+                "ca-app-pub-3940256099942544~3347511713"
             resValue("string", "app_name", "StimmApp Dev")
         }
         create("prod") {
@@ -83,14 +86,9 @@ android {
             applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.eu"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.eu"
+            manifestPlaceholders["adMobAppId"] =
+                "ca-app-pub-5296065079333841~8760518694"
             resValue("string", "app_name", "StimmApp")
-        }
-        create("vivotProd") {
-            dimension = "app"
-            applicationId = "com.trainvent.vivot"
-            manifestPlaceholders["deepLinkHost"] = "vivot.net"
-            manifestPlaceholders["debugDeepLinkHost"] = "vivot.net"
-            resValue("string", "app_name", "Vivot")
         }
     }
 
