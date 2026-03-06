@@ -84,7 +84,13 @@ class PetitionDetailPageKeys {
   final signButton = const Key('signButton');
 }
 
+class WelcomePageKeys {
+  final registerButton = const Key('register_button');
+  final loginButton = const Key('login_button');
+}
+
 class Keys {
+  final welcomePage = WelcomePageKeys();
   final resetPasswordPage = ResetPasswordPageKeys();
   final loginPage = LoginPageKeys();
   final emailConfirmationPage = EmailConfirmationPageKeys();

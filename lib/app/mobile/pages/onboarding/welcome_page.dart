@@ -19,9 +19,7 @@ class WelcomePage extends StatelessWidget {
           children: [
             Expanded(
               flex: 4,
-              child: Image.asset(
-                'assets/images/Form_guy_waving.png',
-              ),
+              child: Image.asset('assets/images/Form_guy_waving.png'),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -58,6 +56,7 @@ class WelcomePage extends StatelessWidget {
       ),
       buttons: [
         ButtonWidget(
+          key: const Key('register_button'),
           label: context.l10n.register,
           isFilled: true,
           callback: () {
@@ -73,6 +72,7 @@ class WelcomePage extends StatelessWidget {
         ),
         const SizedBox(height: 10.0),
         ButtonWidget(
+          key: const Key('login_button'),
           label: context.l10n.login,
           callback: () {
             Navigator.push(

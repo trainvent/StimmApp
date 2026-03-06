@@ -119,7 +119,7 @@ Future<void> regNOut(
   await Future.delayed(const Duration(seconds: 1));
 
   // Navigate to Onboarding
-  await $(l10n.register).tap();
+  await $(keys.welcomePage.registerButton).tap();
   await $(l10n.registerHere).waitUntilVisible();
 
   // 1. Test: Mismatched Passwords
