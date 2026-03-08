@@ -75,9 +75,7 @@ class _BaseOverviewPageState<T extends HomeItem>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(
-                context.l10n.settings,
-              ), // Using "Settings" or "Filter"
+              title: Text(context.l10n.filter), // Using "Settings" or "Filter"
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

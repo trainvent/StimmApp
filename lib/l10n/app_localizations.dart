@@ -956,6 +956,12 @@ abstract class AppLocalizations {
   /// **'ID Scan'**
   String get idScan;
 
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
   /// No description provided for @imagePreviewDescription.
   ///
   /// In en, this message translates to:

@@ -457,6 +457,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get idScan => 'ID Scan';
 
   @override
+  String get filter => 'Filter';
+
+  @override
   String get imagePreviewDescription =>
       'This is a preview of your new profile picture.';
 

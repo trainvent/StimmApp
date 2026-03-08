@@ -463,6 +463,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get idScan => 'Ausweisscan';
 
   @override
+  String get filter => 'filter';
+
+  @override
   String get imagePreviewDescription => 'Bildvorschau';
 
   @override

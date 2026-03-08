@@ -184,6 +184,7 @@
 	"hintTextTags": "e.g. environment, transport",
 	"idNumber": "ID Number",
 	"idScan": "ID Scan",
+	"filter": "Filter",
 	"imagePreviewDescription": "This is a preview of your new profile picture.",
 	"inactive": "Inactive",
 	"invalidEmailEntered": "Invalid email entered",
