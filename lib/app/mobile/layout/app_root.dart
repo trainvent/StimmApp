@@ -64,19 +64,22 @@ class AuthLayout extends ConsumerWidget {
         }
 
         final userProfileState = ref.watch(userProfileProvider);
+        Widget buildProfileRoute(profile) {
+          if (profile == null) {
+            return const SetUserDetailsPage();
+          }
+          if (profile.acceptedCommunityRulesAt == null) {
+            return CommunityGuidelinesPage(profile: profile);
+          }
+          return const WidgetTree();
+        }
 
         return userProfileState.when(
-          data: (profile) {
-            if (profile == null) {
-              return const SetUserDetailsPage();
-            }
-            if (profile.acceptedCommunityRulesAt == null) {
-              return CommunityGuidelinesPage(profile: profile);
-            }
-            return const WidgetTree();
-          },
-          loading: () => const AppLoadingPage(),
+          data: buildProfileRoute,
+          loading: () => const SizedBox.shrink(),
           error: (error, stack) => Center(child: Text('Error: $error')),
+          skipLoadingOnReload: true,
+          skipLoadingOnRefresh: true,
         );
       },
       loading: () => const AppLoadingPage(),
