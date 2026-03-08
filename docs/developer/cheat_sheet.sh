@@ -1,6 +1,6 @@
 # quick rules
 # - dev host: https://stimmapp-dev.web.app
-# - prod host: https://stimmapp.eu
+# - prod host: https://stimmapp.net
 # - vivot host: https://vivot.net
 # - dev web must be built with lib/main_dev.dart
 # - prod web must be built with lib/main.dart
@@ -33,8 +33,8 @@ firebase deploy --only hosting --project stimmapp-f0141
 flutter build appbundle --release --flavor prod -t lib/main.dart
 
 # prod: test links with
-# https://stimmapp.eu/petition/<id>
-# https://stimmapp.eu/poll/<id>
+# https://stimmapp.net/petition/<id>
+# https://stimmapp.net/poll/<id>
 
 # vivot: android debug run
 flutter run --debug --flavor prod -t lib/main_vivot.dart

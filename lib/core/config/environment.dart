@@ -9,12 +9,34 @@ class Environment {
   }
 
   static void applyBrandForLocale({Locale? locale, String? webHost}) {
+    final bool useVivot = _shouldUseVivotBrand(
+      locale: locale,
+      webHost: webHost,
+    );
     final bool dev = config.isDev;
-    config = dev ? BrandConfig.stimmappDev : BrandConfig.stimmappProd;
+    if (useVivot) {
+      config = dev ? BrandConfig.vivotDev : BrandConfig.vivotProd;
+    } else {
+      config = dev ? BrandConfig.stimmappDev : BrandConfig.stimmappProd;
+    }
+  }
+
+  static bool _shouldUseVivotBrand({Locale? locale, String? webHost}) {
+    final String host = (webHost ?? '').toLowerCase();
+    if (host == 'vivot.net' || host.endsWith('.vivot.net')) return true;
+    if (host == 'stimmapp.net' || host.endsWith('.stimmapp.net')) return false;
+
+    final String languageCode = locale?.languageCode.toLowerCase() ?? '';
+    if (languageCode == 'en') return true;
+    if (languageCode == 'de') return false;
+
+    final String countryCode = locale?.countryCode?.toUpperCase() ?? '';
+    return countryCode.isNotEmpty && countryCode != 'DE';
   }
 
   static bool get isDev => config.isDev;
   static bool get isProd => config.isProd;
+  static bool get isVivot => config.brand == AppBrand.vivot;
   static bool get isStimmapp => config.brand == AppBrand.stimmapp;
   static bool get supportsStateScope => isStimmapp;
   static String get appName => config.appName;

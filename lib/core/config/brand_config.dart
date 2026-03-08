@@ -1,6 +1,6 @@
-enum AppFlavor { stimmappDev, stimmappProd }
+enum AppFlavor { stimmappDev, stimmappProd, vivotDev, vivotProd }
 
-enum AppBrand { stimmapp }
+enum AppBrand { stimmapp, vivot }
 
 class BrandConfig {
   const BrandConfig({
@@ -32,8 +32,8 @@ class BrandConfig {
   final String revenueCatApiKeyProdIos;
 
   bool get isDev => switch (flavor) {
-    AppFlavor.stimmappDev => true,
-    AppFlavor.stimmappProd => false,
+    AppFlavor.stimmappDev || AppFlavor.vivotDev => true,
+    AppFlavor.stimmappProd || AppFlavor.vivotProd => false,
   };
 
   bool get isProd => !isDev;
@@ -45,9 +45,9 @@ class BrandConfig {
     brand: AppBrand.stimmapp,
     appName: 'StimmApp',
     supportEmail: 'support@trainvent.com',
-    privacyPolicyUrl: 'https://www.stimmapp.eu/privacy-policy',
-    termsOfServiceUrl: 'https://www.stimmapp.eu/terms-of-service',
-    faqUrl: 'https://www.stimmapp.eu/faq',
+    privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
+    termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
+    faqUrl: 'https://www.stimmapp.net/faq',
     shareHost: 'stimmapp-dev.web.app',
     revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
     revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
@@ -60,10 +60,40 @@ class BrandConfig {
     brand: AppBrand.stimmapp,
     appName: 'StimmApp',
     supportEmail: 'support@trainvent.com',
-    privacyPolicyUrl: 'https://www.stimmapp.eu/privacy-policy',
-    termsOfServiceUrl: 'https://www.stimmapp.eu/terms-of-service',
-    faqUrl: 'https://www.stimmapp.eu/faq',
-    shareHost: 'stimmapp.eu',
+    privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
+    termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
+    faqUrl: 'https://www.stimmapp.net/faq',
+    shareHost: 'stimmapp.net',
+    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
+    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
+    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
+    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
+  );
+
+  static const BrandConfig vivotDev = BrandConfig(
+    flavor: AppFlavor.vivotDev,
+    brand: AppBrand.vivot,
+    appName: 'Vivot Dev',
+    supportEmail: 'support@trainvent.com',
+    privacyPolicyUrl: 'https://vivot.net/privacy',
+    termsOfServiceUrl: 'https://vivot.net/terms',
+    faqUrl: 'https://vivot.net/faq',
+    shareHost: 'vivot-dev.web.app',
+    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
+    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
+    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
+    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
+  );
+
+  static const BrandConfig vivotProd = BrandConfig(
+    flavor: AppFlavor.vivotProd,
+    brand: AppBrand.vivot,
+    appName: 'Vivot',
+    supportEmail: 'support@trainvent.com',
+    privacyPolicyUrl: 'https://vivot.net/privacy',
+    termsOfServiceUrl: 'https://vivot.net/terms',
+    faqUrl: 'https://vivot.net/faq',
+    shareHost: 'vivot.net',
     revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
     revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
     revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',

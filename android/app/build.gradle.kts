@@ -84,8 +84,8 @@ android {
         create("prod") {
             dimension = "app"
             applicationId = "de.lemarq.stimmapp"
-            manifestPlaceholders["deepLinkHost"] = "stimmapp.eu"
-            manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.eu"
+            manifestPlaceholders["deepLinkHost"] = "stimmapp.net"
+            manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.net"
             manifestPlaceholders["adMobAppId"] =
                 "ca-app-pub-5296065079333841~8760518694"
             resValue("string", "app_name", "StimmApp")

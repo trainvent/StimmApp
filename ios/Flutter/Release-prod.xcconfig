@@ -1,6 +1,6 @@
 #include "Release.xcconfig"
 FLUTTER_TARGET=lib/main.dart
 GAD_APPLICATION_IDENTIFIER=ca-app-pub-5296065079333841~8760518694
-DEEP_LINK_HOST=stimmapp.eu
+DEEP_LINK_HOST=stimmapp.net
 APP_DISPLAY_NAME=StimmApp
 APP_BUNDLE_NAME=stimmapp
