@@ -5,7 +5,6 @@
 			"name": "Flutter: StimmApp Dev (Debug Android)",
 			"request": "launch",
 			"type": "dart",
-			"preLaunchTask": "Android: Ensure Emulator Ready",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
@@ -16,7 +15,7 @@
 			"name": "Flutter: StimmApp Dev (Debug iOS)",
 			"request": "launch",
 			"type": "dart",
-			"preLaunchTask": "Android: Ensure Emulator Ready",
+			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main_dev.dart",
 			"args": [
 				"--flavor",
@@ -38,6 +37,7 @@
 			"name": "Flutter: StimmApp Prod (Debug iOS)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
 			"args": [
 				"--flavor",
@@ -48,7 +48,7 @@
 			"name": "Flutter: StimmApp Prod (Profile iOS)",
 			"request": "launch",
 			"type": "dart",
-			"preLaunchTask": "Android: Ensure Emulator Ready",
+			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
 			"flutterMode": "profile",
 			"args": [
@@ -72,6 +72,7 @@
 			"name": "Flutter: StimmApp Dev Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main_dev.dart",
 			"deviceId": "chrome"
 		},
@@ -79,6 +80,7 @@
 			"name": "Flutter: StimmApp Prod Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
+			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
 			"deviceId": "chrome"
 		}

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:stimmapp/app/mobile/pages/onboarding/email_confirmation_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/debounced_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
@@ -49,14 +48,12 @@ class _RegisterPageState extends State<RegisterPage> {
         password: controllerPw.text,
       );
       if (!mounted) return;
-      // Navigate to the new code-based confirmation page
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const EmailConfirmationPage(
-            sendCodeOnLoad: true,
-          ),
-        ),
-      );
+      await authService.sendVerificationCode();
+      if (!mounted) return;
+      // AuthLayout already switches the root content to EmailConfirmationPage
+      // for unverified users. Returning to the first route avoids stacking
+      // a second visually identical confirmation page on top of it.
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } on AuthException catch (e) {
       setState(() {
         errorMessage = '${e.code}: ${e.message ?? 'Unknown error'}';

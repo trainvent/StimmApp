@@ -62,6 +62,23 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
     }
   }
 
+  Future<void> _leaveConfirmationFlow() async {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+      return;
+    }
+
+    try {
+      await authService.signOut();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(e.message ?? S.of(context).anUnexpectedErrorOccurred);
+    } catch (_) {
+      if (!mounted) return;
+      showErrorSnackBar(S.of(context).anUnexpectedErrorOccurred);
+    }
+  }
+
   Future<void> _resendCode({bool showSuccessFeedback = true}) async {
     try {
       await authService.sendVerificationCode();
@@ -77,14 +94,28 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.emailVerification)),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: VerificationWidget(
-          codeController: _codeController,
-          onVerify: _verifyCode,
-          onResend: _resendCode,
+    final canPop = Navigator.canPop(context);
+
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop || canPop) return;
+        _leaveConfirmationFlow();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(
+            onPressed: _leaveConfirmationFlow,
+          ),
+          title: Text(context.l10n.emailVerification),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: VerificationWidget(
+            codeController: _codeController,
+            onVerify: _verifyCode,
+            onResend: _resendCode,
+          ),
         ),
       ),
     );
