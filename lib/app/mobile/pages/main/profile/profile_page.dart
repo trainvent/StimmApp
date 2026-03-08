@@ -303,21 +303,7 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
-                  PointingListTile(
-                    key: keys.profilePage.blockedUsersListTile,
-                    title: Text(context.l10n.blockedUsers),
-                    onTap: currentUser == null
-                        ? null
-                        : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BlockedUsersPage(userId: currentUser.uid),
-                              ),
-                            );
-                          },
-                  ),
+
                   // Running forms
                   PointingListTile(
                     title: Text(S.of(context).runningForms),
@@ -343,7 +329,21 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
-
+                  PointingListTile(
+                    key: keys.profilePage.blockedUsersListTile,
+                    title: Text(context.l10n.blockedUsers),
+                    onTap: currentUser == null
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BlockedUsersPage(userId: currentUser.uid),
+                              ),
+                            );
+                          },
+                  ),
                   //Change password
                   PointingListTile(
                     key: keys.profilePage.changePasswordListTile,
@@ -359,7 +359,6 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
-
                   // Privacy Settings
                   PointingListTile(
                     title: Text(context.l10n.privacySettings),

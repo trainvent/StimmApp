@@ -977,7 +977,7 @@ abstract class AppLocalizations {
   /// No description provided for @isProMember.
   ///
   /// In en, this message translates to:
-  /// **'Ist Pro-Mitglied'**
+  /// **'Is Pro Member'**
   String get isProMember;
 
   /// No description provided for @language.

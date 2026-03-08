@@ -1,9 +1,11 @@
-enum FormScopeType { global, continent, country, stateOrRegion, city }
+enum FormScopeType { global, eu, continent, country, stateOrRegion, city }
 
 FormScopeType parseFormScopeType(String? raw) {
   switch (raw) {
     case 'global':
       return FormScopeType.global;
+    case 'eu':
+      return FormScopeType.eu;
     case 'continent':
       return FormScopeType.continent;
     case 'country':
@@ -22,6 +24,8 @@ String formScopeTypeToFirestore(FormScopeType scopeType) {
   switch (scopeType) {
     case FormScopeType.global:
       return 'global';
+    case FormScopeType.eu:
+      return 'eu';
     case FormScopeType.continent:
       return 'continent';
     case FormScopeType.country:

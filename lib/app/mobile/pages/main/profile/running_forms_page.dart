@@ -115,6 +115,14 @@ class _RunningFormsPageState extends State<RunningFormsPage>
     );
   }
 
+  void _openPetitionDetails(Petition petition) {
+    Navigator.of(context).pushNamed('/petition/${petition.id}');
+  }
+
+  void _openPollDetails(Poll poll) {
+    Navigator.of(context).pushNamed('/poll/${poll.id}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,6 +168,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
               subtitle: Text(
                 'Expires: ${DateFormat('yyyy-MM-dd').format(p.expiresAt)}',
               ),
+              onTap: () => _openPetitionDetails(p),
               trailing: hasNoSignatures
                   ? IconButton(
                       icon: const Icon(Icons.delete),
@@ -198,6 +207,7 @@ class _RunningFormsPageState extends State<RunningFormsPage>
               subtitle: Text(
                 'Expires: ${DateFormat('yyyy-MM-dd').format(p.expiresAt)}',
               ),
+              onTap: () => _openPollDetails(p),
               trailing: hasNoVotes
                   ? IconButton(
                       icon: const Icon(Icons.delete),

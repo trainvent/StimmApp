@@ -32,6 +32,7 @@ void main() {
       'expiryDate': null,
       'idNumber': null,
       'address': null,
+      'town': null,
       'height': null,
       'isPro': false,
       'wentProAt': null,

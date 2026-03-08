@@ -467,7 +467,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidEmailEntered => 'Invalid email entered';
 
   @override
-  String get isProMember => 'Ist Pro-Mitglied';
+  String get isProMember => 'Is Pro Member';
 
   @override
   String get language => 'language';

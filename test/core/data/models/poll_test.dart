@@ -47,8 +47,13 @@ void main() {
       'expiresAt': timestamp,
       'status': 'active',
       'titleLowercase': 'test poll',
+      'scopeType': 'global',
+      'continentCode': null,
       'countryCode': null,
+      'stateOrRegion': null,
       'state': null,
+      'town': null,
+      'city': null,
     };
 
     test(

@@ -4,6 +4,7 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/eu_country_codes.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -27,6 +28,7 @@ class BaseCreatorPage extends StatefulWidget {
     required String description,
     required List<String> tags,
     required String scopeType,
+    String? scopeContinentCode,
     String? scopeCountryCode,
     String? scopeStateOrRegion,
     String? scopeTown,
@@ -52,6 +54,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _profileStateOrRegion;
   bool _isLoading = false;
   int _durationDays = 28; // Default duration
+
+  bool get _supportsEuScope => isEuCountryCode(_profileCountryCode);
 
   @override
   void initState() {
@@ -91,6 +95,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           profile.countryCode?.toUpperCase() ??
           (profile.supportsStateScope ? 'DE' : null);
       _profileStateOrRegion = profile.state;
+      if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
+        _selectedScope = FormScopeType.country;
+      }
       if (!_supportsStateScope &&
           _selectedScope == FormScopeType.stateOrRegion) {
         _selectedScope = FormScopeType.country;
@@ -130,6 +137,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         }
         if (!_supportsStateScope &&
             _selectedScope == FormScopeType.stateOrRegion) {
+          _selectedScope = FormScopeType.country;
+        }
+        if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
           _selectedScope = FormScopeType.country;
         }
         if (draftTown != null) _scopeTownController.text = draftTown;
@@ -205,17 +215,25 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       showErrorSnackBar('Please enter a town');
       return;
     }
+    if (_selectedScope == FormScopeType.eu && !_supportsEuScope) {
+      showErrorSnackBar('EU scope is only available for EU countries');
+      return;
+    }
     if (_selectedScope != FormScopeType.global &&
         (_profileCountryCode == null || _profileCountryCode!.isEmpty)) {
       showErrorSnackBar('Please set your country in your address first');
       return;
     }
     final scopeType = formScopeTypeToFirestore(_selectedScope);
+    String? scopeContinentCode;
     String? scopeCountryCode;
     String? scopeStateOrRegion;
     String? scopeTown;
     switch (_selectedScope) {
       case FormScopeType.global:
+        break;
+      case FormScopeType.eu:
+        scopeContinentCode = 'EU';
         break;
       case FormScopeType.continent:
         break;
@@ -241,6 +259,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
         scopeType: scopeType,
+        scopeContinentCode: scopeContinentCode,
         scopeCountryCode: scopeCountryCode,
         scopeStateOrRegion: scopeStateOrRegion,
         scopeTown: scopeTown,
@@ -361,6 +380,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     switch (scope) {
       case FormScopeType.global:
         return 'Global';
+      case FormScopeType.eu:
+        return 'EU';
       case FormScopeType.continent:
         return 'Continent';
       case FormScopeType.country:
@@ -506,6 +527,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                     value: FormScopeType.global,
                     child: Text(_scopeLabel(FormScopeType.global)),
                   ),
+                  if (_supportsEuScope)
+                    DropdownMenuItem(
+                      value: FormScopeType.eu,
+                      child: Text(_scopeLabel(FormScopeType.eu)),
+                    ),
                   DropdownMenuItem(
                     value: FormScopeType.country,
                     child: Text(_scopeLabel(FormScopeType.country)),

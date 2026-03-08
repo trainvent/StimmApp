@@ -4,7 +4,9 @@ import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:stimmapp/core/constants/eu_country_codes.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
@@ -30,10 +32,18 @@ class _BaseOverviewPageState<T extends HomeItem>
     extends State<BaseOverviewPage<T>>
     with SingleTickerProviderStateMixin {
   static const int _itemsPerAd = 7; // Show an ad after every 7 items.
+  static const List<FormScopeType> _scopeFilterOrder = [
+    FormScopeType.global,
+    FormScopeType.eu,
+    FormScopeType.country,
+    FormScopeType.stateOrRegion,
+    FormScopeType.city,
+  ];
 
   late TabController _tabController;
   String _query = '';
   List<String> _selectedTags = [];
+  Set<FormScopeType> _selectedScopes = {};
   bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
 
@@ -59,6 +69,7 @@ class _BaseOverviewPageState<T extends HomeItem>
       builder: (context) {
         // Use a local state for the dialog to allow updating selection before confirming
         List<String> tempSelectedTags = List.from(_selectedTags);
+        Set<FormScopeType> tempSelectedScopes = Set.from(_selectedScopes);
         bool tempOnlyMyPublications = _onlyMyPublications;
 
         return StatefulBuilder(
@@ -72,17 +83,22 @@ class _BaseOverviewPageState<T extends HomeItem>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SwitchListTile(
-                      title: Text(
-                        context.l10n.myPetitions,
-                      ), // Reusing "My Petitions" or similar key for "My Publications"
-                      value: tempOnlyMyPublications,
-                      onChanged: (val) {
+                    Text(
+                      'Scope',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildScopeTargetSelector(
+                      selectedScopes: tempSelectedScopes,
+                      onToggle: (scope) {
                         setState(() {
-                          tempOnlyMyPublications = val;
+                          if (tempSelectedScopes.contains(scope)) {
+                            tempSelectedScopes.remove(scope);
+                          } else {
+                            tempSelectedScopes.add(scope);
+                          }
                         });
                       },
-                      contentPadding: EdgeInsets.zero,
                     ),
                     const Divider(),
                     Text(
@@ -108,6 +124,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                     // Clear filters
                     setState(() {
                       tempSelectedTags = [];
+                      tempSelectedScopes = {};
                       tempOnlyMyPublications = false;
                     });
                   },
@@ -117,6 +134,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                   onPressed: () {
                     this.setState(() {
                       _selectedTags = tempSelectedTags;
+                      _selectedScopes = tempSelectedScopes;
                       _onlyMyPublications = tempOnlyMyPublications;
                     });
                     Navigator.pop(context);
@@ -140,27 +158,17 @@ class _BaseOverviewPageState<T extends HomeItem>
     final itemCountryCode = item.countryCode?.toUpperCase();
     final itemStateOrRegion = item.stateOrRegion;
     final itemTown = item.town?.trim().toLowerCase();
-
-    final hasLegacyScopeData =
-        (itemCountryCode != null && itemCountryCode.isNotEmpty) ||
-        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) ||
-        (itemTown != null && itemTown.isNotEmpty);
-    final normalizedScopeType = item.scopeType.isEmpty
-        ? (itemTown != null && itemTown.isNotEmpty
-              ? 'city'
-              : (hasLegacyScopeData
-                    ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
-                          ? 'stateOrRegion'
-                          : 'country')
-                    : 'global'))
-        : item.scopeType;
+    final normalizedScopeType = _normalizedScopeType(item);
 
     switch (normalizedScopeType) {
       case 'global':
         return true;
+      case 'eu':
+        return isEuCountryCode(userCountryCode);
       case 'continent':
-        // Continent support is optional in the current app.
-        // Treat this as globally visible until user continent is modeled.
+        if ((item.continentCode ?? '').toUpperCase() == 'EU') {
+          return isEuCountryCode(userCountryCode);
+        }
         return true;
       case 'country':
         if (userCountryCode == null || userCountryCode.isEmpty) return false;
@@ -189,6 +197,180 @@ class _BaseOverviewPageState<T extends HomeItem>
         return userTown == itemTown;
       default:
         return true;
+    }
+  }
+
+  String _normalizedScopeType(T item) {
+    final itemCountryCode = item.countryCode?.toUpperCase();
+    final itemStateOrRegion = item.stateOrRegion;
+    final itemTown = item.town?.trim().toLowerCase();
+    final hasLegacyScopeData =
+        (itemCountryCode != null && itemCountryCode.isNotEmpty) ||
+        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) ||
+        (itemTown != null && itemTown.isNotEmpty);
+
+    return item.scopeType.isEmpty
+        ? (itemTown != null && itemTown.isNotEmpty
+              ? 'city'
+              : (hasLegacyScopeData
+                    ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
+                          ? 'stateOrRegion'
+                          : 'country')
+                    : 'global'))
+        : item.scopeType;
+  }
+
+  bool _matchesSelectedScopes(T item) {
+    if (_selectedScopes.isEmpty) {
+      return true;
+    }
+    final normalizedScopeType = _normalizedScopeType(item);
+    return _selectedScopes.any(
+      (scope) => formScopeTypeToFirestore(scope) == normalizedScopeType,
+    );
+  }
+
+  String _scopeLabel(FormScopeType scope) {
+    switch (scope) {
+      case FormScopeType.global:
+        return 'Global';
+      case FormScopeType.eu:
+        return 'EU';
+      case FormScopeType.continent:
+        return 'Continent';
+      case FormScopeType.country:
+        return 'Country';
+      case FormScopeType.stateOrRegion:
+        return context.l10n.state;
+      case FormScopeType.city:
+        return 'City';
+    }
+  }
+
+  Widget _buildScopeTargetSelector({
+    required Set<FormScopeType> selectedScopes,
+    required ValueChanged<FormScopeType> onToggle,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    const sizes = <FormScopeType, double>{
+      FormScopeType.global: 220,
+      FormScopeType.eu: 180,
+      FormScopeType.country: 140,
+      FormScopeType.stateOrRegion: 100,
+      FormScopeType.city: 60,
+    };
+
+    return Column(
+      children: [
+        Center(
+          child: SizedBox(
+            width: sizes[FormScopeType.global],
+            height: sizes[FormScopeType.global],
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                for (final scope in _scopeFilterOrder)
+                  _buildScopeRing(
+                    scope: scope,
+                    size: sizes[scope]!,
+                    isSelected: selectedScopes.contains(scope),
+                    onTap: () => onToggle(scope),
+                    color: _scopeColor(colorScheme, scope),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final scope in _scopeFilterOrder)
+              FilterChip(
+                selected: selectedScopes.contains(scope),
+                onSelected: (_) => onToggle(scope),
+                avatar: CircleAvatar(
+                  radius: 8,
+                  backgroundColor: _scopeColor(colorScheme, scope),
+                ),
+                label: Text(_scopeLabel(scope)),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScopeRing({
+    required FormScopeType scope,
+    required double size,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required Color color,
+  }) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isSelected
+                  ? color.withValues(alpha: 0.22)
+                  : color.withValues(alpha: 0.08),
+              border: Border.all(
+                color: isSelected ? color : color.withValues(alpha: 0.45),
+                width: isSelected ? 3 : 1.5,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.18),
+                        blurRadius: 12,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
+            ),
+            alignment: Alignment.center,
+            child: size <= 72
+                ? Text(
+                    _scopeLabel(scope),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  )
+                : null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _scopeColor(ColorScheme colorScheme, FormScopeType scope) {
+    switch (scope) {
+      case FormScopeType.global:
+        return colorScheme.primary;
+      case FormScopeType.eu:
+        return Colors.indigo;
+      case FormScopeType.continent:
+        return colorScheme.secondary;
+      case FormScopeType.country:
+        return Colors.teal;
+      case FormScopeType.stateOrRegion:
+        return Colors.orange;
+      case FormScopeType.city:
+        return Colors.redAccent;
     }
   }
 
@@ -242,6 +424,8 @@ class _BaseOverviewPageState<T extends HomeItem>
                   }).toList();
                 }
 
+                items = items.where(_matchesSelectedScopes).toList();
+
                 if (items.isEmpty) {
                   return Center(child: Text(context.l10n.noData));
                 }
@@ -293,6 +477,7 @@ class _BaseOverviewPageState<T extends HomeItem>
   Widget build(BuildContext context) {
     // Calculate active filters count
     int filterCount = _selectedTags.length;
+    filterCount += _selectedScopes.length;
     if (_onlyMyPublications) filterCount++;
 
     return Scaffold(
