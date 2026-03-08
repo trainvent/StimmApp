@@ -427,7 +427,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                 if (items.isEmpty) {
                   return Center(child: Text(context.l10n.noData));
                 }
-                final showAds = !(userProfile?.isPro ?? false) && !kIsWeb;
+                final showAds = !(userProfile?.isPro ?? false);
                 final standardAdCount = showAds
                     ? (items.length / _itemsPerAd).floor()
                     : 0;
