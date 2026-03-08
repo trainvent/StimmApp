@@ -832,6 +832,41 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signedPetitions => 'Unterzeichnete Petitionen';
 
   @override
+  String get scope => 'Geltungsbereich';
+
+  @override
+  String get scopeGlobal => 'Global';
+
+  @override
+  String get scopeEu => 'EU';
+
+  @override
+  String get scopeContinent => 'Kontinent';
+
+  @override
+  String get scopeCountry => 'Land';
+
+  @override
+  String get scopeStateRegion => 'Bundesland / Region';
+
+  @override
+  String get scopeCity => 'Stadt';
+
+  @override
+  String get town => 'Ort';
+
+  @override
+  String get pleaseEnterTown => 'Bitte geben Sie einen Ort ein';
+
+  @override
+  String get euScopeOnlyForEuCountries =>
+      'Der EU-Geltungsbereich ist nur für EU-Länder verfügbar';
+
+  @override
+  String get pleaseSetCountryInAddressFirst =>
+      'Bitte hinterlegen Sie zuerst Ihr Land in Ihrer Adresse';
+
+  @override
   String get state => 'Bundesland';
 
   @override
@@ -1245,9 +1280,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get passwordMustBeAtLeast8CharactersLong =>
       'Passwort muss mindestens 8 Character lang sein';
-
-  @override
-  String get town => 'Bezirk';
 
   @override
   String passwordValidation(String type) {

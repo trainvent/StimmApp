@@ -212,16 +212,16 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     }
     if (_selectedScope == FormScopeType.city &&
         _scopeTownController.text.trim().isEmpty) {
-      showErrorSnackBar('Please enter a town');
+      showErrorSnackBar(context.l10n.pleaseEnterTown);
       return;
     }
     if (_selectedScope == FormScopeType.eu && !_supportsEuScope) {
-      showErrorSnackBar('EU scope is only available for EU countries');
+      showErrorSnackBar(context.l10n.euScopeOnlyForEuCountries);
       return;
     }
     if (_selectedScope != FormScopeType.global &&
         (_profileCountryCode == null || _profileCountryCode!.isEmpty)) {
-      showErrorSnackBar('Please set your country in your address first');
+      showErrorSnackBar(context.l10n.pleaseSetCountryInAddressFirst);
       return;
     }
     final scopeType = formScopeTypeToFirestore(_selectedScope);
@@ -379,17 +379,17 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
-        return 'Global';
+        return context.l10n.scopeGlobal;
       case FormScopeType.eu:
-        return 'EU';
+        return context.l10n.scopeEu;
       case FormScopeType.continent:
-        return 'Continent';
+        return context.l10n.scopeContinent;
       case FormScopeType.country:
-        return 'Country';
+        return context.l10n.scopeCountry;
       case FormScopeType.stateOrRegion:
-        return 'State / Region';
+        return context.l10n.scopeStateRegion;
       case FormScopeType.city:
-        return 'Town';
+        return context.l10n.scopeCity;
     }
   }
 
@@ -518,8 +518,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               DropdownButtonFormField<FormScopeType>(
                 key: ValueKey(_selectedScope),
                 initialValue: _selectedScope,
-                decoration: const InputDecoration(
-                  labelText: 'Scope',
+                decoration: InputDecoration(
+                  labelText: context.l10n.scope,
                   border: OutlineInputBorder(),
                 ),
                 items: [
@@ -558,14 +558,14 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               if (_selectedScope == FormScopeType.city) ...[
                 TextFormField(
                   controller: _scopeTownController,
-                  decoration: const InputDecoration(
-                    labelText: 'Town',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.town,
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (_selectedScope == FormScopeType.city &&
                         (value == null || value.trim().isEmpty)) {
-                      return 'Please enter a town';
+                      return context.l10n.pleaseEnterTown;
                     }
                     return null;
                   },

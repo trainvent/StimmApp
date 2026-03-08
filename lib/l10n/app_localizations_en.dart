@@ -824,6 +824,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signedPetitions => 'Signed Petitions';
 
   @override
+  String get scope => 'Scope';
+
+  @override
+  String get scopeGlobal => 'Global';
+
+  @override
+  String get scopeEu => 'EU';
+
+  @override
+  String get scopeContinent => 'Continent';
+
+  @override
+  String get scopeCountry => 'Country';
+
+  @override
+  String get scopeStateRegion => 'State / Region';
+
+  @override
+  String get scopeCity => 'City';
+
+  @override
+  String get town => 'Town';
+
+  @override
+  String get pleaseEnterTown => 'Please enter a town';
+
+  @override
+  String get euScopeOnlyForEuCountries =>
+      'EU scope is only available for EU countries';
+
+  @override
+  String get pleaseSetCountryInAddressFirst =>
+      'Please set your country in your address first';
+
+  @override
   String get state => 'State';
 
   @override
@@ -953,7 +988,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeToPro => 'Welcome to Pro!';
 
   @override
-  String get yes => 'Ja';
+  String get yes => 'Yes';
 
   @override
   String get yesCancel => 'Yes, cancel';
@@ -1230,9 +1265,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordMustBeAtLeast8CharactersLong =>
       'Password must be at least 8 characters long';
-
-  @override
-  String get town => 'town';
 
   @override
   String passwordValidation(String type) {

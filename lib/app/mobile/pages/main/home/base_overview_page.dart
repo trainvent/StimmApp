@@ -84,7 +84,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Scope',
+                      context.l10n.scope,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
@@ -233,17 +233,17 @@ class _BaseOverviewPageState<T extends HomeItem>
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
-        return 'Global';
+        return context.l10n.scopeGlobal;
       case FormScopeType.eu:
-        return 'EU';
+        return context.l10n.scopeEu;
       case FormScopeType.continent:
-        return 'Continent';
+        return context.l10n.scopeContinent;
       case FormScopeType.country:
-        return 'Country';
+        return context.l10n.scopeCountry;
       case FormScopeType.stateOrRegion:
-        return context.l10n.state;
+        return context.l10n.scopeStateRegion;
       case FormScopeType.city:
-        return 'City';
+        return context.l10n.scopeCity;
     }
   }
 

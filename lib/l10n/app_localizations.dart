@@ -1658,6 +1658,72 @@ abstract class AppLocalizations {
   /// **'Signed Petitions'**
   String get signedPetitions;
 
+  /// No description provided for @scope.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get scope;
+
+  /// No description provided for @scopeGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'Global'**
+  String get scopeGlobal;
+
+  /// No description provided for @scopeEu.
+  ///
+  /// In en, this message translates to:
+  /// **'EU'**
+  String get scopeEu;
+
+  /// No description provided for @scopeContinent.
+  ///
+  /// In en, this message translates to:
+  /// **'Continent'**
+  String get scopeContinent;
+
+  /// No description provided for @scopeCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get scopeCountry;
+
+  /// No description provided for @scopeStateRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'State / Region'**
+  String get scopeStateRegion;
+
+  /// No description provided for @scopeCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get scopeCity;
+
+  /// No description provided for @town.
+  ///
+  /// In en, this message translates to:
+  /// **'Town'**
+  String get town;
+
+  /// No description provided for @pleaseEnterTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a town'**
+  String get pleaseEnterTown;
+
+  /// No description provided for @euScopeOnlyForEuCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'EU scope is only available for EU countries'**
+  String get euScopeOnlyForEuCountries;
+
+  /// No description provided for @pleaseSetCountryInAddressFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set your country in your address first'**
+  String get pleaseSetCountryInAddressFirst;
+
   /// No description provided for @state.
   ///
   /// In en, this message translates to:
@@ -1907,7 +1973,7 @@ abstract class AppLocalizations {
   /// No description provided for @yes.
   ///
   /// In en, this message translates to:
-  /// **'Ja'**
+  /// **'Yes'**
   String get yes;
 
   /// No description provided for @yesCancel.
@@ -2413,12 +2479,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 8 characters long'**
   String get passwordMustBeAtLeast8CharactersLong;
-
-  /// No description provided for @town.
-  ///
-  /// In en, this message translates to:
-  /// **'town'**
-  String get town;
 
   /// Password validation messages
   ///

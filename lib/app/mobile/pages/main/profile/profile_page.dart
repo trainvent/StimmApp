@@ -233,7 +233,7 @@ class ProfilePage extends StatelessWidget {
                           _buildDetailTile(
                             key: keys.profilePage.manageSubscriptionsListTile,
                             context,
-                            context.l10n.isProMember,
+                            context.l10n.proMember,
                             userProfile.isPro == true
                                 ? context.l10n.yes
                                 : context.l10n.no,
