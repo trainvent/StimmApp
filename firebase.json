@@ -33,6 +33,14 @@
     ],
     "rewrites": [
       {
+        "source": "/marketing",
+        "destination": "/marketing.html"
+      },
+      {
+        "source": "/marketing/**",
+        "destination": "/marketing.html"
+      },
+      {
         "source": "/faq",
         "destination": "/faq.html"
       },
