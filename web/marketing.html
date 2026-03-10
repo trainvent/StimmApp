@@ -123,16 +123,44 @@
 </head>
 <body>
   <main class="card">
-    <img class="logo" src="/icons/Icon-512.png" alt="StimmApp logo">
+    <img id="logo" class="logo" src="/icons/Icon-512.png" alt="StimmApp logo">
     <h1>StimmApp</h1>
-    <p>Create petitions and polls. Download the app on your preferred store.</p>
+    <p id="tagline">Create petitions and polls. Download the app on your preferred store.</p>
 
     <div class="actions">
-      <a class="button" href="https://apps.apple.com/app/idYOUR_APP_STORE_ID" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
-      <a class="button secondary" href="https://play.google.com/store/apps/details?id=de.lemarq.stimmapp" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
+      <a id="app-store-link" class="button" href="https://apps.apple.com/app/idYOUR_APP_STORE_ID" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+      <a id="play-store-link" class="button secondary" href="https://play.google.com/store/apps/details?id=de.lemarq.stimmapp" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
     </div>
 
-    <p class="footnote">Replace the App Store URL in <code>web/marketing.html</code> with your final iOS listing link.</p>
+    <p id="footnote" class="footnote">Replace the App Store URL in <code>web/marketing.html</code> with your final iOS listing link.</p>
   </main>
+  <script>
+    const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
+    const copy = isEnglishHost ? {
+      lang: 'en',
+      title: 'StimmApp',
+      logoAlt: 'StimmApp logo',
+      tagline: 'Create petitions and polls. Download the app on your preferred store.',
+      appStore: 'Download on the App Store',
+      playStore: 'Get it on Google Play',
+      footnote: 'Replace the App Store URL in <code>web/marketing.html</code> with your final iOS listing link.'
+    } : {
+      lang: 'de',
+      title: 'StimmApp',
+      logoAlt: 'StimmApp Logo',
+      tagline: 'Erstelle Petitionen und Umfragen. Lade die App in deinem bevorzugten Store herunter.',
+      appStore: 'Im App Store laden',
+      playStore: 'Bei Google Play laden',
+      footnote: 'Ersetze die App-Store-URL in <code>web/marketing.html</code> durch deinen finalen iOS-Link.'
+    };
+
+    document.documentElement.lang = copy.lang;
+    document.title = copy.title;
+    document.getElementById('logo').alt = copy.logoAlt;
+    document.getElementById('tagline').textContent = copy.tagline;
+    document.getElementById('app-store-link').textContent = copy.appStore;
+    document.getElementById('play-store-link').textContent = copy.playStore;
+    document.getElementById('footnote').innerHTML = copy.footnote;
+  </script>
 </body>
 </html>

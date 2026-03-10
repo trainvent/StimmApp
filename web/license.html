@@ -41,15 +41,46 @@
 </head>
 <body>
   <div class="card">
-    <h1>Lizenz</h1>
-    <p>Dieses Projekt wird unter der <strong>GNU General Public License v3.0</strong> veröffentlicht.</p>
+    <h1 id="title">Lizenz</h1>
+    <p id="intro">Dieses Projekt wird unter der <strong>GNU General Public License v3.0</strong> veroeffentlicht.</p>
     <p><strong>SPDX:</strong> <code>GPL-3.0-only</code></p>
 
-    <p>Vollständiger Lizenztext:</p>
-    <p><a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank" rel="noopener noreferrer">GNU GPL v3.0 (offizieller Text)</a></p>
+    <p id="full-text-label">Vollstaendiger Lizenztext:</p>
+    <p><a id="license-text-link" href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank" rel="noopener noreferrer">GNU GPL v3.0 (offizieller Text)</a></p>
 
-    <p>Kontakt bei Lizenzfragen: <a href="mailto:support@trainvent.com">support@trainvent.com</a></p>
-    <p><a href="/support.html">Zurück zum Support</a></p>
+    <p id="contact-line">Kontakt bei Lizenzfragen: <a href="mailto:support@trainvent.com">support@trainvent.com</a></p>
+    <p><a id="back-link" href="/support.html">Zurueck zum Support</a></p>
   </div>
+  <script>
+    const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
+    const copy = isEnglishHost ? {
+      lang: 'en',
+      pageTitle: 'License - StimmApp',
+      title: 'License',
+      intro: 'This project is released under the <strong>GNU General Public License v3.0</strong>.',
+      fullText: 'Full license text:',
+      licenseTextLink: 'GNU GPL v3.0 (official text)',
+      contact: 'Contact for license questions: <a href="mailto:support@trainvent.com">support@trainvent.com</a>',
+      back: 'Back to Support'
+    } : {
+      lang: 'de',
+      pageTitle: 'Lizenz - StimmApp',
+      title: 'Lizenz',
+      intro: 'Dieses Projekt wird unter der <strong>GNU General Public License v3.0</strong> veroeffentlicht.',
+      fullText: 'Vollstaendiger Lizenztext:',
+      licenseTextLink: 'GNU GPL v3.0 (offizieller Text)',
+      contact: 'Kontakt bei Lizenzfragen: <a href="mailto:support@trainvent.com">support@trainvent.com</a>',
+      back: 'Zurueck zum Support'
+    };
+
+    document.documentElement.lang = copy.lang;
+    document.title = copy.pageTitle;
+    document.getElementById('title').textContent = copy.title;
+    document.getElementById('intro').innerHTML = copy.intro;
+    document.getElementById('full-text-label').textContent = copy.fullText;
+    document.getElementById('license-text-link').textContent = copy.licenseTextLink;
+    document.getElementById('contact-line').innerHTML = copy.contact;
+    document.getElementById('back-link').textContent = copy.back;
+  </script>
 </body>
 </html>
