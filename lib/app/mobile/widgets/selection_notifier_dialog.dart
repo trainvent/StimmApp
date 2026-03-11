@@ -14,6 +14,7 @@ class SelectionNotifierDialog<T> extends StatefulWidget {
   final ValueNotifier<T?> notifier;
   final List<T> options;
   final String Function(BuildContext, T) optionLabel;
+  final Widget Function(BuildContext, T)? optionLeading;
   final String? title;
   final String? confirmLabel;
   final String? cancelLabel;
@@ -24,6 +25,7 @@ class SelectionNotifierDialog<T> extends StatefulWidget {
     required this.notifier,
     required this.options,
     required this.optionLabel,
+    this.optionLeading,
     this.title,
     this.confirmLabel,
     this.cancelLabel,
@@ -90,7 +92,11 @@ class _SelectionNotifierDialogState<T>
                     shrinkWrap: true,
                     children: widget.options.map((opt) {
                       final label = widget.optionLabel(context, opt);
-                      return RadioListTile<T>(title: Text(label), value: opt);
+                      return RadioListTile<T>(
+                        secondary: widget.optionLeading?.call(context, opt),
+                        title: Text(label),
+                        value: opt,
+                      );
                     }).toList(),
                   ),
                 ),

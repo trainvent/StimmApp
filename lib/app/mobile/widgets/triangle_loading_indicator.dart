@@ -45,16 +45,19 @@ class TriangleLoadingIndicator extends StatefulWidget {
 class _TriangleLoadingIndicatorState extends State<TriangleLoadingIndicator>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Stopwatch _clock;
 
   @override
   void initState() {
     super.initState();
+    _clock = Stopwatch()..start();
     _controller = AnimationController.unbounded(vsync: this)
       ..repeat(min: 0, max: 1, period: const Duration(seconds: 1));
   }
 
   @override
   void dispose() {
+    _clock.stop();
     _controller.dispose();
     super.dispose();
   }
@@ -69,8 +72,7 @@ class _TriangleLoadingIndicatorState extends State<TriangleLoadingIndicator>
           animation: _controller,
           builder: (context, child) {
             final tSec =
-                DateTime.now().microsecondsSinceEpoch /
-                Duration.microsecondsPerSecond;
+                _clock.elapsedMicroseconds / Duration.microsecondsPerSecond;
             return CustomPaint(
               painter: _TriangleLoadingPainter(
                 tSec: tSec,
@@ -170,12 +172,7 @@ class _TriangleLoadingPainter extends CustomPainter {
     final neededDepth = (cycleIndex + 1) * nPerCycle + 3;
     ensureTriangles(neededDepth);
     final maxDepthIdx = triangles.length - 1;
-    final maxRenderableCycles = math.max(
-      1,
-      ((maxDepthIdx - nPerCycle) / nPerCycle).floor() + 1,
-    );
-    final effectiveCycleIndex = cycleIndex % maxRenderableCycles;
-    final baseDepth = effectiveCycleIndex * nPerCycle;
+    final baseDepth = math.min(cycleIndex * nPerCycle, maxDepthIdx);
 
     final startIdx = math.min(baseDepth, maxDepthIdx);
     final endIdx = math.min(baseDepth + nPerCycle, maxDepthIdx);
@@ -381,12 +378,7 @@ class _TriangleLoadingPainter extends CustomPainter {
   Color _triColor(int index) {
     final seedHsl = baseColor != null ? HSLColor.fromColor(baseColor!) : null;
     final hue = ((seedHsl?.hue ?? baseHue) + index * hueStep) % 360;
-    final hsl = HSLColor.fromAHSL(
-      1,
-      hue,
-      saturation,
-      lightness,
-    );
+    final hsl = HSLColor.fromAHSL(1, hue, saturation, lightness);
     return hsl.toColor();
   }
 
