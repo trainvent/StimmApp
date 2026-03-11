@@ -1311,6 +1311,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signatureReasoning => 'signature reasoning';
 
   @override
+  String get signatureReasoningInfo =>
+      'Activates commenting on your signatures and opinions before submitting.';
+
+  @override
   String get whyAreYouSigning => 'Why are you signing?';
 
   @override
@@ -1318,6 +1322,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get runningForms => 'Running Forms';
+
+  @override
+  String get publications => 'Publications';
 
   @override
   String get cannotDeletePetitionHasSignatures =>

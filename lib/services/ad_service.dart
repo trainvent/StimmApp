@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:stimmapp/core/config/environment.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 
 class BannerAdWrapper {
   final BannerAd? _ad;
@@ -18,6 +20,15 @@ class BannerAdWrapper {
 }
 
 class AdService {
+  static const String _androidTestBannerAdUnitId =
+      'ca-app-pub-3940256099942544/6300978111';
+  static const String _iosTestBannerAdUnitId =
+      'ca-app-pub-3940256099942544/2934735716';
+  static const String _androidTestInterstitialAdUnitId =
+      'ca-app-pub-3940256099942544/1033173712';
+  static const String _iosTestInterstitialAdUnitId =
+      'ca-app-pub-3940256099942544/4411468910';
+
   static final AdService _instance = AdService._internal();
 
   factory AdService() {
@@ -34,17 +45,10 @@ class AdService {
   String get bannerAdUnitId {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
-      // Use test ID for debug builds, real ID for release
-      if (kDebugMode) {
-        return 'ca-app-pub-3940256099942544/6300978111'; // Android Test Banner ID
-      }
-      return 'ca-app-pub-5296065079333841/8760518694'; // Real Banner ID
+      if (kDebugMode || Environment.isDev) return _androidTestBannerAdUnitId;
+      return IConst.googleAdMobBannerAdUnitId;
     } else if (Platform.isIOS) {
-      if (kDebugMode) {
-        return 'ca-app-pub-3940256099942544/2934735716'; // iOS Test Banner ID
-      }
-      // TODO: Replace with your actual iOS Ad Unit ID
-      return 'ca-app-pub-3940256099942544/2934735716'; 
+      return _iosTestBannerAdUnitId;
     }
     throw UnsupportedError("Unsupported platform");
   }
@@ -52,16 +56,12 @@ class AdService {
   String get interstitialAdUnitId {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return '';
     if (Platform.isAndroid) {
-      if (kDebugMode) {
-        return 'ca-app-pub-3940256099942544/1033173712'; // Android Test Interstitial ID
+      if (kDebugMode || Environment.isDev) {
+        return _androidTestInterstitialAdUnitId;
       }
       return 'ca-app-pub-5296065079333841/5826982633'; // Real Interstitial ID
     } else if (Platform.isIOS) {
-      if (kDebugMode) {
-        return 'ca-app-pub-3940256099942544/4411468910'; // iOS Test Interstitial ID
-      }
-      // TODO: Replace with your actual iOS Ad Unit ID
-      return 'ca-app-pub-3940256099942544/4411468910';
+      return _iosTestInterstitialAdUnitId;
     }
     throw UnsupportedError("Unsupported platform");
   }

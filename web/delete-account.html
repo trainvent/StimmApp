@@ -75,29 +75,29 @@
 
 <body>
 	<div id="content">
-		<h1>Löschen Ihres StimmApp-Kontos</h1>
-		<p>Bitte melden Sie sich an, um Ihr Konto und alle zugehörigen Daten unwiderruflich zu löschen.</p>
+		<h1 id="page-title">Loeschen Ihres StimmApp-Kontos</h1>
+		<p id="intro">Bitte melden Sie sich an, um Ihr Konto und alle zugehoerigen Daten unwiderruflich zu loeschen.</p>
 
 		<div id="error-message" class="error"></div>
 
 		<form id="delete-form">
 			<div class="form-group">
-				<label for="email">E-Mail</label>
+				<label id="email-label" for="email">E-Mail</label>
 				<input type="email" id="email" required>
 			</div>
 			<div class="form-group">
-				<label for="password">Passwort</label>
+				<label id="password-label" for="password">Passwort</label>
 				<input type="password" id="password" required>
 			</div>
-			<p class="warning">Hinweis: Die Löschung Ihres Kontos ist endgültig und kann nicht rückgängig gemacht
+			<p id="warning" class="warning">Hinweis: Die Loeschung Ihres Kontos ist endgueltig und kann nicht rueckgaengig gemacht
 				werden.</p>
-			<button type="submit" id="delete-btn">Konto unwiderruflich löschen</button>
+			<button type="submit" id="delete-btn">Konto unwiderruflich loeschen</button>
 		</form>
 	</div>
 
 	<div id="success-message" style="display: none; text-align: center;">
-		<h1>Konto gelöscht</h1>
-		<p>Ihr Konto wurde erfolgreich gelöscht. Wir bedauern, dass Sie uns verlassen.</p>
+		<h1 id="success-title">Konto geloescht</h1>
+		<p id="success-copy">Ihr Konto wurde erfolgreich geloescht. Wir bedauern, dass Sie uns verlassen.</p>
 	</div>
 
 	<script type="module">
@@ -125,12 +125,57 @@
 		const errorMessage = document.getElementById('error-message');
 		const contentDiv = document.getElementById('content');
 		const successDiv = document.getElementById('success-message');
+		const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
+		const copy = isEnglishHost ? {
+			lang: 'en',
+			title: 'Delete Account - StimmApp',
+			pageTitle: 'Delete Your StimmApp Account',
+			intro: 'Please sign in to permanently delete your account and all related data.',
+			emailLabel: 'Email',
+			passwordLabel: 'Password',
+			warning: 'Warning: Deleting your account is permanent and cannot be undone.',
+			deleteButton: 'Delete account permanently',
+			deletingButton: 'Deleting...',
+			successTitle: 'Account deleted',
+			successCopy: 'Your account was deleted successfully. We are sorry to see you go.',
+			errorPrefix: 'Error: ',
+			invalidCredentials: 'Email or password is incorrect.',
+			tooManyRequests: 'Too many attempts. Please try again later.',
+			unknownError: 'An unknown error occurred'
+		} : {
+			lang: 'de',
+			title: 'Konto loeschen - StimmApp',
+			pageTitle: 'Loeschen Ihres StimmApp-Kontos',
+			intro: 'Bitte melden Sie sich an, um Ihr Konto und alle zugehoerigen Daten unwiderruflich zu loeschen.',
+			emailLabel: 'E-Mail',
+			passwordLabel: 'Passwort',
+			warning: 'Hinweis: Die Loeschung Ihres Kontos ist endgueltig und kann nicht rueckgaengig gemacht werden.',
+			deleteButton: 'Konto unwiderruflich loeschen',
+			deletingButton: 'Wird geloescht...',
+			successTitle: 'Konto geloescht',
+			successCopy: 'Ihr Konto wurde erfolgreich geloescht. Wir bedauern, dass Sie uns verlassen.',
+			errorPrefix: 'Fehler: ',
+			invalidCredentials: 'E-Mail oder Passwort ist falsch.',
+			tooManyRequests: 'Zu viele Versuche. Bitte versuchen Sie es spaeter erneut.',
+			unknownError: 'Ein unbekannter Fehler ist aufgetreten'
+		};
+
+		document.documentElement.lang = copy.lang;
+		document.title = copy.title;
+		document.getElementById('page-title').textContent = copy.pageTitle;
+		document.getElementById('intro').textContent = copy.intro;
+		document.getElementById('email-label').textContent = copy.emailLabel;
+		document.getElementById('password-label').textContent = copy.passwordLabel;
+		document.getElementById('warning').textContent = copy.warning;
+		document.getElementById('delete-btn').textContent = copy.deleteButton;
+		document.getElementById('success-title').textContent = copy.successTitle;
+		document.getElementById('success-copy').textContent = copy.successCopy;
 
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			errorMessage.style.display = 'none';
 			deleteBtn.disabled = true;
-			deleteBtn.textContent = 'Wird gelöscht...';
+			deleteBtn.textContent = copy.deletingButton;
 
 			const email = emailInput.value;
 			const password = passwordInput.value;
@@ -144,10 +189,10 @@
 				successDiv.style.display = 'block';
 			} catch (error) {
 				console.error("Error deleting account:", error);
-				errorMessage.textContent = "Fehler: " + getErrorMessage(error.code);
+				errorMessage.textContent = copy.errorPrefix + getErrorMessage(error.code);
 				errorMessage.style.display = 'block';
 				deleteBtn.disabled = false;
-				deleteBtn.textContent = 'Konto unwiderruflich löschen';
+				deleteBtn.textContent = copy.deleteButton;
 			}
 		});
 
@@ -156,11 +201,11 @@
 				case 'auth/invalid-credential':
 				case 'auth/wrong-password':
 				case 'auth/user-not-found':
-					return "E-Mail oder Passwort ist falsch.";
+					return copy.invalidCredentials;
 				case 'auth/too-many-requests':
-					return "Zu viele Versuche. Bitte versuchen Sie es später erneut.";
+					return copy.tooManyRequests;
 				default:
-					return "Ein unbekannter Fehler ist aufgetreten (" + code + ").";
+					return copy.unknownError + " (" + code + ").";
 			}
 		}
 	</script>

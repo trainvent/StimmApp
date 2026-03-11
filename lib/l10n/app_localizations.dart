@@ -2546,6 +2546,12 @@ abstract class AppLocalizations {
   /// **'signature reasoning'**
   String get signatureReasoning;
 
+  /// No description provided for @signatureReasoningInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Activates commenting on your signatures and opinions before submitting.'**
+  String get signatureReasoningInfo;
+
   /// No description provided for @whyAreYouSigning.
   ///
   /// In en, this message translates to:
@@ -2563,6 +2569,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Running Forms'**
   String get runningForms;
+
+  /// No description provided for @publications.
+  ///
+  /// In en, this message translates to:
+  /// **'Publications'**
+  String get publications;
 
   /// No description provided for @cannotDeletePetitionHasSignatures.
   ///

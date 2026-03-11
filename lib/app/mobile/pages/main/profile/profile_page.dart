@@ -2,13 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/form_export_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/running_forms_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/privacy_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
@@ -304,27 +303,14 @@ class ProfilePage extends StatelessWidget {
                     },
                   ),
 
-                  // Running forms
                   PointingListTile(
-                    title: Text(S.of(context).runningForms),
+                    key: keys.profilePage.publicationsListTile,
+                    title: Text(context.l10n.publications),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RunningFormsPage(),
-                        ),
-                      );
-                    },
-                  ),
-                  // Finished forms export
-                  PointingListTile(
-                    key: keys.profilePage.formExportListTile,
-                    title: Text(context.l10n.finishedForms),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FormExportPage(),
+                          builder: (context) => const PublicationsPage(),
                         ),
                       );
                     },

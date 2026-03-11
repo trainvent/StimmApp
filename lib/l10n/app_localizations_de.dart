@@ -1327,6 +1327,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signatureReasoning => 'Begründung der Unterschrift';
 
   @override
+  String get signatureReasoningInfo =>
+      'Aktiviert das Kommentieren deiner Unterschriften und Meinungen vor dem Absenden.';
+
+  @override
   String get whyAreYouSigning => 'Warum unterzeichnen Sie?';
 
   @override
@@ -1334,6 +1338,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get runningForms => 'Laufende Formulare';
+
+  @override
+  String get publications => 'Veröffentlichungen';
 
   @override
   String get cannotDeletePetitionHasSignatures =>
