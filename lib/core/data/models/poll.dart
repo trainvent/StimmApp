@@ -41,6 +41,9 @@ class Poll implements HomeItem {
   final String? stateOrRegion;
   @override
   final String? town;
+  final String? groupId;
+  final String? groupName;
+  final String visibility;
 
   Poll({
     required this.id,
@@ -56,6 +59,9 @@ class Poll implements HomeItem {
     this.scopeType = 'global',
     this.continentCode,
     this.countryCode,
+    this.groupId,
+    this.groupName,
+    this.visibility = 'public',
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
     String? town,
@@ -88,6 +94,9 @@ class Poll implements HomeItem {
     String? scopeType,
     String? continentCode,
     String? countryCode,
+    String? groupId,
+    String? groupName,
+    String? visibility,
     String? stateOrRegion,
     @Deprecated('Use stateOrRegion') String? state,
     String? town,
@@ -107,6 +116,9 @@ class Poll implements HomeItem {
       scopeType: scopeType ?? this.scopeType,
       continentCode: continentCode ?? this.continentCode,
       countryCode: countryCode ?? this.countryCode,
+      groupId: groupId ?? this.groupId,
+      groupName: groupName ?? this.groupName,
+      visibility: visibility ?? this.visibility,
       stateOrRegion: stateOrRegion ?? state ?? this.stateOrRegion,
       town: town ?? city ?? this.town,
     );
@@ -154,6 +166,9 @@ class Poll implements HomeItem {
       scopeType: scopeType,
       continentCode: data['continentCode'] as String?,
       countryCode: countryCode,
+      groupId: data['groupId'] as String?,
+      groupName: data['groupName'] as String?,
+      visibility: (data['visibility'] ?? 'public') as String,
       stateOrRegion: stateOrRegion,
       town: town,
     );
@@ -174,6 +189,9 @@ class Poll implements HomeItem {
       'scopeType': p.scopeType,
       'continentCode': p.continentCode,
       'countryCode': p.countryCode?.toUpperCase(),
+      'groupId': p.groupId,
+      'groupName': p.groupName,
+      'visibility': p.visibility,
       'stateOrRegion': p.stateOrRegion,
       // Legacy compatibility for clients still reading `state`.
       'state': p.stateOrRegion,

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_groups_page.dart';
+import 'package:stimmapp/app/mobile/widgets/buttons/blurrable_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:uuid/uuid.dart';
 
 class PollCreatorPage extends StatefulWidget {
@@ -25,6 +30,14 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     TextEditingController(),
   ];
   final _uuid = const Uuid();
+  UserProfile? _user;
+  PollGroup? _selectedGroup;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUser();
+  }
 
   @override
   void dispose() {
@@ -32,6 +45,57 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _fetchUser() async {
+    final currentUser = authService.currentUser;
+    if (currentUser == null) {
+      return;
+    }
+    final user = await UserRepository.create().watchById(currentUser.uid).first;
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _user = user;
+    });
+  }
+
+  Future<void> _openGroupSelector() async {
+    final user = _user;
+    final navigator = Navigator.of(context);
+    if (user == null) {
+      await _fetchUser();
+    }
+    if (!mounted) {
+      return;
+    }
+
+    if ((_user?.isPro ?? false) != true) {
+      final opened = await PurchasesService.instance.presentPaywall(
+        context: context,
+      );
+      if (!opened) {
+        showErrorSnackBar('Could not open paywall');
+      }
+      return;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    final selectedGroup = await navigator.push<PollGroup>(
+      MaterialPageRoute(
+        builder: (context) => PollGroupsPage(selectedGroupId: _selectedGroup?.id),
+      ),
+    );
+    if (!mounted || selectedGroup == null) {
+      return;
+    }
+    setState(() {
+      _selectedGroup = selectedGroup;
+    });
   }
 
   void _addOption() {
@@ -130,6 +194,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         scopeType: scopeType,
         continentCode: scopeContinentCode,
         countryCode: resolvedCountryCode,
+        groupId: _selectedGroup?.id,
+        groupName: _selectedGroup?.name,
+        visibility: _selectedGroup == null ? 'public' : 'group',
         stateOrRegion: scopeStateOrRegion,
         town: scopeTown,
       );
@@ -174,6 +241,49 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       title: context.l10n.createPoll,
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createPoll,
+      additionalTopFields: [
+        BlurrableButton(
+          icon: Icons.groups_2_outlined,
+          title: 'Polling groups',
+          description: _selectedGroup == null
+              ? 'Create team-only polls and preload allowed members.'
+              : 'Selected group: ${_selectedGroup!.name}',
+          onPressed: _openGroupSelector,
+          isBlurred: (_user?.isPro ?? false) != true,
+          descriptionIfBlurred: context.l10n.goProToAccessTheseBenefits,
+        ),
+        if ((_user?.isPro ?? false) != true)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _openGroupSelector,
+              child: Text(context.l10n.paywallTitle),
+            ),
+          ),
+        if (_selectedGroup != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                Chip(
+                  avatar: const Icon(Icons.group, size: 18),
+                  label: Text(_selectedGroup!.name),
+                ),
+                ActionChip(
+                  onPressed: () {
+                    setState(() {
+                      _selectedGroup = null;
+                    });
+                  },
+                  label: const Text('Post publicly instead'),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 20),
+      ],
       additionalBottomFields: [
         const SizedBox(height: 20),
         Text(
