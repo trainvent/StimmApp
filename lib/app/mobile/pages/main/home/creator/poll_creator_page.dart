@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_groups_page.dart';
-import 'package:stimmapp/app/mobile/widgets/buttons/blurrable_button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
@@ -242,23 +241,18 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createPoll,
       additionalTopFields: [
-        BlurrableButton(
-          icon: Icons.groups_2_outlined,
-          title: 'Polling groups',
-          description: _selectedGroup == null
-              ? 'Create team-only polls and preload allowed members.'
-              : 'Selected group: ${_selectedGroup!.name}',
-          onPressed: _openGroupSelector,
-          isBlurred: (_user?.isPro ?? false) != true,
-          descriptionIfBlurred: context.l10n.goProToAccessTheseBenefits,
-        ),
-        if ((_user?.isPro ?? false) != true)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: _openGroupSelector,
-              child: Text(context.l10n.paywallTitle),
+        if ((_user?.isPro ?? false) == true)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.groups_2_outlined),
+            title: const Text('Polling groups'),
+            subtitle: Text(
+              _selectedGroup == null
+                  ? 'Create team-only polls and preload allowed members.'
+                  : 'Selected group: ${_selectedGroup!.name}',
             ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _openGroupSelector,
           ),
         if (_selectedGroup != null)
           Padding(
