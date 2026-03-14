@@ -268,7 +268,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (!context.mounted) return;
                               showLicensePage(
                                 context: context,
-                                applicationName: IConst.appName,
+                                applicationName: context.localizedAppName,
                                 applicationVersion:
                                     '1.0.0', // Or fetch dynamically
                                 applicationIcon: Padding(

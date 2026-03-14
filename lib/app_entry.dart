@@ -162,7 +162,9 @@ class _MyAppState extends State<MyApp> {
           builder: (context, locale, child) {
             final app = MaterialApp(
               navigatorKey: navigatorKey,
-              title: IConst.appName,
+              title: (locale?.languageCode.toLowerCase() == 'en')
+                  ? 'Vivot'
+                  : 'StimmApp',
               theme: AppTheme.light,
               darkTheme: AppTheme.dark,
               themeMode: themeMode,
@@ -209,7 +211,8 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
               home: !_initialized
                   ? const AppLoadingPage()
-                  : _pageForRouteName(initialRouteName) ?? const InitAppLayout(),
+                  : _pageForRouteName(initialRouteName) ??
+                        const InitAppLayout(),
             );
 
             if (Environment.isDev) {

@@ -9,10 +9,7 @@ class Environment {
   }
 
   static void applyBrandForLocale({Locale? locale, String? webHost}) {
-    final bool useVivot = _shouldUseVivotBrand(
-      locale: locale,
-      webHost: webHost,
-    );
+    final bool useVivot = _shouldUseVivotBrand(webHost: webHost);
     final bool dev = config.isDev;
     if (useVivot) {
       config = dev ? BrandConfig.vivotDev : BrandConfig.vivotProd;
@@ -21,17 +18,11 @@ class Environment {
     }
   }
 
-  static bool _shouldUseVivotBrand({Locale? locale, String? webHost}) {
+  static bool _shouldUseVivotBrand({String? webHost}) {
     final String host = (webHost ?? '').toLowerCase();
     if (host == 'vivot.net' || host.endsWith('.vivot.net')) return true;
     if (host == 'stimmapp.net' || host.endsWith('.stimmapp.net')) return false;
-
-    final String languageCode = locale?.languageCode.toLowerCase() ?? '';
-    if (languageCode == 'en') return true;
-    if (languageCode == 'de') return false;
-
-    final String countryCode = locale?.countryCode?.toUpperCase() ?? '';
-    return countryCode.isNotEmpty && countryCode != 'DE';
+    return false;
   }
 
   static bool get isDev => config.isDev;
