@@ -36,7 +36,7 @@ class WelcomePage extends StatelessWidget {
                             style: AppTextStyles.xxlRed,
                           ),
                           TextSpan(
-                            text: IConst.appName,
+                            text: context.localizedAppName,
                             style: AppTextStyles.xxlRed,
                           ),
                         ],

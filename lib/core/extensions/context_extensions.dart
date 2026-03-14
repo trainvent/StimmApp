@@ -6,4 +6,9 @@ extension BuildContextExtensions on BuildContext {
   ///
   /// Instead of `AppLocalizations.of(context)!`, you can now use `context.l10n`.
   AppLocalizations get l10n => AppLocalizations.of(this)!;
+
+  String get localizedAppName {
+    final languageCode = Localizations.localeOf(this).languageCode.toLowerCase();
+    return languageCode == 'en' ? 'Vivot' : 'StimmApp';
+  }
 }

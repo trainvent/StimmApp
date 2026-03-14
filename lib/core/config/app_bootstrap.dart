@@ -225,15 +225,19 @@ class AppBootstrap {
     if (host == 'vivot.net' || host.endsWith('.vivot.net')) {
       return const Locale('en');
     }
-    final locale = WidgetsBinding.instance.platformDispatcher.locale;
-    final countryCode = locale.countryCode?.toUpperCase();
-    return countryCode != null && countryCode != 'DE'
-        ? const Locale('en')
-        : const Locale('de');
+    return _defaultLocaleFromDevice();
   }
 
   Locale _defaultMobileLocaleByDevice() {
+    return _defaultLocaleFromDevice();
+  }
+
+  Locale _defaultLocaleFromDevice() {
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final languageCode = locale.languageCode.toLowerCase();
+    if (languageCode == 'de') return const Locale('de');
+    if (languageCode == 'en') return const Locale('en');
+
     final countryCode = locale.countryCode?.toUpperCase();
     return countryCode != null && countryCode != 'DE'
         ? const Locale('en')

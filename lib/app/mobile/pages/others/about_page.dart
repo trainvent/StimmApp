@@ -58,7 +58,7 @@ class AboutPage extends StatelessWidget {
           Center(child: Image.asset("assets/images/cropped-LeLogo.png")),
           const SizedBox(height: 10),
           Center(
-            child: Text(IConst.appName, style: AppTextStyles.xxlBold),
+            child: Text(context.localizedAppName, style: AppTextStyles.xxlBold),
           ),
           const SizedBox(height: 40),
           NeonPaddingWidget(
