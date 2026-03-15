@@ -38,6 +38,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
   bool _isLoading = false;
   bool _isApplyingSuggestion = false;
   int _requestId = 0;
+  String? _lastResolvedAddress;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
 
   void _handleFocusChanged() {
     if (!_focusNode.hasFocus) {
+      unawaited(_resolveCurrentTextIfNeeded());
       _removeOverlay();
       return;
     }
@@ -71,6 +73,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     widget.onStateChanged(null);
     widget.onTownChanged?.call(null);
     widget.onCountryCodeChanged?.call(null);
+    _lastResolvedAddress = null;
 
     final text = widget.controller.text.trim();
     _debounce?.cancel();
@@ -169,6 +172,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     widget.onStateChanged(suggestion.info.state);
     widget.onTownChanged?.call(suggestion.info.town);
     widget.onCountryCodeChanged?.call(suggestion.info.countryCode);
+    _lastResolvedAddress = suggestion.address.trim();
     setState(() {
       _suggestions = const [];
       _isLoading = false;
@@ -176,6 +180,36 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     _removeOverlay();
     _focusNode.unfocus();
     _isApplyingSuggestion = false;
+  }
+
+  Future<void> _resolveCurrentTextIfNeeded() async {
+    final text = widget.controller.text.trim();
+    if (!mounted ||
+        text.isEmpty ||
+        text.length < 2 ||
+        text == _lastResolvedAddress ||
+        !_service.hasApiKey) {
+      return;
+    }
+
+    final info = await _service.resolveAddress(
+      text,
+      countries: widget.countries,
+    );
+    if (!mounted) {
+      return;
+    }
+    if (info.town == null &&
+        info.state == null &&
+        info.countryCode == null &&
+        info.freeformAddress == null) {
+      return;
+    }
+
+    _lastResolvedAddress = text;
+    widget.onStateChanged(info.state);
+    widget.onTownChanged?.call(info.town);
+    widget.onCountryCodeChanged?.call(info.countryCode);
   }
 
   @override
@@ -209,9 +243,10 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
             (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
-              }
-              return null;
-            },
+            }
+            return null;
+          },
+        onFieldSubmitted: (_) => unawaited(_resolveCurrentTextIfNeeded()),
         maxLines: 1,
       ),
     );

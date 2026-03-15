@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
-import 'package:stimmapp/app/mobile/widgets/select_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -70,10 +69,6 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                   child: Center(
                     child: Column(
                       children: [
-                        if (_requiresStateScope && _selectedState != null) ...[
-                          Text(_selectedState!),
-                          const SizedBox(height: 20),
-                        ],
                         GooglePlacesAddressWidget(
                           controller: _controllerAddress,
                           onStateChanged: (state) {
@@ -95,17 +90,15 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                             });
                           },
                         ),
-                        if (_requiresStateScope) ...[
-                          const SizedBox(height: 20),
-                          SelectAddressWidget(
-                            selectedState: _selectedState,
-                            onStateChanged: (newValue) {
-                              setState(() {
-                                _selectedState = newValue;
-                              });
-                            },
+                        if (_requiresStateScope && _selectedState != null) ...[
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Detected state: $_selectedState',
+                              style: AppTextStyles.m,
+                            ),
                           ),
-                          const SizedBox(height: 10),
                         ],
                         Text(
                           errorMessage,

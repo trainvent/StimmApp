@@ -22,10 +22,7 @@ class IConst {
   // Preferred address search provider key.
   // Supply via:
   // flutter run --dart-define=TOMTOM_SEARCH_API_KEY=...
-  static const String tomTomSearchApiKey = String.fromEnvironment(
-    'TOMTOM_SEARCH_API_KEY',
-    defaultValue: '',
-  );
+  static const String tomTomSearchApiKey = 'IAa218B56ALkr3sDdVUpSkhbChKbFVWG';
 
   static const String googleAdMobAppId =
       'ca-app-pub-5296065079333841~8760518694';

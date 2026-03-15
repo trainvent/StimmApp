@@ -84,14 +84,35 @@ class TomTomSearchService {
     }
   }
 
+  Future<PlaceAddressInfo> resolveAddress(
+    String query, {
+    List<String>? countries,
+  }) async {
+    final suggestions = await searchAddresses(
+      query,
+      countries: countries,
+      limit: 1,
+    );
+    if (suggestions.isEmpty) {
+      return const PlaceAddressInfo();
+    }
+    return suggestions.first.info;
+  }
+
   PlaceAddressInfo _parseAddressInfo(Map<String, dynamic> address) {
     final countryCode = (address['countryCode'] as String?)?.toUpperCase();
-    final town =
-        (address['municipality'] as String?)?.trim().isNotEmpty == true
-        ? (address['municipality'] as String).trim()
-        : ((address['localName'] as String?)?.trim().isNotEmpty == true
-              ? (address['localName'] as String).trim()
-              : (address['municipalitySubdivision'] as String?)?.trim());
+    final municipality = (address['municipality'] as String?)?.trim();
+    final localName = (address['localName'] as String?)?.trim();
+    final municipalitySubdivision =
+        (address['municipalitySubdivision'] as String?)?.trim();
+    final countrySecondarySubdivision =
+        (address['countrySecondarySubdivision'] as String?)?.trim();
+    final town = _pickTown(
+      municipality: municipality,
+      localName: localName,
+      municipalitySubdivision: municipalitySubdivision,
+      countrySecondarySubdivision: countrySecondarySubdivision,
+    );
     final subdivisionName =
         (address['countrySubdivisionName'] as String?)?.trim();
     final subdivision = (address['countrySubdivision'] as String?)?.trim();
@@ -102,6 +123,28 @@ class TomTomSearchService {
       town: town,
       freeformAddress: (address['freeformAddress'] as String?)?.trim(),
     );
+  }
+
+  String? _pickTown({
+    String? municipality,
+    String? localName,
+    String? municipalitySubdivision,
+    String? countrySecondarySubdivision,
+  }) {
+    if (municipality != null && municipality.isNotEmpty) {
+      return municipality;
+    }
+    if (localName != null && localName.isNotEmpty) {
+      return localName;
+    }
+    if (municipalitySubdivision != null && municipalitySubdivision.isNotEmpty) {
+      return municipalitySubdivision.split(',').first.trim();
+    }
+    if (countrySecondarySubdivision != null &&
+        countrySecondarySubdivision.isNotEmpty) {
+      return countrySecondarySubdivision;
+    }
+    return null;
   }
 
   String? _buildFallbackLabel(Map<String, dynamic> address) {
