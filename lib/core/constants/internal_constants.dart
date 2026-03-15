@@ -15,11 +15,17 @@ class IConst {
   static const Set<String> alwaysProEmails = <String>{adminEmail, ownerEmail};
   static const String noreplyEmail = 'noreply@trainvent.com';
 
-  // Google Places API Key.
-  // If your Firebase API key is restricted and doesn't work for Places,
-  // create an unrestricted API key in Google Cloud Console and put it here.
+  // Legacy Google Places API key.
   static const String googlePlacesApiKey =
-      'AIzaSyC2FIfql1gfwTanWRLCMU3ixmJkzpSIN8M'; // Default to Android key for now
+      'AIzaSyC2FIfql1gfwTanWRLCMU3ixmJkzpSIN8M';
+
+  // Preferred address search provider key.
+  // Supply via:
+  // flutter run --dart-define=TOMTOM_SEARCH_API_KEY=...
+  static const String tomTomSearchApiKey = String.fromEnvironment(
+    'TOMTOM_SEARCH_API_KEY',
+    defaultValue: '',
+  );
 
   static const String googleAdMobAppId =
       'ca-app-pub-5296065079333841~8760518694';
