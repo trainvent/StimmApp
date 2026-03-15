@@ -5,8 +5,8 @@ import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 
-class GroupAccessInboxPage extends StatelessWidget {
-  const GroupAccessInboxPage({super.key});
+class InboxPage extends StatelessWidget {
+  const InboxPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class GroupAccessInboxPage extends StatelessWidget {
     final repo = PollGroupRepository.create();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Group notifications'),
+        title: const Text('Notifications'),
         actions: [
           IconButton(
             tooltip: 'Scan QR code',

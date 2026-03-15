@@ -74,6 +74,12 @@ service cloud.firestore {
              groupDoc(groupId).data.createdBy == request.auth.uid;
     }
 
+    function isPollGroupAdmin(groupId) {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/pollGroups/$(groupId)/members/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/pollGroups/$(groupId)/members/$(request.auth.uid)).data.role == 'admin';
+    }
+
     function isPollGroupCreatorAfter(groupId) {
       return isAuthenticated() &&
              groupDocAfter(groupId).data.createdBy == request.auth.uid;
@@ -195,11 +201,13 @@ service cloud.firestore {
       allow update: if isAdmin() ||
                     (isAuthenticated() &&
                      resource.data.createdBy == request.auth.uid) ||
+                    isPollGroupAdmin(groupId) ||
                     canSelfJoinPollGroup(groupId) ||
                     canSelfLeavePollGroup(groupId);
       allow delete: if isAdmin() ||
                     (isAuthenticated() &&
-                     resource.data.createdBy == request.auth.uid);
+                     resource.data.createdBy == request.auth.uid) ||
+                    isPollGroupAdmin(groupId);
 
       match /members/{memberId} {
         allow read: if canReadPollGroup(groupId);
@@ -211,21 +219,22 @@ service cloud.firestore {
                        request.resource.data.joinedBy == request.auth.uid);
         allow update, delete: if isAdmin() ||
                               isPollGroupCreator(groupId) ||
+                              isPollGroupAdmin(groupId) ||
                               (isAuthenticated() &&
                                memberId == request.auth.uid &&
                                isPollGroupMember(groupId));
       }
 
       match /allowedMembers/{allowedMemberId} {
-        allow read: if isAdmin() || isPollGroupCreator(groupId);
-        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId);
-        allow update, delete: if isAdmin() || isPollGroupCreator(groupId);
+        allow read: if isAdmin() || isPollGroupCreator(groupId) || isPollGroupAdmin(groupId);
+        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId) || isPollGroupAdmin(groupId);
+        allow update, delete: if isAdmin() || isPollGroupCreator(groupId) || isPollGroupAdmin(groupId);
       }
 
       match /allowedDomains/{allowedDomainId} {
-        allow read: if isAdmin() || isPollGroupCreator(groupId);
-        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId);
-        allow update, delete: if isAdmin() || isPollGroupCreator(groupId);
+        allow read: if isAdmin() || isPollGroupCreator(groupId) || isPollGroupAdmin(groupId);
+        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId) || isPollGroupAdmin(groupId);
+        allow update, delete: if isAdmin() || isPollGroupCreator(groupId) || isPollGroupAdmin(groupId);
       }
     }
 

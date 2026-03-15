@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/group_access_inbox_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
@@ -120,11 +120,9 @@ class ProfilePage extends StatelessWidget {
               isLabelVisible: pendingCount > 0,
               child: IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const GroupAccessInboxPage(),
-                    ),
-                  );
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const InboxPage()));
                 },
                 icon: const Icon(Icons.notifications_none),
               ),

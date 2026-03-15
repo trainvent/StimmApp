@@ -338,6 +338,29 @@ class PollGroupRepository {
     return _fs.getDoc(_groups().doc(groupId));
   }
 
+  Stream<PollGroupMember?> watchMember(String groupId, String uid) {
+    return _fs.watchDoc(_members(groupId).doc(uid));
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    final membersSnap = await _members(groupId).get();
+    final allowedMembersSnap = await _allowedMembers(groupId).get();
+    final allowedDomainsSnap = await _allowedDomains(groupId).get();
+    final batch = _fs.instance.batch();
+
+    for (final doc in membersSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in allowedMembersSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in allowedDomainsSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    batch.delete(_groups().doc(groupId));
+    await batch.commit();
+  }
+
   Future<PollGroupAccessNotification?> getNotification(
     String uid,
     String notificationId,

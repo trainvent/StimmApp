@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/group_editor_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/group_access_qr_scanner_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -64,6 +67,69 @@ class MemberGroupsPage extends StatelessWidget {
     }
   }
 
+  Future<void> _openEditor(BuildContext context, PollGroup group) async {
+    await Navigator.of(context).push<PollGroup>(
+      MaterialPageRoute(
+        builder: (context) => GroupEditorPage(initialGroup: group),
+      ),
+    );
+  }
+
+  Future<void> _deleteGroup(BuildContext context, PollGroup group) async {
+    final controller = TextEditingController();
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Delete group'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Type "${group.name}" to confirm deletion. This cannot be undone.',
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: 'Group name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).pop(controller.text.trim() == group.name.trim());
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) {
+        showErrorSnackBar('Group name did not match.');
+        return;
+      }
+
+      await PollGroupRepository.create().deleteGroup(group.id);
+      showSuccessSnackBar('Group deleted.');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
+    } finally {
+      controller.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final uid = authService.currentUser?.uid;
@@ -75,17 +141,31 @@ class MemberGroupsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My groups')),
+      appBar: AppBar(
+        title: const Text('My groups'),
+        actions: [
+          IconButton(
+            tooltip: 'Scan QR code',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const GroupAccessQrScannerPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.qr_code_scanner),
+          ),
+        ],
+      ),
       body: StreamBuilder<List<PollGroup>>(
         stream: repository.watchAccessibleGroupsForUser(uid),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            debugPrint('MemberGroupsPage stream error: ${snapshot.error}');
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Group debug error:\n${snapshot.error}',
+                  'Failed to load your groups.\n${snapshot.error}',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -108,149 +188,116 @@ class MemberGroupsPage extends StatelessWidget {
                     'You are not a member of any groups yet.',
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
-                  _DebugMembershipPanel(uid: uid, repository: repository),
                 ],
               ),
             );
           }
 
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: _DebugMembershipPanel(uid: uid, repository: repository),
-              ),
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: groups.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final group = groups[index];
-                    final isCreator = group.createdBy == uid;
-                    final expiresAt = group.expiresAt;
-                    final expiresLabel = expiresAt == null
-                        ? 'No expiry'
-                        : 'Expires ${DateFormat('yyyy-MM-dd').format(expiresAt)}';
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: groups.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final group = groups[index];
+              final isCreator = group.createdBy == uid;
+              final expiresAt = group.expiresAt;
+              final expiresLabel = expiresAt == null
+                  ? 'No expiry'
+                  : 'Expires ${DateFormat('yyyy-MM-dd').format(expiresAt)}';
 
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.groups_2_outlined),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    group.name,
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ),
-                                Chip(
-                                  label: Text(isCreator ? 'Creator' : 'Member'),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Access: ${_accessModeTitle(group.accessMode)}'
-                              ' • Members: ${group.memberIds.length}'
-                              ' • $expiresLabel',
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: isCreator
-                                  ? const Text(
-                                      'You created this group and cannot leave it here.',
-                                    )
-                                  : OutlinedButton.icon(
-                                      onPressed: () => _leaveGroup(context, group),
-                                      icon: const Icon(Icons.logout),
-                                      label: const Text('Leave group'),
+              return StreamBuilder<PollGroupMember?>(
+                stream: repository.watchMember(group.id, uid),
+                builder: (context, memberSnapshot) {
+                  final member = memberSnapshot.data;
+                  final isAdmin = member?.role == PollGroupRole.admin;
+                  final canManage = isCreator || isAdmin;
+                  final roleLabel = isCreator
+                      ? 'Creator'
+                      : (isAdmin ? 'Admin' : 'Member');
+
+                  return Slidable(
+                    key: ValueKey('member_group_${group.id}'),
+                    endActionPane: ActionPane(
+                      motion: const StretchMotion(),
+                      children: canManage
+                          ? [
+                              SlidableAction(
+                                onPressed: (_) => _deleteGroup(context, group),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                                icon: Icons.delete_outline,
+                                label: 'Delete',
+                              ),
+                            ]
+                          : [
+                              SlidableAction(
+                                onPressed: (_) => _leaveGroup(context, group),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
+                                icon: Icons.logout,
+                                label: 'Leave',
+                              ),
+                            ],
+                    ),
+                    child: Card(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: canManage
+                            ? () => _openEditor(context, group)
+                            : null,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.groups_2_outlined),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      group.name,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
                                     ),
-                            ),
-                          ],
+                                  ),
+                                  Chip(label: Text(roleLabel)),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Access: ${_accessModeTitle(group.accessMode)}'
+                                ' • Members: ${group.memberIds.length}'
+                                ' • $expiresLabel',
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                canManage
+                                    ? 'Swipe for delete.'
+                                    : 'Swipe to leave the group.',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                    ),
+                  );
+                },
+              );
+            },
           );
         },
       ),
-    );
-  }
-}
-
-class _DebugMembershipPanel extends StatelessWidget {
-  const _DebugMembershipPanel({
-    required this.uid,
-    required this.repository,
-  });
-
-  final String uid;
-  final PollGroupRepository repository;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<PollGroup>>(
-      stream: repository.watchGroupsForUser(uid),
-      builder: (context, groupSnapshot) {
-        final memberGroups = groupSnapshot.data ?? const <PollGroup>[];
-        return StreamBuilder<List<PollGroupAccessNotification>>(
-          stream: repository.watchNotifications(uid),
-          builder: (context, notificationSnapshot) {
-            final notifications =
-                notificationSnapshot.data ??
-                const <PollGroupAccessNotification>[];
-            final acceptedInviteGroupIds = notifications
-                .where(
-                  (item) =>
-                      item.type == PollGroupAccessNotificationType.invite &&
-                      item.status == PollGroupAccessNotificationStatus.accepted,
-                )
-                .map((item) => item.groupId)
-                .toList();
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodySmall ?? const TextStyle(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Debug info'),
-                    Text('uid: $uid'),
-                    Text('memberGroups: ${memberGroups.length}'),
-                    Text(
-                      'memberGroupIds: ${memberGroups.map((group) => group.id).join(', ')}',
-                    ),
-                    Text('acceptedInvites: ${acceptedInviteGroupIds.length}'),
-                    Text(
-                      'acceptedInviteGroupIds: ${acceptedInviteGroupIds.join(', ')}',
-                    ),
-                    if (groupSnapshot.hasError)
-                      Text('groupQueryError: ${groupSnapshot.error}'),
-                    if (notificationSnapshot.hasError)
-                      Text('notificationError: ${notificationSnapshot.error}'),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }
