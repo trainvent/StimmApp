@@ -4,6 +4,12 @@ enum PollGroupRole { admin, manager, user }
 
 enum PollGroupNicknameMode { selfNamed, adminAssigned }
 
+enum PollGroupAccessMode { private, protected, open }
+
+enum PollGroupAccessNotificationType { invite, request }
+
+enum PollGroupAccessNotificationStatus { pending, accepted, denied }
+
 String pollGroupRoleToFirestore(PollGroupRole role) {
   switch (role) {
     case PollGroupRole.admin:
@@ -46,6 +52,79 @@ PollGroupNicknameMode parsePollGroupNicknameMode(String? value) {
   }
 }
 
+String pollGroupAccessModeToFirestore(PollGroupAccessMode mode) {
+  switch (mode) {
+    case PollGroupAccessMode.private:
+      return 'private';
+    case PollGroupAccessMode.protected:
+      return 'protected';
+    case PollGroupAccessMode.open:
+      return 'open';
+  }
+}
+
+PollGroupAccessMode parsePollGroupAccessMode(String? value) {
+  switch (value) {
+    case 'protected':
+      return PollGroupAccessMode.protected;
+    case 'open':
+      return PollGroupAccessMode.open;
+    case 'private':
+    default:
+      return PollGroupAccessMode.private;
+  }
+}
+
+String pollGroupAccessNotificationTypeToFirestore(
+  PollGroupAccessNotificationType type,
+) {
+  switch (type) {
+    case PollGroupAccessNotificationType.invite:
+      return 'invite';
+    case PollGroupAccessNotificationType.request:
+      return 'request';
+  }
+}
+
+PollGroupAccessNotificationType parsePollGroupAccessNotificationType(
+  String? value,
+) {
+  switch (value) {
+    case 'request':
+      return PollGroupAccessNotificationType.request;
+    case 'invite':
+    default:
+      return PollGroupAccessNotificationType.invite;
+  }
+}
+
+String pollGroupAccessNotificationStatusToFirestore(
+  PollGroupAccessNotificationStatus status,
+) {
+  switch (status) {
+    case PollGroupAccessNotificationStatus.pending:
+      return 'pending';
+    case PollGroupAccessNotificationStatus.accepted:
+      return 'accepted';
+    case PollGroupAccessNotificationStatus.denied:
+      return 'denied';
+  }
+}
+
+PollGroupAccessNotificationStatus parsePollGroupAccessNotificationStatus(
+  String? value,
+) {
+  switch (value) {
+    case 'accepted':
+      return PollGroupAccessNotificationStatus.accepted;
+    case 'denied':
+      return PollGroupAccessNotificationStatus.denied;
+    case 'pending':
+    default:
+      return PollGroupAccessNotificationStatus.pending;
+  }
+}
+
 class PollGroup {
   final String id;
   final String name;
@@ -58,6 +137,9 @@ class PollGroup {
   final List<String> memberIds;
   final int importedMemberCount;
   final bool isActive;
+  final PollGroupAccessMode accessMode;
+  final bool inviteLinkEnabled;
+  final String? inviteLinkToken;
 
   const PollGroup({
     required this.id,
@@ -71,6 +153,9 @@ class PollGroup {
     required this.importedMemberCount,
     this.expiresAt,
     this.isActive = true,
+    this.accessMode = PollGroupAccessMode.private,
+    this.inviteLinkEnabled = false,
+    this.inviteLinkToken,
   });
 
   PollGroup copyWith({
@@ -85,19 +170,29 @@ class PollGroup {
     List<String>? memberIds,
     int? importedMemberCount,
     bool? isActive,
+    PollGroupAccessMode? accessMode,
+    bool? inviteLinkEnabled,
+    Object? inviteLinkToken = _unset,
   }) {
     return PollGroup(
       id: id ?? this.id,
       name: name ?? this.name,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
-      expiresAt: identical(expiresAt, _unset) ? this.expiresAt : expiresAt as DateTime?,
+      expiresAt: identical(expiresAt, _unset)
+          ? this.expiresAt
+          : expiresAt as DateTime?,
       joinCode: joinCode ?? this.joinCode,
       nicknameMode: nicknameMode ?? this.nicknameMode,
       managersCanInvite: managersCanInvite ?? this.managersCanInvite,
       memberIds: memberIds ?? this.memberIds,
       importedMemberCount: importedMemberCount ?? this.importedMemberCount,
       isActive: isActive ?? this.isActive,
+      accessMode: accessMode ?? this.accessMode,
+      inviteLinkEnabled: inviteLinkEnabled ?? this.inviteLinkEnabled,
+      inviteLinkToken: identical(inviteLinkToken, _unset)
+          ? this.inviteLinkToken
+          : inviteLinkToken as String?,
     );
   }
 
@@ -118,6 +213,12 @@ class PollGroup {
       memberIds: (data['memberIds'] as List?)?.cast<String>() ?? const [],
       importedMemberCount: data['importedMemberCount'] as int? ?? 0,
       isActive: data['isActive'] as bool? ?? true,
+      accessMode: parsePollGroupAccessMode(
+        data['accessMode'] as String? ??
+            ((data['isPrivate'] as bool? ?? true) ? 'private' : 'open'),
+      ),
+      inviteLinkEnabled: data['inviteLinkEnabled'] as bool? ?? false,
+      inviteLinkToken: data['inviteLinkToken'] as String?,
     );
   }
 
@@ -135,6 +236,9 @@ class PollGroup {
       'memberIds': group.memberIds,
       'importedMemberCount': group.importedMemberCount,
       'isActive': group.isActive,
+      'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+      'inviteLinkEnabled': group.inviteLinkEnabled,
+      'inviteLinkToken': group.inviteLinkToken,
       'nameLowercase': group.name.toLowerCase(),
     };
   }
@@ -222,6 +326,159 @@ class PollGroupAllowedMember {
       'role': pollGroupRoleToFirestore(member.role),
       'createdAt': Timestamp.fromDate(member.createdAt),
       'createdBy': member.createdBy,
+    };
+  }
+}
+
+class PollGroupAllowedDomain {
+  final String domain;
+  final PollGroupRole role;
+  final DateTime createdAt;
+  final String createdBy;
+
+  const PollGroupAllowedDomain({
+    required this.domain,
+    required this.role,
+    required this.createdAt,
+    required this.createdBy,
+  });
+
+  static PollGroupAllowedDomain fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+    SnapshotOptions? _,
+  ) {
+    final data = snap.data() ?? <String, dynamic>{};
+    return PollGroupAllowedDomain(
+      domain: (data['domain'] ?? snap.id) as String,
+      role: parsePollGroupRole(data['role'] as String?),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdBy: (data['createdBy'] ?? '') as String,
+    );
+  }
+
+  static Map<String, Object?> toFirestore(
+    PollGroupAllowedDomain domain,
+    SetOptions? _,
+  ) {
+    return {
+      'domain': domain.domain,
+      'role': pollGroupRoleToFirestore(domain.role),
+      'createdAt': Timestamp.fromDate(domain.createdAt),
+      'createdBy': domain.createdBy,
+    };
+  }
+}
+
+class PollGroupAccessNotification {
+  final String id;
+  final String groupId;
+  final String groupName;
+  final String actorUid;
+  final String actorDisplayName;
+  final String recipientUid;
+  final PollGroupRole role;
+  final PollGroupAccessMode accessMode;
+  final PollGroupAccessNotificationType type;
+  final PollGroupAccessNotificationStatus status;
+  final DateTime createdAt;
+  final DateTime? resolvedAt;
+  final String? inviteLinkToken;
+
+  const PollGroupAccessNotification({
+    required this.id,
+    required this.groupId,
+    required this.groupName,
+    required this.actorUid,
+    required this.actorDisplayName,
+    required this.recipientUid,
+    required this.role,
+    required this.accessMode,
+    required this.type,
+    required this.status,
+    required this.createdAt,
+    this.resolvedAt,
+    this.inviteLinkToken,
+  });
+
+  PollGroupAccessNotification copyWith({
+    String? id,
+    String? groupId,
+    String? groupName,
+    String? actorUid,
+    String? actorDisplayName,
+    String? recipientUid,
+    PollGroupRole? role,
+    PollGroupAccessMode? accessMode,
+    PollGroupAccessNotificationType? type,
+    PollGroupAccessNotificationStatus? status,
+    DateTime? createdAt,
+    Object? resolvedAt = _unset,
+    Object? inviteLinkToken = _unset,
+  }) {
+    return PollGroupAccessNotification(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      groupName: groupName ?? this.groupName,
+      actorUid: actorUid ?? this.actorUid,
+      actorDisplayName: actorDisplayName ?? this.actorDisplayName,
+      recipientUid: recipientUid ?? this.recipientUid,
+      role: role ?? this.role,
+      accessMode: accessMode ?? this.accessMode,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      resolvedAt: identical(resolvedAt, _unset)
+          ? this.resolvedAt
+          : resolvedAt as DateTime?,
+      inviteLinkToken: identical(inviteLinkToken, _unset)
+          ? this.inviteLinkToken
+          : inviteLinkToken as String?,
+    );
+  }
+
+  static PollGroupAccessNotification fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+    SnapshotOptions? _,
+  ) {
+    final data = snap.data() ?? <String, dynamic>{};
+    return PollGroupAccessNotification(
+      id: snap.id,
+      groupId: (data['groupId'] ?? '') as String,
+      groupName: (data['groupName'] ?? '') as String,
+      actorUid: (data['actorUid'] ?? '') as String,
+      actorDisplayName: (data['actorDisplayName'] ?? '') as String,
+      recipientUid: (data['recipientUid'] ?? '') as String,
+      role: parsePollGroupRole(data['role'] as String?),
+      accessMode: parsePollGroupAccessMode(data['accessMode'] as String?),
+      type: parsePollGroupAccessNotificationType(data['type'] as String?),
+      status: parsePollGroupAccessNotificationStatus(data['status'] as String?),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
+      inviteLinkToken: data['inviteLinkToken'] as String?,
+    );
+  }
+
+  static Map<String, Object?> toFirestore(
+    PollGroupAccessNotification notification,
+    SetOptions? _,
+  ) {
+    return {
+      'groupId': notification.groupId,
+      'groupName': notification.groupName,
+      'actorUid': notification.actorUid,
+      'actorDisplayName': notification.actorDisplayName,
+      'recipientUid': notification.recipientUid,
+      'role': pollGroupRoleToFirestore(notification.role),
+      'accessMode': pollGroupAccessModeToFirestore(notification.accessMode),
+      'type': pollGroupAccessNotificationTypeToFirestore(notification.type),
+      'status': pollGroupAccessNotificationStatusToFirestore(
+        notification.status,
+      ),
+      'createdAt': Timestamp.fromDate(notification.createdAt),
+      'resolvedAt': notification.resolvedAt != null
+          ? Timestamp.fromDate(notification.resolvedAt!)
+          : null,
+      'inviteLinkToken': notification.inviteLinkToken,
     };
   }
 }

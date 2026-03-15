@@ -7,4 +7,5 @@ class DatabaseCollections {
   static const blockedUsers = 'blockedUsers';
   static const kickedUsers = 'kickedUsers';
   static const moderationReports = 'moderationReports';
+  static const groupAccessNotifications = 'groupAccessNotifications';
 }

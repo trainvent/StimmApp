@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/group_access_inbox_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
@@ -19,6 +20,8 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -95,13 +98,37 @@ class ProfilePage extends StatelessWidget {
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
-        Badge.count(
-          offset: const Offset(-5, 5),
-          count: 0,
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
-          ),
+        StreamBuilder<List<PollGroupAccessNotification>>(
+          stream: currentUser == null
+              ? null
+              : PollGroupRepository.create().watchNotifications(
+                  currentUser.uid,
+                ),
+          builder: (context, snapshot) {
+            final pendingCount =
+                (snapshot.data ?? const <PollGroupAccessNotification>[])
+                    .where(
+                      (item) =>
+                          item.status ==
+                          PollGroupAccessNotificationStatus.pending,
+                    )
+                    .length;
+            return Badge.count(
+              offset: const Offset(-5, 5),
+              count: pendingCount,
+              isLabelVisible: pendingCount > 0,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const GroupAccessInboxPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.notifications_none),
+              ),
+            );
+          },
         ),
       ],
       child: Padding(

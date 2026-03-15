@@ -56,6 +56,67 @@ service cloud.firestore {
         : (!data.keys().hasAny(['state']) || data.state == null || data.state == '');
     }
 
+    function groupDoc(groupId) {
+      return get(/databases/$(database)/documents/pollGroups/$(groupId));
+    }
+
+    function groupDocAfter(groupId) {
+      return getAfter(/databases/$(database)/documents/pollGroups/$(groupId));
+    }
+
+    function groupExists(groupId) {
+      return exists(/databases/$(database)/documents/pollGroups/$(groupId));
+    }
+
+    function isPollGroupCreator(groupId) {
+      return isAuthenticated() &&
+             groupExists(groupId) &&
+             groupDoc(groupId).data.createdBy == request.auth.uid;
+    }
+
+    function isPollGroupCreatorAfter(groupId) {
+      return isAuthenticated() &&
+             groupDocAfter(groupId).data.createdBy == request.auth.uid;
+    }
+
+    function isPollGroupMember(groupId) {
+      return isAuthenticated() &&
+             groupExists(groupId) &&
+             request.auth.uid in groupDoc(groupId).data.memberIds;
+    }
+
+    function isPollGroupMemberAfter(groupId) {
+      return isAuthenticated() &&
+             request.auth.uid in groupDocAfter(groupId).data.memberIds;
+    }
+
+    function isValidPollGroupCreate() {
+      return request.resource.data.createdBy == request.auth.uid &&
+             request.resource.data.name is string &&
+             request.resource.data.memberIds is list &&
+             request.resource.data.memberIds.size() == 1 &&
+             request.auth.uid in request.resource.data.memberIds &&
+             request.resource.data.accessMode is string &&
+             request.resource.data.inviteLinkEnabled is bool;
+    }
+
+    function canReadPollGroup(groupId) {
+      return isAdmin() ||
+             isPollGroupMember(groupId) ||
+             (isAuthenticated() &&
+              groupExists(groupId) &&
+              groupDoc(groupId).data.accessMode != 'private');
+    }
+
+    function canSelfJoinPollGroup(groupId) {
+      return isAuthenticated() &&
+             groupExists(groupId) &&
+             request.resource.data.diff(resource.data).changedKeys().hasOnly(['memberIds']) &&
+             request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1 &&
+             request.auth.uid in request.resource.data.memberIds &&
+             !(request.auth.uid in resource.data.memberIds);
+    }
+
     // --- Collection Rules ---
 
     // Users Collection
@@ -67,6 +128,22 @@ service cloud.firestore {
 
       match /blockedUsers/{blockedUserId} {
         allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      match /groupAccessNotifications/{notificationId} {
+        allow read, update, delete: if isOwner(userId) || isAdmin();
+        allow create: if isAdmin() ||
+                      isOwner(userId) ||
+                      (isAuthenticated() &&
+                       request.resource.data.groupId is string &&
+                       request.resource.data.recipientUid == userId &&
+                       (
+                         groupExists(request.resource.data.groupId) &&
+                         (
+                           groupDoc(request.resource.data.groupId).data.createdBy == request.auth.uid ||
+                           request.resource.data.actorUid == request.auth.uid
+                         )
+                       ));
       }
 
       // Explicitly handle subcollections for history
@@ -95,6 +172,37 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin() ||
                     (isAuthenticated() && hasValidContentState(request.resource.data));
+    }
+
+    match /pollGroups/{groupId} {
+      allow read: if canReadPollGroup(groupId);
+      allow create: if isAdmin() ||
+                    (isAuthenticated() && isValidPollGroupCreate());
+      allow update: if isAdmin() || isPollGroupCreator(groupId) || canSelfJoinPollGroup(groupId);
+      allow delete: if isAdmin() || isPollGroupCreator(groupId);
+
+      match /members/{memberId} {
+        allow read: if canReadPollGroup(groupId);
+        allow create: if isAdmin() ||
+                      (isPollGroupCreator(groupId) &&
+                       request.resource.data.joinedBy == request.auth.uid) ||
+                      (isPollGroupMemberAfter(groupId) &&
+                       memberId == request.auth.uid &&
+                       request.resource.data.joinedBy == request.auth.uid);
+        allow update, delete: if isAdmin() || isPollGroupCreator(groupId);
+      }
+
+      match /allowedMembers/{allowedMemberId} {
+        allow read: if isAdmin() || isPollGroupCreator(groupId);
+        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId);
+        allow update, delete: if isAdmin() || isPollGroupCreator(groupId);
+      }
+
+      match /allowedDomains/{allowedDomainId} {
+        allow read: if isAdmin() || isPollGroupCreator(groupId);
+        allow create: if isAdmin() || isPollGroupCreatorAfter(groupId);
+        allow update, delete: if isAdmin() || isPollGroupCreator(groupId);
+      }
     }
 
     match /moderationReports/{reportId} {
