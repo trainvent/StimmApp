@@ -87,41 +87,55 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
         acceptedInviteGroupIds.contains(groupId);
   }
 
-  String _scopeLabel(T item) {
+  String _scopeLabel(BuildContext context, T item) {
     switch (item.scopeType) {
       case 'eu':
-        return 'EU';
+        return context.l10n.scopeEu;
       case 'continent':
         return item.continentCode?.toUpperCase() == 'EU'
-            ? 'Europe'
-            : 'Continent';
+            ? context.l10n.europeScopeLabel
+            : context.l10n.scopeContinent;
       case 'country':
-        return item.countryCode?.toUpperCase() ?? 'Country';
+        return item.countryCode?.toUpperCase() ??
+            context.l10n.countryScopeFallback;
       case 'stateOrRegion':
         if ((item.stateOrRegion ?? '').isNotEmpty) {
           return item.stateOrRegion!;
         }
-        return item.countryCode?.toUpperCase() ?? 'State / Region';
+        return item.countryCode?.toUpperCase() ??
+            context.l10n.stateRegionScopeFallback;
       case 'city':
       case 'town':
         final town = item.town?.trim();
         if (town != null && town.isNotEmpty) {
           return town;
         }
-        return 'City';
+        return context.l10n.cityScopeFallback;
       case 'global':
       default:
-        return 'Global';
+        return context.l10n.globalScopeLabel;
     }
   }
 
   List<Widget> _detailMetaChips(BuildContext context, T item) {
-    final chips = <Widget>[Chip(label: Text('Scope: ${_scopeLabel(item)}'))];
+    final chips = <Widget>[
+      Chip(
+        label: Text(
+          context.l10n.scopeLabelWithValue(_scopeLabel(context, item)),
+        ),
+      ),
+    ];
 
     if (item is Poll &&
         item.visibility == 'group' &&
         (item.groupName ?? '').trim().isNotEmpty) {
-      chips.add(Chip(label: Text('Group: ${item.groupName!.trim()}')));
+      chips.add(
+        Chip(
+          label: Text(
+            context.l10n.groupLabelWithValue(item.groupName!.trim()),
+          ),
+        ),
+      );
     }
 
     return chips;

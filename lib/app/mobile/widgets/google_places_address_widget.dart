@@ -225,8 +225,8 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
           labelText: context.l10n.address,
           border: const OutlineInputBorder(),
           helperText: isTomTomConfigured
-              ? 'Search powered by TomTom'
-              : 'Set TOMTOM_SEARCH_API_KEY to enable address suggestions',
+              ? context.l10n.searchPoweredByTomTom
+              : context.l10n.setTomTomApiKeyToEnableSuggestions,
           suffixIcon: _isLoading
               ? const Padding(
                   padding: EdgeInsets.all(12),
@@ -242,10 +242,10 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
             widget.validator ??
             (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-            }
-            return null;
-          },
+                return context.l10n.enterSomething;
+              }
+              return null;
+            },
         onFieldSubmitted: (_) => unawaited(_resolveCurrentTextIfNeeded()),
         maxLines: 1,
       ),

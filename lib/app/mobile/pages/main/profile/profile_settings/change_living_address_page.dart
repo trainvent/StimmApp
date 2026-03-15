@@ -95,7 +95,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Detected state: $_selectedState',
+                              context.l10n.detectedStateLabel(_selectedState!),
                               style: AppTextStyles.m,
                             ),
                           ),
@@ -125,7 +125,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
               return;
             }
             if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
-              showErrorSnackBar('Please select an address with a town');
+              showErrorSnackBar(context.l10n.pleaseSelectAddressWithTown);
               return;
             }
             if (_requiresStateScope && _selectedState == null) {

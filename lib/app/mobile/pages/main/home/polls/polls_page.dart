@@ -5,6 +5,7 @@ import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class PollsPage extends StatefulWidget {
   const PollsPage({super.key});
@@ -48,7 +49,9 @@ class _PollsPageState extends State<PollsPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     debugPrint('Poll group filter stream error: ${snapshot.error}');
-                    return Text('Group debug error: ${snapshot.error}');
+                    return Text(
+                      '${context.l10n.error}: ${snapshot.error}',
+                    );
                   }
                   final groups = snapshot.data ?? const <PollGroup>[];
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,9 +67,7 @@ class _PollsPageState extends State<PollsPage> {
                     );
                   }
                   if (groups.isEmpty) {
-                    return const Text(
-                      'No joined or accepted groups available yet.',
-                    );
+                    return Text(context.l10n.groupFilterEmpty);
                   }
                   final availableGroupIds = groups.map((group) => group.id).toSet();
                   if (_selectedGroupId != null &&
@@ -88,6 +89,7 @@ class _PollsPageState extends State<PollsPage> {
                           border: OutlineInputBorder(),
                           isDense: true,
                         ),
+                        disabledHint: Text(context.l10n.allGroups),
                         items: groups
                             .map(
                               (group) => DropdownMenuItem<String>(
@@ -110,7 +112,7 @@ class _PollsPageState extends State<PollsPage> {
                               setDialogState(() {});
                               setState(() => _selectedGroupId = null);
                             },
-                            child: const Text('Clear group filter'),
+                            child: Text(context.l10n.clearGroupFilter),
                           ),
                         ),
                       ],

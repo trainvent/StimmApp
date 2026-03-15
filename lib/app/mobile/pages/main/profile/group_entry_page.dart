@@ -5,6 +5,7 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class GroupEntryPage extends StatefulWidget {
   const GroupEntryPage({
@@ -62,7 +63,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     final notificationOwnerUid = widget.notificationOwnerUid;
     final notificationId = widget.notificationId;
     if (uid == null || notificationOwnerUid != uid || notificationId == null) {
-      showErrorSnackBar('This action is no longer available.');
+      showErrorSnackBar(context.l10n.actionNoLongerAvailable);
       return;
     }
     setState(() => _isSaving = true);
@@ -76,7 +77,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         return;
       }
       showSuccessSnackBar(
-        accept ? 'Saved. Group access accepted.' : 'Invite denied.',
+        accept ? context.l10n.groupAccessAccepted : context.l10n.inviteDenied,
       );
       Navigator.of(context).pop();
     } catch (error, stackTrace) {
@@ -91,7 +92,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   Future<void> _requestAccess(PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar('Please sign in first.');
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     setState(() => _isSaving = true);
@@ -100,14 +101,14 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       await _repo.requestAccess(
         requesterUid: uid,
         requesterDisplayName:
-            profile?.displayName ?? profile?.email ?? 'A user',
+            profile?.displayName ?? profile?.email ?? context.l10n.aUser,
         group: group,
         requestedRole: PollGroupRole.user,
       );
       if (!mounted) {
         return;
       }
-      showSuccessSnackBar('Access request sent.');
+      showSuccessSnackBar(context.l10n.accessRequestSent);
       Navigator.of(context).pop();
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
@@ -121,7 +122,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   Future<void> _joinOpenGroup(PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar('Please sign in first.');
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     setState(() => _isSaving = true);
@@ -130,7 +131,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       if (!mounted) {
         return;
       }
-      showSuccessSnackBar('You joined the group.');
+      showSuccessSnackBar(context.l10n.youJoinedTheGroup);
       Navigator.of(context).pop();
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
@@ -161,12 +162,12 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         currentUid == notification.recipientUid) {
       final acceptLabel =
           notification.type == PollGroupAccessNotificationType.request
-          ? 'Approve request'
-          : 'Accept invite';
+          ? context.l10n.approveRequest
+          : context.l10n.acceptInvite;
       final denyLabel =
           notification.type == PollGroupAccessNotificationType.request
-          ? 'Deny request'
-          : 'Deny invite';
+          ? context.l10n.denyRequest
+          : context.l10n.denyInvite;
       return Row(
         children: [
           Expanded(
@@ -190,28 +191,24 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       return const SizedBox.shrink();
     }
     if (currentUid != null && group.memberIds.contains(currentUid)) {
-      return const Text('You are already a member of this group.');
+      return Text(context.l10n.alreadyMemberOfGroup);
     }
     if (group.accessMode == PollGroupAccessMode.private) {
-      return const Text(
-        'This group is completely private. Please wait for a direct invite from the group admins.',
-      );
+      return Text(context.l10n.privateGroupWaitForInvite);
     }
     if (group.accessMode == PollGroupAccessMode.protected &&
         !_hasValidProtectedToken(group)) {
-      return const Text(
-        'This invite link is not valid for the protected group.',
-      );
+      return Text(context.l10n.invalidProtectedInviteLink);
     }
     if (group.accessMode == PollGroupAccessMode.protected) {
       return FilledButton(
         onPressed: _isSaving ? null : () => _requestAccess(group),
-        child: const Text('Request access'),
+        child: Text(context.l10n.requestAccess),
       );
     }
     return FilledButton(
       onPressed: _isSaving ? null : () => _joinOpenGroup(group),
-      child: const Text('Join group'),
+      child: Text(context.l10n.joinGroup),
     );
   }
 
@@ -239,7 +236,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         final group = snapshot.data!.$1;
         final notification = snapshot.data!.$2;
         final currentProfile = snapshot.data!.$3;
-        final title = group?.name ?? notification?.groupName ?? 'Group access';
+        final title =
+            group?.name ?? notification?.groupName ?? context.l10n.groupAccessTitle;
 
         return Scaffold(
           appBar: AppBar(title: Text(title)),
@@ -251,33 +249,35 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
               if (notification != null)
                 Text(
                   notification.type == PollGroupAccessNotificationType.invite
-                      ? '${notification.actorDisplayName} invited you to this group.'
-                      : '${notification.actorDisplayName} requested access to this group.',
+                      ? context.l10n.invitedYouToThisGroup(
+                          notification.actorDisplayName,
+                        )
+                      : context.l10n.requestedAccessToThisGroup(
+                          notification.actorDisplayName,
+                        ),
                 ),
               if (group != null) ...[
                 if (notification != null) const SizedBox(height: 12),
                 Text(
-                  'Access mode: ${switch (group.accessMode) {
-                    PollGroupAccessMode.private => 'Completely private',
-                    PollGroupAccessMode.protected => 'Protected',
-                    PollGroupAccessMode.open => 'Open',
-                  }}',
+                  context.l10n.accessModeLabel(switch (group.accessMode) {
+                    PollGroupAccessMode.private =>
+                      context.l10n.completelyPrivateAccessMode,
+                    PollGroupAccessMode.protected =>
+                      context.l10n.protectedAccessMode,
+                    PollGroupAccessMode.open => context.l10n.openAccessMode,
+                  }),
                 ),
                 const SizedBox(height: 8),
                 if (group.accessMode == PollGroupAccessMode.protected)
-                  const Text(
-                    'Protected groups require a valid invite link and an approval request.',
-                  ),
+                  Text(context.l10n.protectedGroupsRequireInviteLink),
                 if (group.accessMode == PollGroupAccessMode.open)
-                  const Text('Open groups can be joined immediately.'),
+                  Text(context.l10n.openGroupsCanBeJoinedImmediately),
               ] else if (notification != null) ...[
                 const SizedBox(height: 8),
-                const Text(
-                  'Group details are temporarily unavailable, but you can still respond to this notification.',
-                ),
+                Text(context.l10n.groupDetailsTemporarilyUnavailableRespond),
               ] else ...[
                 const SizedBox(height: 8),
-                const Text('Group details are temporarily unavailable.'),
+                Text(context.l10n.groupDetailsTemporarilyUnavailable),
               ],
               const SizedBox(height: 24),
               _buildPrimaryActions(

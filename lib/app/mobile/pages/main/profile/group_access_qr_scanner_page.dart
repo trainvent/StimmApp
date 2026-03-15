@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class GroupAccessQrScannerPage extends StatefulWidget {
   const GroupAccessQrScannerPage({super.key});
@@ -22,7 +23,7 @@ class _GroupAccessQrScannerPageState extends State<GroupAccessQrScannerPage> {
     final groupId = uri?.queryParameters['groupId'];
     final token = uri?.queryParameters['token'];
     if (groupId == null || groupId.isEmpty) {
-      showErrorSnackBar('This QR code does not contain a valid group invite.');
+      showErrorSnackBar(context.l10n.invalidGroupInviteQrCode);
       return;
     }
     _handledScan = true;
@@ -36,7 +37,7 @@ class _GroupAccessQrScannerPageState extends State<GroupAccessQrScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan group QR code')),
+      appBar: AppBar(title: Text(context.l10n.scanGroupQrCode)),
       body: MobileScanner(
         onDetect: (capture) {
           final rawValue = capture.barcodes.first.rawValue;

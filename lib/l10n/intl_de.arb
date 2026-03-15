@@ -510,5 +510,149 @@
 				"type": "String"
 			}
 		}
-	}
+	},
+	"searchPoweredByTomTom": "Suche mit TomTom",
+	"setTomTomApiKeyToEnableSuggestions": "Setze TOMTOM_SEARCH_API_KEY, um Adressvorschläge zu aktivieren",
+	"pleaseSelectAddressWithTown": "Bitte wähle eine Adresse mit Ort aus",
+	"detectedStateLabel": "Erkanntes Bundesland: {state}",
+	"@detectedStateLabel": {
+		"placeholders": {
+			"state": {
+				"type": "String"
+			}
+		}
+	},
+	"scopeLabelWithValue": "Geltungsbereich: {scope}",
+	"@scopeLabelWithValue": {
+		"placeholders": {
+			"scope": {
+				"type": "String"
+			}
+		}
+	},
+	"groupLabelWithValue": "Gruppe: {group}",
+	"@groupLabelWithValue": {
+		"placeholders": {
+			"group": {
+				"type": "String"
+			}
+		}
+	},
+	"globalScopeLabel": "Global",
+	"europeScopeLabel": "Europa",
+	"countryScopeFallback": "Land",
+	"stateRegionScopeFallback": "Bundesland / Region",
+	"cityScopeFallback": "Stadt",
+	"info": "Info",
+	"scopeDetails": "Details zum Geltungsbereich",
+	"scopeAndGroup": "Geltungsbereich und Gruppe",
+	"myGroups": "Meine Gruppen",
+	"pleaseSignInToViewYourGroups": "Bitte melde dich an, um deine Gruppen anzuzeigen.",
+	"failedToLoadYourGroups": "Deine Gruppen konnten nicht geladen werden.",
+	"youAreNotMemberOfAnyGroupsYet": "Du bist noch in keiner Gruppe Mitglied.",
+	"noExpiry": "Kein Ablaufdatum",
+	"expiresOnDate": "Läuft ab {date}",
+	"@expiresOnDate": {
+		"placeholders": {
+			"date": {
+				"type": "String"
+			}
+		}
+	},
+	"creatorRoleLabel": "Ersteller",
+	"adminRoleLabel": "Admin",
+	"memberRoleLabel": "Mitglied",
+	"groupAccessSummary": "Zugang: {accessMode} • Mitglieder: {memberCount} • {expiry}",
+	"@groupAccessSummary": {
+		"placeholders": {
+			"accessMode": {
+				"type": "String"
+			},
+			"memberCount": {
+				"type": "int"
+			},
+			"expiry": {
+				"type": "String"
+			}
+		}
+	},
+	"swipeForDelete": "Wische zum Löschen.",
+	"swipeToLeaveGroup": "Wische, um die Gruppe zu verlassen.",
+	"leaveGroup": "Gruppe verlassen",
+	"deleteGroup": "Gruppe löschen",
+	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ verlassen?",
+	"@doYouWantToLeaveGroup": {
+		"placeholders": {
+			"groupName": {
+				"type": "String"
+			}
+		}
+	},
+	"youLeftTheGroup": "Du hast die Gruppe verlassen.",
+	"groupCreatorsCannotLeaveOwnGroup": "Gruppenersteller können ihre eigene Gruppe nicht verlassen. Bearbeite oder lösche sie stattdessen.",
+	"typeGroupNameToConfirmDeletion": "Gib „{groupName}“ ein, um das Löschen zu bestätigen. Dies kann nicht rückgängig gemacht werden.",
+	"@typeGroupNameToConfirmDeletion": {
+		"placeholders": {
+			"groupName": {
+				"type": "String"
+			}
+		}
+	},
+	"groupNameLabel": "Gruppenname",
+	"groupNameDidNotMatch": "Der Gruppenname stimmt nicht überein.",
+	"groupDeleted": "Gruppe gelöscht.",
+	"scanQrCode": "QR-Code scannen",
+	"scanGroupQrCode": "QR-Code für Gruppe scannen",
+	"invalidGroupInviteQrCode": "Dieser QR-Code enthält keine gültige Gruppeneinladung.",
+	"groupFilterEmpty": "Es sind noch keine beigetretenen oder akzeptierten Gruppen verfügbar.",
+	"allGroups": "Alle Gruppen",
+	"clearGroupFilter": "Gruppenfilter löschen",
+	"protectedAccessMode": "Geschützt",
+	"openAccessMode": "Offen",
+	"completelyPrivateAccessMode": "Vollständig privat",
+	"groupAccess": "Gruppenzugang",
+	"actionNoLongerAvailable": "Diese Aktion ist nicht mehr verfügbar.",
+	"groupAccessAccepted": "Gespeichert. Gruppenzugang akzeptiert.",
+	"inviteDenied": "Einladung abgelehnt.",
+	"aUser": "Ein Nutzer",
+	"accessRequestSent": "Zugriffsanfrage gesendet.",
+	"youJoinedTheGroup": "Du bist der Gruppe beigetreten.",
+	"approveRequest": "Anfrage genehmigen",
+	"acceptInvite": "Einladung annehmen",
+	"denyRequest": "Anfrage ablehnen",
+	"denyInvite": "Einladung ablehnen",
+	"alreadyMemberOfGroup": "Du bist bereits Mitglied dieser Gruppe.",
+	"privateGroupWaitForInvite": "Diese Gruppe ist vollständig privat. Bitte warte auf eine direkte Einladung der Gruppenadmins.",
+	"invalidProtectedInviteLink": "Dieser Einladungslink ist für die geschützte Gruppe nicht gültig.",
+	"requestAccess": "Zugang anfragen",
+	"joinGroup": "Gruppe beitreten",
+	"groupAccessTitle": "Gruppenzugang",
+	"invitedYouToThisGroup": "{name} hat dich in diese Gruppe eingeladen.",
+	"@invitedYouToThisGroup": {
+		"placeholders": {
+			"name": {
+				"type": "String"
+			}
+		}
+	},
+	"requestedAccessToThisGroup": "{name} hat Zugriff auf diese Gruppe angefragt.",
+	"@requestedAccessToThisGroup": {
+		"placeholders": {
+			"name": {
+				"type": "String"
+			}
+		}
+	},
+	"accessModeLabel": "Zugangsmodus: {mode}",
+	"@accessModeLabel": {
+		"placeholders": {
+			"mode": {
+				"type": "String"
+			}
+		}
+	},
+	"protectedGroupsRequireInviteLink": "Geschützte Gruppen benötigen einen gültigen Einladungslink und eine Zugriffsanfrage.",
+	"openGroupsCanBeJoinedImmediately": "Offene Gruppen können sofort beigetreten werden.",
+	"groupDetailsTemporarilyUnavailableRespond": "Gruppendetails sind vorübergehend nicht verfügbar, aber du kannst trotzdem auf diese Benachrichtigung reagieren.",
+	"groupDetailsTemporarilyUnavailable": "Gruppendetails sind vorübergehend nicht verfügbar."
 }

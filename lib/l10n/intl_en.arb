@@ -506,5 +506,149 @@
 				"type": "String"
 			}
 		}
-	}
+	},
+	"searchPoweredByTomTom": "Search powered by TomTom",
+	"setTomTomApiKeyToEnableSuggestions": "Set TOMTOM_SEARCH_API_KEY to enable address suggestions",
+	"pleaseSelectAddressWithTown": "Please select an address with a town",
+	"detectedStateLabel": "Detected state: {state}",
+	"@detectedStateLabel": {
+		"placeholders": {
+			"state": {
+				"type": "String"
+			}
+		}
+	},
+	"scopeLabelWithValue": "Scope: {scope}",
+	"@scopeLabelWithValue": {
+		"placeholders": {
+			"scope": {
+				"type": "String"
+			}
+		}
+	},
+	"groupLabelWithValue": "Group: {group}",
+	"@groupLabelWithValue": {
+		"placeholders": {
+			"group": {
+				"type": "String"
+			}
+		}
+	},
+	"globalScopeLabel": "Global",
+	"europeScopeLabel": "Europe",
+	"countryScopeFallback": "Country",
+	"stateRegionScopeFallback": "State / Region",
+	"cityScopeFallback": "City",
+	"info": "Info",
+	"scopeDetails": "Scope details",
+	"scopeAndGroup": "Scope and group",
+	"myGroups": "My groups",
+	"pleaseSignInToViewYourGroups": "Please sign in to view your groups.",
+	"failedToLoadYourGroups": "Failed to load your groups.",
+	"youAreNotMemberOfAnyGroupsYet": "You are not a member of any groups yet.",
+	"noExpiry": "No expiry",
+	"expiresOnDate": "Expires {date}",
+	"@expiresOnDate": {
+		"placeholders": {
+			"date": {
+				"type": "String"
+			}
+		}
+	},
+	"creatorRoleLabel": "Creator",
+	"adminRoleLabel": "Admin",
+	"memberRoleLabel": "Member",
+	"groupAccessSummary": "Access: {accessMode} • Members: {memberCount} • {expiry}",
+	"@groupAccessSummary": {
+		"placeholders": {
+			"accessMode": {
+				"type": "String"
+			},
+			"memberCount": {
+				"type": "int"
+			},
+			"expiry": {
+				"type": "String"
+			}
+		}
+	},
+	"swipeForDelete": "Swipe for delete.",
+	"swipeToLeaveGroup": "Swipe to leave the group.",
+	"leaveGroup": "Leave group",
+	"deleteGroup": "Delete group",
+	"doYouWantToLeaveGroup": "Do you want to leave \"{groupName}\"?",
+	"@doYouWantToLeaveGroup": {
+		"placeholders": {
+			"groupName": {
+				"type": "String"
+			}
+		}
+	},
+	"youLeftTheGroup": "You left the group.",
+	"groupCreatorsCannotLeaveOwnGroup": "Group creators cannot leave their own group. Edit or delete it instead.",
+	"typeGroupNameToConfirmDeletion": "Type \"{groupName}\" to confirm deletion. This cannot be undone.",
+	"@typeGroupNameToConfirmDeletion": {
+		"placeholders": {
+			"groupName": {
+				"type": "String"
+			}
+		}
+	},
+	"groupNameLabel": "Group name",
+	"groupNameDidNotMatch": "Group name did not match.",
+	"groupDeleted": "Group deleted.",
+	"scanQrCode": "Scan QR code",
+	"scanGroupQrCode": "Scan group QR code",
+	"invalidGroupInviteQrCode": "This QR code does not contain a valid group invite.",
+	"groupFilterEmpty": "No joined or accepted groups available yet.",
+	"allGroups": "All groups",
+	"clearGroupFilter": "Clear group filter",
+	"protectedAccessMode": "Protected",
+	"openAccessMode": "Open",
+	"completelyPrivateAccessMode": "Completely private",
+	"groupAccess": "Group access",
+	"actionNoLongerAvailable": "This action is no longer available.",
+	"groupAccessAccepted": "Saved. Group access accepted.",
+	"inviteDenied": "Invite denied.",
+	"aUser": "A user",
+	"accessRequestSent": "Access request sent.",
+	"youJoinedTheGroup": "You joined the group.",
+	"approveRequest": "Approve request",
+	"acceptInvite": "Accept invite",
+	"denyRequest": "Deny request",
+	"denyInvite": "Deny invite",
+	"alreadyMemberOfGroup": "You are already a member of this group.",
+	"privateGroupWaitForInvite": "This group is completely private. Please wait for a direct invite from the group admins.",
+	"invalidProtectedInviteLink": "This invite link is not valid for the protected group.",
+	"requestAccess": "Request access",
+	"joinGroup": "Join group",
+	"groupAccessTitle": "Group access",
+	"invitedYouToThisGroup": "{name} invited you to this group.",
+	"@invitedYouToThisGroup": {
+		"placeholders": {
+			"name": {
+				"type": "String"
+			}
+		}
+	},
+	"requestedAccessToThisGroup": "{name} requested access to this group.",
+	"@requestedAccessToThisGroup": {
+		"placeholders": {
+			"name": {
+				"type": "String"
+			}
+		}
+	},
+	"accessModeLabel": "Access mode: {mode}",
+	"@accessModeLabel": {
+		"placeholders": {
+			"mode": {
+				"type": "String"
+			}
+		}
+	},
+	"protectedGroupsRequireInviteLink": "Protected groups require a valid invite link and an approval request.",
+	"openGroupsCanBeJoinedImmediately": "Open groups can be joined immediately.",
+	"groupDetailsTemporarilyUnavailableRespond": "Group details are temporarily unavailable, but you can still respond to this notification.",
+	"groupDetailsTemporarilyUnavailable": "Group details are temporarily unavailable."
 }

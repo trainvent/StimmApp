@@ -7,44 +7,45 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class MemberGroupsPage extends StatelessWidget {
   const MemberGroupsPage({super.key});
 
-  String _accessModeTitle(PollGroupAccessMode mode) {
+  String _accessModeTitle(BuildContext context, PollGroupAccessMode mode) {
     switch (mode) {
       case PollGroupAccessMode.private:
-        return 'Completely private';
+        return context.l10n.completelyPrivateAccessMode;
       case PollGroupAccessMode.protected:
-        return 'Protected';
+        return context.l10n.protectedAccessMode;
       case PollGroupAccessMode.open:
-        return 'Open';
+        return context.l10n.openAccessMode;
     }
   }
 
   Future<void> _leaveGroup(BuildContext context, PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar('Please sign in first.');
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
 
     final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Leave group'),
-        content: Text('Do you want to leave "${group.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Leave'),
-          ),
-        ],
-      ),
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.leaveGroup),
+          content: Text(context.l10n.doYouWantToLeaveGroup(group.name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(context.l10n.leaveGroup),
+            ),
+          ],
+        ),
     );
 
     if (confirmed != true) {
@@ -53,12 +54,10 @@ class MemberGroupsPage extends StatelessWidget {
 
     try {
       await PollGroupRepository.create().leaveGroup(group: group, uid: uid);
-      showSuccessSnackBar('You left the group.');
+      showSuccessSnackBar(context.l10n.youLeftTheGroup);
     } on StateError catch (error) {
       if (error.message == 'group_creator_cannot_leave') {
-        showErrorSnackBar(
-          'Group creators cannot leave their own group. Edit or delete it instead.',
-        );
+        showErrorSnackBar(context.l10n.groupCreatorsCannotLeaveOwnGroup);
         return;
       }
       showErrorSnackBar(error.message);
@@ -81,19 +80,17 @@ class MemberGroupsPage extends StatelessWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Delete group'),
+          title: Text(context.l10n.deleteGroup),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Type "${group.name}" to confirm deletion. This cannot be undone.',
-              ),
+              Text(context.l10n.typeGroupNameToConfirmDeletion(group.name)),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(
-                  labelText: 'Group name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupNameLabel,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -102,7 +99,7 @@ class MemberGroupsPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -110,19 +107,19 @@ class MemberGroupsPage extends StatelessWidget {
                   context,
                 ).pop(controller.text.trim() == group.name.trim());
               },
-              child: const Text('Delete'),
+              child: Text(context.l10n.deleteGroup),
             ),
           ],
         ),
       );
 
       if (confirmed != true) {
-        showErrorSnackBar('Group name did not match.');
+        showErrorSnackBar(context.l10n.groupNameDidNotMatch);
         return;
       }
 
       await PollGroupRepository.create().deleteGroup(group.id);
-      showSuccessSnackBar('Group deleted.');
+      showSuccessSnackBar(context.l10n.groupDeleted);
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
@@ -135,17 +132,17 @@ class MemberGroupsPage extends StatelessWidget {
     final uid = authService.currentUser?.uid;
     final repository = PollGroupRepository.create();
     if (uid == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please sign in to view your groups.')),
+      return Scaffold(
+        body: Center(child: Text(context.l10n.pleaseSignInToViewYourGroups)),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My groups'),
+        title: Text(context.l10n.myGroups),
         actions: [
           IconButton(
-            tooltip: 'Scan QR code',
+            tooltip: context.l10n.scanQrCode,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -165,7 +162,7 @@ class MemberGroupsPage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Failed to load your groups.\n${snapshot.error}',
+                  '${context.l10n.failedToLoadYourGroups}\n${snapshot.error}',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -184,8 +181,8 @@ class MemberGroupsPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'You are not a member of any groups yet.',
+                  Text(
+                    context.l10n.youAreNotMemberOfAnyGroupsYet,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -202,8 +199,10 @@ class MemberGroupsPage extends StatelessWidget {
               final isCreator = group.createdBy == uid;
               final expiresAt = group.expiresAt;
               final expiresLabel = expiresAt == null
-                  ? 'No expiry'
-                  : 'Expires ${DateFormat('yyyy-MM-dd').format(expiresAt)}';
+                  ? context.l10n.noExpiry
+                  : context.l10n.expiresOnDate(
+                      DateFormat('yyyy-MM-dd').format(expiresAt),
+                    );
 
               return StreamBuilder<PollGroupMember?>(
                 stream: repository.watchMember(group.id, uid),
@@ -212,8 +211,10 @@ class MemberGroupsPage extends StatelessWidget {
                   final isAdmin = member?.role == PollGroupRole.admin;
                   final canManage = isCreator || isAdmin;
                   final roleLabel = isCreator
-                      ? 'Creator'
-                      : (isAdmin ? 'Admin' : 'Member');
+                      ? context.l10n.creatorRoleLabel
+                      : (isAdmin
+                            ? context.l10n.adminRoleLabel
+                            : context.l10n.memberRoleLabel);
 
                   return Slidable(
                     key: ValueKey('member_group_${group.id}'),
@@ -230,7 +231,7 @@ class MemberGroupsPage extends StatelessWidget {
                                   context,
                                 ).colorScheme.onErrorContainer,
                                 icon: Icons.delete_outline,
-                                label: 'Delete',
+                                label: context.l10n.deleteGroup,
                               ),
                             ]
                           : [
@@ -243,7 +244,7 @@ class MemberGroupsPage extends StatelessWidget {
                                   context,
                                 ).colorScheme.onSecondaryContainer,
                                 icon: Icons.logout,
-                                label: 'Leave',
+                                label: context.l10n.leaveGroup,
                               ),
                             ],
                     ),
@@ -275,15 +276,17 @@ class MemberGroupsPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Access: ${_accessModeTitle(group.accessMode)}'
-                                ' • Members: ${group.memberIds.length}'
-                                ' • $expiresLabel',
+                                context.l10n.groupAccessSummary(
+                                  _accessModeTitle(context, group.accessMode),
+                                  group.memberIds.length,
+                                  expiresLabel,
+                                ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 canManage
-                                    ? 'Swipe for delete.'
-                                    : 'Swipe to leave the group.',
+                                    ? context.l10n.swipeForDelete
+                                    : context.l10n.swipeToLeaveGroup,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],

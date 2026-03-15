@@ -1400,4 +1400,240 @@ class AppLocalizationsEn extends AppLocalizations {
   String couldNotSaveYourAcceptance(String error) {
     return 'Could not save your acceptance: $error';
   }
+
+  @override
+  String get searchPoweredByTomTom => 'Search powered by TomTom';
+
+  @override
+  String get setTomTomApiKeyToEnableSuggestions =>
+      'Set TOMTOM_SEARCH_API_KEY to enable address suggestions';
+
+  @override
+  String get pleaseSelectAddressWithTown =>
+      'Please select an address with a town';
+
+  @override
+  String detectedStateLabel(String state) {
+    return 'Detected state: $state';
+  }
+
+  @override
+  String scopeLabelWithValue(String scope) {
+    return 'Scope: $scope';
+  }
+
+  @override
+  String groupLabelWithValue(String group) {
+    return 'Group: $group';
+  }
+
+  @override
+  String get globalScopeLabel => 'Global';
+
+  @override
+  String get europeScopeLabel => 'Europe';
+
+  @override
+  String get countryScopeFallback => 'Country';
+
+  @override
+  String get stateRegionScopeFallback => 'State / Region';
+
+  @override
+  String get cityScopeFallback => 'City';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get scopeDetails => 'Scope details';
+
+  @override
+  String get scopeAndGroup => 'Scope and group';
+
+  @override
+  String get myGroups => 'My groups';
+
+  @override
+  String get pleaseSignInToViewYourGroups =>
+      'Please sign in to view your groups.';
+
+  @override
+  String get failedToLoadYourGroups => 'Failed to load your groups.';
+
+  @override
+  String get youAreNotMemberOfAnyGroupsYet =>
+      'You are not a member of any groups yet.';
+
+  @override
+  String get noExpiry => 'No expiry';
+
+  @override
+  String expiresOnDate(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get creatorRoleLabel => 'Creator';
+
+  @override
+  String get adminRoleLabel => 'Admin';
+
+  @override
+  String get memberRoleLabel => 'Member';
+
+  @override
+  String groupAccessSummary(String accessMode, int memberCount, String expiry) {
+    return 'Access: $accessMode • Members: $memberCount • $expiry';
+  }
+
+  @override
+  String get swipeForDelete => 'Swipe for delete.';
+
+  @override
+  String get swipeToLeaveGroup => 'Swipe to leave the group.';
+
+  @override
+  String get leaveGroup => 'Leave group';
+
+  @override
+  String get deleteGroup => 'Delete group';
+
+  @override
+  String doYouWantToLeaveGroup(String groupName) {
+    return 'Do you want to leave \"$groupName\"?';
+  }
+
+  @override
+  String get youLeftTheGroup => 'You left the group.';
+
+  @override
+  String get groupCreatorsCannotLeaveOwnGroup =>
+      'Group creators cannot leave their own group. Edit or delete it instead.';
+
+  @override
+  String typeGroupNameToConfirmDeletion(String groupName) {
+    return 'Type \"$groupName\" to confirm deletion. This cannot be undone.';
+  }
+
+  @override
+  String get groupNameLabel => 'Group name';
+
+  @override
+  String get groupNameDidNotMatch => 'Group name did not match.';
+
+  @override
+  String get groupDeleted => 'Group deleted.';
+
+  @override
+  String get scanQrCode => 'Scan QR code';
+
+  @override
+  String get scanGroupQrCode => 'Scan group QR code';
+
+  @override
+  String get invalidGroupInviteQrCode =>
+      'This QR code does not contain a valid group invite.';
+
+  @override
+  String get groupFilterEmpty => 'No joined or accepted groups available yet.';
+
+  @override
+  String get allGroups => 'All groups';
+
+  @override
+  String get clearGroupFilter => 'Clear group filter';
+
+  @override
+  String get protectedAccessMode => 'Protected';
+
+  @override
+  String get openAccessMode => 'Open';
+
+  @override
+  String get completelyPrivateAccessMode => 'Completely private';
+
+  @override
+  String get groupAccess => 'Group access';
+
+  @override
+  String get actionNoLongerAvailable => 'This action is no longer available.';
+
+  @override
+  String get groupAccessAccepted => 'Saved. Group access accepted.';
+
+  @override
+  String get inviteDenied => 'Invite denied.';
+
+  @override
+  String get aUser => 'A user';
+
+  @override
+  String get accessRequestSent => 'Access request sent.';
+
+  @override
+  String get youJoinedTheGroup => 'You joined the group.';
+
+  @override
+  String get approveRequest => 'Approve request';
+
+  @override
+  String get acceptInvite => 'Accept invite';
+
+  @override
+  String get denyRequest => 'Deny request';
+
+  @override
+  String get denyInvite => 'Deny invite';
+
+  @override
+  String get alreadyMemberOfGroup => 'You are already a member of this group.';
+
+  @override
+  String get privateGroupWaitForInvite =>
+      'This group is completely private. Please wait for a direct invite from the group admins.';
+
+  @override
+  String get invalidProtectedInviteLink =>
+      'This invite link is not valid for the protected group.';
+
+  @override
+  String get requestAccess => 'Request access';
+
+  @override
+  String get joinGroup => 'Join group';
+
+  @override
+  String get groupAccessTitle => 'Group access';
+
+  @override
+  String invitedYouToThisGroup(String name) {
+    return '$name invited you to this group.';
+  }
+
+  @override
+  String requestedAccessToThisGroup(String name) {
+    return '$name requested access to this group.';
+  }
+
+  @override
+  String accessModeLabel(String mode) {
+    return 'Access mode: $mode';
+  }
+
+  @override
+  String get protectedGroupsRequireInviteLink =>
+      'Protected groups require a valid invite link and an approval request.';
+
+  @override
+  String get openGroupsCanBeJoinedImmediately =>
+      'Open groups can be joined immediately.';
+
+  @override
+  String get groupDetailsTemporarilyUnavailableRespond =>
+      'Group details are temporarily unavailable, but you can still respond to this notification.';
+
+  @override
+  String get groupDetailsTemporarilyUnavailable =>
+      'Group details are temporarily unavailable.';
 }

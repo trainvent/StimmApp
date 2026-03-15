@@ -2701,6 +2701,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save your acceptance: {error}'**
   String couldNotSaveYourAcceptance(String error);
+
+  /// No description provided for @searchPoweredByTomTom.
+  ///
+  /// In en, this message translates to:
+  /// **'Search powered by TomTom'**
+  String get searchPoweredByTomTom;
+
+  /// No description provided for @setTomTomApiKeyToEnableSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Set TOMTOM_SEARCH_API_KEY to enable address suggestions'**
+  String get setTomTomApiKeyToEnableSuggestions;
+
+  /// No description provided for @pleaseSelectAddressWithTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an address with a town'**
+  String get pleaseSelectAddressWithTown;
+
+  /// No description provided for @detectedStateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected state: {state}'**
+  String detectedStateLabel(String state);
+
+  /// No description provided for @scopeLabelWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope: {scope}'**
+  String scopeLabelWithValue(String scope);
+
+  /// No description provided for @groupLabelWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Group: {group}'**
+  String groupLabelWithValue(String group);
+
+  /// No description provided for @globalScopeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Global'**
+  String get globalScopeLabel;
+
+  /// No description provided for @europeScopeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Europe'**
+  String get europeScopeLabel;
+
+  /// No description provided for @countryScopeFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get countryScopeFallback;
+
+  /// No description provided for @stateRegionScopeFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'State / Region'**
+  String get stateRegionScopeFallback;
+
+  /// No description provided for @cityScopeFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get cityScopeFallback;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @scopeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope details'**
+  String get scopeDetails;
+
+  /// No description provided for @scopeAndGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope and group'**
+  String get scopeAndGroup;
+
+  /// No description provided for @myGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'My groups'**
+  String get myGroups;
+
+  /// No description provided for @pleaseSignInToViewYourGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view your groups.'**
+  String get pleaseSignInToViewYourGroups;
+
+  /// No description provided for @failedToLoadYourGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load your groups.'**
+  String get failedToLoadYourGroups;
+
+  /// No description provided for @youAreNotMemberOfAnyGroupsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not a member of any groups yet.'**
+  String get youAreNotMemberOfAnyGroupsYet;
+
+  /// No description provided for @noExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'No expiry'**
+  String get noExpiry;
+
+  /// No description provided for @expiresOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String expiresOnDate(String date);
+
+  /// No description provided for @creatorRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Creator'**
+  String get creatorRoleLabel;
+
+  /// No description provided for @adminRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRoleLabel;
+
+  /// No description provided for @memberRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get memberRoleLabel;
+
+  /// No description provided for @groupAccessSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Access: {accessMode} • Members: {memberCount} • {expiry}'**
+  String groupAccessSummary(String accessMode, int memberCount, String expiry);
+
+  /// No description provided for @swipeForDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for delete.'**
+  String get swipeForDelete;
+
+  /// No description provided for @swipeToLeaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to leave the group.'**
+  String get swipeToLeaveGroup;
+
+  /// No description provided for @leaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group'**
+  String get leaveGroup;
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get deleteGroup;
+
+  /// No description provided for @doYouWantToLeaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to leave \"{groupName}\"?'**
+  String doYouWantToLeaveGroup(String groupName);
+
+  /// No description provided for @youLeftTheGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the group.'**
+  String get youLeftTheGroup;
+
+  /// No description provided for @groupCreatorsCannotLeaveOwnGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group creators cannot leave their own group. Edit or delete it instead.'**
+  String get groupCreatorsCannotLeaveOwnGroup;
+
+  /// No description provided for @typeGroupNameToConfirmDeletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Type \"{groupName}\" to confirm deletion. This cannot be undone.'**
+  String typeGroupNameToConfirmDeletion(String groupName);
+
+  /// No description provided for @groupNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get groupNameLabel;
+
+  /// No description provided for @groupNameDidNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name did not match.'**
+  String get groupNameDidNotMatch;
+
+  /// No description provided for @groupDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Group deleted.'**
+  String get groupDeleted;
+
+  /// No description provided for @scanQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get scanQrCode;
+
+  /// No description provided for @scanGroupQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan group QR code'**
+  String get scanGroupQrCode;
+
+  /// No description provided for @invalidGroupInviteQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'This QR code does not contain a valid group invite.'**
+  String get invalidGroupInviteQrCode;
+
+  /// No description provided for @groupFilterEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No joined or accepted groups available yet.'**
+  String get groupFilterEmpty;
+
+  /// No description provided for @allGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All groups'**
+  String get allGroups;
+
+  /// No description provided for @clearGroupFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear group filter'**
+  String get clearGroupFilter;
+
+  /// No description provided for @protectedAccessMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protectedAccessMode;
+
+  /// No description provided for @openAccessMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openAccessMode;
+
+  /// No description provided for @completelyPrivateAccessMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Completely private'**
+  String get completelyPrivateAccessMode;
+
+  /// No description provided for @groupAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group access'**
+  String get groupAccess;
+
+  /// No description provided for @actionNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This action is no longer available.'**
+  String get actionNoLongerAvailable;
+
+  /// No description provided for @groupAccessAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. Group access accepted.'**
+  String get groupAccessAccepted;
+
+  /// No description provided for @inviteDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite denied.'**
+  String get inviteDenied;
+
+  /// No description provided for @aUser.
+  ///
+  /// In en, this message translates to:
+  /// **'A user'**
+  String get aUser;
+
+  /// No description provided for @accessRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Access request sent.'**
+  String get accessRequestSent;
+
+  /// No description provided for @youJoinedTheGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined the group.'**
+  String get youJoinedTheGroup;
+
+  /// No description provided for @approveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve request'**
+  String get approveRequest;
+
+  /// No description provided for @acceptInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invite'**
+  String get acceptInvite;
+
+  /// No description provided for @denyRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny request'**
+  String get denyRequest;
+
+  /// No description provided for @denyInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny invite'**
+  String get denyInvite;
+
+  /// No description provided for @alreadyMemberOfGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'You are already a member of this group.'**
+  String get alreadyMemberOfGroup;
+
+  /// No description provided for @privateGroupWaitForInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'This group is completely private. Please wait for a direct invite from the group admins.'**
+  String get privateGroupWaitForInvite;
+
+  /// No description provided for @invalidProtectedInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite link is not valid for the protected group.'**
+  String get invalidProtectedInviteLink;
+
+  /// No description provided for @requestAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request access'**
+  String get requestAccess;
+
+  /// No description provided for @joinGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Join group'**
+  String get joinGroup;
+
+  /// No description provided for @groupAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group access'**
+  String get groupAccessTitle;
+
+  /// No description provided for @invitedYouToThisGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} invited you to this group.'**
+  String invitedYouToThisGroup(String name);
+
+  /// No description provided for @requestedAccessToThisGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} requested access to this group.'**
+  String requestedAccessToThisGroup(String name);
+
+  /// No description provided for @accessModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access mode: {mode}'**
+  String accessModeLabel(String mode);
+
+  /// No description provided for @protectedGroupsRequireInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected groups require a valid invite link and an approval request.'**
+  String get protectedGroupsRequireInviteLink;
+
+  /// No description provided for @openGroupsCanBeJoinedImmediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Open groups can be joined immediately.'**
+  String get openGroupsCanBeJoinedImmediately;
+
+  /// No description provided for @groupDetailsTemporarilyUnavailableRespond.
+  ///
+  /// In en, this message translates to:
+  /// **'Group details are temporarily unavailable, but you can still respond to this notification.'**
+  String get groupDetailsTemporarilyUnavailableRespond;
+
+  /// No description provided for @groupDetailsTemporarilyUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Group details are temporarily unavailable.'**
+  String get groupDetailsTemporarilyUnavailable;
 }
 
 class _AppLocalizationsDelegate

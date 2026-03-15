@@ -70,7 +70,6 @@
 			"name": "Flutter: StimmApp Dev Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
-			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main_dev.dart",
 			"deviceId": "chrome"
 		},
@@ -78,7 +77,6 @@
 			"name": "Flutter: StimmApp Prod Web (Chrome)",
 			"request": "launch",
 			"type": "dart",
-			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
 			"deviceId": "chrome"
 		}
