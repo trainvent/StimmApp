@@ -7,8 +7,11 @@ import 'package:stimmapp/core/constants/eu_country_codes.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
+import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
+import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -227,6 +230,38 @@ class _BaseOverviewPageState<T extends HomeItem>
     );
   }
 
+  bool _isAccessibleForCurrentUser({
+    required T item,
+    required String? currentUid,
+    required Set<String> memberGroupIds,
+    required Set<String> acceptedInviteGroupIds,
+  }) {
+    if (item is! Poll) {
+      return true;
+    }
+
+    final poll = item;
+    if (poll.visibility != 'group') {
+      return true;
+    }
+
+    if (currentUid == null) {
+      return false;
+    }
+
+    if (poll.createdBy == currentUid) {
+      return true;
+    }
+
+    final groupId = poll.groupId;
+    if (groupId == null || groupId.isEmpty) {
+      return false;
+    }
+
+    return memberGroupIds.contains(groupId) ||
+        acceptedInviteGroupIds.contains(groupId);
+  }
+
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
@@ -383,82 +418,126 @@ class _BaseOverviewPageState<T extends HomeItem>
         final blockedIdsStream = currentUid == null
             ? Stream<Set<String>>.value(const <String>{})
             : ModerationRepository.create().watchBlockedUserIds(currentUid);
+        final memberGroupIdsStream = currentUid == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : PollGroupRepository.create().watchGroupsForUser(currentUid).map(
+                (groups) => groups.map((group) => group.id).toSet(),
+              );
+        final acceptedInviteGroupIdsStream = currentUid == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : PollGroupRepository.create().watchNotifications(currentUid).map(
+                (notifications) => notifications
+                    .where(
+                      (notification) =>
+                          notification.type ==
+                              PollGroupAccessNotificationType.invite &&
+                          notification.status ==
+                              PollGroupAccessNotificationStatus.accepted,
+                    )
+                    .map((notification) => notification.groupId)
+                    .toSet(),
+              );
         return StreamBuilder<Set<String>>(
           stream: blockedIdsStream,
           builder: (context, blockedSnap) {
             final blockedIds = blockedSnap.data ?? const <String>{};
-            return StreamBuilder<List<T>>(
-              stream: widget.streamProvider(_query, status),
-              builder: (context, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const Center(child: TriangleLoadingIndicator());
-                }
-                var items = snap.data ?? const [];
-                items = items
-                    .where(
-                      (item) => _isVisibleForUser(
-                        item: item,
-                        userProfile: userProfile,
-                      ),
-                    )
-                    .toList();
+            return StreamBuilder<Set<String>>(
+              stream: memberGroupIdsStream,
+              builder: (context, groupSnap) {
+                final memberGroupIds = groupSnap.data ?? const <String>{};
+                return StreamBuilder<Set<String>>(
+                  stream: acceptedInviteGroupIdsStream,
+                  builder: (context, acceptedInviteSnap) {
+                    final acceptedInviteGroupIds =
+                        acceptedInviteSnap.data ?? const <String>{};
+                    return StreamBuilder<List<T>>(
+                      stream: widget.streamProvider(_query, status),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(child: TriangleLoadingIndicator());
+                        }
+                        var items = snap.data ?? const [];
+                        items = items
+                            .where(
+                              (item) => _isVisibleForUser(
+                                item: item,
+                                userProfile: userProfile,
+                              ),
+                            )
+                            .where(
+                              (item) => _isAccessibleForCurrentUser(
+                                item: item,
+                                currentUid: currentUid,
+                                memberGroupIds: memberGroupIds,
+                                acceptedInviteGroupIds: acceptedInviteGroupIds,
+                              ),
+                            )
+                            .toList();
 
-                if (blockedIds.isNotEmpty) {
-                  items = items
-                      .where((item) => !blockedIds.contains(item.createdBy))
-                      .toList();
-                }
+                        if (blockedIds.isNotEmpty) {
+                          items = items
+                              .where((item) => !blockedIds.contains(item.createdBy))
+                              .toList();
+                        }
 
-                if (_onlyMyPublications && currentUid != null) {
-                  items = items
-                      .where((item) => item.createdBy == currentUid)
-                      .toList();
-                }
+                        if (_onlyMyPublications && currentUid != null) {
+                          items = items
+                              .where((item) => item.createdBy == currentUid)
+                              .toList();
+                        }
 
-                if (_selectedTags.isNotEmpty) {
-                  items = items.where((item) {
-                    return item.tags.any((tag) => _selectedTags.contains(tag));
-                  }).toList();
-                }
+                        if (_selectedTags.isNotEmpty) {
+                          items = items.where((item) {
+                            return item.tags.any(
+                              (tag) => _selectedTags.contains(tag),
+                            );
+                          }).toList();
+                        }
 
-                items = items.where(_matchesSelectedScopes).toList();
+                        items = items.where(_matchesSelectedScopes).toList();
 
-                if (items.isEmpty) {
-                  return Center(child: Text(context.l10n.noData));
-                }
-                final showAds = !(userProfile?.isPro ?? false);
-                final standardAdCount = showAds
-                    ? (items.length / _itemsPerAd).floor()
-                    : 0;
-                final showFallbackAd =
-                    showAds && items.isNotEmpty && standardAdCount == 0;
-                final totalCount =
-                    items.length + standardAdCount + (showFallbackAd ? 1 : 0);
+                        if (items.isEmpty) {
+                          return Center(child: Text(context.l10n.noData));
+                        }
+                        final showAds = !(userProfile?.isPro ?? false);
+                        final standardAdCount = showAds
+                            ? (items.length / _itemsPerAd).floor()
+                            : 0;
+                        final showFallbackAd =
+                            showAds && items.isNotEmpty && standardAdCount == 0;
+                        final totalCount =
+                            items.length +
+                            standardAdCount +
+                            (showFallbackAd ? 1 : 0);
 
-                return ListView.builder(
-                  itemCount: totalCount,
-                  itemBuilder: (context, index) {
-                    if (!showAds) {
-                      return Column(
-                        children: [
-                          widget.itemBuilder(context, items[index]),
-                          const Divider(height: 1),
-                        ],
-                      );
-                    }
-                    final isAdTile =
-                        (index + 1) % (_itemsPerAd + 1) == 0 ||
-                        (showFallbackAd && index == totalCount - 1);
-                    if (isAdTile) {
-                      return const BannerAdWidget();
-                    }
-                    final adSlot = (index + 1) ~/ (_itemsPerAd + 1);
-                    final itemIndex = index - adSlot;
-                    return Column(
-                      children: [
-                        widget.itemBuilder(context, items[itemIndex]),
-                        const Divider(height: 1),
-                      ],
+                        return ListView.builder(
+                          itemCount: totalCount,
+                          itemBuilder: (context, index) {
+                            if (!showAds) {
+                              return Column(
+                                children: [
+                                  widget.itemBuilder(context, items[index]),
+                                  const Divider(height: 1),
+                                ],
+                              );
+                            }
+                            final isAdTile =
+                                (index + 1) % (_itemsPerAd + 1) == 0 ||
+                                (showFallbackAd && index == totalCount - 1);
+                            if (isAdTile) {
+                              return const BannerAdWidget();
+                            }
+                            final adSlot = (index + 1) ~/ (_itemsPerAd + 1);
+                            final itemIndex = index - adSlot;
+                            return Column(
+                              children: [
+                                widget.itemBuilder(context, items[itemIndex]),
+                                const Divider(height: 1),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     );
                   },
                 );
