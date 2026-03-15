@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
@@ -56,6 +57,21 @@ Future<void> _initFirebase(FirebaseOptions firebaseOptions) async {
   }
 }
 
+Future<void> _configureFirestore() async {
+  final firestore = FirebaseFirestore.instanceFor(app: Firebase.app());
+
+  if (kIsWeb) {
+    firestore.settings = const Settings(
+      persistenceEnabled: false,
+      webExperimentalAutoDetectLongPolling: true,
+      ignoreUndefinedProperties: true,
+    );
+    debugPrint(
+      '[Firestore] Configured web settings with memory cache and auto long-polling',
+    );
+  }
+}
+
 Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) usePathUrlStrategy();
@@ -82,6 +98,7 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
     'Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}',
   );
 
+  await _configureFirestore();
   locator.init();
   if (!kIsWeb) {
     await PurchasesService.instance.init(
