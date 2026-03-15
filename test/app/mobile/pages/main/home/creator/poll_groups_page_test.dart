@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_groups_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/group_editor_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -104,21 +104,19 @@ void main() {
     repository = _RecordingPollGroupRepository();
   });
 
-  group('PollGroupsPage', () {
-    testWidgets('shows invite QR preview for protected groups', (
+  group('GroupEditorPage', () {
+    testWidgets('defaults to protected access and shows invite QR preview', (
       tester,
     ) async {
       await tester.pumpWidget(
         createTestWidget(
-          PollGroupsPage(repository: repository, auth: _FakeAuthService(user)),
+          GroupEditorPage(repository: repository, auth: _FakeAuthService(user)),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('invite_qr_preview')), findsNothing);
-
-      await tester.tap(find.text('Protected'));
-      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('access_mode_dropdown')), findsOneWidget);
+      expect(find.byKey(const Key('access_mode_description')), findsOneWidget);
       await tester.scrollUntilVisible(
         find.byKey(const Key('invite_qr_preview')),
         250,
@@ -132,7 +130,7 @@ void main() {
     testWidgets('imports CSV rows and reports malformed ones', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          PollGroupsPage(
+          GroupEditorPage(
             repository: repository,
             auth: _FakeAuthService(user),
             csvImporter: const _FakeCsvImporter(
@@ -167,19 +165,53 @@ void main() {
       );
     });
 
+    testWidgets('imports TSV rows', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          GroupEditorPage(
+            repository: repository,
+            auth: _FakeAuthService(user),
+            csvImporter: const _FakeCsvImporter(
+              'email\tnickname\trole\n'
+              'anna@example.com\tAnna\tuser\n'
+              'lead@example.com\tLead\tmanager',
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('pick_csv_button')),
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      final importButton = tester.widget<OutlinedButton>(
+        find.byKey(const Key('pick_csv_button')),
+      );
+      importButton.onPressed!();
+      await tester.pumpAndSettle();
+
+      expect(find.text('anna@example.com'), findsOneWidget);
+      expect(find.text('lead@example.com'), findsOneWidget);
+      expect(
+        find.text('Last import: 2 valid rows, 0 malformed rows.'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('creates groups with manual members and domain rules', (
       tester,
     ) async {
       await tester.pumpWidget(
         createTestWidget(
-          PollGroupsPage(repository: repository, auth: _FakeAuthService(user)),
+          GroupEditorPage(repository: repository, auth: _FakeAuthService(user)),
         ),
       );
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField).first, 'Ops Team');
-      await tester.tap(find.text('Protected'));
-      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.byKey(const Key('member_email_0')),
         150,

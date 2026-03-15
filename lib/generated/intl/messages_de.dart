@@ -302,6 +302,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Fehler beim Hochladen des Bildes",
     ),
     "errors": MessageLookupByLibrary.simpleMessage("Fehler"),
+    "euScopeOnlyForEuCountries": MessageLookupByLibrary.simpleMessage(
+      "Der EU-Geltungsbereich ist nur für EU-Länder verfügbar",
+    ),
     "exercise": MessageLookupByLibrary.simpleMessage("Übung"),
     "expiredCreations": MessageLookupByLibrary.simpleMessage(
       "Abgelaufene Einträge",
@@ -330,6 +333,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bild konnte nicht hochgeladen werden",
     ),
     "faultyInput": MessageLookupByLibrary.simpleMessage("Fehlerhafte Eingabe"),
+    "filter": MessageLookupByLibrary.simpleMessage("filter"),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Letzter Hinweis"),
     "finishedForms": MessageLookupByLibrary.simpleMessage(
       "Abgeschlossene Formulare",
@@ -549,6 +553,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie einen gültigen 6-stelligen Code ein",
     ),
+    "pleaseEnterTown": MessageLookupByLibrary.simpleMessage(
+      "Bitte geben Sie einen Ort ein",
+    ),
     "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie ihre Zugangsdaten ein.",
     ),
@@ -569,6 +576,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSelectState": MessageLookupByLibrary.simpleMessage(
       "Bitte wähle dein Bundesland aus.",
+    ),
+    "pleaseSetCountryInAddressFirst": MessageLookupByLibrary.simpleMessage(
+      "Bitte hinterlegen Sie zuerst Ihr Land in Ihrer Adresse",
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Bitte zuerst anmelden",
@@ -648,6 +658,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profilbild aktualisiert",
     ),
+    "publications": MessageLookupByLibrary.simpleMessage("Veröffentlichungen"),
     "publishedUnderTheGnuGeneralPublicLicenseV30":
         MessageLookupByLibrary.simpleMessage(
           "veröffentlicht unter der GNU General Public License v3.0",
@@ -713,6 +724,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bitte scannen Sie Ihren deutschen Personalausweis",
     ),
     "scannedData": MessageLookupByLibrary.simpleMessage("Gescannte Daten"),
+    "scope": MessageLookupByLibrary.simpleMessage("Geltungsbereich"),
+    "scopeCity": MessageLookupByLibrary.simpleMessage("Stadt"),
+    "scopeContinent": MessageLookupByLibrary.simpleMessage("Kontinent"),
+    "scopeCountry": MessageLookupByLibrary.simpleMessage("Land"),
+    "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
+    "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
+    "scopeStateRegion": MessageLookupByLibrary.simpleMessage(
+      "Bundesland / Region",
+    ),
     "searchTextField": MessageLookupByLibrary.simpleMessage("Schlagwort"),
     "select": MessageLookupByLibrary.simpleMessage("Auswählen"),
     "selectFromCamera": MessageLookupByLibrary.simpleMessage(
@@ -760,6 +780,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "signUpForPro": MessageLookupByLibrary.simpleMessage("Pro-Abo abschließen"),
     "signatureReasoning": MessageLookupByLibrary.simpleMessage(
       "Begründung der Unterschrift",
+    ),
+    "signatureReasoningInfo": MessageLookupByLibrary.simpleMessage(
+      "Aktiviert das Kommentieren deiner Unterschriften und Meinungen vor dem Absenden.",
     ),
     "signatures": MessageLookupByLibrary.simpleMessage("Unterschriften"),
     "signed": MessageLookupByLibrary.simpleMessage("Unterzeichnet"),
@@ -829,6 +852,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Titel ist erforderlich",
     ),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Titel ist zu kurz"),
+    "town": MessageLookupByLibrary.simpleMessage("Ort"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
     "unblock": MessageLookupByLibrary.simpleMessage("Blockierung aufheben"),
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(

@@ -28,7 +28,17 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   final _repo = PollGroupRepository.create();
   bool _isSaving = false;
 
-  Future<PollGroup?> _loadGroup() => _repo.getGroup(widget.groupId);
+  Future<PollGroup?> _loadGroup() async {
+    try {
+      return await _repo.getGroup(widget.groupId);
+    } catch (error, stackTrace) {
+      debugPrint(
+        'GroupEntryPage: failed to load group ${widget.groupId}: $error',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+      return null;
+    }
+  }
 
   Future<PollGroupAccessNotification?> _loadNotification() async {
     final ownerUid = widget.notificationOwnerUid;
@@ -36,7 +46,15 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     if (ownerUid == null || notificationId == null) {
       return null;
     }
-    return _repo.getNotification(ownerUid, notificationId);
+    try {
+      return await _repo.getNotification(ownerUid, notificationId);
+    } catch (error, stackTrace) {
+      debugPrint(
+        'GroupEntryPage: failed to load notification $notificationId for $ownerUid: $error',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+      return null;
+    }
   }
 
   Future<void> _respondToNotification(bool accept) async {
@@ -61,8 +79,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         accept ? 'Saved. Group access accepted.' : 'Invite denied.',
       );
       Navigator.of(context).pop();
-    } catch (e) {
-      showErrorSnackBar('Could not save your answer: $e');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -91,8 +109,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       }
       showSuccessSnackBar('Access request sent.');
       Navigator.of(context).pop();
-    } catch (e) {
-      showErrorSnackBar('Could not request access: $e');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -114,8 +132,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       }
       showSuccessSnackBar('You joined the group.');
       Navigator.of(context).pop();
-    } catch (e) {
-      showErrorSnackBar('Could not join group: $e');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -252,6 +270,14 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                   ),
                 if (group.accessMode == PollGroupAccessMode.open)
                   const Text('Open groups can be joined immediately.'),
+              ] else if (notification != null) ...[
+                const SizedBox(height: 8),
+                const Text(
+                  'Group details are temporarily unavailable, but you can still respond to this notification.',
+                ),
+              ] else ...[
+                const SizedBox(height: 8),
+                const Text('Group details are temporarily unavailable.'),
               ],
               const SizedBox(height: 24),
               _buildPrimaryActions(

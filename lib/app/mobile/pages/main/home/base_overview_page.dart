@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';

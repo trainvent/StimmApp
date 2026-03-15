@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_groups_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/group_picker_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -15,6 +16,9 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:uuid/uuid.dart';
+
+const String _publicGroupValue = '__public__';
+const String _manageGroupsValue = '__manage_groups__';
 
 class PollCreatorPage extends StatefulWidget {
   const PollCreatorPage({super.key});
@@ -29,13 +33,12 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     TextEditingController(),
   ];
   final _uuid = const Uuid();
-  UserProfile? _user;
+  final Map<String, PollGroup> _knownGroupsById = <String, PollGroup>{};
   PollGroup? _selectedGroup;
 
   @override
   void initState() {
     super.initState();
-    _fetchUser();
   }
 
   @override
@@ -46,31 +49,18 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     super.dispose();
   }
 
-  Future<void> _fetchUser() async {
+  Future<void> _openGroupSelector() async {
+    final navigator = Navigator.of(context);
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       return;
     }
-    final user = await UserRepository.create().watchById(currentUser.uid).first;
+    final user = await UserRepository.create().getById(currentUser.uid);
+    final canUseGroups = (user?.isPro ?? false) == true;
     if (!mounted) {
       return;
     }
-    setState(() {
-      _user = user;
-    });
-  }
-
-  Future<void> _openGroupSelector() async {
-    final user = _user;
-    final navigator = Navigator.of(context);
-    if (user == null) {
-      await _fetchUser();
-    }
-    if (!mounted) {
-      return;
-    }
-
-    if ((_user?.isPro ?? false) != true) {
+    if (!canUseGroups) {
       final opened = await PurchasesService.instance.presentPaywall(
         context: context,
       );
@@ -86,7 +76,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
 
     final selectedGroup = await navigator.push<PollGroup>(
       MaterialPageRoute(
-        builder: (context) => PollGroupsPage(selectedGroupId: _selectedGroup?.id),
+        builder: (context) => GroupPickerPage(
+          selectedGroupId: _selectedGroup?.id,
+          initialGroups: _knownGroupsById.values.toList(),
+        ),
       ),
     );
     if (!mounted || selectedGroup == null) {
@@ -94,7 +87,146 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     }
     setState(() {
       _selectedGroup = selectedGroup;
+      _rememberGroups(<PollGroup>[selectedGroup]);
     });
+  }
+
+  Future<void> _handleGroupSelection(String? value) async {
+    if (value == null || value == _selectedGroup?.id) {
+      return;
+    }
+    if (value == _publicGroupValue) {
+      setState(() {
+        _selectedGroup = null;
+      });
+      return;
+    }
+    if (value == _manageGroupsValue) {
+      await _openGroupSelector();
+      return;
+    }
+
+    final currentUser = authService.currentUser;
+    if (currentUser == null) {
+      return;
+    }
+    final groups = await PollGroupRepository.create()
+        .watchGroupsForUser(currentUser.uid)
+        .first;
+    if (!mounted) {
+      return;
+    }
+    for (final group in groups) {
+      if (group.id == value) {
+        setState(() {
+          _selectedGroup = group;
+          _rememberGroups(<PollGroup>[group]);
+        });
+        return;
+      }
+    }
+  }
+
+  void _rememberGroups(Iterable<PollGroup> groups) {
+    for (final group in groups) {
+      _knownGroupsById[group.id] = group;
+    }
+  }
+
+  Widget _buildGroupSelector() {
+    final currentUser = authService.currentUser;
+    if (currentUser == null) {
+      return DropdownButtonFormField<String>(
+        key: const Key('poll_group_dropdown'),
+        initialValue: _publicGroupValue,
+        decoration: const InputDecoration(
+          labelText: 'Publish to',
+          border: OutlineInputBorder(),
+        ),
+        items: const [
+          DropdownMenuItem<String>(
+            value: _publicGroupValue,
+            child: Text('Public'),
+          ),
+        ],
+        onChanged: null,
+      );
+    }
+
+    return StreamBuilder<UserProfile?>(
+      stream: UserRepository.create().watchById(currentUser.uid),
+      builder: (context, snapshot) {
+        final canUseGroups = (snapshot.data?.isPro ?? false) == true;
+        if (!canUseGroups) {
+          return DropdownButtonFormField<String>(
+            key: const Key('poll_group_dropdown'),
+            initialValue: _publicGroupValue,
+            decoration: const InputDecoration(
+              labelText: 'Publish to',
+              border: OutlineInputBorder(),
+            ),
+            items: const [
+              DropdownMenuItem<String>(
+                value: _publicGroupValue,
+                child: Text('Public'),
+              ),
+              DropdownMenuItem<String>(
+                value: _manageGroupsValue,
+                child: Text('Create or manage groups...'),
+              ),
+            ],
+            onChanged: (value) async {
+              if (value == _manageGroupsValue) {
+                await _openGroupSelector();
+              }
+            },
+          );
+        }
+
+        return StreamBuilder<List<PollGroup>>(
+          stream: PollGroupRepository.create().watchGroupsForUser(currentUser.uid),
+          builder: (context, groupSnapshot) {
+            final latestGroups = List<PollGroup>.from(
+              groupSnapshot.data ?? const <PollGroup>[],
+            );
+            if (latestGroups.isNotEmpty) {
+              _rememberGroups(latestGroups);
+            }
+            final groups = _knownGroupsById.values.toList();
+            if (_selectedGroup != null &&
+                !_knownGroupsById.containsKey(_selectedGroup!.id)) {
+              groups.insert(0, _selectedGroup!);
+            }
+            final selectedValue = _selectedGroup?.id ?? _publicGroupValue;
+            return DropdownButtonFormField<String>(
+              key: const Key('poll_group_dropdown'),
+              initialValue: selectedValue,
+              decoration: const InputDecoration(
+                labelText: 'Publish to',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem<String>(
+                  value: _publicGroupValue,
+                  child: Text('Public'),
+                ),
+                ...groups.map(
+                  (group) => DropdownMenuItem<String>(
+                    value: group.id,
+                    child: Text(group.name),
+                  ),
+                ),
+                const DropdownMenuItem<String>(
+                  value: _manageGroupsValue,
+                  child: Text('Create or manage groups...'),
+                ),
+              ],
+              onChanged: _handleGroupSelection,
+            );
+          },
+        );
+      },
+    );
   }
 
   void _addOption() {
@@ -241,41 +373,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createPoll,
       additionalTopFields: [
-        if ((_user?.isPro ?? false) == true)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.groups_2_outlined),
-            title: const Text('Polling groups'),
-            subtitle: Text(
-              _selectedGroup == null
-                  ? 'Create team-only polls and preload allowed members.'
-                  : 'Selected group: ${_selectedGroup!.name}',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: _openGroupSelector,
-          ),
-        if (_selectedGroup != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                Chip(
-                  avatar: const Icon(Icons.group, size: 18),
-                  label: Text(_selectedGroup!.name),
-                ),
-                ActionChip(
-                  onPressed: () {
-                    setState(() {
-                      _selectedGroup = null;
-                    });
-                  },
-                  label: const Text('Post publicly instead'),
-                ),
-              ],
-            ),
-          ),
+        _buildGroupSelector(),
         const SizedBox(height: 20),
       ],
       additionalBottomFields: [

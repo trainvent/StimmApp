@@ -288,6 +288,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Error uploading image",
     ),
     "errors": MessageLookupByLibrary.simpleMessage("Errors"),
+    "euScopeOnlyForEuCountries": MessageLookupByLibrary.simpleMessage(
+      "EU scope is only available for EU countries",
+    ),
     "exercise": MessageLookupByLibrary.simpleMessage("Exercise"),
     "expiredCreations": MessageLookupByLibrary.simpleMessage(
       "Expired creations",
@@ -312,6 +315,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Failed to upload image: ",
     ),
     "faultyInput": MessageLookupByLibrary.simpleMessage("Faulty input"),
+    "filter": MessageLookupByLibrary.simpleMessage("Filter"),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Final notice"),
     "finishedForms": MessageLookupByLibrary.simpleMessage("Finished forms"),
     "flutterPro": MessageLookupByLibrary.simpleMessage("Flutter Pro"),
@@ -352,7 +356,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidEmailEntered": MessageLookupByLibrary.simpleMessage(
       "Invalid email entered",
     ),
-    "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
+    "isProMember": MessageLookupByLibrary.simpleMessage("Is Pro Member"),
     "language": MessageLookupByLibrary.simpleMessage("language"),
     "lastStep": MessageLookupByLibrary.simpleMessage("Last step!"),
     "licenses": MessageLookupByLibrary.simpleMessage("Licenses"),
@@ -527,6 +531,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid 6-digit code",
     ),
+    "pleaseEnterTown": MessageLookupByLibrary.simpleMessage(
+      "Please enter a town",
+    ),
     "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
       "Please enter your Credentials",
     ),
@@ -547,6 +554,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSelectState": MessageLookupByLibrary.simpleMessage(
       "Please select a state",
+    ),
+    "pleaseSetCountryInAddressFirst": MessageLookupByLibrary.simpleMessage(
+      "Please set your country in your address first",
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Please sign in first",
@@ -620,6 +630,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profile picture updated",
     ),
+    "publications": MessageLookupByLibrary.simpleMessage("Publications"),
     "publishedUnderTheGnuGeneralPublicLicenseV30":
         MessageLookupByLibrary.simpleMessage(
           "published under the GNU General Public License v3.0",
@@ -677,6 +688,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please scan your German ID card",
     ),
     "scannedData": MessageLookupByLibrary.simpleMessage("Scanned Data"),
+    "scope": MessageLookupByLibrary.simpleMessage("Scope"),
+    "scopeCity": MessageLookupByLibrary.simpleMessage("City"),
+    "scopeContinent": MessageLookupByLibrary.simpleMessage("Continent"),
+    "scopeCountry": MessageLookupByLibrary.simpleMessage("Country"),
+    "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
+    "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
+    "scopeStateRegion": MessageLookupByLibrary.simpleMessage("State / Region"),
     "searchTextField": MessageLookupByLibrary.simpleMessage("Schlagwort"),
     "select": MessageLookupByLibrary.simpleMessage("Pick"),
     "selectFromCamera": MessageLookupByLibrary.simpleMessage(
@@ -716,6 +734,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "signUpForPro": MessageLookupByLibrary.simpleMessage("Sign up for Pro"),
     "signatureReasoning": MessageLookupByLibrary.simpleMessage(
       "signature reasoning",
+    ),
+    "signatureReasoningInfo": MessageLookupByLibrary.simpleMessage(
+      "Activates commenting on your signatures and opinions before submitting.",
     ),
     "signatures": MessageLookupByLibrary.simpleMessage("Signatures"),
     "signed": MessageLookupByLibrary.simpleMessage("Signed"),
@@ -779,6 +800,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "title": MessageLookupByLibrary.simpleMessage("Title"),
     "titleRequired": MessageLookupByLibrary.simpleMessage("Title is required"),
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Title is too short"),
+    "town": MessageLookupByLibrary.simpleMessage("Town"),
     "travel": MessageLookupByLibrary.simpleMessage("Travel"),
     "unblock": MessageLookupByLibrary.simpleMessage("Unblock"),
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -861,7 +883,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
       "Wrong password provided.",
     ),
-    "yes": MessageLookupByLibrary.simpleMessage("Ja"),
+    "yes": MessageLookupByLibrary.simpleMessage("Yes"),
     "yesCancel": MessageLookupByLibrary.simpleMessage("Yes, cancel"),
     "youSubscribedToFollowingBenefits": MessageLookupByLibrary.simpleMessage(
       "You subscribed to following benefits",

@@ -1219,6 +1219,11 @@ class S {
     return Intl.message('ID Scan', name: 'idScan', desc: '', args: []);
   }
 
+  /// `Filter`
+  String get filter {
+    return Intl.message('Filter', name: 'filter', desc: '', args: []);
+  }
+
   /// `This is a preview of your new profile picture.`
   String get imagePreviewDescription {
     return Intl.message(
@@ -1244,10 +1249,10 @@ class S {
     );
   }
 
-  /// `Ist Pro-Mitglied`
+  /// `Is Pro Member`
   String get isProMember {
     return Intl.message(
-      'Ist Pro-Mitglied',
+      'Is Pro Member',
       name: 'isProMember',
       desc: '',
       args: [],
@@ -2164,6 +2169,86 @@ class S {
     );
   }
 
+  /// `Scope`
+  String get scope {
+    return Intl.message('Scope', name: 'scope', desc: '', args: []);
+  }
+
+  /// `Global`
+  String get scopeGlobal {
+    return Intl.message('Global', name: 'scopeGlobal', desc: '', args: []);
+  }
+
+  /// `EU`
+  String get scopeEu {
+    return Intl.message('EU', name: 'scopeEu', desc: '', args: []);
+  }
+
+  /// `Continent`
+  String get scopeContinent {
+    return Intl.message(
+      'Continent',
+      name: 'scopeContinent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Country`
+  String get scopeCountry {
+    return Intl.message('Country', name: 'scopeCountry', desc: '', args: []);
+  }
+
+  /// `State / Region`
+  String get scopeStateRegion {
+    return Intl.message(
+      'State / Region',
+      name: 'scopeStateRegion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `City`
+  String get scopeCity {
+    return Intl.message('City', name: 'scopeCity', desc: '', args: []);
+  }
+
+  /// `Town`
+  String get town {
+    return Intl.message('Town', name: 'town', desc: '', args: []);
+  }
+
+  /// `Please enter a town`
+  String get pleaseEnterTown {
+    return Intl.message(
+      'Please enter a town',
+      name: 'pleaseEnterTown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `EU scope is only available for EU countries`
+  String get euScopeOnlyForEuCountries {
+    return Intl.message(
+      'EU scope is only available for EU countries',
+      name: 'euScopeOnlyForEuCountries',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please set your country in your address first`
+  String get pleaseSetCountryInAddressFirst {
+    return Intl.message(
+      'Please set your country in your address first',
+      name: 'pleaseSetCountryInAddressFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `State`
   String get state {
     return Intl.message('State', name: 'state', desc: '', args: []);
@@ -2509,9 +2594,9 @@ class S {
     );
   }
 
-  /// `Ja`
+  /// `Yes`
   String get yes {
-    return Intl.message('Ja', name: 'yes', desc: '', args: []);
+    return Intl.message('Yes', name: 'yes', desc: '', args: []);
   }
 
   /// `Yes, cancel`
@@ -3354,6 +3439,16 @@ class S {
     );
   }
 
+  /// `Activates commenting on your signatures and opinions before submitting.`
+  String get signatureReasoningInfo {
+    return Intl.message(
+      'Activates commenting on your signatures and opinions before submitting.',
+      name: 'signatureReasoningInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Why are you signing?`
   String get whyAreYouSigning {
     return Intl.message(
@@ -3379,6 +3474,16 @@ class S {
     return Intl.message(
       'Running Forms',
       name: 'runningForms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Publications`
+  String get publications {
+    return Intl.message(
+      'Publications',
+      name: 'publications',
       desc: '',
       args: [],
     );

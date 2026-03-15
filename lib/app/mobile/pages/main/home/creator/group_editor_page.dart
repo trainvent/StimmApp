@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csv/csv.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -14,25 +15,25 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:universal_io/io.dart' as io;
 
-class PollGroupsPage extends StatefulWidget {
-  const PollGroupsPage({
+class GroupEditorPage extends StatefulWidget {
+  const GroupEditorPage({
     super.key,
-    this.selectedGroupId,
+    this.initialGroup,
     this.repository,
     this.auth,
     this.csvImporter,
   });
 
-  final String? selectedGroupId;
+  final PollGroup? initialGroup;
   final PollGroupRepository? repository;
   final AuthService? auth;
   final PollGroupCsvImporter? csvImporter;
 
   @override
-  State<PollGroupsPage> createState() => _PollGroupsPageState();
+  State<GroupEditorPage> createState() => _GroupEditorPageState();
 }
 
-class _PollGroupsPageState extends State<PollGroupsPage> {
+class _GroupEditorPageState extends State<GroupEditorPage> {
   final _nameController = TextEditingController();
   final List<_InviteMemberDraft> _memberDrafts = [];
   final List<_AllowedDomainDraft> _domainDrafts = [];
@@ -41,11 +42,14 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
   bool _hasExpiration = false;
   DateTime? _expiresAt;
   bool _isCreating = false;
-  PollGroupAccessMode _accessMode = PollGroupAccessMode.private;
+  PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
   bool _isDraggingCsv = false;
   int _lastImportedCsvRows = 0;
   int _lastInvalidCsvRows = 0;
   late final String _draftInviteToken;
+  bool _isLoadingExistingRules = false;
+
+  bool get _isEditing => widget.initialGroup != null;
 
   PollGroupRepository get _repository =>
       widget.repository ?? PollGroupRepository.create();
@@ -56,8 +60,8 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
   @override
   void initState() {
     super.initState();
-    _draftInviteToken = _buildToken();
-    _addMemberDraft();
+    _draftInviteToken = widget.initialGroup?.inviteLinkToken ?? _buildToken();
+    _seedForm();
   }
 
   @override
@@ -87,6 +91,77 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
       _expiresAt = selected;
       _hasExpiration = true;
     });
+  }
+
+  void _seedForm() {
+    final initialGroup = widget.initialGroup;
+    if (initialGroup == null) {
+      _addMemberDraft();
+      return;
+    }
+
+    _nameController.text = initialGroup.name;
+    _allowSelfNamedNicknames =
+        initialGroup.nicknameMode == PollGroupNicknameMode.selfNamed;
+    _managersCanInvite = initialGroup.managersCanInvite;
+    _hasExpiration = initialGroup.expiresAt != null;
+    _expiresAt = initialGroup.expiresAt;
+    _accessMode = initialGroup.accessMode;
+    _loadExistingRules(initialGroup.id);
+  }
+
+  Future<void> _loadExistingRules(String groupId) async {
+    setState(() => _isLoadingExistingRules = true);
+    try {
+      final allowedMembers = await _repository.getAllowedMembers(groupId);
+      final allowedDomains = await _repository.getAllowedDomains(groupId);
+      if (!mounted) {
+        return;
+      }
+      for (final draft in _memberDrafts) {
+        draft.dispose();
+      }
+      for (final draft in _domainDrafts) {
+        draft.dispose();
+      }
+      _memberDrafts
+        ..clear()
+        ..addAll(
+          allowedMembers.isEmpty
+              ? <_InviteMemberDraft>[
+                  _InviteMemberDraft(),
+                ]
+              : allowedMembers
+                    .map(
+                      (member) => _InviteMemberDraft(
+                        email: member.email,
+                        nickname: member.nickname ?? '',
+                        role: member.role,
+                      ),
+                    )
+                    .toList(),
+        );
+      _domainDrafts
+        ..clear()
+        ..addAll(
+          allowedDomains
+              .map(
+                (domain) => _AllowedDomainDraft(
+                  domain: domain.domain,
+                  role: domain.role,
+                ),
+              )
+              .toList(),
+        );
+    } catch (error, stackTrace) {
+      if (mounted) {
+        showInternalDifficultiesSnackBar(error, stackTrace);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingExistingRules = false);
+      }
+    }
   }
 
   void _addMemberDraft({
@@ -210,20 +285,28 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
   }
 
   _CsvImportResult _parseCsvMembers(String raw) {
-    final lines = raw
-        .split(RegExp(r'\r?\n'))
-        .map((line) => line.trim())
-        .where((line) => line.isNotEmpty)
-        .toList();
-    if (lines.isEmpty) {
+    final normalized = raw
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n')
+        .trim();
+    if (normalized.isEmpty) {
+      return const _CsvImportResult(members: [], invalidRows: 0);
+    }
+
+    final delimiter = _detectDelimiter(normalized);
+    final rows = const CsvToListConverter(
+      shouldParseNumbers: false,
+    ).convert(normalized, fieldDelimiter: delimiter, eol: '\n');
+    if (rows.isEmpty) {
       return const _CsvImportResult(members: [], invalidRows: 0);
     }
 
     final members = <_ImportedMemberDraft>[];
     var invalidRows = 0;
-    for (var index = 0; index < lines.length; index += 1) {
-      final line = lines[index];
-      final cells = _splitCsvLine(line);
+    for (var index = 0; index < rows.length; index += 1) {
+      final cells = rows[index]
+          .map((cell) => cell?.toString() ?? '')
+          .toList(growable: false);
       if (index == 0 && _looksLikeHeader(cells)) {
         continue;
       }
@@ -248,31 +331,16 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
     return _CsvImportResult(members: members, invalidRows: invalidRows);
   }
 
-  List<String> _splitCsvLine(String line) {
-    final cells = <String>[];
-    var buffer = StringBuffer();
-    var inQuotes = false;
-    for (var i = 0; i < line.length; i += 1) {
-      final char = line[i];
-      if (char == '"') {
-        final nextIsQuote = i + 1 < line.length && line[i + 1] == '"';
-        if (inQuotes && nextIsQuote) {
-          buffer.write('"');
-          i += 1;
-          continue;
-        }
-        inQuotes = !inQuotes;
-        continue;
-      }
-      if (char == ',' && !inQuotes) {
-        cells.add(buffer.toString());
-        buffer = StringBuffer();
-        continue;
-      }
-      buffer.write(char);
-    }
-    cells.add(buffer.toString());
-    return cells;
+  String _detectDelimiter(String raw) {
+    final firstLine = raw.split(RegExp(r'\r?\n')).first;
+    final candidates = <String, int>{
+      '\t': '\t'.allMatches(firstLine).length,
+      ';': ';'.allMatches(firstLine).length,
+      ',': ','.allMatches(firstLine).length,
+    };
+    return candidates.entries.reduce((best, current) {
+      return current.value > best.value ? current : best;
+    }).key;
   }
 
   bool _looksLikeHeader(List<String> cells) {
@@ -354,7 +422,8 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
   }
 
   bool _looksLikeCsvName(String name) {
-    return name.toLowerCase().endsWith('.csv');
+    final lower = name.toLowerCase();
+    return lower.endsWith('.csv') || lower.endsWith('.tsv');
   }
 
   String _buildToken() {
@@ -404,8 +473,8 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
           subject: 'Group invite link',
         ),
       );
-    } catch (e) {
-      showErrorSnackBar('Could not share invite link: $e');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
     }
   }
 
@@ -466,7 +535,7 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
     return PollGroupRepository.normalizeAllowedDomains(domains);
   }
 
-  Future<void> _createGroup() async {
+  Future<void> _saveGroup() async {
     final user = _auth.currentUser;
     if (user == null) {
       showErrorSnackBar('Please sign in first.');
@@ -489,32 +558,54 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
 
     setState(() => _isCreating = true);
     try {
-      final groupId = await _repository.createGroup(
-        creatorUid: user.uid,
-        name: groupName,
-        joinCode: _buildJoinCode(),
-        nicknameMode: _allowSelfNamedNicknames
-            ? PollGroupNicknameMode.selfNamed
-            : PollGroupNicknameMode.adminAssigned,
-        managersCanInvite: _managersCanInvite,
-        accessMode: _accessMode,
-        inviteLinkEnabled: _inviteLinkEnabled,
-        inviteLinkToken: _inviteLinkEnabled ? _draftInviteToken : null,
-        expiresAt: _hasExpiration ? _expiresAt : null,
-        allowedMembers: allowedMembers,
-        allowedDomains: allowedDomains,
-      );
-      final group = await _repository
-          .watchGroupsForUser(user.uid)
-          .first
-          .then((groups) => groups.firstWhere((item) => item.id == groupId));
+      late final PollGroup group;
+      if (_isEditing) {
+        final existingGroup = widget.initialGroup!;
+        group = existingGroup.copyWith(
+          name: groupName,
+          expiresAt: _hasExpiration ? _expiresAt : null,
+          nicknameMode: _allowSelfNamedNicknames
+              ? PollGroupNicknameMode.selfNamed
+              : PollGroupNicknameMode.adminAssigned,
+          managersCanInvite: _managersCanInvite,
+          importedMemberCount: allowedMembers.length,
+          accessMode: _accessMode,
+          inviteLinkEnabled: _inviteLinkEnabled,
+          inviteLinkToken: _inviteLinkEnabled ? _draftInviteToken : null,
+        );
+        await _repository.updateGroup(
+          group: group,
+          allowedMembers: allowedMembers,
+          allowedDomains: allowedDomains,
+        );
+      } else {
+        final groupId = await _repository.createGroup(
+          creatorUid: user.uid,
+          name: groupName,
+          joinCode: _buildJoinCode(),
+          nicknameMode: _allowSelfNamedNicknames
+              ? PollGroupNicknameMode.selfNamed
+              : PollGroupNicknameMode.adminAssigned,
+          managersCanInvite: _managersCanInvite,
+          accessMode: _accessMode,
+          inviteLinkEnabled: _inviteLinkEnabled,
+          inviteLinkToken: _inviteLinkEnabled ? _draftInviteToken : null,
+          expiresAt: _hasExpiration ? _expiresAt : null,
+          allowedMembers: allowedMembers,
+          allowedDomains: allowedDomains,
+        );
+        group = await _repository
+            .watchGroupsForUser(user.uid)
+            .first
+            .then((groups) => groups.firstWhere((item) => item.id == groupId));
+      }
       if (!mounted) {
         return;
       }
-      showSuccessSnackBar('Group created.');
+      showSuccessSnackBar(_isEditing ? 'Group updated.' : 'Group created.');
       Navigator.of(context).pop(group);
-    } catch (e) {
-      showErrorSnackBar('Failed to create group: $e');
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
       if (mounted) {
         setState(() => _isCreating = false);
@@ -559,6 +650,31 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
       case PollGroupAccessMode.open:
         return 'Everyone can join without approval.';
     }
+  }
+
+  Widget _buildAccessModeDropdown() {
+    return DropdownButtonFormField<PollGroupAccessMode>(
+      key: const Key('access_mode_dropdown'),
+      initialValue: _accessMode,
+      decoration: const InputDecoration(
+        labelText: 'Group access',
+        border: OutlineInputBorder(),
+      ),
+      items: PollGroupAccessMode.values
+          .map(
+            (mode) => DropdownMenuItem<PollGroupAccessMode>(
+              value: mode,
+              child: Text(_accessModeTitle(mode)),
+            ),
+          )
+          .toList(),
+      onChanged: (value) {
+        if (value == null) {
+          return;
+        }
+        setState(() => _accessMode = value);
+      },
+    );
   }
 
   Widget _buildRoleDropdown({
@@ -717,7 +833,7 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Accepted format: email,nickname,role',
+                  'Accepted format: CSV or TSV with email,nickname,role',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (_lastImportedCsvRows > 0 || _lastInvalidCsvRows > 0) ...[
@@ -885,159 +1001,110 @@ class _PollGroupsPageState extends State<PollGroupsPage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Polling Groups')),
+      appBar: AppBar(title: Text(_isEditing ? 'Edit Group' : 'Create Group')),
       body: user == null
           ? const Center(child: Text('Please sign in to manage groups.'))
-          : StreamBuilder<List<PollGroup>>(
-              stream: _repository.watchGroupsForUser(user.uid),
-              builder: (context, snapshot) {
-                final groups = snapshot.data ?? const <PollGroup>[];
-                return ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    Text(
-                      'Create a members-only polling space for teams, events, and companies.',
-                      style: Theme.of(context).textTheme.bodyMedium,
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                Text(
+                  _isEditing
+                      ? 'Adjust the access rules, invites, and settings for this group.'
+                      : 'Create a members-only polling space for teams, events, and companies.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Group name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildAccessModeDropdown(),
+                const SizedBox(height: 8),
+                Text(
+                  _accessModeDescription(_accessMode),
+                  key: const Key('access_mode_description'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _allowSelfNamedNicknames,
+                  title: const Text('Members can choose their own nickname'),
+                  onChanged: (value) {
+                    setState(() => _allowSelfNamedNicknames = value);
+                  },
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _managersCanInvite,
+                  title: const Text('Managers can prepare access lists'),
+                  onChanged: (value) {
+                    setState(() => _managersCanInvite = value);
+                  },
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _hasExpiration,
+                  title: const Text('Set an expiration date'),
+                  onChanged: (value) {
+                    setState(() {
+                      _hasExpiration = value;
+                      if (!value) {
+                        _expiresAt = null;
+                      }
+                    });
+                    if (value) {
+                      _pickExpirationDate();
+                    }
+                  },
+                ),
+                if (_hasExpiration) ...[
+                  OutlinedButton.icon(
+                    onPressed: _pickExpirationDate,
+                    icon: const Icon(Icons.event),
+                    label: Text(
+                      _expiresAt == null
+                          ? 'Pick expiration date'
+                          : 'Expires ${_formatDate(_expiresAt!)}',
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Group name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Group access',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    RadioGroup<PollGroupAccessMode>(
-                      groupValue: _accessMode,
-                      onChanged: (value) {
-                        if (value == null) {
-                          return;
-                        }
-                        setState(() => _accessMode = value);
-                      },
-                      child: Column(
-                        children: PollGroupAccessMode.values
-                            .map(
-                              (mode) => RadioListTile<PollGroupAccessMode>(
-                                key: Key(
-                                  'access_mode_${pollGroupAccessModeToFirestore(mode)}',
-                                ),
-                                contentPadding: EdgeInsets.zero,
-                                value: mode,
-                                title: Text(_accessModeTitle(mode)),
-                                subtitle: Text(_accessModeDescription(mode)),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: _allowSelfNamedNicknames,
-                      title: const Text(
-                        'Members can choose their own nickname',
-                      ),
-                      onChanged: (value) {
-                        setState(() => _allowSelfNamedNicknames = value);
-                      },
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: _managersCanInvite,
-                      title: const Text('Managers can prepare access lists'),
-                      onChanged: (value) {
-                        setState(() => _managersCanInvite = value);
-                      },
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      value: _hasExpiration,
-                      title: const Text('Set an expiration date'),
-                      onChanged: (value) {
-                        setState(() {
-                          _hasExpiration = value;
-                          if (!value) {
-                            _expiresAt = null;
-                          }
-                        });
-                        if (value) {
-                          _pickExpirationDate();
-                        }
-                      },
-                    ),
-                    if (_hasExpiration) ...[
-                      OutlinedButton.icon(
-                        onPressed: _pickExpirationDate,
-                        icon: const Icon(Icons.event),
-                        label: Text(
-                          _expiresAt == null
-                              ? 'Pick expiration date'
-                              : 'Expires ${_formatDate(_expiresAt!)}',
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    const SizedBox(height: 8),
-                    _buildInviteMembersSection(),
-                    const SizedBox(height: 24),
-                    _buildDomainSection(),
-                    const SizedBox(height: 24),
-                    _buildInviteLinkSection(),
-                    if (_inviteLinkEnabled) const SizedBox(height: 24),
-                    FilledButton.icon(
-                      key: const Key('create_group_button'),
-                      onPressed: _isCreating ? null : _createGroup,
-                      icon: const Icon(Icons.group_add),
-                      label: Text(_isCreating ? 'Creating...' : 'Create group'),
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      'Your groups',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    if (snapshot.connectionState == ConnectionState.waiting &&
-                        groups.isEmpty)
-                      const Center(child: CircularProgressIndicator()),
-                    if (groups.isEmpty &&
-                        snapshot.connectionState != ConnectionState.waiting)
-                      const Text(
-                        'No groups yet. Create one above to start team polling.',
-                      ),
-                    ...groups.map(
-                      (group) => Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          leading: const Icon(Icons.groups_2_outlined),
-                          title: Text(group.name),
-                          subtitle: Text(
-                            'Join code: ${group.joinCode}'
-                            '${group.expiresAt != null ? ' • Expires ${_formatDate(group.expiresAt!)}' : ''}'
-                            ' • Imported members: ${group.importedMemberCount}'
-                            ' • ${_accessModeTitle(group.accessMode)}'
-                            '${group.inviteLinkEnabled ? ' • Invite link on' : ''}',
-                          ),
-                          trailing: widget.selectedGroupId == group.id
-                              ? const Icon(Icons.check_circle)
-                              : const Icon(Icons.chevron_right),
-                          onTap: () => Navigator.of(context).pop(group),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Supported roles: ${_roleLabel(PollGroupRole.admin)}, ${_roleLabel(PollGroupRole.manager)}, ${_roleLabel(PollGroupRole.user)}.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                );
-              },
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                if (_isLoadingExistingRules) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ] else ...[
+                  const SizedBox(height: 8),
+                  _buildInviteMembersSection(),
+                  const SizedBox(height: 24),
+                  _buildDomainSection(),
+                  const SizedBox(height: 24),
+                ],
+                _buildInviteLinkSection(),
+                if (_inviteLinkEnabled) const SizedBox(height: 24),
+                FilledButton.icon(
+                  key: const Key('save_group_button'),
+                  onPressed: _isCreating || _isLoadingExistingRules
+                      ? null
+                      : _saveGroup,
+                  icon: Icon(_isEditing ? Icons.save : Icons.group_add),
+                  label: Text(
+                    _isCreating
+                        ? (_isEditing ? 'Saving...' : 'Creating...')
+                        : (_isEditing ? 'Save group' : 'Create group'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Supported roles: ${_roleLabel(PollGroupRole.admin)}, ${_roleLabel(PollGroupRole.manager)}, ${_roleLabel(PollGroupRole.user)}.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
             ),
     );
   }
@@ -1105,7 +1172,7 @@ class DefaultPollGroupCsvImporter extends PollGroupCsvImporter {
   Future<String?> pickCsvText() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: const ['csv'],
+      allowedExtensions: const ['csv', 'tsv'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) {

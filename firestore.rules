@@ -138,9 +138,8 @@ service cloud.firestore {
                        request.resource.data.groupId is string &&
                        request.resource.data.recipientUid == userId &&
                        (
-                         groupExists(request.resource.data.groupId) &&
                          (
-                           groupDoc(request.resource.data.groupId).data.createdBy == request.auth.uid ||
+                           groupDocAfter(request.resource.data.groupId).data.createdBy == request.auth.uid ||
                            request.resource.data.actorUid == request.auth.uid
                          )
                        ));

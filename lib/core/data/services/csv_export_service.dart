@@ -1,3 +1,4 @@
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -22,22 +23,8 @@ class CsvExportService {
   final PollRepository _pollRepo = PollRepository.create();
   final PetitionRepository _petitionRepo = PetitionRepository.create();
 
-  String _csvEscape(String field) {
-    final needsQuoting =
-        field.contains(',') ||
-        field.contains('"') ||
-        field.contains('\n') ||
-        field.contains('\r');
-    var v = field.replaceAll('"', '""');
-    return needsQuoting ? '"$v"' : v;
-  }
-
   String _buildCsv(List<List<String>> rows) {
-    final buffer = StringBuffer();
-    for (final row in rows) {
-      buffer.writeln(row.map(_csvEscape).join(','));
-    }
-    return buffer.toString();
+    return const ListToCsvConverter().convert(rows);
   }
 
   // renamed and extended: write CSV to a temp file and open native share popup
@@ -83,7 +70,9 @@ class CsvExportService {
     String petitionId,
   ) async {
     // Fetch signer profiles via the participants stream once
-    final results = await _petitionRepo.getParticipantsWithSignaturesOnce(petitionId);
+    final results = await _petitionRepo.getParticipantsWithSignaturesOnce(
+      petitionId,
+    );
     final rows = <List<String>>[];
     if (!context.mounted) {
       throw Exception('Context is no longer mounted');

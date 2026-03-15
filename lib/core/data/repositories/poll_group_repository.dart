@@ -173,6 +173,45 @@ class PollGroupRepository {
     return snap.docs.map((doc) => doc.data()).toList();
   }
 
+  Future<void> updateGroup({
+    required PollGroup group,
+    List<PollGroupAllowedMember> allowedMembers = const [],
+    List<PollGroupAllowedDomain> allowedDomains = const [],
+  }) async {
+    final normalizedMembers = normalizeAllowedMembers(allowedMembers);
+    final normalizedDomains = normalizeAllowedDomains(allowedDomains);
+    final existingMemberDocs = await _allowedMembers(group.id).get();
+    final existingDomainDocs = await _allowedDomains(group.id).get();
+    final batch = _fs.instance.batch();
+
+    batch.set(_groups().doc(group.id), group, SetOptions(merge: true));
+
+    final nextMemberIds = normalizedMembers.map((member) => member.email).toSet();
+    for (final doc in existingMemberDocs.docs) {
+      if (!nextMemberIds.contains(doc.id)) {
+        batch.delete(doc.reference);
+      }
+    }
+    for (final member in normalizedMembers) {
+      batch.set(
+        _allowedMembers(group.id).doc(member.email.toLowerCase()),
+        member,
+      );
+    }
+
+    final nextDomainIds = normalizedDomains.map((domain) => domain.domain).toSet();
+    for (final doc in existingDomainDocs.docs) {
+      if (!nextDomainIds.contains(doc.id)) {
+        batch.delete(doc.reference);
+      }
+    }
+    for (final domain in normalizedDomains) {
+      batch.set(_allowedDomains(group.id).doc(domain.domain), domain);
+    }
+
+    await batch.commit();
+  }
+
   Stream<List<PollGroupAccessNotification>> watchNotifications(String uid) {
     return _fs.watchCol(
       _notifications(uid).orderBy('createdAt', descending: true),

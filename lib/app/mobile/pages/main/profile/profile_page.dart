@@ -146,7 +146,13 @@ class ProfilePage extends StatelessWidget {
                   return const Center(child: TriangleLoadingIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Text('${context.l10n.error}${snapshot.error}');
+                  debugPrint(
+                    'ProfilePage: failed to load user profile: ${snapshot.error}',
+                  );
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showInternalDifficultiesSnackBar(snapshot.error);
+                  });
+                  return Text(context.l10n.error);
                 }
                 if (!snapshot.hasData || snapshot.data == null) {
                   return Text(context.l10n.userNotFound);
