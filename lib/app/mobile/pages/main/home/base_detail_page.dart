@@ -87,6 +87,117 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
         acceptedInviteGroupIds.contains(groupId);
   }
 
+  String _scopeLabel(T item) {
+    switch (item.scopeType) {
+      case 'eu':
+        return 'EU';
+      case 'continent':
+        return item.continentCode?.toUpperCase() == 'EU'
+            ? 'Europe'
+            : 'Continent';
+      case 'country':
+        return item.countryCode?.toUpperCase() ?? 'Country';
+      case 'stateOrRegion':
+        if ((item.stateOrRegion ?? '').isNotEmpty) {
+          return item.stateOrRegion!;
+        }
+        return item.countryCode?.toUpperCase() ?? 'State / Region';
+      case 'city':
+      case 'town':
+        final town = item.town?.trim();
+        if (town != null && town.isNotEmpty) {
+          return town;
+        }
+        return 'City';
+      case 'global':
+      default:
+        return 'Global';
+    }
+  }
+
+  List<Widget> _detailMetaChips(BuildContext context, T item) {
+    final chips = <Widget>[Chip(label: Text('Scope: ${_scopeLabel(item)}'))];
+
+    if (item is Poll &&
+        item.visibility == 'group' &&
+        (item.groupName ?? '').trim().isNotEmpty) {
+      chips.add(Chip(label: Text('Group: ${item.groupName!.trim()}')));
+    }
+
+    return chips;
+  }
+
+  Widget _buildHeaderCard(BuildContext context, T item) {
+    final hasTags = item.tags.isNotEmpty;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        ),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  item.title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.info_outline,
+                size: 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ],
+          ),
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _detailMetaChips(context, item),
+              ),
+            ),
+            if (hasTags) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: item.tags.map((tagKey) {
+                    return Chip(
+                      label: Text(
+                        AppTagsHelper.getLocalizedTag(context, tagKey),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,10 +232,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                 }
 
                 await SharePlus.instance.share(
-                  ShareParams(
-                    text: shareText,
-                    subject: shareSubject,
-                  ),
+                  ShareParams(text: shareText, subject: shareSubject),
                 );
               } catch (e) {
                 debugPrint('Share failed: $e');
@@ -132,7 +240,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                   // Fallback: Copy to clipboard
                   await Clipboard.setData(ClipboardData(text: link));
                   if (context.mounted) {
-                    messenger.showSnackBar(SnackBar(content: Text(linkCopiedText)));
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(linkCopiedText)),
+                    );
                   }
                 }
               } finally {
@@ -171,23 +281,25 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
               : ModerationRepository.create().watchBlockedUserIds(currentUid);
           final memberGroupIdsStream = currentUid == null
               ? Stream<Set<String>>.value(const <String>{})
-              : PollGroupRepository.create().watchGroupsForUser(currentUid).map(
-                  (groups) => groups.map((group) => group.id).toSet(),
-                );
+              : PollGroupRepository.create()
+                    .watchGroupsForUser(currentUid)
+                    .map((groups) => groups.map((group) => group.id).toSet());
           final acceptedInviteGroupIdsStream = currentUid == null
               ? Stream<Set<String>>.value(const <String>{})
-              : PollGroupRepository.create().watchNotifications(currentUid).map(
-                  (notifications) => notifications
-                      .where(
-                        (notification) =>
-                            notification.type ==
-                                PollGroupAccessNotificationType.invite &&
-                            notification.status ==
-                                PollGroupAccessNotificationStatus.accepted,
-                      )
-                      .map((notification) => notification.groupId)
-                      .toSet(),
-                );
+              : PollGroupRepository.create()
+                    .watchNotifications(currentUid)
+                    .map(
+                      (notifications) => notifications
+                          .where(
+                            (notification) =>
+                                notification.type ==
+                                    PollGroupAccessNotificationType.invite &&
+                                notification.status ==
+                                    PollGroupAccessNotificationStatus.accepted,
+                          )
+                          .map((notification) => notification.groupId)
+                          .toSet(),
+                    );
 
           return StreamBuilder<Set<String>>(
             stream: blockedIdsStream,
@@ -240,44 +352,17 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (item.state != null && item.state!.isNotEmpty) ...[
-                              const SizedBox(height: 8),
+                            _buildHeaderCard(context, item),
+                            const SizedBox(height: 12),
+                            if (item.state != null &&
+                                item.state!.isNotEmpty) ...[
                               Chip(
-                                label: Text(context.l10n.relatedToState(item.state!)),
-                              ),
-                            ],
-                            if (item.tags.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8.0,
-                                runSpacing: 4.0,
-                                children: item.tags.map((tagKey) {
-                                  return Chip(
-                                    label: Text(
-                                      AppTagsHelper.getLocalizedTag(
-                                        context,
-                                        tagKey,
-                                      ),
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    visualDensity: VisualDensity.compact,
-                                    padding: EdgeInsets.zero,
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                            const SizedBox(height: 16),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    item.title,
-                                    style: Theme.of(context).textTheme.headlineSmall,
-                                  ),
+                                label: Text(
+                                  context.l10n.relatedToState(item.state!),
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
                             Text(item.description),
                             const SizedBox(height: 16),
                             Row(
@@ -314,7 +399,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                                 context.l10n.closed,
                                 style: Theme.of(context).textTheme.labelLarge
                                     ?.copyWith(
-                                      color: Theme.of(context).colorScheme.error,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
                                     ),
                               ),
                             ],
