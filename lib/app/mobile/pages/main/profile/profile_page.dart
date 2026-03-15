@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/group_access_inbox_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
@@ -344,6 +345,17 @@ class ProfilePage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const PublicationsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  PointingListTile(
+                    title: const Text('My groups'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MemberGroupsPage(),
                         ),
                       );
                     },

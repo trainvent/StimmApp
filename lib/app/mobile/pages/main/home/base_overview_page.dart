@@ -21,10 +21,19 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     super.key,
     required this.streamProvider,
     required this.itemBuilder,
+    this.extraFilter,
+    this.extraFilterCount = 0,
+    this.filterDialogSectionBuilder,
+    this.clearExtraFilters,
   });
 
   final Stream<List<T>> Function(String query, String status) streamProvider;
   final Widget Function(BuildContext context, T item) itemBuilder;
+  final bool Function(T item)? extraFilter;
+  final int extraFilterCount;
+  final Widget Function(BuildContext context, StateSetter setDialogState)?
+  filterDialogSectionBuilder;
+  final VoidCallback? clearExtraFilters;
 
   @override
   State<BaseOverviewPage<T>> createState() => _BaseOverviewPageState<T>();
@@ -83,38 +92,65 @@ class _BaseOverviewPageState<T extends HomeItem>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      context.l10n.scope,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildScopeTargetSelector(
-                      selectedScopes: tempSelectedScopes,
-                      onToggle: (scope) {
-                        setState(() {
-                          if (tempSelectedScopes.contains(scope)) {
-                            tempSelectedScopes.remove(scope);
-                          } else {
-                            tempSelectedScopes.add(scope);
-                          }
-                        });
-                      },
+                    ExpansionTile(
+                      initiallyExpanded: true,
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.only(bottom: 8),
+                      title: Text(
+                        context.l10n.scope,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      children: [
+                        _buildScopeTargetSelector(
+                          selectedScopes: tempSelectedScopes,
+                          onToggle: (scope) {
+                            setState(() {
+                              if (tempSelectedScopes.contains(scope)) {
+                                tempSelectedScopes.remove(scope);
+                              } else {
+                                tempSelectedScopes.add(scope);
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     const Divider(),
-                    Text(
-                      context.l10n.tags,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    ExpansionTile(
+                      initiallyExpanded: false,
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.only(bottom: 8),
+                      title: Text(
+                        context.l10n.tags,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      children: [
+                        TagSelector(
+                          selectedTags: tempSelectedTags,
+                          maxTags: 10, // Allow more tags for filtering
+                          onChanged: (newTags) {
+                            setState(() {
+                              tempSelectedTags = newTags;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    TagSelector(
-                      selectedTags: tempSelectedTags,
-                      maxTags: 10, // Allow more tags for filtering
-                      onChanged: (newTags) {
-                        setState(() {
-                          tempSelectedTags = newTags;
-                        });
-                      },
-                    ),
+                    if (widget.filterDialogSectionBuilder != null) ...[
+                      const Divider(),
+                      ExpansionTile(
+                        initiallyExpanded: true,
+                        tilePadding: EdgeInsets.zero,
+                        childrenPadding: const EdgeInsets.only(bottom: 8),
+                        title: Text(
+                          'Group',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        children: [
+                          widget.filterDialogSectionBuilder!(context, setState),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -127,6 +163,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                       tempSelectedScopes = {};
                       tempOnlyMyPublications = false;
                     });
+                    widget.clearExtraFilters?.call();
                   },
                   child: Text(context.l10n.remove),
                 ),
@@ -494,10 +531,13 @@ class _BaseOverviewPageState<T extends HomeItem>
                           }).toList();
                         }
 
-                        items = items.where(_matchesSelectedScopes).toList();
+                    items = items.where(_matchesSelectedScopes).toList();
+            if (widget.extraFilter != null) {
+                      items = items.where(widget.extraFilter!).toList();
+                    }
 
-                        if (items.isEmpty) {
-                          return Center(child: Text(context.l10n.noData));
+                    if (items.isEmpty) {
+                      return Center(child: Text(context.l10n.noData));
                         }
                         final showAds = !(userProfile?.isPro ?? false);
                         final standardAdCount = showAds
@@ -555,6 +595,7 @@ class _BaseOverviewPageState<T extends HomeItem>
     int filterCount = _selectedTags.length;
     filterCount += _selectedScopes.length;
     if (_onlyMyPublications) filterCount++;
+    filterCount += widget.extraFilterCount;
 
     return Scaffold(
       appBar: TabBar(
