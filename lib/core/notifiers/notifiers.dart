@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/theme/app_color_scheme.dart';
 
 class AppData {
   //Onboarding
@@ -22,8 +23,11 @@ class AppData {
 ValueNotifier<int> selectedPageNotifier = ValueNotifier(0);
 // ThemeMode: system, light, dark
 ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.system);
+ValueNotifier<AppColorTheme?> themeSchemeNotifier = ValueNotifier(
+  AppColorTheme.stimm,
+);
 // Deprecated: kept for backward compatibility if needed, but should be removed eventually
-ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true); 
+ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true);
 
 final ValueNotifier<Locale?> appLocale = ValueNotifier<Locale?>(null);
 final ValueNotifier<bool> showPetitionReasonNotifier = ValueNotifier(false);

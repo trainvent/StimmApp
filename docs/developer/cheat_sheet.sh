@@ -1,7 +1,9 @@
 # quick rules
-# - dev host: https://stimmapp-dev.web.app
-# - prod host: https://stimmapp.net
-# - vivot host: https://vivot.net
+# - dev app host: https://stimmapp-dev.web.app
+# - prod site host: https://stimmapp.net
+# - prod app host: https://web.stimmapp.net
+# - vivot site host: https://vivot.net
+# - vivot app host: https://web.vivot.net
 # - dev web must be built with lib/main_dev.dart
 # - prod web must be built with lib/main.dart
 # - vivot mobile must be built with lib/main_vivot.dart
@@ -10,10 +12,10 @@
 # dev: local web debug
 flutter run --debug -d chrome -t lib/main_dev.dart
 
-# dev: build web bundle for deploy
+# dev: build Flutter web app bundle for deploy
 ./ci_scripts/build_web_dev.sh
 
-# dev: deploy web bundle
+# dev: deploy Flutter web app bundle
 firebase deploy --only hosting --project stimmapp-dev
 
 # dev: android app debug run
@@ -23,18 +25,21 @@ flutter run --debug --flavor dev -t lib/main_dev.dart
 # https://stimmapp-dev.web.app/petition/<id>
 # https://stimmapp-dev.web.app/poll/<id>
 
-# prod: build web bundle for deploy
+# prod: build Flutter web app bundle for deploy
 ./ci_scripts/build_web_prod.sh
 
-# prod: deploy web bundle
+# prod: deploy Flutter web app bundle
 firebase deploy --only hosting --project stimmapp-f0141
+
+# site: build Next.js website bundle for stimmapp.net / vivot.net
+cd website && npm ci && npm run build && cd ..
 
 # prod: build Android release bundle
 flutter build appbundle --release --flavor prod -t lib/main.dart
 
-# prod: test links with
-# https://stimmapp.net/petition/<id>
-# https://stimmapp.net/poll/<id>
+# prod app: test links with
+# https://web.stimmapp.net/petition/<id>
+# https://web.stimmapp.net/poll/<id>
 
 # vivot: android debug run
 flutter run --debug --flavor prod -t lib/main_vivot.dart
@@ -45,9 +50,9 @@ flutter build appbundle --release --flavor prod -t lib/main_vivot.dart
 # vivot: build iOS archive/ipa on macOS
 flutter build ipa --release --flavor prod -t lib/main_vivot.dart
 
-# vivot: test links with
-# https://vivot.net/petition/<id>
-# https://vivot.net/poll/<id>
+# vivot app: test links with
+# https://web.vivot.net/petition/<id>
+# https://web.vivot.net/poll/<id>
 
 # common: run a single patrol test
 patrol test --target integration_test/

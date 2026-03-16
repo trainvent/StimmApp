@@ -8,6 +8,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
@@ -48,6 +49,46 @@ class _SettingsPageState extends State<SettingsPage> {
       default:
         return '🌐';
     }
+  }
+
+  String _themeModeLabel(BuildContext context, ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.system:
+        return 'System';
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+    }
+  }
+
+  String _themeSchemeLabel(BuildContext context, AppColorTheme theme) {
+    return theme.data.label;
+  }
+
+  Widget _themePreview(
+    AppColorTheme theme, {
+    double size = 14,
+    double spacing = 6,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: theme.data.previewColors.map((color) {
+        final isLast = color == theme.data.previewColors.last;
+        return Padding(
+          padding: EdgeInsets.only(right: isLast ? 0 : spacing),
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(size * 0.35),
+              border: Border.all(color: Colors.black12),
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   @override
@@ -98,21 +139,28 @@ class _SettingsPageState extends State<SettingsPage> {
               ListTile(
                 title: Text(context.l10n.colorTheme),
                 onTap: () {
-                  // Cycle through themes: System -> Light -> Dark -> System
-                  final current = themeModeNotifier.value;
-                  ThemeMode next;
-                  switch (current) {
-                    case ThemeMode.system:
-                      next = ThemeMode.light;
-                      break;
-                    case ThemeMode.light:
-                      next = ThemeMode.dark;
-                      break;
-                    case ThemeMode.dark:
-                      next = ThemeMode.system;
-                      break;
-                  }
-                  themeModeNotifier.value = next;
+                  showDialog(
+                    context: context,
+                    builder: (context) => SelectionNotifierDialog<ThemeMode>(
+                      notifier: ValueNotifier<ThemeMode?>(
+                        themeModeNotifier.value,
+                      ),
+                      options: ThemeMode.values,
+                      optionLabel: _themeModeLabel,
+                      title: context.l10n.colorTheme,
+                      confirmLabel: context.l10n.confirm,
+                      cancelLabel: context.l10n.cancel,
+                      onConfirm: (ThemeMode? selected) async {
+                        if (selected == null) return;
+                        themeModeNotifier.value = selected;
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString(
+                          IConst.themeModeKey,
+                          selected.name,
+                        );
+                      },
+                    ),
+                  );
                 },
                 trailing: ValueListenableBuilder<ThemeMode>(
                   valueListenable: themeModeNotifier,
@@ -129,7 +177,57 @@ class _SettingsPageState extends State<SettingsPage> {
                         icon = Icons.dark_mode;
                         break;
                     }
-                    return Icon(icon);
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(_themeModeLabel(context, mode)),
+                        const SizedBox(width: 8),
+                        Icon(icon),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text(context.l10n.accentPallette),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        SelectionNotifierDialog<AppColorTheme>(
+                          notifier: ValueNotifier<AppColorTheme?>(
+                            themeSchemeNotifier.value ?? AppColorTheme.stimm,
+                          ),
+                          options: AppColorTheme.values,
+                          optionLabel: _themeSchemeLabel,
+                          optionLeading: (ctx, theme) => _themePreview(theme),
+                          title: context.l10n.accentPallette,
+                          confirmLabel: context.l10n.confirm,
+                          cancelLabel: context.l10n.cancel,
+                          onConfirm: (AppColorTheme? selected) async {
+                            if (selected == null) return;
+                            themeSchemeNotifier.value = selected;
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString(
+                              IConst.themeSchemeKey,
+                              selected.data.id,
+                            );
+                          },
+                        ),
+                  );
+                },
+                trailing: ValueListenableBuilder<AppColorTheme?>(
+                  valueListenable: themeSchemeNotifier,
+                  builder: (context, theme, child) {
+                    final selected = theme ?? AppColorTheme.stimm;
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(selected.data.label),
+                        const SizedBox(width: 10),
+                        _themePreview(selected, size: 12, spacing: 4),
+                      ],
+                    );
                   },
                 ),
               ),

@@ -457,23 +457,25 @@ class _BaseOverviewPageState<T extends HomeItem>
             : ModerationRepository.create().watchBlockedUserIds(currentUid);
         final memberGroupIdsStream = currentUid == null
             ? Stream<Set<String>>.value(const <String>{})
-            : PollGroupRepository.create().watchGroupsForUser(currentUid).map(
-                (groups) => groups.map((group) => group.id).toSet(),
-              );
+            : PollGroupRepository.create()
+                  .watchGroupsForUser(currentUid)
+                  .map((groups) => groups.map((group) => group.id).toSet());
         final acceptedInviteGroupIdsStream = currentUid == null
             ? Stream<Set<String>>.value(const <String>{})
-            : PollGroupRepository.create().watchNotifications(currentUid).map(
-                (notifications) => notifications
-                    .where(
-                      (notification) =>
-                          notification.type ==
-                              PollGroupAccessNotificationType.invite &&
-                          notification.status ==
-                              PollGroupAccessNotificationStatus.accepted,
-                    )
-                    .map((notification) => notification.groupId)
-                    .toSet(),
-              );
+            : PollGroupRepository.create()
+                  .watchNotifications(currentUid)
+                  .map(
+                    (notifications) => notifications
+                        .where(
+                          (notification) =>
+                              notification.type ==
+                                  PollGroupAccessNotificationType.invite &&
+                              notification.status ==
+                                  PollGroupAccessNotificationStatus.accepted,
+                        )
+                        .map((notification) => notification.groupId)
+                        .toSet(),
+                  );
         return StreamBuilder<Set<String>>(
           stream: blockedIdsStream,
           builder: (context, blockedSnap) {
@@ -491,7 +493,9 @@ class _BaseOverviewPageState<T extends HomeItem>
                       stream: widget.streamProvider(_query, status),
                       builder: (context, snap) {
                         if (snap.connectionState == ConnectionState.waiting) {
-                          return const Center(child: TriangleLoadingIndicator());
+                          return const Center(
+                            child: TriangleLoadingIndicator(),
+                          );
                         }
                         var items = snap.data ?? const [];
                         items = items
@@ -513,7 +517,9 @@ class _BaseOverviewPageState<T extends HomeItem>
 
                         if (blockedIds.isNotEmpty) {
                           items = items
-                              .where((item) => !blockedIds.contains(item.createdBy))
+                              .where(
+                                (item) => !blockedIds.contains(item.createdBy),
+                              )
                               .toList();
                         }
 
@@ -531,13 +537,13 @@ class _BaseOverviewPageState<T extends HomeItem>
                           }).toList();
                         }
 
-                    items = items.where(_matchesSelectedScopes).toList();
-            if (widget.extraFilter != null) {
-                      items = items.where(widget.extraFilter!).toList();
-                    }
+                        items = items.where(_matchesSelectedScopes).toList();
+                        if (widget.extraFilter != null) {
+                          items = items.where(widget.extraFilter!).toList();
+                        }
 
-                    if (items.isEmpty) {
-                      return Center(child: Text(context.l10n.noData));
+                        if (items.isEmpty) {
+                          return Center(child: Text(context.l10n.noData));
                         }
                         final showAds = !(userProfile?.isPro ?? false);
                         final standardAdCount = showAds
@@ -598,12 +604,26 @@ class _BaseOverviewPageState<T extends HomeItem>
     filterCount += widget.extraFilterCount;
 
     return Scaffold(
-      appBar: TabBar(
-        controller: _tabController,
-        tabs: [
-          Tab(text: context.l10n.active),
-          Tab(text: context.l10n.closed),
-        ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kTextTabBarHeight),
+        child: Material(
+          color: Colors.transparent,
+          child: TabBar(
+            controller: _tabController,
+            labelColor: Theme.of(context).colorScheme.onSurface,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
+            indicatorColor: Theme.of(context).colorScheme.onSurface,
+            dividerColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.18),
+            tabs: [
+              Tab(text: context.l10n.active),
+              Tab(text: context.l10n.closed),
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

@@ -3,9 +3,11 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
+import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /*// on startup:
@@ -27,6 +29,8 @@ final status = PurchasesService.instance.currentStatus;
 enum EntitlementStatus { none, active, expired, unknown }
 
 enum EntitlementTier { free, basic, pro }
+
+enum _WebPaymentOption { webBilling, googlePlay }
 
 class PurchasesService {
   PurchasesService._internal();
@@ -140,6 +144,10 @@ class PurchasesService {
   /// Restore purchases (required for iOS).
   Future<void> restorePurchases() async {
     try {
+      if (kIsWeb) {
+        await refreshCustomerInfo();
+        return;
+      }
       final info = await Purchases.restorePurchases();
       _onCustomerInfoUpdated(info);
     } catch (e, st) {
@@ -150,12 +158,7 @@ class PurchasesService {
   /// Hosted paywall – returns true on success.
   Future<bool> presentPaywall({BuildContext? context}) async {
     if (kIsWeb) {
-      log('RevenueCat Paywalls are not supported on Web.');
-      if (context != null) {
-        await _showWebPaymentDialog(context);
-        return true;
-      }
-      return false;
+      return _presentWebPaywall(context: context);
     }
     try {
       final result = await RevenueCatUI.presentPaywall();
@@ -174,12 +177,11 @@ class PurchasesService {
     BuildContext? context,
   }) async {
     if (kIsWeb) {
-      log('RevenueCat Paywalls are not supported on Web.');
-      if (context != null) {
-        await _showWebPaymentDialog(context);
-        return true;
-      }
-      return false;
+      log(
+        'RevenueCat Paywalls UI is not supported on Web. '
+        'Falling back to package selection.',
+      );
+      return _presentWebPaywall(context: context);
     }
     try {
       final result = await RevenueCatUI.presentPaywallIfNeeded(paywallId);
@@ -192,28 +194,126 @@ class PurchasesService {
     }
   }
 
-  Future<void> _showWebPaymentDialog(BuildContext context) async {
-    final notifier = ValueNotifier<String?>(null);
+  Future<bool> _presentWebPaywall({BuildContext? context}) async {
+    if (!_isInitialized) {
+      log('RevenueCat is not initialized on web. Missing web API key?');
+      showErrorSnackBar('Web billing is not configured yet.');
+      return false;
+    }
+    if (context == null) {
+      log('Web paywall requested without BuildContext.');
+      return false;
+    }
+
+    try {
+      final selectedOption = await _selectWebPaymentOption(context);
+      if (selectedOption == null) {
+        return false;
+      }
+      if (selectedOption == _WebPaymentOption.googlePlay) {
+        final uri = Uri.parse(
+          'https://play.google.com/store/account/subscriptions',
+        );
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (!launched) {
+          showErrorSnackBar('Could not open Google Play subscriptions.');
+          return false;
+        }
+        return true;
+      }
+
+      final offerings = await Purchases.getOfferings();
+      if (!context.mounted) {
+        return false;
+      }
+      final offering = offerings.current;
+      if (offering == null || offering.availablePackages.isEmpty) {
+        showErrorSnackBar('No web billing products are available right now.');
+        return false;
+      }
+
+      final selectedPackage = await _selectWebPackage(
+        context,
+        offering.availablePackages,
+      );
+      if (selectedPackage == null) {
+        return false;
+      }
+
+      final result = await Purchases.purchase(
+        PurchaseParams.package(selectedPackage),
+      );
+      _onCustomerInfoUpdated(result.customerInfo);
+      await refreshCustomerInfo();
+      return true;
+    } on PlatformException catch (e, st) {
+      final errorCode = PurchasesErrorHelper.getErrorCode(e);
+      if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
+        log('presentWebPaywall error: $e\n$st');
+        showErrorSnackBar(e.message ?? 'Could not complete purchase.');
+      }
+      return false;
+    } catch (e, st) {
+      log('presentWebPaywall error: $e\n$st');
+      showErrorSnackBar('Could not complete purchase.');
+      return false;
+    }
+  }
+
+  Future<_WebPaymentOption?> _selectWebPaymentOption(BuildContext context) async {
+    final notifier = ValueNotifier<_WebPaymentOption?>(null);
     await showDialog(
       context: context,
-      builder:
-          (context) => SelectionNotifierDialog<String>(
-            notifier: notifier,
-            title: 'Select Payment Provider',
-            options: const ['Google Play'],
-            optionLabel: (context, option) => option,
-            onConfirm: (selected) async {
-              if (selected == 'Google Play') {
-                final uri = Uri.parse(
-                  'https://play.google.com/store/account/subscriptions',
-                );
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                }
-              }
-            },
-          ),
+      builder: (context) => SelectionNotifierDialog<_WebPaymentOption>(
+        notifier: notifier,
+        title: 'Select Payment Provider',
+        options: _WebPaymentOption.values,
+        optionLabel: (context, option) => switch (option) {
+          _WebPaymentOption.webBilling => 'Web Billing',
+          _WebPaymentOption.googlePlay => 'Google Play',
+        },
+      ),
     );
+    return notifier.value;
+  }
+
+  Future<Package?> _selectWebPackage(
+    BuildContext context,
+    List<Package> packages,
+  ) async {
+    final notifier = ValueNotifier<Package?>(null);
+    await showDialog(
+      context: context,
+      builder: (context) => SelectionNotifierDialog<Package>(
+        notifier: notifier,
+        title: 'Select Payment Provider',
+        options: packages,
+        optionLabel: (context, package) {
+          final product = package.storeProduct;
+          final period = product.subscriptionPeriod;
+          final suffix = (period == null || period.isEmpty) ? '' : ' • $period';
+          return '${product.title} (${product.priceString})$suffix';
+        },
+      ),
+    );
+    return notifier.value;
+  }
+
+  Future<Uri?> getManagementUri() async {
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final url = info.managementURL;
+      if (url == null || url.isEmpty) {
+        return null;
+      }
+      return Uri.tryParse(url);
+    } catch (e, st) {
+      log('getManagementUri error: $e\n$st');
+      return null;
+    }
   }
 
   /// Convenience: refresh customer info and entitlement.

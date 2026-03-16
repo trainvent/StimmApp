@@ -19,7 +19,7 @@ class AppBarScaffold extends StatefulWidget {
 
 class _AppBarScaffoldState extends State<AppBarScaffold> {
   double collapsedBarHeight = 60.0;
-  double expandedBarHeight = 100.0;
+  double expandedBarHeight = 60.0;
   ScrollController scrollController = ScrollController();
   bool isCollapsed = false;
   bool didAddFeedback = false;
@@ -51,7 +51,6 @@ class _AppBarScaffoldState extends State<AppBarScaffold> {
               pinned: true,
               snap: false,
               floating: false,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               surfaceTintColor: null,
               scrolledUnderElevation: 0,
               actions: widget.actions,

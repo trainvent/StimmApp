@@ -12,6 +12,8 @@
 *.ipa
 *.apks
 **/node_modules/
+website/.next/
+website/out/
 
 # Flutter repo-specific
 /bin/cache/
@@ -139,4 +141,3 @@ playwright-report/
 
 # Firebase cache
 /.firebase/
-

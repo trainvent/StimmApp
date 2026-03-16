@@ -12,10 +12,6 @@ class BrandConfig {
     required this.termsOfServiceUrl,
     required this.faqUrl,
     required this.shareHost,
-    required this.revenueCatApiKeyDevAndroid,
-    required this.revenueCatApiKeyDevIos,
-    required this.revenueCatApiKeyProdAndroid,
-    required this.revenueCatApiKeyProdIos,
   });
 
   final AppFlavor flavor;
@@ -26,10 +22,6 @@ class BrandConfig {
   final String termsOfServiceUrl;
   final String faqUrl;
   final String shareHost;
-  final String revenueCatApiKeyDevAndroid;
-  final String revenueCatApiKeyDevIos;
-  final String revenueCatApiKeyProdAndroid;
-  final String revenueCatApiKeyProdIos;
 
   bool get isDev => switch (flavor) {
     AppFlavor.stimmappDev || AppFlavor.vivotDev => true,
@@ -49,10 +41,6 @@ class BrandConfig {
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
     shareHost: 'stimmapp-dev.web.app',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
   );
 
   static const BrandConfig stimmappProd = BrandConfig(
@@ -64,10 +52,6 @@ class BrandConfig {
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
     shareHost: 'stimmapp.net',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
   );
 
   static const BrandConfig vivotDev = BrandConfig(
@@ -79,10 +63,6 @@ class BrandConfig {
     termsOfServiceUrl: 'https://vivot.net/terms',
     faqUrl: 'https://vivot.net/faq',
     shareHost: 'vivot-dev.web.app',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
   );
 
   static const BrandConfig vivotProd = BrandConfig(
@@ -94,9 +74,5 @@ class BrandConfig {
     termsOfServiceUrl: 'https://vivot.net/terms',
     faqUrl: 'https://vivot.net/faq',
     shareHost: 'vivot.net',
-    revenueCatApiKeyDevAndroid: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyDevIos: 'test_VEGOJICjsOpHUeSPdwjeXBwfLph',
-    revenueCatApiKeyProdAndroid: 'goog_gaOrZloplZgSgUVWiKGRXUXyFXF',
-    revenueCatApiKeyProdIos: 'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ',
   );
 }

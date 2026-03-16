@@ -39,6 +39,21 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   Future<void> _openManageSubscriptions(BuildContext context) async {
+    final managementUri = await PurchasesService.instance.getManagementUri();
+    if (!context.mounted) {
+      return;
+    }
+    if (managementUri != null) {
+      final ok = await launchUrl(
+        managementUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!ok) {
+        showErrorSnackBar(S.current.error);
+      }
+      return;
+    }
+
     if (kIsWeb) {
       final notifier = ValueNotifier<String?>(null);
       await showDialog(
@@ -348,7 +363,7 @@ class ProfilePage extends StatelessWidget {
                     },
                   ),
                   PointingListTile(
-                    title: const Text('My groups'),
+                    title: Text(context.l10n.myGroups),
                     onTap: () {
                       Navigator.push(
                         context,

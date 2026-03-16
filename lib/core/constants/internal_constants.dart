@@ -3,6 +3,7 @@ import 'package:stimmapp/core/config/environment.dart';
 
 class IConst {
   static const String themeModeKey = 'isDarkMode';
+  static const String themeSchemeKey = 'themeScheme';
   static const String localeKey = 'locale';
   static const String active = 'active';
   static const String closed = 'closed';
@@ -41,14 +42,26 @@ class IConst {
   static String get privacyPolicyUrl => Environment.privacyPolicyUrl;
   static String get termsOfServiceUrl => Environment.termsOfServiceUrl;
   static String get faqUrl => Environment.faqUrl;
-  static String get revenueCatApiKeyDevAndroid =>
-      Environment.config.revenueCatApiKeyDevAndroid;
-  static String get revenueCatApiKeyDevIos =>
-      Environment.config.revenueCatApiKeyDevIos;
-  static String get revenueCatApiKeyProdAndroid =>
-      Environment.config.revenueCatApiKeyProdAndroid;
-  static String get revenueCatApiKeyProdIos =>
-      Environment.config.revenueCatApiKeyProdIos;
+
+  static const String _revenueCatApiKeyDevAndroid =
+      'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
+  static const String _revenueCatApiKeyDevIos =
+      'test_VEGOJICjsOpHUeSPdwjeXBwfLph';
+  static const String _revenueCatApiKeyDevWeb =
+      "rcb_sb_ecbYmpaiHqdSmuzpyvPMWXoMo";
+  static const String _revenueCatApiKeyProdAndroid =
+      'goog_gaOrZloplZgSgUVWiKGRXUXyFXF';
+  static const String _revenueCatApiKeyProdIos =
+      'appl_IaicnIHIbjAeSXsFTiHklZRlMOJ';
+  static const String _revenueCatApiKeyProdWeb =
+      "rcb_nqCHzNIGqKhyjbDzNRvTeKcioUWQ";
+
+  static String get revenueCatApiKeyDevAndroid => _revenueCatApiKeyDevAndroid;
+  static String get revenueCatApiKeyDevIos => _revenueCatApiKeyDevIos;
+  static String get revenueCatApiKeyDevWeb => _revenueCatApiKeyDevWeb;
+  static String get revenueCatApiKeyProdAndroid => _revenueCatApiKeyProdAndroid;
+  static String get revenueCatApiKeyProdIos => _revenueCatApiKeyProdIos;
+  static String get revenueCatApiKeyProdWeb => _revenueCatApiKeyProdWeb;
 
   static const String testMail = "testLeMarq@gmx.de";
   static const String testSecurePassword = "8dsDk3,2a";

@@ -466,6 +466,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter => 'filter';
 
   @override
+  String get accentPallette => 'Akzent Palette';
+
+  @override
   String get imagePreviewDescription => 'Bildvorschau';
 
   @override
