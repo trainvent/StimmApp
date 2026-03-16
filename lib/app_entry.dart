@@ -30,7 +30,13 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void>? _firebaseInit;
 
 String _resolveRevenueCatApiKey() {
-  final bool isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  if (kIsWeb) {
+    return Environment.isDev
+        ? IConst.revenueCatApiKeyDevWeb
+        : IConst.revenueCatApiKeyProdWeb;
+  }
+
+  final bool isIos = defaultTargetPlatform == TargetPlatform.iOS;
 
   if (Environment.isDev) {
     return isIos
@@ -101,9 +107,10 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
 
   await _configureFirestore();
   locator.init();
-  if (!kIsWeb) {
+  final revenueCatApiKey = _resolveRevenueCatApiKey();
+  if (revenueCatApiKey.isNotEmpty) {
     await PurchasesService.instance.init(
-      apiKey: _resolveRevenueCatApiKey(),
+      apiKey: revenueCatApiKey,
       appUserId: authService.currentUser?.uid,
     );
   }

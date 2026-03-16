@@ -70,7 +70,7 @@ export default function HomePage() {
                 </a>
                 <a
                   className="button secondary"
-                  href="https://apps.apple.com/app/6759249651"
+                  href="https://apps.apple.com/app/stimmapp/id6759249651"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
