@@ -33,48 +33,8 @@
 		],
 		"rewrites": [
 			{
-				"source": "/marketing",
-				"destination": "/marketing.html"
-			},
-			{
-				"source": "/marketing/**",
-				"destination": "/marketing.html"
-			},
-			{
-				"source": "/faq",
-				"destination": "/faq.html"
-			},
-			{
-				"source": "/privacy-policy",
-				"destination": "/privacy_policy.html"
-			},
-			{
-				"source": "/terms-of-service",
-				"destination": "/terms-of-service.html"
-			},
-			{
-				"source": "/privacy",
-				"destination": "/privacy_policy.html"
-			},
-			{
-				"source": "/terms",
-				"destination": "/terms-of-service.html"
-			},
-			{
-				"source": "/support",
-				"destination": "/support.html"
-			},
-			{
-				"source": "/delete-account",
-				"destination": "/delete-account.html"
-			},
-			{
 				"source": "**",
 				"destination": "/index.html"
-			},
-			{
-				"source": "/datenschutzerklaerung",
-				"destination": "/datenschutzerklaerung.html"
 			}
 		]
 	}

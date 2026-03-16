@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - StimmApp</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 24px;
+      color: #1f2937;
+      background: #f8fafc;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+    h1 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+    h2 {
+      margin-top: 24px;
+      color: #0f172a;
+      font-size: 1.05rem;
+    }
+    a {
+      color: #0b7a3d;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>FAQ</h1>
+
+    <h2 id="q1">Wie kann ich mein Konto löschen?</h2>
+    <p id="a1">Nutzen Sie die Seite <a id="delete-link" href="/delete-account.html">Konto löschen</a> oder schreiben Sie an <a href="mailto:support@trainvent.com">support@trainvent.com</a>.</p>
+
+    <h2 id="q2">Ich habe ein technisches Problem. Was soll ich senden?</h2>
+    <p id="a2">Bitte nennen Sie Ihre Konto-E-Mail-Adresse, Ihr Gerätemodell, die iOS-Version und eine kurze Fehlerbeschreibung.</p>
+
+    <h2 id="q3">Wo finde ich Datenschutz und Nutzungsbedingungen?</h2>
+    <p>
+      <a id="privacy-link" href="/privacy">Datenschutzerklaerung</a><br>
+      <a id="terms-link" href="/terms">Nutzungsbedingungen</a>
+    </p>
+
+    <p><a id="back-link" href="/support.html">Zurueck zum Support</a></p>
+  </div>
+  <script>
+    const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
+    const copy = isEnglishHost ? {
+      lang: 'en',
+      title: 'FAQ - StimmApp',
+      q1: 'How can I delete my account?',
+      deleteLink: 'Delete Account',
+      a1: 'Use the ',
+      a1b: ' page or write to ',
+      q2: 'I have a technical problem. What should I send?',
+      a2: 'Please include your account email address, your device model, your iOS version, and a short error description.',
+      q3: 'Where can I find the privacy policy and terms of service?',
+      privacyLink: 'Privacy Policy',
+      termsLink: 'Terms of Service',
+      backLink: 'Back to Support'
+    } : {
+      lang: 'de',
+      title: 'FAQ - StimmApp',
+      q1: 'Wie kann ich mein Konto loeschen?',
+      deleteLink: 'Konto loeschen',
+      a1: 'Nutzen Sie die Seite ',
+      a1b: ' oder schreiben Sie an ',
+      q2: 'Ich habe ein technisches Problem. Was soll ich senden?',
+      a2: 'Bitte nennen Sie Ihre Konto-E-Mail-Adresse, Ihr Geraetemodell, die iOS-Version und eine kurze Fehlerbeschreibung.',
+      q3: 'Wo finde ich Datenschutz und Nutzungsbedingungen?',
+      privacyLink: 'Datenschutzerklaerung',
+      termsLink: 'Nutzungsbedingungen',
+      backLink: 'Zurueck zum Support'
+    };
+
+    document.documentElement.lang = copy.lang;
+    document.title = copy.title;
+    document.getElementById('q1').textContent = copy.q1;
+    document.getElementById('delete-link').textContent = copy.deleteLink;
+    document.getElementById('a1').innerHTML = `${copy.a1}<a id="delete-link-inline" href="/delete-account.html">${copy.deleteLink}</a>${copy.a1b}<a href="mailto:support@trainvent.com">support@trainvent.com</a>.`;
+    document.getElementById('q2').textContent = copy.q2;
+    document.getElementById('a2').textContent = copy.a2;
+    document.getElementById('q3').textContent = copy.q3;
+    document.getElementById('privacy-link').textContent = copy.privacyLink;
+    document.getElementById('terms-link').textContent = copy.termsLink;
+    document.getElementById('back-link').textContent = copy.backLink;
+  </script>
+</body>
+</html>

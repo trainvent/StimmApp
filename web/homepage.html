@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StimmApp</title>
+  <meta id="meta-description" name="description"
+    content="StimmApp ist als ruhiges und sicheres Werkzeug fuer digitale Beteiligung gedacht.">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f6ef;
+      --bg-alt: #eef4ea;
+      --ink: #102018;
+      --muted: #5b6f63;
+      --line: rgba(16, 32, 24, 0.08);
+      --card: rgba(255, 255, 255, 0.84);
+      --primary: #164f2b;
+      --primary-soft: #dcefdc;
+      --secondary: #1570ef;
+      --warm: #f4b740;
+      --shadow: 0 24px 80px rgba(14, 32, 22, 0.12);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(21, 112, 239, 0.12), transparent 28%),
+        radial-gradient(circle at 88% 16%, rgba(22, 79, 43, 0.14), transparent 26%),
+        linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 44%, #ffffff 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 0 10px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(22, 79, 43, 0.18);
+    }
+
+    .nav-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+    }
+
+    .nav-link {
+      color: var(--muted);
+    }
+
+    .nav-link:hover,
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 14px 34px rgba(22, 79, 43, 0.18);
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .hero {
+      padding: 36px 0 30px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-panel,
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy {
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -28% auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(21, 112, 239, 0.18), transparent 66%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 18px 0 0;
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      max-width: 10ch;
+    }
+
+    .lede {
+      margin: 20px 0 0;
+      max-width: 56ch;
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.7;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .micro-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .micro-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(16, 32, 24, 0.07);
+    }
+
+    .micro-card strong {
+      display: block;
+      font-size: 1.25rem;
+      letter-spacing: -0.05em;
+    }
+
+    .micro-card span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .hero-panel {
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 18px;
+    }
+
+    .panel-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mock-card {
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(16, 32, 24, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 248, 244, 0.95));
+    }
+
+    .mock-head,
+    .mock-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .mock-head {
+      margin-bottom: 18px;
+    }
+
+    .dot-group {
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #dfe7e2;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .bar>span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), #2f8d4f);
+    }
+
+    .panel-note {
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #12271d, #1d3c2b);
+      color: #e9f7ee;
+    }
+
+    .panel-note p {
+      margin: 10px 0 0;
+      color: rgba(233, 247, 238, 0.76);
+      line-height: 1.6;
+    }
+
+    .section {
+      padding: 16px 0 26px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .section-card {
+      padding: 24px;
+    }
+
+    .section-card h2,
+    .section-card h3 {
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .section-card p,
+    .footer p {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .kicker {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: var(--secondary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .story {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .story ul {
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .story li {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(16, 32, 24, 0.07);
+    }
+
+    .cta-banner {
+      padding: 28px;
+      background: linear-gradient(135deg, #183b2a, #102018 60%, #153d72);
+      color: #f7fbf8;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 24px 70px rgba(16, 32, 24, 0.22);
+    }
+
+    .cta-banner p {
+      color: rgba(247, 251, 248, 0.76);
+      max-width: 52ch;
+    }
+
+    .footer {
+      padding: 20px 0 46px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: inline-flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .section-grid,
+      .story {
+        grid-template-columns: 1fr;
+      }
+
+      .micro-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-copy,
+      .hero-panel,
+      .section-card,
+      .cta-banner {
+        padding: 22px;
+        border-radius: 26px;
+      }
+
+      h1 {
+        font-size: clamp(2.6rem, 13vw, 4.2rem);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header class="nav">
+      <a class="brand" href="/">
+        <img id="brand-logo" class="brand-mark" src="/icons/Icon-512.png" alt="StimmApp Logo">
+        <span id="brand-name">StimmApp</span>
+      </a>
+      <nav class="nav-links">
+        <a id="nav-mission" class="nav-link" href="#mission">Mission</a>
+        <a class="nav-link" href="/faq">FAQ</a>
+        <a id="nav-privacy" class="nav-link" href="/privacy-policy">Datenschutz</a>
+        <a id="nav-contact" class="nav-link" href="mailto:support@trainvent.com">Kontakt</a>
+        <a id="nav-open-app" class="button" href="https://web.stimmapp.net">App oeffnen</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div id="hero-eyebrow" class="eyebrow">Digitale Beteiligung</div>
+            <h1 id="hero-title">Petitionen und Umfragen, klarer gedacht.</h1>
+            <p id="hero-lede" class="lede">
+              Ein einfaches Werkzeug fuer Beteiligung. Spaeter gern mit mehr Sicherheit und e-ID.
+            </p>
+            <div class="cta-row">
+              <a id="hero-open-app" class="button" href="https://web.stimmapp.net">Web-App oeffnen</a>
+              <a id="hero-contact" class="button secondary"
+                href="mailto:support@trainvent.com?subject=StimmApp%20gemeinwohlorientierte%20Unterstuetzung">
+                Kontakt aufnehmen
+              </a>
+              <a id="hero-play-store" class="button secondary"
+                href="https://play.google.com/store/apps/details?id=de.lemarq.stimmapp" target="_blank"
+                rel="noopener noreferrer">
+                Google Play
+              </a>
+              <a id="hero-app-store" class="button secondary" href="https://apps.apple.com/app/6759249651"
+                target="_blank" rel="noopener noreferrer">
+                App Store
+              </a>
+            </div>
+            <div class="micro-list">
+
+              <div class="micro-card">
+                <strong id="micro-title">Gemeinwohl</strong>
+                <span id="micro-text">Im besten Fall nuetzliche oeffentliche Infrastruktur.</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hero-panel" aria-label="Product preview">
+            <div class="mock-card">
+              <div class="mock-head">
+                <strong id="panel-one-title">Zielbild</strong>
+                <div class="dot-group">
+                  <span class="dot" style="background:#164f2b"></span>
+                  <span class="dot" style="background:#1570ef"></span>
+                  <span class="dot" style="background:#f4b740"></span>
+                </div>
+              </div>
+              <div class="mock-row">
+                <span id="panel-one-row-one-label">Klare Oberflaeche</span>
+                <strong id="panel-one-row-one-value">Weniger Laerm</strong>
+              </div>
+              <div class="bar"><span style="width:82%"></span></div>
+              <div class="mock-row" style="margin-top:18px">
+                <span id="panel-one-row-two-label">Ruhiger Ansatz</span>
+                <strong id="panel-one-row-two-value">Wichtig</strong>
+              </div>
+              <div class="bar"><span style="width:90%; background:linear-gradient(90deg, #1570ef, #6ea9ff)"></span></div>
+            </div>
+
+            <div class="mock-card">
+              <div class="mock-head">
+                <strong id="panel-two-title">Mit Unterstuetzung</strong>
+                <span id="panel-two-kicker" style="color:var(--muted)">Naechster Schritt</span>
+              </div>
+              <div class="mock-row">
+                <span id="panel-two-row-one-label">Sicherere Identitaetspruefung</span>
+                <strong>e-ID</strong>
+              </div>
+              <div class="bar"><span style="width:72%"></span></div>
+              <div class="mock-row" style="margin-top:14px">
+                <span id="panel-two-row-two-label">Vertrauen</span>
+                <strong id="panel-two-row-two-value">Staerker</strong>
+              </div>
+              <div class="bar"><span style="width:78%; background:linear-gradient(90deg, #f4b740, #f7cf75)"></span></div>
+            </div>
+
+            <div class="panel-note">
+              <strong id="panel-note-title">Falls hier jemand aus Verwaltung, Forschung oder Foerderung landet:</strong>
+              <p id="panel-note-text">
+                Wir freuen uns ueber Kontakt.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="mission">
+        <div class="section-grid">
+          <article class="section-card">
+            <span id="mission-card-one-kicker" class="kicker">Warum</span>
+            <h2 id="mission-card-one-title">Beteiligung braucht ruhige Werkzeuge.</h2>
+            <p id="mission-card-one-text">
+              Weniger Reibung, mehr Klarheit.
+            </p>
+          </article>
+          <article class="section-card">
+            <span id="mission-card-two-kicker" class="kicker">Was</span>
+            <h2 id="mission-card-two-title">Eine einfache App fuer Petitionen und Umfragen.</h2>
+            <p id="mission-card-two-text">
+              Spaeter gern mit besserer Identitaetspruefung und e-ID.
+            </p>
+          </article>
+          <article class="section-card">
+            <span id="mission-card-three-kicker" class="kicker">Wer</span>
+            <h2 id="mission-card-three-title">Partner, Foerderung, Feedback.</h2>
+            <p id="mission-card-three-text">
+              Vor allem aus Verwaltung, Kommunen, Stiftungen oder Forschung.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="story">
+          <article class="section-card">
+            <span id="story-one-kicker" class="kicker">Einladung</span>
+            <h3 id="story-one-title">Noch nicht fertig. Aber ernst gemeint.</h3>
+            <p id="story-one-text">
+              Das Projekt laeuft schon. Fuer den naechsten Schritt suchen wir die richtigen Leute.
+            </p>
+            <ul>
+              <li id="story-list-one">Unterstuetzung fuer ein sauberes und sicheres Produkt.</li>
+              <li id="story-list-two">Wege zu besserer Identitaetspruefung und e-ID.</li>
+              <li id="story-list-three">Kontakte zu den richtigen Stellen.</li>
+            </ul>
+          </article>
+          <article class="section-card">
+            <span id="contact-kicker" class="kicker">Kontakt</span>
+            <h3 id="contact-title">Kontakt</h3>
+            <p>
+              <span id="contact-email-label">E-Mail:</span> <a
+                href="mailto:support@trainvent.com">support@trainvent.com</a>
+            </p>
+            <p id="contact-text">
+              Die aktuelle Version kann direkt ausprobiert werden.
+            </p>
+            <div class="cta-row" style="margin-top:20px;">
+              <a id="contact-button" class="button"
+                href="mailto:support@trainvent.com?subject=StimmApp%20staatliche%20oder%20institutionelle%20Unterstuetzung">
+                Kontakt aufnehmen
+              </a>
+              <a id="contact-open-app" class="button secondary" href="https://web.stimmapp.net">App oeffnen</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p id="footer-brand">StimmApp</p>
+      <div class="footer-links">
+        <a id="footer-privacy" href="/privacy-policy">Datenschutz</a>
+        <a id="footer-terms" href="/terms-of-service">Nutzungsbedingungen</a>
+        <a id="footer-support" href="/support">Support</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </footer>
+  </div>
+  <script>
+    const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
+    const localePath = isEnglishHost ? '/i18n/en.json' : '/i18n/de.json';
+
+    function applyCopy(copy) {
+      document.documentElement.lang = copy.lang;
+      document.title = copy.title;
+      document.getElementById('meta-description').setAttribute('content', copy.description);
+      document.getElementById('brand-logo').alt = copy.logoAlt;
+      document.getElementById('brand-name').textContent = copy.brand;
+      document.getElementById('nav-mission').textContent = copy.navMission;
+      document.getElementById('nav-privacy').textContent = copy.navPrivacy;
+      document.getElementById('nav-contact').textContent = copy.navContact;
+      document.getElementById('nav-open-app').textContent = copy.navOpenApp;
+      document.getElementById('nav-open-app').href = copy.appUrl;
+      document.getElementById('hero-eyebrow').textContent = copy.heroEyebrow;
+      document.getElementById('hero-title').textContent = copy.heroTitle;
+      document.getElementById('hero-lede').textContent = copy.heroLede;
+      document.getElementById('hero-open-app').textContent = copy.heroOpenApp;
+      document.getElementById('hero-open-app').href = copy.appUrl;
+      document.getElementById('hero-contact').textContent = copy.heroContact;
+      document.getElementById('hero-contact').href = copy.heroContactHref;
+      document.getElementById('hero-play-store').textContent = copy.heroPlayStore;
+      document.getElementById('hero-app-store').textContent = copy.heroAppStore;
+      document.getElementById('micro-title').textContent = copy.microTitle;
+      document.getElementById('micro-text').textContent = copy.microText;
+      document.getElementById('panel-one-title').textContent = copy.panelOneTitle;
+      document.getElementById('panel-one-row-one-label').textContent = copy.panelOneRowOneLabel;
+      document.getElementById('panel-one-row-one-value').textContent = copy.panelOneRowOneValue;
+      document.getElementById('panel-one-row-two-label').textContent = copy.panelOneRowTwoLabel;
+      document.getElementById('panel-one-row-two-value').textContent = copy.panelOneRowTwoValue;
+      document.getElementById('panel-two-title').textContent = copy.panelTwoTitle;
+      document.getElementById('panel-two-kicker').textContent = copy.panelTwoKicker;
+      document.getElementById('panel-two-row-one-label').textContent = copy.panelTwoRowOneLabel;
+      document.getElementById('panel-two-row-two-label').textContent = copy.panelTwoRowTwoLabel;
+      document.getElementById('panel-two-row-two-value').textContent = copy.panelTwoRowTwoValue;
+      document.getElementById('panel-note-title').textContent = copy.panelNoteTitle;
+      document.getElementById('panel-note-text').textContent = copy.panelNoteText;
+      document.getElementById('mission-card-one-kicker').textContent = copy.missionCardOneKicker;
+      document.getElementById('mission-card-one-title').textContent = copy.missionCardOneTitle;
+      document.getElementById('mission-card-one-text').textContent = copy.missionCardOneText;
+      document.getElementById('mission-card-two-kicker').textContent = copy.missionCardTwoKicker;
+      document.getElementById('mission-card-two-title').textContent = copy.missionCardTwoTitle;
+      document.getElementById('mission-card-two-text').textContent = copy.missionCardTwoText;
+      document.getElementById('mission-card-three-kicker').textContent = copy.missionCardThreeKicker;
+      document.getElementById('mission-card-three-title').textContent = copy.missionCardThreeTitle;
+      document.getElementById('mission-card-three-text').textContent = copy.missionCardThreeText;
+      document.getElementById('story-one-kicker').textContent = copy.storyOneKicker;
+      document.getElementById('story-one-title').textContent = copy.storyOneTitle;
+      document.getElementById('story-one-text').textContent = copy.storyOneText;
+      document.getElementById('story-list-one').textContent = copy.storyListOne;
+      document.getElementById('story-list-two').textContent = copy.storyListTwo;
+      document.getElementById('story-list-three').textContent = copy.storyListThree;
+      document.getElementById('contact-kicker').textContent = copy.contactKicker;
+      document.getElementById('contact-title').textContent = copy.contactTitle;
+      document.getElementById('contact-email-label').textContent = copy.contactEmailLabel;
+      document.getElementById('contact-text').textContent = copy.contactText;
+      document.getElementById('contact-button').textContent = copy.contactButton;
+      document.getElementById('contact-button').href = copy.contactButtonHref;
+      document.getElementById('contact-open-app').textContent = copy.contactOpenApp;
+      document.getElementById('contact-open-app').href = copy.appUrl;
+      document.getElementById('footer-brand').textContent = copy.footerBrand;
+      document.getElementById('footer-privacy').textContent = copy.footerPrivacy;
+      document.getElementById('footer-terms').textContent = copy.footerTerms;
+      document.getElementById('footer-support').textContent = copy.footerSupport;
+    }
+
+    fetch(localePath)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load locale: ${localePath}`);
+        }
+        return response.json();
+      })
+      .then(applyCopy)
+      .catch((error) => {
+        console.error(error);
+      });
+  </script>
+</body>
+
+</html>

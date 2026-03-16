@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "MCVTMBQY74.de.lemarq.stimmapp",
+        "paths": [
+          "/petition/*",
+          "/poll/*"
+        ]
+      }
+    ]
+  }
+}
