@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppColorTheme { stimm, ocean, sunset, rose, amber, plum, slate }
+enum AppColorTheme { stimm, ocean, sunset, rose, amber, plum, slate, mint, sky }
 
 @immutable
 class AppColorThemeData {
@@ -9,12 +9,16 @@ class AppColorThemeData {
     required this.label,
     required this.seedColor,
     required this.previewColors,
+    this.primaryForegroundColor,
+    this.secondaryForegroundColor,
   });
 
   final String id;
   final String label;
   final Color seedColor;
   final List<Color> previewColors;
+  final Color? primaryForegroundColor;
+  final Color? secondaryForegroundColor;
 }
 
 extension AppColorThemeX on AppColorTheme {
@@ -103,6 +107,34 @@ extension AppColorThemeX on AppColorTheme {
             Color(0xFFECEFF1),
             Color(0xFF141A1D),
           ],
+        );
+      case AppColorTheme.mint:
+        return const AppColorThemeData(
+          id: 'mint',
+          label: 'Mint',
+          seedColor: Color(0xFFA5D6A7),
+          previewColors: [
+            Color(0xFFA5D6A7),
+            Color(0xFFC8E6C9),
+            Color(0xFFE8F5E9),
+            Color(0xFFF6FFF6),
+          ],
+          primaryForegroundColor: Colors.black,
+          secondaryForegroundColor: Colors.black,
+        );
+      case AppColorTheme.sky:
+        return const AppColorThemeData(
+          id: 'sky',
+          label: 'Sky',
+          seedColor: Color(0xFF90CAF9),
+          previewColors: [
+            Color(0xFF90CAF9),
+            Color(0xFFBBDEFB),
+            Color(0xFFE3F2FD),
+            Color(0xFFF5FBFF),
+          ],
+          primaryForegroundColor: Colors.black,
+          secondaryForegroundColor: Colors.black,
         );
     }
   }

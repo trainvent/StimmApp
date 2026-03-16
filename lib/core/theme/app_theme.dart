@@ -6,6 +6,7 @@ import 'app_color_scheme.dart';
 class AppTheme {
   static ThemeData lightFor(AppColorTheme theme) {
     return _buildTheme(
+      theme: theme,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.light,
@@ -16,6 +17,7 @@ class AppTheme {
 
   static ThemeData darkFor(AppColorTheme theme) {
     return _buildTheme(
+      theme: theme,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.dark,
@@ -25,23 +27,33 @@ class AppTheme {
   }
 
   static ThemeData _buildTheme({
+    required AppColorTheme theme,
     required ColorScheme scheme,
     required bool isDark,
   }) {
+    final primary = theme.data.previewColors.first;
+    final secondary = theme.data.previewColors[1];
     final onPrimary =
-        ThemeData.estimateBrightnessForColor(scheme.primary) == Brightness.dark
-        ? Colors.white
-        : Colors.black;
+        theme.data.primaryForegroundColor ??
+        (ThemeData.estimateBrightnessForColor(primary) == Brightness.dark
+            ? Colors.white
+            : Colors.black);
     final onSecondary =
-        ThemeData.estimateBrightnessForColor(scheme.secondary) ==
-            Brightness.dark
-        ? Colors.white
-        : Colors.black;
+        theme.data.secondaryForegroundColor ??
+        (ThemeData.estimateBrightnessForColor(secondary) == Brightness.dark
+            ? Colors.white
+            : Colors.black);
+    final themedScheme = scheme.copyWith(
+      primary: primary,
+      onPrimary: onPrimary,
+      secondary: secondary,
+      onSecondary: onSecondary,
+    );
 
     return ThemeData(
       useMaterial3: true,
       fontFamily: AppTextStyles.fontFamily,
-      colorScheme: scheme,
+      colorScheme: themedScheme,
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: isDark
             ? const Color(0x33FFFFFF)
@@ -55,22 +67,22 @@ class AppTheme {
           ),
         ),
         filled: true,
-        fillColor: isDark ? scheme.surfaceContainerHighest : Colors.white,
+        fillColor: isDark ? themedScheme.surfaceContainerHighest : Colors.white,
       ),
       appBarTheme: AppBarTheme(
         centerTitle: true,
-        backgroundColor: scheme.primary,
+        backgroundColor: primary,
         foregroundColor: onPrimary,
         elevation: 0,
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: isDark ? Colors.white : Colors.black,
-        unselectedLabelColor: isDark ? Colors.white70 : Colors.black54,
-        indicatorColor: isDark ? Colors.white : Colors.black,
+        labelColor: onPrimary,
+        unselectedLabelColor: onPrimary.withValues(alpha: 0.7),
+        indicatorColor: onPrimary,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: scheme.primary,
+          backgroundColor: primary,
           foregroundColor: onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
@@ -79,12 +91,12 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: scheme.primary,
+          backgroundColor: primary,
           foregroundColor: onPrimary,
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: scheme.secondary,
+        backgroundColor: secondary,
         foregroundColor: onSecondary,
       ),
     );
