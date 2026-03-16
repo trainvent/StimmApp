@@ -124,32 +124,34 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
           link: _layerLink,
           showWhenUnlinked: false,
           offset: Offset(0, size.height + 6),
-          child: Material(
-            elevation: 6,
-            borderRadius: BorderRadius.circular(12),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 260),
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: _suggestions.length,
-                separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final suggestion = _suggestions[index];
-                  return ListTile(
-                    dense: true,
-                    title: Text(suggestion.address),
-                    subtitle: Text(
-                      [
-                        suggestion.info.town,
-                        suggestion.info.state,
-                        suggestion.info.countryCode,
-                      ].whereType<String>().where((part) => part.isNotEmpty).join(' • '),
-                    ),
-                    onTap: () => _selectSuggestion(suggestion),
-                  );
-                },
+          child: TextFieldTapRegion(
+            child: Material(
+              elevation: 6,
+              borderRadius: BorderRadius.circular(12),
+              clipBehavior: Clip.antiAlias,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 260),
+                child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount: _suggestions.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final suggestion = _suggestions[index];
+                    return ListTile(
+                      dense: true,
+                      title: Text(suggestion.address),
+                      subtitle: Text(
+                        [
+                          suggestion.info.town,
+                          suggestion.info.state,
+                          suggestion.info.countryCode,
+                        ].whereType<String>().where((part) => part.isNotEmpty).join(' • '),
+                      ),
+                      onTap: () => _selectSuggestion(suggestion),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -217,37 +219,39 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     final isTomTomConfigured = _service.hasApiKey;
     return CompositedTransformTarget(
       link: _layerLink,
-      child: TextFormField(
-        controller: widget.controller,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          hintText: context.l10n.enterYourAddress,
-          labelText: context.l10n.address,
-          border: const OutlineInputBorder(),
-          helperText: isTomTomConfigured
-              ? context.l10n.searchPoweredByTomTom
-              : context.l10n.setTomTomApiKeyToEnableSuggestions,
-          suffixIcon: _isLoading
-              ? const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              : const Icon(Icons.search),
+      child: TextFieldTapRegion(
+        child: TextFormField(
+          controller: widget.controller,
+          focusNode: _focusNode,
+          decoration: InputDecoration(
+            hintText: context.l10n.enterYourAddress,
+            labelText: context.l10n.address,
+            border: const OutlineInputBorder(),
+            helperText: isTomTomConfigured
+                ? context.l10n.searchPoweredByTomTom
+                : context.l10n.setTomTomApiKeyToEnableSuggestions,
+            suffixIcon: _isLoading
+                ? const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : const Icon(Icons.search),
+          ),
+          validator:
+              widget.validator ??
+              (value) {
+                if (value == null || value.isEmpty) {
+                  return context.l10n.enterSomething;
+                }
+                return null;
+              },
+          onFieldSubmitted: (_) => unawaited(_resolveCurrentTextIfNeeded()),
+          maxLines: 1,
         ),
-        validator:
-            widget.validator ??
-            (value) {
-              if (value == null || value.isEmpty) {
-                return context.l10n.enterSomething;
-              }
-              return null;
-            },
-        onFieldSubmitted: (_) => unawaited(_resolveCurrentTextIfNeeded()),
-        maxLines: 1,
       ),
     );
   }
