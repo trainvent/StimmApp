@@ -363,7 +363,7 @@ class ProfilePage extends StatelessWidget {
                     },
                   ),
                   PointingListTile(
-                    title: const Text('My groups'),
+                    title: Text(context.l10n.myGroups),
                     onTap: () {
                       Navigator.push(
                         context,
