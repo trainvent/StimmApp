@@ -1,4 +1,5 @@
-#include "Debug.xcconfig"
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug-dev.xcconfig"
+#include "Generated.xcconfig"
 FLUTTER_TARGET=lib/main_dev.dart
 ONLY_ACTIVE_ARCH=YES
 GAD_APPLICATION_IDENTIFIER=ca-app-pub-5296065079333841~8760518694

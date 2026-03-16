@@ -30,6 +30,10 @@
 	<string>$(GAD_APPLICATION_IDENTIFIER)</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow camera access so you can record and upload media for petitions and polls.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow photo library access so you can choose and upload images for your profile, petitions, and polls.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow photo library access so the app can save images you create or export.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
