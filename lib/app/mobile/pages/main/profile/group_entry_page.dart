@@ -95,13 +95,14 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
+    final fallbackDisplayName = context.l10n.aUser;
     setState(() => _isSaving = true);
     try {
       final profile = await UserRepository.create().getById(uid);
       await _repo.requestAccess(
         requesterUid: uid,
         requesterDisplayName:
-            profile?.displayName ?? profile?.email ?? context.l10n.aUser,
+            profile?.displayName ?? profile?.email ?? fallbackDisplayName,
         group: group,
         requestedRole: PollGroupRole.user,
       );

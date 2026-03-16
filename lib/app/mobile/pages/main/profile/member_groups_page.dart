@@ -54,8 +54,14 @@ class MemberGroupsPage extends StatelessWidget {
 
     try {
       await PollGroupRepository.create().leaveGroup(group: group, uid: uid);
+      if (!context.mounted) {
+        return;
+      }
       showSuccessSnackBar(context.l10n.youLeftTheGroup);
     } on StateError catch (error) {
+      if (!context.mounted) {
+        return;
+      }
       if (error.message == 'group_creator_cannot_leave') {
         showErrorSnackBar(context.l10n.groupCreatorsCannotLeaveOwnGroup);
         return;
@@ -114,11 +120,17 @@ class MemberGroupsPage extends StatelessWidget {
       );
 
       if (confirmed != true) {
+        if (!context.mounted) {
+          return;
+        }
         showErrorSnackBar(context.l10n.groupNameDidNotMatch);
         return;
       }
 
       await PollGroupRepository.create().deleteGroup(group.id);
+      if (!context.mounted) {
+        return;
+      }
       showSuccessSnackBar(context.l10n.groupDeleted);
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);

@@ -460,6 +460,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
+  String get accentPallette => 'accent pallette';
+
+  @override
   String get imagePreviewDescription =>
       'This is a preview of your new profile picture.';
 

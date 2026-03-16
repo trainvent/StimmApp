@@ -15,7 +15,6 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/theme/app_theme.dart';
 
 class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   const BaseOverviewPage({

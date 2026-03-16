@@ -189,7 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ListTile(
-                title: const Text('Accent palette'),
+                title: Text(context.l10n.accentPallette),
                 onTap: () {
                   showDialog(
                     context: context,
@@ -201,7 +201,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           options: AppColorTheme.values,
                           optionLabel: _themeSchemeLabel,
                           optionLeading: (ctx, theme) => _themePreview(theme),
-                          title: 'Accent palette',
+                          title: context.l10n.accentPallette,
                           confirmLabel: context.l10n.confirm,
                           cancelLabel: context.l10n.cancel,
                           onConfirm: (AppColorTheme? selected) async {
