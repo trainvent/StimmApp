@@ -376,7 +376,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
         _buildGroupSelector(),
         const SizedBox(height: 20),
       ],
-      additionalBottomFields: [
+      additionalMiddleFields: [
         const SizedBox(height: 20),
         Text(
           context.l10n.options,

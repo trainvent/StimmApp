@@ -18,6 +18,7 @@ class BaseCreatorPage extends StatefulWidget {
     required this.tutorialSteps,
     required this.onSubmit,
     this.additionalTopFields,
+    this.additionalMiddleFields,
     this.additionalBottomFields,
   });
 
@@ -36,6 +37,7 @@ class BaseCreatorPage extends StatefulWidget {
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
+  final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
 
   @override
@@ -480,6 +482,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   return null;
                 },
               ),
+              if (widget.additionalMiddleFields != null) ...widget.additionalMiddleFields!,
               const SizedBox(height: 20),
               Text(
                 context.l10n.tags,
