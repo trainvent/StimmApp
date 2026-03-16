@@ -3,6 +3,7 @@ import 'package:stimmapp/core/config/environment.dart';
 
 class IConst {
   static const String themeModeKey = 'isDarkMode';
+  static const String themeSchemeKey = 'themeScheme';
   static const String localeKey = 'locale';
   static const String active = 'active';
   static const String closed = 'closed';

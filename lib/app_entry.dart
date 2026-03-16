@@ -21,6 +21,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
+import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/core/theme/app_theme.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
@@ -174,76 +175,82 @@ class _MyAppState extends State<MyApp> {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeModeNotifier,
       builder: (context, themeMode, child) {
-        return ValueListenableBuilder<Locale?>(
-          valueListenable: appLocale,
-          builder: (context, locale, child) {
-            final app = MaterialApp(
-              navigatorKey: navigatorKey,
-              title: (locale?.languageCode.toLowerCase() == 'en')
-                  ? 'Vivot'
-                  : 'StimmApp',
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
-              themeMode: themeMode,
-              locale: locale,
-              builder: (context, child) {
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    final maxAllowedWidth = constraints.maxHeight * (5 / 6);
-                    if (constraints.maxWidth > maxAllowedWidth) {
-                      return ColoredBox(
-                        color: Colors.black, // Background for the empty space
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: maxAllowedWidth,
+        return ValueListenableBuilder<AppColorTheme?>(
+          valueListenable: themeSchemeNotifier,
+          builder: (context, themeScheme, child) {
+            final selectedTheme = themeScheme ?? AppColorTheme.stimm;
+            return ValueListenableBuilder<Locale?>(
+              valueListenable: appLocale,
+              builder: (context, locale, child) {
+                final app = MaterialApp(
+                  navigatorKey: navigatorKey,
+                  title: (locale?.languageCode.toLowerCase() == 'en')
+                      ? 'Vivot'
+                      : 'StimmApp',
+                  theme: AppTheme.lightFor(selectedTheme),
+                  darkTheme: AppTheme.darkFor(selectedTheme),
+                  themeMode: themeMode,
+                  locale: locale,
+                  builder: (context, child) {
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        final maxAllowedWidth = constraints.maxHeight * (5 / 6);
+                        if (constraints.maxWidth > maxAllowedWidth) {
+                          return ColoredBox(
+                            color: Colors.black,
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: maxAllowedWidth,
+                                ),
+                                child: ClipRect(child: child),
+                              ),
                             ),
-                            child: ClipRect(child: child),
-                          ),
-                        ),
+                          );
+                        }
+                        return child ?? const SizedBox.shrink();
+                      },
+                    );
+                  },
+                  onGenerateRoute: (settings) {
+                    final page = _pageForRouteName(settings.name);
+                    if (page != null) {
+                      return MaterialPageRoute(
+                        builder: (context) => page,
+                        settings: settings,
                       );
                     }
-                    return child ?? const SizedBox.shrink();
+                    return null;
                   },
+                  routes: {
+                    '/delete_account': (context) => const DeleteAccountPage(),
+                  },
+                  localizationsDelegates: const [
+                    S.delegate,
+                    ...AppLocalizations.localizationsDelegates,
+                  ],
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  debugShowCheckedModeBanner: false,
+                  home: !_initialized
+                      ? const AppLoadingPage()
+                      : _pageForRouteName(initialRouteName) ??
+                            const InitAppLayout(),
                 );
-              },
-              onGenerateRoute: (settings) {
-                final page = _pageForRouteName(settings.name);
-                if (page != null) {
-                  return MaterialPageRoute(
-                    builder: (context) => page,
-                    settings: settings,
+
+                if (Environment.isDev) {
+                  return Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Banner(
+                      message: 'TEST',
+                      location: BannerLocation.topStart,
+                      color: Colors.red,
+                      child: app,
+                    ),
                   );
                 }
-                return null;
+                return app;
               },
-              routes: {
-                '/delete_account': (context) => const DeleteAccountPage(),
-              },
-              localizationsDelegates: const [
-                S.delegate,
-                ...AppLocalizations.localizationsDelegates,
-              ],
-              supportedLocales: AppLocalizations.supportedLocales,
-              debugShowCheckedModeBanner: false,
-              home: !_initialized
-                  ? const AppLoadingPage()
-                  : _pageForRouteName(initialRouteName) ??
-                        const InitAppLayout(),
             );
-
-            if (Environment.isDev) {
-              return Directionality(
-                textDirection: TextDirection.ltr,
-                child: Banner(
-                  message: 'TEST',
-                  location: BannerLocation.topStart,
-                  color: Colors.red,
-                  child: app,
-                ),
-              );
-            }
-            return app;
           },
         );
       },

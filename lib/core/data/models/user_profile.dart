@@ -22,6 +22,7 @@ class UserProfile {
   // Settings
   final bool? showPetitionReason;
   final String? themeMode; // 'light', 'dark', or null (system)
+  final String? themeScheme; // 'stimm', 'ocean', etc.
   final String? locale; // 'en', 'de', etc.
 
   /// Returns the date when the subscription expires (30 days after purchase).
@@ -79,6 +80,7 @@ class UserProfile {
     this.acceptedCommunityRulesAt,
     this.showPetitionReason,
     this.themeMode,
+    this.themeScheme,
     this.locale,
   });
 
@@ -109,6 +111,7 @@ class UserProfile {
     DateTime? acceptedCommunityRulesAt,
     bool? showPetitionReason,
     String? themeMode,
+    String? themeScheme,
     String? locale,
   }) {
     final resolvedEmail = email ?? this.email;
@@ -144,6 +147,7 @@ class UserProfile {
           acceptedCommunityRulesAt ?? this.acceptedCommunityRulesAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
       themeMode: themeMode ?? this.themeMode,
+      themeScheme: themeScheme ?? this.themeScheme,
       locale: locale ?? this.locale,
     );
   }
@@ -180,6 +184,7 @@ class UserProfile {
           ?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
       themeMode: json['themeMode'] as String?,
+      themeScheme: json['themeScheme'] as String?,
       locale: json['locale'] as String?,
     );
   }
@@ -215,6 +220,7 @@ class UserProfile {
           : null,
       'showPetitionReason': showPetitionReason,
       'themeMode': themeMode,
+      'themeScheme': themeScheme,
       'locale': locale,
     };
   }

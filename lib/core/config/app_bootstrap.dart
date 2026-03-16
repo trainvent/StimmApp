@@ -11,6 +11,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/services/ad_service.dart';
 
 class AppBootstrap {
@@ -21,6 +22,7 @@ class AppBootstrap {
   Future<void> init() async {
     // load persisted theme first
     await _initThemeMode();
+    await _initThemeScheme();
     // load persisted locale (if any) before creating composite notifier
     await _initLocale();
     // load persisted petition reason setting
@@ -38,6 +40,7 @@ class AppBootstrap {
     appLocale.addListener(_onLocaleChanged);
     showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
     themeModeNotifier.addListener(_onThemeChanged);
+    themeSchemeNotifier.addListener(_onThemeSchemeChanged);
 
     // Load profile URL when user signs in and clear on sign-out
     _authSub = authService.authStateChanges.listen((user) async {
@@ -74,6 +77,11 @@ class AppBootstrap {
               isDarkModeNotifier.value =
                   themeModeNotifier.value == ThemeMode.dark;
             }
+            if (profile.themeScheme != null) {
+              themeSchemeNotifier.value = AppColorThemeX.fromId(
+                profile.themeScheme,
+              );
+            }
             if (profile.locale != null && profile.locale!.isNotEmpty) {
               appLocale.value = _localeFromString(profile.locale!);
             }
@@ -92,6 +100,7 @@ class AppBootstrap {
     appLocale.removeListener(_onLocaleChanged);
     showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
     themeModeNotifier.removeListener(_onThemeChanged);
+    themeSchemeNotifier.removeListener(_onThemeSchemeChanged);
     _appStateNotifier?.dispose();
   }
 
@@ -162,6 +171,22 @@ class AppBootstrap {
     }
   }
 
+  void _onThemeSchemeChanged() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentTheme = themeSchemeNotifier.value ?? AppColorTheme.stimm;
+    await prefs.setString(IConst.themeSchemeKey, currentTheme.data.id);
+
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {'themeScheme': currentTheme.data.id});
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing theme scheme: $e');
+      }
+    }
+  }
+
   Future<void> _initThemeMode() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // Check for new string-based key first
@@ -192,6 +217,12 @@ class AppBootstrap {
       }
     }
     isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
+  }
+
+  Future<void> _initThemeScheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeScheme = prefs.getString(IConst.themeSchemeKey);
+    themeSchemeNotifier.value = AppColorThemeX.fromId(themeScheme);
   }
 
   Future<void> _initLocale() async {
