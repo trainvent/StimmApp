@@ -409,6 +409,7 @@
 	"filter": "filter",
 	"accentPallette": "Akzent Palette",
 	"tagOther": "Sonstiges",
+	"displayQrCode": "QR Code anzeigen",
 	"pollTutorialStep1Title": "1. Sei kristallklar über das Ziel",
 	"pollTutorialStep1Desc": "Wisse genau, was du lernen willst – nur eine Idee.",
 	"pollTutorialStep2Title": "2. Verwende Alltagssprache",

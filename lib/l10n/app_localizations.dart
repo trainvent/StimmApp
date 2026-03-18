@@ -962,6 +962,12 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get filter;
 
+  /// No description provided for @displayQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'display qr-code'**
+  String get displayQrCode;
+
   /// No description provided for @accentPallette.
   ///
   /// In en, this message translates to:

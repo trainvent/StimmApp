@@ -185,6 +185,7 @@
 	"idNumber": "ID Number",
 	"idScan": "ID Scan",
 	"filter": "Filter",
+	"displayQrCode": "display qr-code",
 	"accentPallette": "accent pallette",
 	"imagePreviewDescription": "This is a preview of your new profile picture.",
 	"inactive": "Inactive",

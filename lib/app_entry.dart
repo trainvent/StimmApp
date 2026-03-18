@@ -12,6 +12,7 @@ import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/delete_account_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
 import 'package:stimmapp/core/config/environment.dart';
@@ -132,22 +133,38 @@ class _MyAppState extends State<MyApp> {
   final AppBootstrap _bootstrap = AppBootstrap();
   bool _initialized = false;
 
-  String _initialRouteName() {
+  Uri _initialUri() {
     if (kIsWeb) {
-      final path = Uri.base.path;
-      return path.isEmpty ? '/' : path;
+      return Uri.base;
     }
 
     final routeName = PlatformDispatcher.instance.defaultRouteName;
-    return routeName.isEmpty ? '/' : routeName;
+    if (routeName.isEmpty) {
+      return Uri(path: '/');
+    }
+    return Uri.tryParse(routeName) ?? Uri(path: routeName);
   }
 
-  Widget? _pageForRouteName(String? routeName) {
-    if (routeName == null || routeName.isEmpty || routeName == '/') {
+  Widget? _pageForUri(Uri? uri) {
+    if (uri == null) {
       return null;
     }
 
-    final uri = Uri.parse(routeName);
+    if (uri.path == '/group-invite') {
+      final groupId = uri.queryParameters['groupId'];
+      if (groupId == null || groupId.isEmpty) {
+        return null;
+      }
+      return GroupEntryPage(
+        groupId: groupId,
+        inviteToken: uri.queryParameters['token'],
+      );
+    }
+
+    if (uri.path.isEmpty || uri.path == '/') {
+      return null;
+    }
+
     if (uri.pathSegments.length != 2) return null;
 
     final id = uri.pathSegments[1];
@@ -177,7 +194,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final initialRouteName = _initialRouteName();
+    final initialUri = _initialUri();
 
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeModeNotifier,
@@ -220,7 +237,9 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
                   onGenerateRoute: (settings) {
-                    final page = _pageForRouteName(settings.name);
+                    final page = _pageForUri(
+                      settings.name == null ? null : Uri.tryParse(settings.name!),
+                    );
                     if (page != null) {
                       return MaterialPageRoute(
                         builder: (context) => page,
@@ -240,7 +259,7 @@ class _MyAppState extends State<MyApp> {
                   debugShowCheckedModeBanner: false,
                   home: !_initialized
                       ? const AppLoadingPage()
-                      : _pageForRouteName(initialRouteName) ??
+                      : _pageForUri(initialUri) ??
                             const InitAppLayout(),
                 );
 

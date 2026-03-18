@@ -5,11 +5,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -440,61 +436,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return 'GRP-${now.substring(now.length - 6)}';
   }
 
-  String? get _currentGroupId => widget.initialGroup?.id;
-
-  String? _buildInviteLink({String? groupId}) {
-    final resolvedGroupId = groupId ?? _currentGroupId;
-    if (resolvedGroupId == null || resolvedGroupId.isEmpty) {
-      return null;
-    }
-
-    return Uri(
-      scheme: 'https',
-      host: Uri.parse(Environment.shareBaseUrl).host,
-      path: '/group-invite',
-      queryParameters: <String, String>{
-        'token': _draftInviteToken,
-        'groupId': resolvedGroupId,
-      },
-    ).toString();
-  }
-
   bool get _inviteLinkEnabled =>
       _accessMode == PollGroupAccessMode.protected ||
       _accessMode == PollGroupAccessMode.open;
-
-  Future<void> _copyInviteLink() async {
-    final inviteLink = _buildInviteLink();
-    if (inviteLink == null) {
-      showErrorSnackBar('Save the group before copying its invite link.');
-      return;
-    }
-    await Clipboard.setData(ClipboardData(text: inviteLink));
-    if (!mounted) {
-      return;
-    }
-    showSuccessSnackBar('Invite link copied to clipboard.');
-  }
-
-  Future<void> _shareInviteLink() async {
-    final inviteLink = _buildInviteLink();
-    if (inviteLink == null) {
-      showErrorSnackBar('Save the group before sharing its invite link.');
-      return;
-    }
-
-    try {
-      await SharePlus.instance.share(
-        ShareParams(
-          text:
-              'Use this invite link to coordinate access to ${_nameController.text.trim().isEmpty ? 'your group' : _nameController.text.trim()}: $inviteLink',
-          subject: 'Group invite link',
-        ),
-      );
-    } catch (error, stackTrace) {
-      await showInternalDifficultiesSnackBar(error, stackTrace);
-    }
-  }
 
   List<PollGroupAllowedMember>? _buildAllowedMembers(String creatorUid) {
     final now = DateTime.now();
@@ -1002,78 +946,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
-  Widget _buildInviteLinkSection() {
-    if (!_inviteLinkEnabled) {
-      return const SizedBox.shrink();
-    }
-    final inviteLink = _buildInviteLink();
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Invite link preview',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _accessMode == PollGroupAccessMode.protected
-                ? 'People with this link can request access to the group.'
-                : 'This link represents the public join path for the group.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 16),
-          if (inviteLink == null)
-            Text(
-              'Save the group first to generate a shareable invite link.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            )
-          else ...[
-            SelectableText(
-              inviteLink,
-              key: const Key('invite_link_preview'),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: QrImageView(
-                key: const Key('invite_qr_preview'),
-                data: inviteLink,
-                size: 160,
-                backgroundColor: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              OutlinedButton.icon(
-                key: const Key('copy_invite_link'),
-                onPressed: inviteLink == null ? null : _copyInviteLink,
-                icon: const Icon(Icons.copy),
-                label: const Text('Copy link'),
-              ),
-              OutlinedButton.icon(
-                key: const Key('share_invite_link'),
-                onPressed: inviteLink == null ? null : _shareInviteLink,
-                icon: const Icon(Icons.share),
-                label: const Text('Share link'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
@@ -1163,8 +1035,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   _buildDomainSection(),
                   const SizedBox(height: 24),
                 ],
-                _buildInviteLinkSection(),
-                if (_inviteLinkEnabled) const SizedBox(height: 24),
                 FilledButton.icon(
                   key: const Key('save_group_button'),
                   onPressed: _isCreating || _isLoadingExistingRules

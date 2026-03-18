@@ -460,6 +460,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
+  String get displayQrCode => 'display qr-code';
+
+  @override
   String get accentPallette => 'accent pallette';
 
   @override
