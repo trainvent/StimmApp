@@ -656,5 +656,121 @@
 	"protectedGroupsRequireInviteLink": "Geschützte Gruppen benötigen einen gültigen Einladungslink und eine Zugriffsanfrage.",
 	"openGroupsCanBeJoinedImmediately": "Offene Gruppen können sofort beigetreten werden.",
 	"groupDetailsTemporarilyUnavailableRespond": "Gruppendetails sind vorübergehend nicht verfügbar, aber du kannst trotzdem auf diese Benachrichtigung reagieren.",
-	"groupDetailsTemporarilyUnavailable": "Gruppendetails sind vorübergehend nicht verfügbar."
+	"groupDetailsTemporarilyUnavailable": "Gruppendetails sind vorübergehend nicht verfügbar.",
+	"manageGroupsTitle": "Gruppen verwalten",
+	"pleaseSignInToManageGroups": "Bitte melde dich an, um Gruppen zu verwalten.",
+	"pickExistingGroupToUseOrEditOrCreateNewOne": "Wähle eine bestehende Gruppe zum Verwenden oder Bearbeiten aus oder erstelle eine neue.",
+	"createNewGroup": "Neue Gruppe erstellen",
+	"yourGroupsTitle": "Deine Gruppen",
+	"noGroupsYetCreateOneAboveToStartTeamPolling": "Noch keine Gruppen. Erstelle oben eine, um mit Team-Abstimmungen zu beginnen.",
+	"joinCodeWithValue": "Beitrittscode: {joinCode}",
+	"@joinCodeWithValue": {
+		"placeholders": {
+			"joinCode": {}
+		}
+	},
+	"expiresOnShort": "Läuft ab: {date}",
+	"@expiresOnShort": {
+		"placeholders": {
+			"date": {}
+		}
+	},
+	"importedMembersCount": "Importierte Mitglieder: {count}",
+	"@importedMembersCount": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"inviteLinkOnLabel": "Einladungslink an",
+	"editLabel": "Bearbeiten",
+	"keepSelected": "Auswahl behalten",
+	"useForThisPoll": "Für diese Umfrage verwenden",
+	"notificationsTitle": "Benachrichtigungen",
+	"pleaseSignInToViewGroupInvitations": "Bitte melde dich an, um Gruppeneinladungen zu sehen.",
+	"noGroupNotificationsYet": "Noch keine Gruppenbenachrichtigungen.",
+	"notificationStatusPending": "Ausstehend",
+	"notificationStatusAccepted": "Angenommen",
+	"notificationStatusDenied": "Abgelehnt",
+	"notificationActionInvitedYou": "hat dich eingeladen",
+	"notificationActionRequestedAccess": "hat Zugriff angefragt",
+	"openApp": "App öffnen",
+	"signInToJoinGroup": "Anmelden zum Beitreten",
+	"signInToRequestGroupAccess": "Anmelden, um Zugang anzufragen",
+	"protectedGroupsRequireApprovalRequest": "Geschützte Gruppen benötigen eine Genehmigungsanfrage, bevor du beitreten kannst.",
+	"signInToJoinGroupAutomatically": "Melde dich an, um dieser Gruppe automatisch beizutreten.",
+	"privateGroupOrSignInRequired": "Diese Gruppe ist privat oder erfordert eine Anmeldung, bevor weitere Details angezeigt werden können.",
+	"createGroupTooltip": "Gruppe erstellen",
+	"groupHasNoActiveInviteLink": "Diese Gruppe hat keinen aktiven Einladungslink.",
+	"copyLinkLabel": "Link kopieren",
+	"copyInviteLinkTooltip": "Einladungslink kopieren",
+	"pasteCsvMembers": "CSV-Mitglieder einfügen",
+	"csvMembersHint": "email,nickname,role\nanna@company.com,Anna,user",
+	"importLabel": "Importieren",
+	"noCsvRowsImported": "Es wurden keine CSV-Zeilen importiert.",
+	"importedCsvRows": "{count} CSV-Zeilen importiert.",
+	"@importedCsvRows": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"importedRowsSkippedMalformed": "{validRows} Zeilen importiert. {invalidRows} fehlerhafte Zeilen übersprungen.",
+	"@importedRowsSkippedMalformed": {
+		"placeholders": {
+			"validRows": {},
+			"invalidRows": {}
+		}
+	},
+	"pleaseEnterValidEmailForEveryInvitedMember": "Bitte gib für jedes eingeladene Mitglied eine gültige E-Mail-Adresse ein.",
+	"pleaseEnterValidEmailDomains": "Bitte gib gültige E-Mail-Domains wie company.com ein.",
+	"pleaseEnterGroupName": "Bitte gib einen Gruppennamen ein.",
+	"groupUpdated": "Gruppe aktualisiert.",
+	"groupCreated": "Gruppe erstellt.",
+	"managerRoleLabel": "Manager",
+	"userRoleLabel": "Benutzer",
+	"onlyPreparedMembersCanParticipate": "Nur von Admins oder Managern vorbereitete Mitglieder können teilnehmen.",
+	"peopleWithInviteLinkCanRequestAccessToGroup": "Personen mit dem Einladungslink können Zugang zur Gruppe anfragen.",
+	"everyoneCanJoinWithoutApproval": "Jeder kann ohne Genehmigung beitreten.",
+	"roleLabel": "Rolle",
+	"removeMemberTooltip": "Mitglied entfernen",
+	"inviteMembersTitle": "Mitglieder einladen",
+	"addMember": "Mitglied hinzufügen",
+	"inviteMembersDescription": "Plan A: Personen einzeln hinzufügen. Plan B: CSV-Zeilen importieren oder eine CSV-Datei unten ablegen. Es werden nicht automatisch E-Mails versendet.",
+	"pasteCsvLabel": "CSV einfügen",
+	"importCsvFileLabel": "CSV-Datei importieren",
+	"dropCsvHere": "CSV hier ablegen",
+	"acceptedCsvFormat": "Akzeptiertes Format: CSV oder TSV mit email,nickname,role",
+	"lastImportSummary": "Letzter Import: {validRows} gültige Zeilen, {invalidRows} fehlerhafte Zeilen.",
+	"@lastImportSummary": {
+		"placeholders": {
+			"validRows": {},
+			"invalidRows": {}
+		}
+	},
+	"allowedMailDomains": "Erlaubte Mail-Domains",
+	"addDomain": "Domain hinzufügen",
+	"allowedMailDomainsDescription": "Nützlich für Firmen: Jeder mit passender E-Mail-Domain kann mit der gewählten Standardrolle vorbereitet werden.",
+	"noDomainRulesYet": "Noch keine Domain-Regeln.",
+	"domainLabel": "Domain",
+	"domainHint": "company.com",
+	"removeDomainTooltip": "Domain entfernen",
+	"editGroupTitle": "Gruppe bearbeiten",
+	"createGroupTitle": "Gruppe erstellen",
+	"editGroupDescription": "Passe Zugriffsregeln, Einladungen und Einstellungen für diese Gruppe an.",
+	"createGroupDescription": "Erstelle einen nur für Mitglieder zugänglichen Abstimmungsbereich für Teams, Events und Firmen.",
+	"membersCanChooseTheirOwnNickname": "Mitglieder können ihren Spitznamen selbst wählen",
+	"managersCanPrepareAccessLists": "Manager können Zugangslisten vorbereiten",
+	"setExpirationDate": "Ablaufdatum festlegen",
+	"pickExpirationDate": "Ablaufdatum auswählen",
+	"savingGroup": "Speichere...",
+	"creatingGroup": "Erstelle...",
+	"saveGroupLabel": "Gruppe speichern",
+	"supportedRoles": "Unterstützte Rollen: {admin}, {manager}, {user}.",
+	"@supportedRoles": {
+		"placeholders": {
+			"admin": {},
+			"manager": {},
+			"user": {}
+		}
+	},
+	"scanQrCodeTooltip": "QR-Code scannen"
 }

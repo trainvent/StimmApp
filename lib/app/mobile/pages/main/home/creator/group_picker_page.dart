@@ -3,6 +3,7 @@ import 'package:stimmapp/app/mobile/pages/main/home/creator/group_editor_page.da
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class GroupPickerPage extends StatelessWidget {
   const GroupPickerPage({
@@ -37,14 +38,14 @@ class GroupPickerPage extends StatelessWidget {
     Navigator.of(context).pop(selectedGroup);
   }
 
-  String _accessModeTitle(PollGroupAccessMode mode) {
+  String _accessModeTitle(BuildContext context, PollGroupAccessMode mode) {
     switch (mode) {
       case PollGroupAccessMode.private:
-        return 'Completely private';
+        return context.l10n.completelyPrivateAccessMode;
       case PollGroupAccessMode.protected:
-        return 'Protected';
+        return context.l10n.protectedAccessMode;
       case PollGroupAccessMode.open:
-        return 'Open';
+        return context.l10n.openAccessMode;
     }
   }
 
@@ -58,9 +59,9 @@ class GroupPickerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
     return Scaffold(
-      appBar: AppBar(title: const Text('Manage Groups')),
+      appBar: AppBar(title: Text(context.l10n.manageGroupsTitle)),
       body: user == null
-          ? const Center(child: Text('Please sign in to manage groups.'))
+          ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
           : StreamBuilder<List<PollGroup>>(
               stream: _repository.watchGroupsForUser(user.uid),
               builder: (context, snapshot) {
@@ -74,7 +75,7 @@ class GroupPickerPage extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   children: [
                     Text(
-                      'Pick an existing group to use or edit, or create a new one.',
+                      context.l10n.pickExistingGroupToUseOrEditOrCreateNewOne,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 20),
@@ -82,11 +83,11 @@ class GroupPickerPage extends StatelessWidget {
                       key: const Key('open_group_creator_button'),
                       onPressed: () => _openEditor(context),
                       icon: const Icon(Icons.group_add),
-                      label: const Text('Create new group'),
+                      label: Text(context.l10n.createNewGroup),
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Your groups',
+                      context.l10n.yourGroupsTitle,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
@@ -95,9 +96,7 @@ class GroupPickerPage extends StatelessWidget {
                       const Center(child: CircularProgressIndicator()),
                     if (groups.isEmpty &&
                         snapshot.connectionState != ConnectionState.waiting)
-                      const Text(
-                        'No groups yet. Create one above to start team polling.',
-                      ),
+                      Text(context.l10n.noGroupsYetCreateOneAboveToStartTeamPolling),
                     ...groups.map(
                       (group) => Card(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -122,11 +121,19 @@ class GroupPickerPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Join code: ${group.joinCode}'
-                                '${group.expiresAt != null ? ' • Expires ${_formatDate(group.expiresAt!)}' : ''}'
-                                ' • Imported members: ${group.importedMemberCount}'
-                                ' • ${_accessModeTitle(group.accessMode)}'
-                                '${group.inviteLinkEnabled ? ' • Invite link on' : ''}',
+                                [
+                                  context.l10n.joinCodeWithValue(group.joinCode),
+                                  if (group.expiresAt != null)
+                                    context.l10n.expiresOnShort(
+                                      _formatDate(group.expiresAt!),
+                                    ),
+                                  context.l10n.importedMembersCount(
+                                    group.importedMemberCount,
+                                  ),
+                                  _accessModeTitle(context, group.accessMode),
+                                  if (group.inviteLinkEnabled)
+                                    context.l10n.inviteLinkOnLabel,
+                                ].join(' • '),
                               ),
                               const SizedBox(height: 12),
                               Wrap(
@@ -135,14 +142,14 @@ class GroupPickerPage extends StatelessWidget {
                                 children: [
                                   OutlinedButton(
                                     onPressed: () => _openEditor(context, group: group),
-                                    child: const Text('Edit'),
+                                    child: Text(context.l10n.editLabel),
                                   ),
                                   FilledButton.tonal(
                                     onPressed: () => Navigator.of(context).pop(group),
                                     child: Text(
                                       selectedGroupId == group.id
-                                          ? 'Keep selected'
-                                          : 'Use for this poll',
+                                          ? context.l10n.keepSelected
+                                          : context.l10n.useForThisPoll,
                                     ),
                                   ),
                                 ],

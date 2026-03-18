@@ -230,15 +230,15 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
           const SizedBox(height: 12),
           FilledButton(
             onPressed: _openAppHome,
-            child: const Text('Open app'),
+            child: Text(context.l10n.openApp),
           ),
         ],
       );
     }
     if (currentUid == null) {
       final label = group.accessMode == PollGroupAccessMode.open
-          ? '${context.l10n.signIn} to join'
-          : '${context.l10n.signIn} to request access';
+          ? context.l10n.signInToJoinGroup
+          : context.l10n.signInToRequestGroupAccess;
       return FilledButton(
         onPressed: _isSaving ? null : _openLogin,
         child: Text(label),
@@ -325,13 +325,11 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                     ),
                     const SizedBox(height: 8),
                     if (group.accessMode == PollGroupAccessMode.protected)
-                      const Text(
-                        'Protected groups require an approval request before you can join.',
-                      ),
+                      Text(context.l10n.protectedGroupsRequireApprovalRequest),
                     if (group.accessMode == PollGroupAccessMode.open)
                       Text(
                         currentUid == null
-                            ? 'Sign in to join this group automatically.'
+                            ? context.l10n.signInToJoinGroupAutomatically
                             : context.l10n.openGroupsCanBeJoinedImmediately,
                       ),
                   ] else if (notification != null) ...[
@@ -339,9 +337,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                     Text(context.l10n.groupDetailsTemporarilyUnavailableRespond),
                   ] else if (currentUid == null) ...[
                     const SizedBox(height: 8),
-                    const Text(
-                      'This group is private or requires sign-in before more details can be shown.',
-                    ),
+                    Text(context.l10n.privateGroupOrSignInRequired),
                   ] else ...[
                     const SizedBox(height: 8),
                     Text(context.l10n.privateGroupWaitForInvite),

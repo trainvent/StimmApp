@@ -120,6 +120,7 @@ export * from './user_cleanup';
 export * from './admin';
 export * from './auth_code';
 export * from './data_sync';
+export * from './poll_groups';
 
 // Conditionally export test_data_seeder only if NOT in production
 // Replace 'stimmapp-prod' with your actual production project ID if different

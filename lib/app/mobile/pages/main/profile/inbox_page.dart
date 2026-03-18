@@ -4,6 +4,7 @@ import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
@@ -12,18 +13,18 @@ class InboxPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please sign in to view group invitations.')),
+      return Scaffold(
+        body: Center(child: Text(context.l10n.pleaseSignInToViewGroupInvitations)),
       );
     }
 
     final repo = PollGroupRepository.create();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(context.l10n.notificationsTitle),
         actions: [
           IconButton(
-            tooltip: 'Scan QR code',
+            tooltip: context.l10n.scanQrCodeTooltip,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -45,7 +46,7 @@ class InboxPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (notifications.isEmpty) {
-            return const Center(child: Text('No group notifications yet.'));
+            return Center(child: Text(context.l10n.noGroupNotificationsYet));
           }
           return ListView.separated(
             itemCount: notifications.length,
@@ -53,13 +54,13 @@ class InboxPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = notifications[index];
               final statusLabel = switch (item.status) {
-                PollGroupAccessNotificationStatus.pending => 'Pending',
-                PollGroupAccessNotificationStatus.accepted => 'Accepted',
-                PollGroupAccessNotificationStatus.denied => 'Denied',
+                PollGroupAccessNotificationStatus.pending => context.l10n.notificationStatusPending,
+                PollGroupAccessNotificationStatus.accepted => context.l10n.notificationStatusAccepted,
+                PollGroupAccessNotificationStatus.denied => context.l10n.notificationStatusDenied,
               };
               final actionLabel = switch (item.type) {
-                PollGroupAccessNotificationType.invite => 'invited you',
-                PollGroupAccessNotificationType.request => 'requested access',
+                PollGroupAccessNotificationType.invite => context.l10n.notificationActionInvitedYou,
+                PollGroupAccessNotificationType.request => context.l10n.notificationActionRequestedAccess,
               };
               return ListTile(
                 leading: Icon(

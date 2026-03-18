@@ -3121,6 +3121,468 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Group details are temporarily unavailable.'**
   String get groupDetailsTemporarilyUnavailable;
+
+  /// No description provided for @manageGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage groups'**
+  String get manageGroupsTitle;
+
+  /// No description provided for @pleaseSignInToManageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to manage groups.'**
+  String get pleaseSignInToManageGroups;
+
+  /// No description provided for @pickExistingGroupToUseOrEditOrCreateNewOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an existing group to use or edit, or create a new one.'**
+  String get pickExistingGroupToUseOrEditOrCreateNewOne;
+
+  /// No description provided for @createNewGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new group'**
+  String get createNewGroup;
+
+  /// No description provided for @yourGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your groups'**
+  String get yourGroupsTitle;
+
+  /// No description provided for @noGroupsYetCreateOneAboveToStartTeamPolling.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet. Create one above to start team polling.'**
+  String get noGroupsYetCreateOneAboveToStartTeamPolling;
+
+  /// No description provided for @joinCodeWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Join code: {joinCode}'**
+  String joinCodeWithValue(Object joinCode);
+
+  /// No description provided for @expiresOnShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String expiresOnShort(Object date);
+
+  /// No description provided for @importedMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported members: {count}'**
+  String importedMembersCount(Object count);
+
+  /// No description provided for @inviteLinkOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite link on'**
+  String get inviteLinkOnLabel;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editLabel;
+
+  /// No description provided for @keepSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep selected'**
+  String get keepSelected;
+
+  /// No description provided for @useForThisPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Use for this poll'**
+  String get useForThisPoll;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @pleaseSignInToViewGroupInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to view group invitations.'**
+  String get pleaseSignInToViewGroupInvitations;
+
+  /// No description provided for @noGroupNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No group notifications yet.'**
+  String get noGroupNotificationsYet;
+
+  /// No description provided for @notificationStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get notificationStatusPending;
+
+  /// No description provided for @notificationStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get notificationStatusAccepted;
+
+  /// No description provided for @notificationStatusDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Denied'**
+  String get notificationStatusDenied;
+
+  /// No description provided for @notificationActionInvitedYou.
+  ///
+  /// In en, this message translates to:
+  /// **'invited you'**
+  String get notificationActionInvitedYou;
+
+  /// No description provided for @notificationActionRequestedAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'requested access'**
+  String get notificationActionRequestedAccess;
+
+  /// No description provided for @openApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open app'**
+  String get openApp;
+
+  /// No description provided for @signInToJoinGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to join'**
+  String get signInToJoinGroup;
+
+  /// No description provided for @signInToRequestGroupAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to request access'**
+  String get signInToRequestGroupAccess;
+
+  /// No description provided for @protectedGroupsRequireApprovalRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected groups require an approval request before you can join.'**
+  String get protectedGroupsRequireApprovalRequest;
+
+  /// No description provided for @signInToJoinGroupAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to join this group automatically.'**
+  String get signInToJoinGroupAutomatically;
+
+  /// No description provided for @privateGroupOrSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This group is private or requires sign-in before more details can be shown.'**
+  String get privateGroupOrSignInRequired;
+
+  /// No description provided for @createGroupTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get createGroupTooltip;
+
+  /// No description provided for @groupHasNoActiveInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'This group has no active invite link.'**
+  String get groupHasNoActiveInviteLink;
+
+  /// No description provided for @copyLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLinkLabel;
+
+  /// No description provided for @copyInviteLinkTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invite link'**
+  String get copyInviteLinkTooltip;
+
+  /// No description provided for @pasteCsvMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste CSV members'**
+  String get pasteCsvMembers;
+
+  /// No description provided for @csvMembersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'email,nickname,role\nanna@company.com,Anna,user'**
+  String get csvMembersHint;
+
+  /// No description provided for @importLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importLabel;
+
+  /// No description provided for @noCsvRowsImported.
+  ///
+  /// In en, this message translates to:
+  /// **'No CSV rows were imported.'**
+  String get noCsvRowsImported;
+
+  /// No description provided for @importedCsvRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} CSV rows.'**
+  String importedCsvRows(Object count);
+
+  /// No description provided for @importedRowsSkippedMalformed.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {validRows} rows. Skipped {invalidRows} malformed rows.'**
+  String importedRowsSkippedMalformed(Object validRows, Object invalidRows);
+
+  /// No description provided for @pleaseEnterValidEmailForEveryInvitedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email for every invited member.'**
+  String get pleaseEnterValidEmailForEveryInvitedMember;
+
+  /// No description provided for @pleaseEnterValidEmailDomains.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter valid email domains like company.com.'**
+  String get pleaseEnterValidEmailDomains;
+
+  /// No description provided for @pleaseEnterGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a group name.'**
+  String get pleaseEnterGroupName;
+
+  /// No description provided for @groupUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Group updated.'**
+  String get groupUpdated;
+
+  /// No description provided for @groupCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Group created.'**
+  String get groupCreated;
+
+  /// No description provided for @managerRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get managerRoleLabel;
+
+  /// No description provided for @userRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get userRoleLabel;
+
+  /// No description provided for @onlyPreparedMembersCanParticipate.
+  ///
+  /// In en, this message translates to:
+  /// **'Only members prepared by admins or managers can participate.'**
+  String get onlyPreparedMembersCanParticipate;
+
+  /// No description provided for @peopleWithInviteLinkCanRequestAccessToGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'People with the invite link can request access to the group.'**
+  String get peopleWithInviteLinkCanRequestAccessToGroup;
+
+  /// No description provided for @everyoneCanJoinWithoutApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone can join without approval.'**
+  String get everyoneCanJoinWithoutApproval;
+
+  /// No description provided for @roleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get roleLabel;
+
+  /// No description provided for @removeMemberTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove member'**
+  String get removeMemberTooltip;
+
+  /// No description provided for @inviteMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite members'**
+  String get inviteMembersTitle;
+
+  /// No description provided for @addMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add member'**
+  String get addMember;
+
+  /// No description provided for @inviteMembersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.'**
+  String get inviteMembersDescription;
+
+  /// No description provided for @pasteCsvLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste CSV'**
+  String get pasteCsvLabel;
+
+  /// No description provided for @importCsvFileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Import CSV file'**
+  String get importCsvFileLabel;
+
+  /// No description provided for @dropCsvHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop a CSV here'**
+  String get dropCsvHere;
+
+  /// No description provided for @acceptedCsvFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted format: CSV or TSV with email,nickname,role'**
+  String get acceptedCsvFormat;
+
+  /// No description provided for @lastImportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Last import: {validRows} valid rows, {invalidRows} malformed rows.'**
+  String lastImportSummary(Object validRows, Object invalidRows);
+
+  /// No description provided for @allowedMailDomains.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed mail domains'**
+  String get allowedMailDomains;
+
+  /// No description provided for @addDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'Add domain'**
+  String get addDomain;
+
+  /// No description provided for @allowedMailDomainsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.'**
+  String get allowedMailDomainsDescription;
+
+  /// No description provided for @noDomainRulesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No domain rules yet.'**
+  String get noDomainRulesYet;
+
+  /// No description provided for @domainLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Domain'**
+  String get domainLabel;
+
+  /// No description provided for @domainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'company.com'**
+  String get domainHint;
+
+  /// No description provided for @removeDomainTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove domain'**
+  String get removeDomainTooltip;
+
+  /// No description provided for @editGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get editGroupTitle;
+
+  /// No description provided for @createGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get createGroupTitle;
+
+  /// No description provided for @editGroupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust the access rules, invites, and settings for this group.'**
+  String get editGroupDescription;
+
+  /// No description provided for @createGroupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a members-only polling space for teams, events, and companies.'**
+  String get createGroupDescription;
+
+  /// No description provided for @membersCanChooseTheirOwnNickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Members can choose their own nickname'**
+  String get membersCanChooseTheirOwnNickname;
+
+  /// No description provided for @managersCanPrepareAccessLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Managers can prepare access lists'**
+  String get managersCanPrepareAccessLists;
+
+  /// No description provided for @setExpirationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Set an expiration date'**
+  String get setExpirationDate;
+
+  /// No description provided for @pickExpirationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick expiration date'**
+  String get pickExpirationDate;
+
+  /// No description provided for @savingGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get savingGroup;
+
+  /// No description provided for @creatingGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get creatingGroup;
+
+  /// No description provided for @saveGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save group'**
+  String get saveGroupLabel;
+
+  /// No description provided for @supportedRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported roles: {admin}, {manager}, {user}.'**
+  String supportedRoles(Object admin, Object manager, Object user);
+
+  /// No description provided for @scanQrCodeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get scanQrCodeTooltip;
 }
 
 class _AppLocalizationsDelegate

@@ -6,9 +6,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:universal_io/io.dart' as io;
 
 class GroupEditorPage extends StatefulWidget {
@@ -124,9 +126,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         ..clear()
         ..addAll(
           allowedMembers.isEmpty
-              ? <_InviteMemberDraft>[
-                  _InviteMemberDraft(),
-                ]
+              ? <_InviteMemberDraft>[_InviteMemberDraft()]
               : allowedMembers
                     .map(
                       (member) => _InviteMemberDraft(
@@ -207,23 +207,23 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Paste CSV members'),
+          title: Text(context.l10n.pasteCsvMembers),
           content: SizedBox(
             width: 420,
             child: TextField(
               controller: controller,
               minLines: 8,
               maxLines: 12,
-              decoration: const InputDecoration(
-                hintText: 'email,nickname,role\nanna@company.com,Anna,user',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: context.l10n.csvMembersHint,
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -231,7 +231,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   dialogContext,
                 ).pop(_parseCsvMembers(controller.text));
               },
-              child: const Text('Import'),
+              child: Text(context.l10n.importLabel),
             ),
           ],
         );
@@ -401,15 +401,15 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
   void _showCsvFeedback({required int validRows, required int invalidRows}) {
     if (validRows == 0 && invalidRows == 0) {
-      showErrorSnackBar('No CSV rows were imported.');
+      showErrorSnackBar(context.l10n.noCsvRowsImported);
       return;
     }
     if (invalidRows == 0) {
-      showSuccessSnackBar('Imported $validRows CSV rows.');
+      showSuccessSnackBar(context.l10n.importedCsvRows(validRows));
       return;
     }
     showErrorSnackBar(
-      'Imported $validRows rows. Skipped $invalidRows malformed rows.',
+      context.l10n.importedRowsSkippedMalformed(validRows, invalidRows),
     );
   }
 
@@ -453,7 +453,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       }
       if (!_looksLikeEmail(email)) {
         showErrorSnackBar(
-          'Please enter a valid email for every invited member.',
+          context.l10n.pleaseEnterValidEmailForEveryInvitedMember,
         );
         return null;
       }
@@ -482,7 +482,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         continue;
       }
       if (normalizedDomain == null) {
-        showErrorSnackBar('Please enter valid email domains like company.com.');
+        showErrorSnackBar(context.l10n.pleaseEnterValidEmailDomains);
         return null;
       }
       domains.add(
@@ -500,12 +500,12 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   Future<void> _saveGroup() async {
     final user = _auth.currentUser;
     if (user == null) {
-      showErrorSnackBar('Please sign in first.');
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     final groupName = _nameController.text.trim();
     if (groupName.isEmpty) {
-      showErrorSnackBar('Please enter a group name.');
+      showErrorSnackBar(context.l10n.pleaseEnterGroupName);
       return;
     }
 
@@ -564,8 +564,24 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       if (!mounted) {
         return;
       }
-      showSuccessSnackBar(_isEditing ? 'Group updated.' : 'Group created.');
+      showSuccessSnackBar(
+        _isEditing ? context.l10n.groupUpdated : context.l10n.groupCreated,
+      );
       Navigator.of(context).pop(group);
+    } on StateError catch (error) {
+      if (error.message == 'group_limit_requires_pro') {
+        if (!mounted) {
+          return;
+        }
+        final opened = await PurchasesService.instance.presentPaywall(
+          context: context,
+        );
+        if (!opened && mounted) {
+          showErrorSnackBar(context.l10n.couldNotOpenPaywall);
+        }
+        return;
+      }
+      await showInternalDifficultiesSnackBar(error, StackTrace.current);
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
@@ -584,33 +600,33 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   String _roleLabel(PollGroupRole role) {
     switch (role) {
       case PollGroupRole.admin:
-        return 'Admin';
+        return context.l10n.adminRoleLabel;
       case PollGroupRole.manager:
-        return 'Manager';
+        return context.l10n.managerRoleLabel;
       case PollGroupRole.user:
-        return 'User';
+        return context.l10n.userRoleLabel;
     }
   }
 
   String _accessModeTitle(PollGroupAccessMode mode) {
     switch (mode) {
       case PollGroupAccessMode.private:
-        return 'Completely private';
+        return context.l10n.completelyPrivateAccessMode;
       case PollGroupAccessMode.protected:
-        return 'Protected';
+        return context.l10n.protectedAccessMode;
       case PollGroupAccessMode.open:
-        return 'Open';
+        return context.l10n.openAccessMode;
     }
   }
 
   String _accessModeDescription(PollGroupAccessMode mode) {
     switch (mode) {
       case PollGroupAccessMode.private:
-        return 'Only members prepared by admins or managers can participate.';
+        return context.l10n.onlyPreparedMembersCanParticipate;
       case PollGroupAccessMode.protected:
-        return 'People with the invite link can request access to the group.';
+        return context.l10n.peopleWithInviteLinkCanRequestAccessToGroup;
       case PollGroupAccessMode.open:
-        return 'Everyone can join without approval.';
+        return context.l10n.everyoneCanJoinWithoutApproval;
     }
   }
 
@@ -618,9 +634,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return DropdownButtonFormField<PollGroupAccessMode>(
       key: const Key('access_mode_dropdown'),
       initialValue: _accessMode,
-      decoration: const InputDecoration(
-        labelText: 'Group access',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: context.l10n.groupAccess,
+        border: const OutlineInputBorder(),
       ),
       items: PollGroupAccessMode.values
           .map(
@@ -647,9 +663,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return DropdownButtonFormField<PollGroupRole>(
       key: key,
       initialValue: value,
-      decoration: const InputDecoration(
-        labelText: 'Role',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: context.l10n.roleLabel,
+        border: const OutlineInputBorder(),
       ),
       items: PollGroupRole.values
           .map(
@@ -667,9 +683,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return TextField(
       key: Key('member_email_$index'),
       controller: draft.emailController,
-      decoration: const InputDecoration(
-        labelText: 'Email',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: context.l10n.email,
+        border: const OutlineInputBorder(),
       ),
     );
   }
@@ -678,9 +694,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return TextField(
       key: Key('member_nickname_$index'),
       controller: draft.nicknameController,
-      decoration: const InputDecoration(
-        labelText: 'Nickname',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: context.l10n.nickname,
+        border: const OutlineInputBorder(),
       ),
     );
   }
@@ -710,10 +726,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             children: [
               Expanded(flex: 3, child: _buildMemberEmailField(draft, index)),
               const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: _buildMemberNicknameField(draft, index),
-              ),
+              Expanded(flex: 2, child: _buildMemberNicknameField(draft, index)),
               const SizedBox(width: 12),
               Expanded(flex: 2, child: _buildMemberRoleField(draft, index)),
               const SizedBox(width: 8),
@@ -721,7 +734,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 key: Key('remove_member_row_$index'),
                 onPressed: () => _removeMemberDraft(index),
                 icon: const Icon(Icons.delete_outline),
-                tooltip: 'Remove member',
+                tooltip: context.l10n.removeMemberTooltip,
               ),
             ],
           );
@@ -744,7 +757,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                     key: Key('remove_member_row_$index'),
                     onPressed: () => _removeMemberDraft(index),
                     icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Remove member',
+                    tooltip: context.l10n.removeMemberTooltip,
                   ),
                 ],
               ),
@@ -752,9 +765,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: _buildMemberNicknameField(draft, index),
-                  ),
+                  Expanded(child: _buildMemberNicknameField(draft, index)),
                   const SizedBox(width: 12),
                   Expanded(child: _buildMemberRoleField(draft, index)),
                 ],
@@ -773,7 +784,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         Row(
           children: [
             Text(
-              'Invite members',
+              context.l10n.inviteMembersTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Spacer(),
@@ -781,13 +792,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               key: const Key('add_member_row'),
               onPressed: _addMemberDraft,
               icon: const Icon(Icons.add),
-              label: const Text('Add member'),
+              label: Text(context.l10n.addMember),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.',
+          context.l10n.inviteMembersDescription,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
@@ -807,13 +818,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               key: const Key('paste_csv_button'),
               onPressed: _openCsvPasteDialog,
               icon: const Icon(Icons.content_paste),
-              label: const Text('Paste CSV'),
+              label: Text(context.l10n.pasteCsvLabel),
             ),
             OutlinedButton.icon(
               key: const Key('pick_csv_button'),
               onPressed: _pickCsvFile,
               icon: const Icon(Icons.upload_file),
-              label: const Text('Import CSV file'),
+              label: Text(context.l10n.importCsvFileLabel),
             ),
           ],
         ),
@@ -843,18 +854,21 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Drop a CSV here',
+                  context.l10n.dropCsvHere,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Accepted format: CSV or TSV with email,nickname,role',
+                  context.l10n.acceptedCsvFormat,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (_lastImportedCsvRows > 0 || _lastInvalidCsvRows > 0) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Last import: $_lastImportedCsvRows valid rows, $_lastInvalidCsvRows malformed rows.',
+                    context.l10n.lastImportSummary(
+                      _lastImportedCsvRows,
+                      _lastInvalidCsvRows,
+                    ),
                     key: const Key('csv_import_summary'),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -874,7 +888,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         Row(
           children: [
             Text(
-              'Allowed mail domains',
+              context.l10n.allowedMailDomains,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Spacer(),
@@ -882,19 +896,19 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               key: const Key('add_domain_row'),
               onPressed: _addDomainDraft,
               icon: const Icon(Icons.add_business),
-              label: const Text('Add domain'),
+              label: Text(context.l10n.addDomain),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          'Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.',
+          context.l10n.allowedMailDomainsDescription,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
         if (_domainDrafts.isEmpty)
           Text(
-            'No domain rules yet.',
+            context.l10n.noDomainRulesYet,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ...List.generate(_domainDrafts.length, (index) {
@@ -908,10 +922,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   child: TextField(
                     key: Key('domain_value_$index'),
                     controller: draft.domainController,
-                    decoration: const InputDecoration(
-                      labelText: 'Domain',
-                      hintText: 'company.com',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.domainLabel,
+                      hintText: context.l10n.domainHint,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -936,7 +950,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   key: Key('remove_domain_row_$index'),
                   onPressed: () => _removeDomainDraft(index),
                   icon: const Icon(Icons.delete_outline),
-                  tooltip: 'Remove domain',
+                  tooltip: context.l10n.removeDomainTooltip,
                 ),
               ],
             ),
@@ -951,24 +965,30 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     final user = _auth.currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit Group' : 'Create Group')),
+      appBar: AppBar(
+        title: Text(
+          _isEditing
+              ? context.l10n.editGroupTitle
+              : context.l10n.createGroupTitle,
+        ),
+      ),
       body: user == null
-          ? const Center(child: Text('Please sign in to manage groups.'))
+          ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
                 Text(
                   _isEditing
-                      ? 'Adjust the access rules, invites, and settings for this group.'
-                      : 'Create a members-only polling space for teams, events, and companies.',
+                      ? context.l10n.editGroupDescription
+                      : context.l10n.createGroupDescription,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Group name',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.groupNameLabel,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -982,7 +1002,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: _allowSelfNamedNicknames,
-                  title: const Text('Members can choose their own nickname'),
+                  title: Text(context.l10n.membersCanChooseTheirOwnNickname),
                   onChanged: (value) {
                     setState(() => _allowSelfNamedNicknames = value);
                   },
@@ -990,7 +1010,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: _managersCanInvite,
-                  title: const Text('Managers can prepare access lists'),
+                  title: Text(context.l10n.managersCanPrepareAccessLists),
                   onChanged: (value) {
                     setState(() => _managersCanInvite = value);
                   },
@@ -998,7 +1018,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: _hasExpiration,
-                  title: const Text('Set an expiration date'),
+                  title: Text(context.l10n.setExpirationDate),
                   onChanged: (value) {
                     setState(() {
                       _hasExpiration = value;
@@ -1017,8 +1037,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                     icon: const Icon(Icons.event),
                     label: Text(
                       _expiresAt == null
-                          ? 'Pick expiration date'
-                          : 'Expires ${_formatDate(_expiresAt!)}',
+                          ? context.l10n.pickExpirationDate
+                          : context.l10n.expiresOnShort(
+                              _formatDate(_expiresAt!),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -1043,14 +1065,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   icon: Icon(_isEditing ? Icons.save : Icons.group_add),
                   label: Text(
                     _isCreating
-                        ? (_isEditing ? 'Saving...' : 'Creating...')
-                        : (_isEditing ? 'Save group' : 'Create group'),
+                        ? (_isEditing
+                              ? context.l10n.savingGroup
+                              : context.l10n.creatingGroup)
+                        : (_isEditing
+                              ? context.l10n.saveGroupLabel
+                              : context.l10n.createGroupTitle),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Supported roles: ${_roleLabel(PollGroupRole.admin)}, ${_roleLabel(PollGroupRole.manager)}, ${_roleLabel(PollGroupRole.user)}.',
-                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),

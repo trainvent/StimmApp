@@ -652,5 +652,121 @@
 	"protectedGroupsRequireInviteLink": "Protected groups require a valid invite link and an approval request.",
 	"openGroupsCanBeJoinedImmediately": "Open groups can be joined immediately.",
 	"groupDetailsTemporarilyUnavailableRespond": "Group details are temporarily unavailable, but you can still respond to this notification.",
-	"groupDetailsTemporarilyUnavailable": "Group details are temporarily unavailable."
+	"groupDetailsTemporarilyUnavailable": "Group details are temporarily unavailable.",
+	"manageGroupsTitle": "Manage groups",
+	"pleaseSignInToManageGroups": "Please sign in to manage groups.",
+	"pickExistingGroupToUseOrEditOrCreateNewOne": "Pick an existing group to use or edit, or create a new one.",
+	"createNewGroup": "Create new group",
+	"yourGroupsTitle": "Your groups",
+	"noGroupsYetCreateOneAboveToStartTeamPolling": "No groups yet. Create one above to start team polling.",
+	"joinCodeWithValue": "Join code: {joinCode}",
+	"@joinCodeWithValue": {
+		"placeholders": {
+			"joinCode": {}
+		}
+	},
+	"expiresOnShort": "Expires {date}",
+	"@expiresOnShort": {
+		"placeholders": {
+			"date": {}
+		}
+	},
+	"importedMembersCount": "Imported members: {count}",
+	"@importedMembersCount": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"inviteLinkOnLabel": "Invite link on",
+	"editLabel": "Edit",
+	"keepSelected": "Keep selected",
+	"useForThisPoll": "Use for this poll",
+	"notificationsTitle": "Notifications",
+	"pleaseSignInToViewGroupInvitations": "Please sign in to view group invitations.",
+	"noGroupNotificationsYet": "No group notifications yet.",
+	"notificationStatusPending": "Pending",
+	"notificationStatusAccepted": "Accepted",
+	"notificationStatusDenied": "Denied",
+	"notificationActionInvitedYou": "invited you",
+	"notificationActionRequestedAccess": "requested access",
+	"openApp": "Open app",
+	"signInToJoinGroup": "Sign in to join",
+	"signInToRequestGroupAccess": "Sign in to request access",
+	"protectedGroupsRequireApprovalRequest": "Protected groups require an approval request before you can join.",
+	"signInToJoinGroupAutomatically": "Sign in to join this group automatically.",
+	"privateGroupOrSignInRequired": "This group is private or requires sign-in before more details can be shown.",
+	"createGroupTooltip": "Create group",
+	"groupHasNoActiveInviteLink": "This group has no active invite link.",
+	"copyLinkLabel": "Copy link",
+	"copyInviteLinkTooltip": "Copy invite link",
+	"pasteCsvMembers": "Paste CSV members",
+	"csvMembersHint": "email,nickname,role\nanna@company.com,Anna,user",
+	"importLabel": "Import",
+	"noCsvRowsImported": "No CSV rows were imported.",
+	"importedCsvRows": "Imported {count} CSV rows.",
+	"@importedCsvRows": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"importedRowsSkippedMalformed": "Imported {validRows} rows. Skipped {invalidRows} malformed rows.",
+	"@importedRowsSkippedMalformed": {
+		"placeholders": {
+			"validRows": {},
+			"invalidRows": {}
+		}
+	},
+	"pleaseEnterValidEmailForEveryInvitedMember": "Please enter a valid email for every invited member.",
+	"pleaseEnterValidEmailDomains": "Please enter valid email domains like company.com.",
+	"pleaseEnterGroupName": "Please enter a group name.",
+	"groupUpdated": "Group updated.",
+	"groupCreated": "Group created.",
+	"managerRoleLabel": "Manager",
+	"userRoleLabel": "User",
+	"onlyPreparedMembersCanParticipate": "Only members prepared by admins or managers can participate.",
+	"peopleWithInviteLinkCanRequestAccessToGroup": "People with the invite link can request access to the group.",
+	"everyoneCanJoinWithoutApproval": "Everyone can join without approval.",
+	"roleLabel": "Role",
+	"removeMemberTooltip": "Remove member",
+	"inviteMembersTitle": "Invite members",
+	"addMember": "Add member",
+	"inviteMembersDescription": "Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.",
+	"pasteCsvLabel": "Paste CSV",
+	"importCsvFileLabel": "Import CSV file",
+	"dropCsvHere": "Drop a CSV here",
+	"acceptedCsvFormat": "Accepted format: CSV or TSV with email,nickname,role",
+	"lastImportSummary": "Last import: {validRows} valid rows, {invalidRows} malformed rows.",
+	"@lastImportSummary": {
+		"placeholders": {
+			"validRows": {},
+			"invalidRows": {}
+		}
+	},
+	"allowedMailDomains": "Allowed mail domains",
+	"addDomain": "Add domain",
+	"allowedMailDomainsDescription": "Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.",
+	"noDomainRulesYet": "No domain rules yet.",
+	"domainLabel": "Domain",
+	"domainHint": "company.com",
+	"removeDomainTooltip": "Remove domain",
+	"editGroupTitle": "Edit group",
+	"createGroupTitle": "Create group",
+	"editGroupDescription": "Adjust the access rules, invites, and settings for this group.",
+	"createGroupDescription": "Create a members-only polling space for teams, events, and companies.",
+	"membersCanChooseTheirOwnNickname": "Members can choose their own nickname",
+	"managersCanPrepareAccessLists": "Managers can prepare access lists",
+	"setExpirationDate": "Set an expiration date",
+	"pickExpirationDate": "Pick expiration date",
+	"savingGroup": "Saving...",
+	"creatingGroup": "Creating...",
+	"saveGroupLabel": "Save group",
+	"supportedRoles": "Supported roles: {admin}, {manager}, {user}.",
+	"@supportedRoles": {
+		"placeholders": {
+			"admin": {},
+			"manager": {},
+			"user": {}
+		}
+	},
+	"scanQrCodeTooltip": "Scan QR code"
 }

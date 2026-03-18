@@ -196,8 +196,7 @@ service cloud.firestore {
                       request.auth.uid in resource.data.memberIds ||
                       resource.data.accessMode != 'private'
                     ));
-      allow create: if isAdmin() ||
-                    (isAuthenticated() && isValidPollGroupCreate());
+      allow create: if isAdmin();
       allow update: if isAdmin() ||
                     (isAuthenticated() &&
                      resource.data.createdBy == request.auth.uid) ||

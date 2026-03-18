@@ -9,8 +9,11 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/subscription_provider.dart';
+import 'package:stimmapp/core/services/purchases_service.dart';
 
 class MemberGroupsPage extends StatelessWidget {
   const MemberGroupsPage({super.key});
@@ -97,6 +100,35 @@ class MemberGroupsPage extends StatelessWidget {
   }
 
   Future<void> _openCreateGroup(BuildContext context) async {
+    final uid = authService.currentUser?.uid;
+    if (uid == null) {
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
+
+    await PurchasesService.instance.refreshCustomerInfo();
+    await syncSubscriptionStatus(uid, PurchasesService.instance.currentStatus);
+
+    final user = await UserRepository.create().getById(uid);
+    final createdCount = await PollGroupRepository.create()
+        .countGroupsCreatedByUser(uid);
+    final requiresPro = createdCount >= 1 && (user?.isPro ?? false) != true;
+    if (!context.mounted) {
+      return;
+    }
+    if (requiresPro) {
+      final opened = await PurchasesService.instance.presentPaywall(
+        context: context,
+      );
+      if (!opened && context.mounted) {
+        showErrorSnackBar(context.l10n.couldNotOpenPaywall);
+      }
+      return;
+    }
+
+    if (!context.mounted) {
+      return;
+    }
     await Navigator.of(context).push<PollGroup>(
       MaterialPageRoute(builder: (context) => const GroupEditorPage()),
     );
@@ -167,7 +199,7 @@ class MemberGroupsPage extends StatelessWidget {
   ) async {
     final inviteLink = _buildInviteLink(group);
     if (inviteLink == null) {
-      showErrorSnackBar('This group has no active invite link.');
+      showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
       return;
     }
 
@@ -175,13 +207,13 @@ class MemberGroupsPage extends StatelessWidget {
     if (!context.mounted) {
       return;
     }
-    showSuccessSnackBar('Invite link copied to clipboard.');
+    showSuccessSnackBar(context.l10n.linkCopiedToClipboard);
   }
 
   Future<void> _showGroupQrCode(BuildContext context, PollGroup group) async {
     final inviteLink = _buildInviteLink(group);
     if (inviteLink == null) {
-      showErrorSnackBar('This group has no active invite link.');
+      showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
       return;
     }
 
@@ -220,11 +252,11 @@ class MemberGroupsPage extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
               }
               if (context.mounted) {
-                showSuccessSnackBar('Invite link copied to clipboard.');
+                showSuccessSnackBar(context.l10n.linkCopiedToClipboard);
               }
             },
             icon: const Icon(Icons.copy),
-            label: const Text('Copy link'),
+            label: Text(context.l10n.copyLinkLabel),
           ),
         ],
       ),
@@ -246,7 +278,7 @@ class MemberGroupsPage extends StatelessWidget {
         title: Text(context.l10n.myGroups),
         actions: [
           IconButton(
-            tooltip: 'Create group',
+            tooltip: context.l10n.createGroupTooltip,
             onPressed: () => _openCreateGroup(context),
             icon: const Icon(Icons.add),
           ),
@@ -383,7 +415,7 @@ class MemberGroupsPage extends StatelessWidget {
                                   ),
                                   if (inviteLink != null) ...[
                                     IconButton(
-                                      tooltip: 'Copy invite link',
+                                      tooltip: context.l10n.copyInviteLinkTooltip,
                                       onPressed: () =>
                                           _copyGroupInviteLink(context, group),
                                       icon: const Icon(Icons.link),

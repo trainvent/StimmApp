@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 class PollGroupRepository {
@@ -41,13 +41,6 @@ class PollGroupRepository {
         fromFirestore: PollGroupAllowedDomain.fromFirestore,
         toFirestore: PollGroupAllowedDomain.toFirestore,
       );
-
-  CollectionReference<UserProfile> _users() => _fs.colRef<UserProfile>(
-    DatabaseCollections.users,
-    fromFirestore: (snap, _) =>
-        UserProfile.fromJson(snap.data() as Map<String, dynamic>, snap.id),
-    toFirestore: (model, _) => model.toJson(),
-  );
 
   CollectionReference<PollGroupAccessNotification> _notifications(
     String uid,
@@ -192,91 +185,56 @@ class PollGroupRepository {
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
   }) async {
-    final now = DateTime.now();
-    final groupRef = _groups().doc();
     final normalizedMembers = normalizeAllowedMembers(allowedMembers);
     final normalizedDomains = normalizeAllowedDomains(allowedDomains);
-    final creatorProfile = await _fs.getDoc(_users().doc(creatorUid));
-    final actorDisplayName =
-        creatorProfile?.displayName ?? creatorProfile?.email ?? 'Group admin';
-    final group = PollGroup(
-      id: groupRef.id,
-      name: name,
-      createdBy: creatorUid,
-      createdAt: now,
-      expiresAt: expiresAt,
-      joinCode: joinCode,
-      nicknameMode: nicknameMode,
-      managersCanInvite: managersCanInvite,
-      memberIds: [creatorUid],
-      importedMemberCount: normalizedMembers.length,
-      accessMode: accessMode,
-      inviteLinkEnabled: inviteLinkEnabled,
-      inviteLinkToken: inviteLinkEnabled ? inviteLinkToken : null,
-    );
-
-    final batch = _fs.instance.batch();
-    batch.set(groupRef, group);
-    batch.set(
-      _members(groupRef.id).doc(creatorUid),
-      PollGroupMember(
-        uid: creatorUid,
-        role: PollGroupRole.admin,
-        joinedAt: now,
-        joinedBy: creatorUid,
-      ),
-    );
-
-    for (final member in normalizedMembers) {
-      batch.set(
-        _allowedMembers(groupRef.id).doc(member.email.toLowerCase()),
-        member,
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'createPollGroup',
       );
-    }
-
-    for (final domain in normalizedDomains) {
-      batch.set(_allowedDomains(groupRef.id).doc(domain.domain), domain);
-    }
-
-    final existingUsers = await _findUsersByEmails(
-      normalizedMembers.map((member) => member.email).toList(),
-    );
-    for (final profile in existingUsers) {
-      final email = profile.email?.trim().toLowerCase();
-      if (email == null) {
-        continue;
+      final result = await callable.call(<String, Object?>{
+        'name': name,
+        'joinCode': joinCode,
+        'nicknameMode': pollGroupNicknameModeToFirestore(nicknameMode),
+        'managersCanInvite': managersCanInvite,
+        'accessMode': pollGroupAccessModeToFirestore(accessMode),
+        'inviteLinkEnabled': inviteLinkEnabled,
+        'inviteLinkToken': inviteLinkEnabled ? inviteLinkToken : null,
+        'expiresAtMillis': expiresAt?.millisecondsSinceEpoch,
+        'allowedMembers': normalizedMembers
+            .map(
+              (member) => <String, Object?>{
+                'email': member.email,
+                'nickname': member.nickname,
+                'role': pollGroupRoleToFirestore(member.role),
+              },
+            )
+            .toList(),
+        'allowedDomains': normalizedDomains
+            .map(
+              (domain) => <String, Object?>{
+                'domain': domain.domain,
+                'role': pollGroupRoleToFirestore(domain.role),
+              },
+            )
+            .toList(),
+      });
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final groupId = data['groupId'] as String?;
+      if (groupId == null || groupId.isEmpty) {
+        throw StateError('Group creation returned no id.');
       }
-      PollGroupAllowedMember? allowedMember;
-      for (final member in normalizedMembers) {
-        if (member.email == email) {
-          allowedMember = member;
-        }
+      return groupId;
+    } on FirebaseFunctionsException catch (e) {
+      if (e.message == 'group_limit_requires_pro') {
+        throw StateError('group_limit_requires_pro');
       }
-      if (allowedMember == null) {
-        continue;
-      }
-      final notificationRef = _notifications(profile.uid).doc();
-      batch.set(
-        notificationRef,
-        PollGroupAccessNotification(
-          id: notificationRef.id,
-          groupId: groupRef.id,
-          groupName: name,
-          actorUid: creatorUid,
-          actorDisplayName: actorDisplayName,
-          recipientUid: profile.uid,
-          role: allowedMember.role,
-          accessMode: accessMode,
-          type: PollGroupAccessNotificationType.invite,
-          status: PollGroupAccessNotificationStatus.pending,
-          createdAt: now,
-          inviteLinkToken: inviteLinkEnabled ? inviteLinkToken : null,
-        ),
-      );
+      throw StateError(e.message ?? e.code);
     }
+  }
 
-    await batch.commit();
-    return groupRef.id;
+  Future<int> countGroupsCreatedByUser(String uid) async {
+    final groups = await watchGroupsForUser(uid).first;
+    return groups.where((group) => group.createdBy == uid).take(2).length;
   }
 
   Future<List<PollGroupAllowedMember>> getAllowedMembers(String groupId) async {
@@ -482,30 +440,6 @@ class PollGroupRepository {
     });
     batch.delete(_members(group.id).doc(uid));
     await batch.commit();
-  }
-
-  Future<List<UserProfile>> _findUsersByEmails(List<String> emails) async {
-    final normalized = emails
-        .map((email) => email.trim().toLowerCase())
-        .toSet();
-    final profiles = <UserProfile>[];
-    for (final chunk in _chunkStrings(normalized.toList(), 10)) {
-      final snap = await _users().where('email', whereIn: chunk).get();
-      profiles.addAll(snap.docs.map((doc) => doc.data()));
-    }
-    return profiles;
-  }
-
-  List<List<String>> _chunkStrings(List<String> items, int size) {
-    if (items.isEmpty) {
-      return const [];
-    }
-    final chunks = <List<String>>[];
-    for (var index = 0; index < items.length; index += size) {
-      final end = (index + size) > items.length ? items.length : index + size;
-      chunks.add(items.sublist(index, end));
-    }
-    return chunks;
   }
 
   static List<PollGroupAllowedMember> normalizeAllowedMembers(

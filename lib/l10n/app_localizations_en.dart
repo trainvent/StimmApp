@@ -1642,4 +1642,269 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupDetailsTemporarilyUnavailable =>
       'Group details are temporarily unavailable.';
+
+  @override
+  String get manageGroupsTitle => 'Manage groups';
+
+  @override
+  String get pleaseSignInToManageGroups => 'Please sign in to manage groups.';
+
+  @override
+  String get pickExistingGroupToUseOrEditOrCreateNewOne =>
+      'Pick an existing group to use or edit, or create a new one.';
+
+  @override
+  String get createNewGroup => 'Create new group';
+
+  @override
+  String get yourGroupsTitle => 'Your groups';
+
+  @override
+  String get noGroupsYetCreateOneAboveToStartTeamPolling =>
+      'No groups yet. Create one above to start team polling.';
+
+  @override
+  String joinCodeWithValue(Object joinCode) {
+    return 'Join code: $joinCode';
+  }
+
+  @override
+  String expiresOnShort(Object date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String importedMembersCount(Object count) {
+    return 'Imported members: $count';
+  }
+
+  @override
+  String get inviteLinkOnLabel => 'Invite link on';
+
+  @override
+  String get editLabel => 'Edit';
+
+  @override
+  String get keepSelected => 'Keep selected';
+
+  @override
+  String get useForThisPoll => 'Use for this poll';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get pleaseSignInToViewGroupInvitations =>
+      'Please sign in to view group invitations.';
+
+  @override
+  String get noGroupNotificationsYet => 'No group notifications yet.';
+
+  @override
+  String get notificationStatusPending => 'Pending';
+
+  @override
+  String get notificationStatusAccepted => 'Accepted';
+
+  @override
+  String get notificationStatusDenied => 'Denied';
+
+  @override
+  String get notificationActionInvitedYou => 'invited you';
+
+  @override
+  String get notificationActionRequestedAccess => 'requested access';
+
+  @override
+  String get openApp => 'Open app';
+
+  @override
+  String get signInToJoinGroup => 'Sign in to join';
+
+  @override
+  String get signInToRequestGroupAccess => 'Sign in to request access';
+
+  @override
+  String get protectedGroupsRequireApprovalRequest =>
+      'Protected groups require an approval request before you can join.';
+
+  @override
+  String get signInToJoinGroupAutomatically =>
+      'Sign in to join this group automatically.';
+
+  @override
+  String get privateGroupOrSignInRequired =>
+      'This group is private or requires sign-in before more details can be shown.';
+
+  @override
+  String get createGroupTooltip => 'Create group';
+
+  @override
+  String get groupHasNoActiveInviteLink =>
+      'This group has no active invite link.';
+
+  @override
+  String get copyLinkLabel => 'Copy link';
+
+  @override
+  String get copyInviteLinkTooltip => 'Copy invite link';
+
+  @override
+  String get pasteCsvMembers => 'Paste CSV members';
+
+  @override
+  String get csvMembersHint =>
+      'email,nickname,role\nanna@company.com,Anna,user';
+
+  @override
+  String get importLabel => 'Import';
+
+  @override
+  String get noCsvRowsImported => 'No CSV rows were imported.';
+
+  @override
+  String importedCsvRows(Object count) {
+    return 'Imported $count CSV rows.';
+  }
+
+  @override
+  String importedRowsSkippedMalformed(Object validRows, Object invalidRows) {
+    return 'Imported $validRows rows. Skipped $invalidRows malformed rows.';
+  }
+
+  @override
+  String get pleaseEnterValidEmailForEveryInvitedMember =>
+      'Please enter a valid email for every invited member.';
+
+  @override
+  String get pleaseEnterValidEmailDomains =>
+      'Please enter valid email domains like company.com.';
+
+  @override
+  String get pleaseEnterGroupName => 'Please enter a group name.';
+
+  @override
+  String get groupUpdated => 'Group updated.';
+
+  @override
+  String get groupCreated => 'Group created.';
+
+  @override
+  String get managerRoleLabel => 'Manager';
+
+  @override
+  String get userRoleLabel => 'User';
+
+  @override
+  String get onlyPreparedMembersCanParticipate =>
+      'Only members prepared by admins or managers can participate.';
+
+  @override
+  String get peopleWithInviteLinkCanRequestAccessToGroup =>
+      'People with the invite link can request access to the group.';
+
+  @override
+  String get everyoneCanJoinWithoutApproval =>
+      'Everyone can join without approval.';
+
+  @override
+  String get roleLabel => 'Role';
+
+  @override
+  String get removeMemberTooltip => 'Remove member';
+
+  @override
+  String get inviteMembersTitle => 'Invite members';
+
+  @override
+  String get addMember => 'Add member';
+
+  @override
+  String get inviteMembersDescription =>
+      'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.';
+
+  @override
+  String get pasteCsvLabel => 'Paste CSV';
+
+  @override
+  String get importCsvFileLabel => 'Import CSV file';
+
+  @override
+  String get dropCsvHere => 'Drop a CSV here';
+
+  @override
+  String get acceptedCsvFormat =>
+      'Accepted format: CSV or TSV with email,nickname,role';
+
+  @override
+  String lastImportSummary(Object validRows, Object invalidRows) {
+    return 'Last import: $validRows valid rows, $invalidRows malformed rows.';
+  }
+
+  @override
+  String get allowedMailDomains => 'Allowed mail domains';
+
+  @override
+  String get addDomain => 'Add domain';
+
+  @override
+  String get allowedMailDomainsDescription =>
+      'Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.';
+
+  @override
+  String get noDomainRulesYet => 'No domain rules yet.';
+
+  @override
+  String get domainLabel => 'Domain';
+
+  @override
+  String get domainHint => 'company.com';
+
+  @override
+  String get removeDomainTooltip => 'Remove domain';
+
+  @override
+  String get editGroupTitle => 'Edit group';
+
+  @override
+  String get createGroupTitle => 'Create group';
+
+  @override
+  String get editGroupDescription =>
+      'Adjust the access rules, invites, and settings for this group.';
+
+  @override
+  String get createGroupDescription =>
+      'Create a members-only polling space for teams, events, and companies.';
+
+  @override
+  String get membersCanChooseTheirOwnNickname =>
+      'Members can choose their own nickname';
+
+  @override
+  String get managersCanPrepareAccessLists =>
+      'Managers can prepare access lists';
+
+  @override
+  String get setExpirationDate => 'Set an expiration date';
+
+  @override
+  String get pickExpirationDate => 'Pick expiration date';
+
+  @override
+  String get savingGroup => 'Saving...';
+
+  @override
+  String get creatingGroup => 'Creating...';
+
+  @override
+  String get saveGroupLabel => 'Save group';
+
+  @override
+  String supportedRoles(Object admin, Object manager, Object user) {
+    return 'Supported roles: $admin, $manager, $user.';
+  }
+
+  @override
+  String get scanQrCodeTooltip => 'Scan QR code';
 }
