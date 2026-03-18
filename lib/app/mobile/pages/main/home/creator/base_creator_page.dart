@@ -366,7 +366,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               left: 0,
               child: IgnorePointer(
                 child: Image.asset(
-                  'assets/images/form_guy_teaching.png',
+                  'assets/images/Lemm_teaching.png',
                   width: screenWidth / 5,
                   fit: BoxFit.contain,
                 ),
@@ -482,7 +482,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                   return null;
                 },
               ),
-              if (widget.additionalMiddleFields != null) ...widget.additionalMiddleFields!,
+              if (widget.additionalMiddleFields != null)
+                ...widget.additionalMiddleFields!,
               const SizedBox(height: 20),
               Text(
                 context.l10n.tags,

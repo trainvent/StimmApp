@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                   Expanded(
                     child: Center(
                       child: Image.asset(
-                        "assets/images/form_guy_lock.png",
+                        "assets/images/Lemm_login.png",
                         fit: BoxFit.contain,
                       ),
                     ),

@@ -207,7 +207,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Expanded(
                     child: Center(
                       child: Image.asset(
-                        "assets/images/form_guy_register.png",
+                        "assets/images/Lemm_pen.png",
                         fit: BoxFit.contain,
                       ),
                     ),

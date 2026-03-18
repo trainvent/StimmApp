@@ -440,14 +440,21 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return 'GRP-${now.substring(now.length - 6)}';
   }
 
-  String _buildInviteLink({String? groupId}) {
+  String? get _currentGroupId => widget.initialGroup?.id;
+
+  String? _buildInviteLink({String? groupId}) {
+    final resolvedGroupId = groupId ?? _currentGroupId;
+    if (resolvedGroupId == null || resolvedGroupId.isEmpty) {
+      return null;
+    }
+
     return Uri(
       scheme: 'https',
       host: Uri.parse(Environment.shareBaseUrl).host,
       path: '/group-invite',
       queryParameters: <String, String>{
         'token': _draftInviteToken,
-        ...?groupId == null ? null : {'groupId': groupId},
+        'groupId': resolvedGroupId,
       },
     ).toString();
   }
@@ -457,7 +464,12 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       _accessMode == PollGroupAccessMode.open;
 
   Future<void> _copyInviteLink() async {
-    await Clipboard.setData(ClipboardData(text: _buildInviteLink()));
+    final inviteLink = _buildInviteLink();
+    if (inviteLink == null) {
+      showErrorSnackBar('Save the group before copying its invite link.');
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: inviteLink));
     if (!mounted) {
       return;
     }
@@ -465,11 +477,17 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   }
 
   Future<void> _shareInviteLink() async {
+    final inviteLink = _buildInviteLink();
+    if (inviteLink == null) {
+      showErrorSnackBar('Save the group before sharing its invite link.');
+      return;
+    }
+
     try {
       await SharePlus.instance.share(
         ShareParams(
           text:
-              'Use this invite link to coordinate access to ${_nameController.text.trim().isEmpty ? 'your group' : _nameController.text.trim()}: ${_buildInviteLink()}',
+              'Use this invite link to coordinate access to ${_nameController.text.trim().isEmpty ? 'your group' : _nameController.text.trim()}: $inviteLink',
           subject: 'Group invite link',
         ),
       );
@@ -701,6 +719,109 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
+  Widget _buildMemberEmailField(_InviteMemberDraft draft, int index) {
+    return TextField(
+      key: Key('member_email_$index'),
+      controller: draft.emailController,
+      decoration: const InputDecoration(
+        labelText: 'Email',
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildMemberNicknameField(_InviteMemberDraft draft, int index) {
+    return TextField(
+      key: Key('member_nickname_$index'),
+      controller: draft.nicknameController,
+      decoration: const InputDecoration(
+        labelText: 'Nickname',
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildMemberRoleField(_InviteMemberDraft draft, int index) {
+    return _buildRoleDropdown(
+      key: Key('member_role_$index'),
+      value: draft.role,
+      onChanged: (value) {
+        if (value == null) {
+          return;
+        }
+        setState(() {
+          draft.role = value;
+        });
+      },
+    );
+  }
+
+  Widget _buildMemberDraftRow(_InviteMemberDraft draft, int index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final useCompactLayout = constraints.maxWidth < 560;
+        if (!useCompactLayout) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 3, child: _buildMemberEmailField(draft, index)),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: _buildMemberNicknameField(draft, index),
+              ),
+              const SizedBox(width: 12),
+              Expanded(flex: 2, child: _buildMemberRoleField(draft, index)),
+              const SizedBox(width: 8),
+              IconButton(
+                key: Key('remove_member_row_$index'),
+                onPressed: () => _removeMemberDraft(index),
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Remove member',
+              ),
+            ],
+          );
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).dividerColor),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _buildMemberEmailField(draft, index)),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    key: Key('remove_member_row_$index'),
+                    onPressed: () => _removeMemberDraft(index),
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Remove member',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _buildMemberNicknameField(draft, index),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildMemberRoleField(draft, index)),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildInviteMembersSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -730,57 +851,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           final draft = _memberDrafts[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextField(
-                    key: Key('member_email_$index'),
-                    controller: draft.emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    key: Key('member_nickname_$index'),
-                    controller: draft.nicknameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nickname',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: _buildRoleDropdown(
-                    key: Key('member_role_$index'),
-                    value: draft.role,
-                    onChanged: (value) {
-                      if (value == null) {
-                        return;
-                      }
-                      setState(() {
-                        draft.role = value;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  key: Key('remove_member_row_$index'),
-                  onPressed: () => _removeMemberDraft(index),
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: 'Remove member',
-                ),
-              ],
-            ),
+            child: _buildMemberDraftRow(draft, index),
           );
         }),
         const SizedBox(height: 8),
@@ -958,34 +1029,41 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
-          SelectableText(
-            inviteLink,
-            key: const Key('invite_link_preview'),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: QrImageView(
-              key: const Key('invite_qr_preview'),
-              data: inviteLink,
-              size: 160,
-              backgroundColor: Colors.white,
+          if (inviteLink == null)
+            Text(
+              'Save the group first to generate a shareable invite link.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            )
+          else ...[
+            SelectableText(
+              inviteLink,
+              key: const Key('invite_link_preview'),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            Center(
+              child: QrImageView(
+                key: const Key('invite_qr_preview'),
+                data: inviteLink,
+                size: 160,
+                backgroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Wrap(
             spacing: 12,
             runSpacing: 12,
             children: [
               OutlinedButton.icon(
                 key: const Key('copy_invite_link'),
-                onPressed: _copyInviteLink,
+                onPressed: inviteLink == null ? null : _copyInviteLink,
                 icon: const Icon(Icons.copy),
                 label: const Text('Copy link'),
               ),
               OutlinedButton.icon(
                 key: const Key('share_invite_link'),
-                onPressed: _shareInviteLink,
+                onPressed: inviteLink == null ? null : _shareInviteLink,
                 icon: const Icon(Icons.share),
                 label: const Text('Share link'),
               ),

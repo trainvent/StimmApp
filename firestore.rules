@@ -212,7 +212,7 @@ service cloud.firestore {
       match /members/{memberId} {
         allow read: if canReadPollGroup(groupId);
         allow create: if isAdmin() ||
-                      (isPollGroupCreator(groupId) &&
+                      (isPollGroupCreatorAfter(groupId) &&
                        request.resource.data.joinedBy == request.auth.uid) ||
                       (isPollGroupMemberAfter(groupId) &&
                        memberId == request.auth.uid &&

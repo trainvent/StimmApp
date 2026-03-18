@@ -18,7 +18,7 @@ class WelcomePage extends StatelessWidget {
           children: [
             Expanded(
               flex: 4,
-              child: Image.asset('assets/images/Form_guy_waving.png'),
+              child: Image.asset('assets/images/Lemm_waving.png'),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
