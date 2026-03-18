@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/group_editor_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';

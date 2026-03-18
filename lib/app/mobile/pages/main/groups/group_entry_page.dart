@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/login_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -13,13 +14,11 @@ class GroupEntryPage extends StatefulWidget {
   const GroupEntryPage({
     super.key,
     required this.groupId,
-    this.inviteToken,
     this.notificationId,
     this.notificationOwnerUid,
   });
 
   final String groupId;
-  final String? inviteToken;
   final String? notificationId;
   final String? notificationOwnerUid;
 
@@ -315,17 +314,13 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                   if (group != null) ...[
                     if (notification != null) const SizedBox(height: 12),
                     Text(
-                      context.l10n.accessModeLabel(switch (group.accessMode) {
-                        PollGroupAccessMode.private =>
-                          context.l10n.completelyPrivateAccessMode,
-                        PollGroupAccessMode.protected =>
-                          context.l10n.protectedAccessMode,
-                        PollGroupAccessMode.open => context.l10n.openAccessMode,
-                      }),
+                      context.l10n.accessModeLabel(
+                        group.accessMode.localizedTitle(context),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     if (group.accessMode == PollGroupAccessMode.protected)
-                      Text(context.l10n.protectedGroupsRequireApprovalRequest),
+                      Text(group.accessMode.localizedDescription(context)),
                     if (group.accessMode == PollGroupAccessMode.open)
                       Text(
                         currentUid == null

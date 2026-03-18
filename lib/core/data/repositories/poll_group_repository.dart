@@ -180,7 +180,6 @@ class PollGroupRepository {
     required bool managersCanInvite,
     required PollGroupAccessMode accessMode,
     required bool inviteLinkEnabled,
-    String? inviteLinkToken,
     DateTime? expiresAt,
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
@@ -198,7 +197,6 @@ class PollGroupRepository {
         'managersCanInvite': managersCanInvite,
         'accessMode': pollGroupAccessModeToFirestore(accessMode),
         'inviteLinkEnabled': inviteLinkEnabled,
-        'inviteLinkToken': inviteLinkEnabled ? inviteLinkToken : null,
         'expiresAtMillis': expiresAt?.millisecondsSinceEpoch,
         'allowedMembers': normalizedMembers
             .map(
@@ -397,7 +395,6 @@ class PollGroupRepository {
         type: PollGroupAccessNotificationType.request,
         status: PollGroupAccessNotificationStatus.pending,
         createdAt: now,
-        inviteLinkToken: group.inviteLinkToken,
       ),
     );
   }

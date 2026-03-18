@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_access_qr_scanner_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -17,30 +16,6 @@ import 'package:stimmapp/core/services/purchases_service.dart';
 
 class MemberGroupsPage extends StatelessWidget {
   const MemberGroupsPage({super.key});
-
-  String? _buildInviteLink(PollGroup group) {
-    if (!group.inviteLinkEnabled) {
-      return null;
-    }
-
-    return Uri(
-      scheme: 'https',
-      host: Uri.parse(Environment.shareBaseUrl).host,
-      path: '/group-invite',
-      queryParameters: <String, String>{'groupId': group.id},
-    ).toString();
-  }
-
-  String _accessModeTitle(BuildContext context, PollGroupAccessMode mode) {
-    switch (mode) {
-      case PollGroupAccessMode.private:
-        return context.l10n.completelyPrivateAccessMode;
-      case PollGroupAccessMode.protected:
-        return context.l10n.protectedAccessMode;
-      case PollGroupAccessMode.open:
-        return context.l10n.openAccessMode;
-    }
-  }
 
   Future<void> _leaveGroup(BuildContext context, PollGroup group) async {
     final uid = authService.currentUser?.uid;
@@ -197,7 +172,7 @@ class MemberGroupsPage extends StatelessWidget {
     BuildContext context,
     PollGroup group,
   ) async {
-    final inviteLink = _buildInviteLink(group);
+    final inviteLink = buildPollGroupInviteLink(group);
     if (inviteLink == null) {
       showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
       return;
@@ -211,7 +186,7 @@ class MemberGroupsPage extends StatelessWidget {
   }
 
   Future<void> _showGroupQrCode(BuildContext context, PollGroup group) async {
-    final inviteLink = _buildInviteLink(group);
+    final inviteLink = buildPollGroupInviteLink(group);
     if (inviteLink == null) {
       showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
       return;
@@ -338,12 +313,6 @@ class MemberGroupsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final group = groups[index];
               final isCreator = group.createdBy == uid;
-              final expiresAt = group.expiresAt;
-              final expiresLabel = expiresAt == null
-                  ? context.l10n.noExpiry
-                  : context.l10n.expiresOnDate(
-                      DateFormat('yyyy-MM-dd').format(expiresAt),
-                    );
 
               return StreamBuilder<PollGroupMember?>(
                 stream: repository.watchMember(group.id, uid),
@@ -351,12 +320,18 @@ class MemberGroupsPage extends StatelessWidget {
                   final member = memberSnapshot.data;
                   final isAdmin = member?.role == PollGroupRole.admin;
                   final canManage = isCreator || isAdmin;
-                  final inviteLink = _buildInviteLink(group);
+                  final inviteLink = buildPollGroupInviteLink(group);
                   final roleLabel = isCreator
                       ? context.l10n.creatorRoleLabel
                       : (isAdmin
                             ? context.l10n.adminRoleLabel
                             : context.l10n.memberRoleLabel);
+                  final expiresAt = group.expiresAt;
+                  final expiresLabel = expiresAt == null
+                      ? context.l10n.noExpiry
+                      : context.l10n.expiresOnDate(
+                          formatPollGroupDate(expiresAt),
+                        );
 
                   return Slidable(
                     key: ValueKey('member_group_${group.id}'),
@@ -390,65 +365,37 @@ class MemberGroupsPage extends StatelessWidget {
                               ),
                             ],
                     ),
-                    child: Card(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: canManage
-                            ? () => _openEditor(context, group)
-                            : null,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.groups_2_outlined),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      group.name,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
-                                    ),
-                                  ),
-                                  if (inviteLink != null) ...[
-                                    IconButton(
-                                      tooltip:
-                                          context.l10n.copyInviteLinkTooltip,
-                                      onPressed: () =>
-                                          _copyGroupInviteLink(context, group),
-                                      icon: const Icon(Icons.link),
-                                    ),
-                                    IconButton(
-                                      tooltip: context.l10n.scanQrCode,
-                                      onPressed: () =>
-                                          _showGroupQrCode(context, group),
-                                      icon: const Icon(Icons.qr_code),
-                                    ),
-                                  ],
-                                  Chip(label: Text(roleLabel)),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                context.l10n.groupAccessSummary(
-                                  _accessModeTitle(context, group.accessMode),
-                                  group.memberIds.length,
-                                  expiresLabel,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                canManage
-                                    ? context.l10n.swipeForDelete
-                                    : context.l10n.swipeToLeaveGroup,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
+                    child: PollGroupSummaryCard(
+                      group: group,
+                      onTap: canManage ? () => _openEditor(context, group) : null,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (inviteLink != null) ...[
+                            IconButton(
+                              tooltip: context.l10n.copyInviteLinkTooltip,
+                              onPressed: () => _copyGroupInviteLink(context, group),
+                              icon: const Icon(Icons.link),
+                            ),
+                            IconButton(
+                              tooltip: context.l10n.scanQrCode,
+                              onPressed: () => _showGroupQrCode(context, group),
+                              icon: const Icon(Icons.qr_code),
+                            ),
+                          ],
+                          Chip(label: Text(roleLabel)),
+                        ],
+                      ),
+                      summary: context.l10n.groupAccessSummary(
+                        group.accessMode.localizedTitle(context),
+                        group.memberIds.length,
+                        expiresLabel,
+                      ),
+                      footer: Text(
+                        canManage
+                            ? context.l10n.swipeForDelete
+                            : context.l10n.swipeToLeaveGroup,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   );

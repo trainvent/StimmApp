@@ -12,7 +12,7 @@ import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/delete_account_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
 import 'package:stimmapp/core/config/environment.dart';
@@ -155,10 +155,7 @@ class _MyAppState extends State<MyApp> {
       if (groupId == null || groupId.isEmpty) {
         return null;
       }
-      return GroupEntryPage(
-        groupId: groupId,
-        inviteToken: uri.queryParameters['token'],
-      );
+      return GroupEntryPage(groupId: groupId);
     }
 
     if (uri.path.isEmpty || uri.path == '/') {
@@ -238,7 +235,9 @@ class _MyAppState extends State<MyApp> {
                   },
                   onGenerateRoute: (settings) {
                     final page = _pageForUri(
-                      settings.name == null ? null : Uri.tryParse(settings.name!),
+                      settings.name == null
+                          ? null
+                          : Uri.tryParse(settings.name!),
                     );
                     if (page != null) {
                       return MaterialPageRoute(
@@ -259,8 +258,7 @@ class _MyAppState extends State<MyApp> {
                   debugShowCheckedModeBanner: false,
                   home: !_initialized
                       ? const AppLoadingPage()
-                      : _pageForUri(initialUri) ??
-                            const InitAppLayout(),
+                      : _pageForUri(initialUri) ?? const InitAppLayout(),
                 );
 
                 if (Environment.isDev) {

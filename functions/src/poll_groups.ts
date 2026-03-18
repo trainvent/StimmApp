@@ -8,7 +8,6 @@ type CreatePollGroupPayload = {
 	managersCanInvite?: unknown;
 	accessMode?: unknown;
 	inviteLinkEnabled?: unknown;
-	inviteLinkToken?: unknown;
 	expiresAtMillis?: unknown;
 	allowedMembers?: unknown;
 	allowedDomains?: unknown;
@@ -179,9 +178,6 @@ export const createPollGroup = onCall(async (request) => {
 		});
 	}
 
-	const inviteLinkToken = data.inviteLinkEnabled
-		? normalizeOptionalString(data.inviteLinkToken)
-		: null;
 	const actorDisplayName =
 		typeof creatorData?.displayName === "string" && creatorData.displayName.trim()
 			? creatorData.displayName.trim()
@@ -205,7 +201,6 @@ export const createPollGroup = onCall(async (request) => {
 		isActive: true,
 		accessMode: data.accessMode,
 		inviteLinkEnabled: data.inviteLinkEnabled,
-		inviteLinkToken,
 		nameLowercase: name.toLowerCase(),
 	});
 
@@ -261,7 +256,6 @@ export const createPollGroup = onCall(async (request) => {
 			status: "pending",
 			createdAt: now,
 			resolvedAt: null,
-			inviteLinkToken,
 		});
 	}
 

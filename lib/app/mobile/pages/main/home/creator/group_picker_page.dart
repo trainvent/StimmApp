@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/group_editor_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -23,10 +23,7 @@ class GroupPickerPage extends StatelessWidget {
       repository ?? PollGroupRepository.create();
   AuthService get _auth => auth ?? authService;
 
-  Future<void> _openEditor(
-    BuildContext context, {
-    PollGroup? group,
-  }) async {
+  Future<void> _openEditor(BuildContext context, {PollGroup? group}) async {
     final selectedGroup = await Navigator.of(context).push<PollGroup>(
       MaterialPageRoute(
         builder: (context) => GroupEditorPage(initialGroup: group),
@@ -96,7 +93,11 @@ class GroupPickerPage extends StatelessWidget {
                       const Center(child: CircularProgressIndicator()),
                     if (groups.isEmpty &&
                         snapshot.connectionState != ConnectionState.waiting)
-                      Text(context.l10n.noGroupsYetCreateOneAboveToStartTeamPolling),
+                      Text(
+                        context
+                            .l10n
+                            .noGroupsYetCreateOneAboveToStartTeamPolling,
+                      ),
                     ...groups.map(
                       (group) => Card(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -112,7 +113,9 @@ class GroupPickerPage extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       group.name,
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
                                     ),
                                   ),
                                   if (selectedGroupId == group.id)
@@ -122,7 +125,9 @@ class GroupPickerPage extends StatelessWidget {
                               const SizedBox(height: 8),
                               Text(
                                 [
-                                  context.l10n.joinCodeWithValue(group.joinCode),
+                                  context.l10n.joinCodeWithValue(
+                                    group.joinCode,
+                                  ),
                                   if (group.expiresAt != null)
                                     context.l10n.expiresOnShort(
                                       _formatDate(group.expiresAt!),
@@ -141,11 +146,13 @@ class GroupPickerPage extends StatelessWidget {
                                 runSpacing: 12,
                                 children: [
                                   OutlinedButton(
-                                    onPressed: () => _openEditor(context, group: group),
+                                    onPressed: () =>
+                                        _openEditor(context, group: group),
                                     child: Text(context.l10n.editLabel),
                                   ),
                                   FilledButton.tonal(
-                                    onPressed: () => Navigator.of(context).pop(group),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(group),
                                     child: Text(
                                       selectedGroupId == group.id
                                           ? context.l10n.keepSelected

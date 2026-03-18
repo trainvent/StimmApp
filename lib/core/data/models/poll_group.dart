@@ -139,7 +139,6 @@ class PollGroup {
   final bool isActive;
   final PollGroupAccessMode accessMode;
   final bool inviteLinkEnabled;
-  final String? inviteLinkToken;
 
   const PollGroup({
     required this.id,
@@ -155,7 +154,6 @@ class PollGroup {
     this.isActive = true,
     this.accessMode = PollGroupAccessMode.private,
     this.inviteLinkEnabled = false,
-    this.inviteLinkToken,
   });
 
   PollGroup copyWith({
@@ -172,7 +170,6 @@ class PollGroup {
     bool? isActive,
     PollGroupAccessMode? accessMode,
     bool? inviteLinkEnabled,
-    Object? inviteLinkToken = _unset,
   }) {
     return PollGroup(
       id: id ?? this.id,
@@ -190,9 +187,6 @@ class PollGroup {
       isActive: isActive ?? this.isActive,
       accessMode: accessMode ?? this.accessMode,
       inviteLinkEnabled: inviteLinkEnabled ?? this.inviteLinkEnabled,
-      inviteLinkToken: identical(inviteLinkToken, _unset)
-          ? this.inviteLinkToken
-          : inviteLinkToken as String?,
     );
   }
 
@@ -218,7 +212,6 @@ class PollGroup {
             ((data['isPrivate'] as bool? ?? true) ? 'private' : 'open'),
       ),
       inviteLinkEnabled: data['inviteLinkEnabled'] as bool? ?? false,
-      inviteLinkToken: data['inviteLinkToken'] as String?,
     );
   }
 
@@ -238,7 +231,6 @@ class PollGroup {
       'isActive': group.isActive,
       'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
       'inviteLinkEnabled': group.inviteLinkEnabled,
-      'inviteLinkToken': group.inviteLinkToken,
       'nameLowercase': group.name.toLowerCase(),
     };
   }
@@ -382,7 +374,6 @@ class PollGroupAccessNotification {
   final PollGroupAccessNotificationStatus status;
   final DateTime createdAt;
   final DateTime? resolvedAt;
-  final String? inviteLinkToken;
 
   const PollGroupAccessNotification({
     required this.id,
@@ -397,7 +388,6 @@ class PollGroupAccessNotification {
     required this.status,
     required this.createdAt,
     this.resolvedAt,
-    this.inviteLinkToken,
   });
 
   PollGroupAccessNotification copyWith({
@@ -413,7 +403,6 @@ class PollGroupAccessNotification {
     PollGroupAccessNotificationStatus? status,
     DateTime? createdAt,
     Object? resolvedAt = _unset,
-    Object? inviteLinkToken = _unset,
   }) {
     return PollGroupAccessNotification(
       id: id ?? this.id,
@@ -430,9 +419,6 @@ class PollGroupAccessNotification {
       resolvedAt: identical(resolvedAt, _unset)
           ? this.resolvedAt
           : resolvedAt as DateTime?,
-      inviteLinkToken: identical(inviteLinkToken, _unset)
-          ? this.inviteLinkToken
-          : inviteLinkToken as String?,
     );
   }
 
@@ -454,7 +440,6 @@ class PollGroupAccessNotification {
       status: parsePollGroupAccessNotificationStatus(data['status'] as String?),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
-      inviteLinkToken: data['inviteLinkToken'] as String?,
     );
   }
 
@@ -478,7 +463,6 @@ class PollGroupAccessNotification {
       'resolvedAt': notification.resolvedAt != null
           ? Timestamp.fromDate(notification.resolvedAt!)
           : null,
-      'inviteLinkToken': notification.inviteLinkToken,
     };
   }
 }

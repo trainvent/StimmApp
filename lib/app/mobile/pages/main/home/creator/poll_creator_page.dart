@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/group_picker_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_picker_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';

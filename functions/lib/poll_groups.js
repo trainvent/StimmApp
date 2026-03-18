@@ -161,9 +161,6 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
             createdBy: uid,
         });
     }
-    const inviteLinkToken = data.inviteLinkEnabled
-        ? normalizeOptionalString(data.inviteLinkToken)
-        : null;
     const actorDisplayName = typeof (creatorData === null || creatorData === void 0 ? void 0 : creatorData.displayName) === "string" && creatorData.displayName.trim()
         ? creatorData.displayName.trim()
         : (typeof (creatorData === null || creatorData === void 0 ? void 0 : creatorData.email) === "string" && creatorData.email.trim()
@@ -184,7 +181,6 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
         isActive: true,
         accessMode: data.accessMode,
         inviteLinkEnabled: data.inviteLinkEnabled,
-        inviteLinkToken,
         nameLowercase: name.toLowerCase(),
     });
     batch.set(groupRef.collection("members").doc(uid), {
@@ -236,7 +232,6 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
             status: "pending",
             createdAt: now,
             resolvedAt: null,
-            inviteLinkToken,
         });
     }
     await batch.commit();

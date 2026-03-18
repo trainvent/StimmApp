@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/group_access_qr_scanner_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_access_qr_scanner_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -14,7 +14,9 @@ class InboxPage extends StatelessWidget {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
       return Scaffold(
-        body: Center(child: Text(context.l10n.pleaseSignInToViewGroupInvitations)),
+        body: Center(
+          child: Text(context.l10n.pleaseSignInToViewGroupInvitations),
+        ),
       );
     }
 
@@ -54,13 +56,18 @@ class InboxPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = notifications[index];
               final statusLabel = switch (item.status) {
-                PollGroupAccessNotificationStatus.pending => context.l10n.notificationStatusPending,
-                PollGroupAccessNotificationStatus.accepted => context.l10n.notificationStatusAccepted,
-                PollGroupAccessNotificationStatus.denied => context.l10n.notificationStatusDenied,
+                PollGroupAccessNotificationStatus.pending =>
+                  context.l10n.notificationStatusPending,
+                PollGroupAccessNotificationStatus.accepted =>
+                  context.l10n.notificationStatusAccepted,
+                PollGroupAccessNotificationStatus.denied =>
+                  context.l10n.notificationStatusDenied,
               };
               final actionLabel = switch (item.type) {
-                PollGroupAccessNotificationType.invite => context.l10n.notificationActionInvitedYou,
-                PollGroupAccessNotificationType.request => context.l10n.notificationActionRequestedAccess,
+                PollGroupAccessNotificationType.invite =>
+                  context.l10n.notificationActionInvitedYou,
+                PollGroupAccessNotificationType.request =>
+                  context.l10n.notificationActionRequestedAccess,
               };
               return ListTile(
                 leading: Icon(

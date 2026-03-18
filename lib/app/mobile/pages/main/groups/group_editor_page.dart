@@ -5,11 +5,12 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:universal_io/io.dart' as io;
 
@@ -44,7 +45,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   bool _isDraggingCsv = false;
   int _lastImportedCsvRows = 0;
   int _lastInvalidCsvRows = 0;
-  late final String _draftInviteToken;
   bool _isLoadingExistingRules = false;
 
   bool get _isEditing => widget.initialGroup != null;
@@ -58,7 +58,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   @override
   void initState() {
     super.initState();
-    _draftInviteToken = widget.initialGroup?.inviteLinkToken ?? _buildToken();
     _seedForm();
   }
 
@@ -422,13 +421,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return lower.endsWith('.csv') || lower.endsWith('.tsv');
   }
 
-  String _buildToken() {
-    final now = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    return now
-        .padLeft(10, '0')
-        .substring(now.length > 10 ? now.length - 10 : 0);
-  }
-
   String _buildJoinCode() {
     final now = DateTime.now().millisecondsSinceEpoch
         .toRadixString(36)
@@ -533,7 +525,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           importedMemberCount: allowedMembers.length,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
-          inviteLinkToken: _inviteLinkEnabled ? _draftInviteToken : null,
         );
         await _repository.updateGroup(
           group: group,
@@ -551,7 +542,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           managersCanInvite: _managersCanInvite,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
-          inviteLinkToken: _inviteLinkEnabled ? _draftInviteToken : null,
           expiresAt: _hasExpiration ? _expiresAt : null,
           allowedMembers: allowedMembers,
           allowedDomains: allowedDomains,
@@ -591,12 +581,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '${date.year}-$month-$day';
-  }
-
   String _roleLabel(PollGroupRole role) {
     switch (role) {
       case PollGroupRole.admin:
@@ -605,28 +589,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         return context.l10n.managerRoleLabel;
       case PollGroupRole.user:
         return context.l10n.userRoleLabel;
-    }
-  }
-
-  String _accessModeTitle(PollGroupAccessMode mode) {
-    switch (mode) {
-      case PollGroupAccessMode.private:
-        return context.l10n.completelyPrivateAccessMode;
-      case PollGroupAccessMode.protected:
-        return context.l10n.protectedAccessMode;
-      case PollGroupAccessMode.open:
-        return context.l10n.openAccessMode;
-    }
-  }
-
-  String _accessModeDescription(PollGroupAccessMode mode) {
-    switch (mode) {
-      case PollGroupAccessMode.private:
-        return context.l10n.onlyPreparedMembersCanParticipate;
-      case PollGroupAccessMode.protected:
-        return context.l10n.peopleWithInviteLinkCanRequestAccessToGroup;
-      case PollGroupAccessMode.open:
-        return context.l10n.everyoneCanJoinWithoutApproval;
     }
   }
 
@@ -642,7 +604,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           .map(
             (mode) => DropdownMenuItem<PollGroupAccessMode>(
               value: mode,
-              child: Text(_accessModeTitle(mode)),
+              child: Text(mode.localizedTitle(context)),
             ),
           )
           .toList(),
@@ -995,7 +957,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 _buildAccessModeDropdown(),
                 const SizedBox(height: 8),
                 Text(
-                  _accessModeDescription(_accessMode),
+                  _accessMode.localizedDescription(context),
                   key: const Key('access_mode_description'),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -1039,7 +1001,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                       _expiresAt == null
                           ? context.l10n.pickExpirationDate
                           : context.l10n.expiresOnShort(
-                              _formatDate(_expiresAt!),
+                              formatPollGroupDate(_expiresAt!),
                             ),
                     ),
                   ),

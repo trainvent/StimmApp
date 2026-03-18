@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/group_entry_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -21,16 +21,13 @@ class _GroupAccessQrScannerPageState extends State<GroupAccessQrScannerPage> {
     }
     final uri = Uri.tryParse(rawValue);
     final groupId = uri?.queryParameters['groupId'];
-    final token = uri?.queryParameters['token'];
     if (groupId == null || groupId.isEmpty) {
       showErrorSnackBar(context.l10n.invalidGroupInviteQrCode);
       return;
     }
     _handledScan = true;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => GroupEntryPage(groupId: groupId, inviteToken: token),
-      ),
+      MaterialPageRoute(builder: (_) => GroupEntryPage(groupId: groupId)),
     );
   }
 
