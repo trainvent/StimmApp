@@ -11,18 +11,17 @@ void main() {
       expect(
         rules,
         contains(
-          'allow create: if isAdmin() || isPollGroupCreatorAfter(groupId);',
+          'allow create: if isAdmin() || isPollGroupCreatorAfter(groupId) || isPollGroupAdmin(groupId);',
         ),
       );
     });
 
-    test('requires explicit private and invite flags on group create', () {
+    test('blocks direct group creation and keeps explicit group fields', () {
       expect(rules, contains('function isValidPollGroupCreate()'));
       expect(rules, contains("request.resource.data.accessMode is string"));
-      expect(
-        rules,
-        contains("request.resource.data.inviteLinkEnabled is bool"),
-      );
+      expect(rules, contains("request.resource.data.inviteLinkEnabled is bool"));
+      expect(rules, contains('match /pollGroups/{groupId} {'));
+      expect(rules, contains('allow create: if isAdmin();'));
     });
   });
 }

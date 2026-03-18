@@ -43,6 +43,7 @@ void main() {
       'acceptedCommunityRulesAt': null,
       'showPetitionReason': null,
       'themeMode': null,
+      'themeScheme': null,
       'locale': null,
     };
 

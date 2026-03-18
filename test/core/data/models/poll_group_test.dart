@@ -19,7 +19,6 @@ void main() {
       isActive: true,
       accessMode: PollGroupAccessMode.protected,
       inviteLinkEnabled: true,
-      inviteLinkToken: 'invite-token',
     );
 
     test('serializes invite and privacy fields', () {
@@ -27,7 +26,6 @@ void main() {
 
       expect(result['accessMode'], 'protected');
       expect(result['inviteLinkEnabled'], isTrue);
-      expect(result['inviteLinkToken'], 'invite-token');
       expect(result['importedMemberCount'], 2);
     });
 
@@ -45,14 +43,12 @@ void main() {
         'isActive': true,
         'accessMode': 'protected',
         'inviteLinkEnabled': true,
-        'inviteLinkToken': 'invite-token',
       });
 
       final result = PollGroup.fromFirestore(await ref.get(), null);
 
       expect(result.accessMode, PollGroupAccessMode.protected);
       expect(result.inviteLinkEnabled, isTrue);
-      expect(result.inviteLinkToken, 'invite-token');
       expect(result.importedMemberCount, 2);
     });
   });

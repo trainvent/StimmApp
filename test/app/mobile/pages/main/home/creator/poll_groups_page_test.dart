@@ -52,7 +52,6 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
     required bool managersCanInvite,
     required PollGroupAccessMode accessMode,
     required bool inviteLinkEnabled,
-    String? inviteLinkToken,
     DateTime? expiresAt,
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
@@ -64,7 +63,6 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
       'managersCanInvite': managersCanInvite,
       'accessMode': accessMode,
       'inviteLinkEnabled': inviteLinkEnabled,
-      'inviteLinkToken': inviteLinkToken,
       'allowedMembers': allowedMembers,
       'allowedDomains': allowedDomains,
     };
@@ -80,7 +78,6 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
       importedMemberCount: allowedMembers.length,
       accessMode: accessMode,
       inviteLinkEnabled: inviteLinkEnabled,
-      inviteLinkToken: inviteLinkToken,
     );
     createdGroups
       ..clear()
@@ -105,7 +102,7 @@ void main() {
   });
 
   group('GroupEditorPage', () {
-    testWidgets('defaults to protected access and shows invite QR preview', (
+    testWidgets('defaults to protected access and shows access description', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -117,14 +114,6 @@ void main() {
 
       expect(find.byKey(const Key('access_mode_dropdown')), findsOneWidget);
       expect(find.byKey(const Key('access_mode_description')), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('invite_qr_preview')),
-        250,
-        scrollable: find.byType(Scrollable).first,
-      );
-
-      expect(find.byKey(const Key('invite_link_preview')), findsOneWidget);
-      expect(find.byKey(const Key('invite_qr_preview')), findsOneWidget);
     });
 
     testWidgets('imports CSV rows and reports malformed ones', (tester) async {
@@ -247,7 +236,7 @@ void main() {
       );
 
       final createButton = tester.widget<FilledButton>(
-        find.byKey(const Key('create_group_button')),
+        find.byKey(const Key('save_group_button')),
       );
       createButton.onPressed!();
       await tester.pumpAndSettle();

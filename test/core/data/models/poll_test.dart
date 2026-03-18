@@ -50,6 +50,9 @@ void main() {
       'scopeType': 'global',
       'continentCode': null,
       'countryCode': null,
+      'groupId': null,
+      'groupName': null,
+      'visibility': 'public',
       'stateOrRegion': null,
       'state': null,
       'town': null,
@@ -75,6 +78,9 @@ void main() {
         expect(result.createdAt.year, poll.createdAt.year);
         expect(result.expiresAt, poll.expiresAt);
         expect(result.countryCode, poll.countryCode);
+        expect(result.groupId, poll.groupId);
+        expect(result.groupName, poll.groupName);
+        expect(result.visibility, poll.visibility);
       },
     );
 

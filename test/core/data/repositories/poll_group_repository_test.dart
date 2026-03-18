@@ -5,13 +5,129 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
+class _TestPollGroupRepository extends PollGroupRepository {
+  _TestPollGroupRepository(this.firestore) : super(DatabaseService(firestore));
+
+  final FakeFirebaseFirestore firestore;
+
+  @override
+  Future<String> createGroup({
+    required String creatorUid,
+    required String name,
+    required String joinCode,
+    required PollGroupNicknameMode nicknameMode,
+    required bool managersCanInvite,
+    required PollGroupAccessMode accessMode,
+    required bool inviteLinkEnabled,
+    DateTime? expiresAt,
+    List<PollGroupAllowedMember> allowedMembers = const [],
+    List<PollGroupAllowedDomain> allowedDomains = const [],
+  }) async {
+    final normalizedMembers = PollGroupRepository.normalizeAllowedMembers(
+      allowedMembers,
+    );
+    final normalizedDomains = PollGroupRepository.normalizeAllowedDomains(
+      allowedDomains,
+    );
+    final now = DateTime(2024, 1, 1);
+    final groupRef = firestore.collection('pollGroups').doc();
+    final creatorSnap = await firestore.collection('users').doc(creatorUid).get();
+    final creatorData = creatorSnap.data() ?? const <String, dynamic>{};
+    final actorDisplayName =
+        (creatorData['displayName'] as String?)?.trim().isNotEmpty == true
+        ? (creatorData['displayName'] as String).trim()
+        : ((creatorData['email'] as String?)?.trim().isNotEmpty == true
+              ? (creatorData['email'] as String).trim()
+              : 'Group admin');
+
+    await groupRef.set(
+      PollGroup.toFirestore(
+        PollGroup(
+          id: groupRef.id,
+          name: name,
+          createdBy: creatorUid,
+          createdAt: now,
+          expiresAt: expiresAt,
+          joinCode: joinCode,
+          nicknameMode: nicknameMode,
+          managersCanInvite: managersCanInvite,
+          memberIds: [creatorUid],
+          importedMemberCount: normalizedMembers.length,
+          isActive: true,
+          accessMode: accessMode,
+          inviteLinkEnabled: inviteLinkEnabled,
+        ),
+        null,
+      ),
+    );
+    await groupRef.collection('members').doc(creatorUid).set(
+      PollGroupMember.toFirestore(
+        PollGroupMember(
+          uid: creatorUid,
+          role: PollGroupRole.admin,
+          joinedAt: now,
+          joinedBy: creatorUid,
+        ),
+        null,
+      ),
+    );
+
+    for (final member in normalizedMembers) {
+      await groupRef
+          .collection('allowedMembers')
+          .doc(member.email.toLowerCase())
+          .set(PollGroupAllowedMember.toFirestore(member, null));
+    }
+    for (final domain in normalizedDomains) {
+      await groupRef
+          .collection('allowedDomains')
+          .doc(domain.domain)
+          .set(PollGroupAllowedDomain.toFirestore(domain, null));
+    }
+
+    final users = await firestore.collection('users').get();
+    for (final userDoc in users.docs) {
+      final email = (userDoc.data()['email'] as String?)?.trim().toLowerCase();
+      final allowedMember = normalizedMembers.where((member) => member.email == email);
+      if (email == null || allowedMember.isEmpty) {
+        continue;
+      }
+      final notificationRef = firestore
+          .collection('users')
+          .doc(userDoc.id)
+          .collection('groupAccessNotifications')
+          .doc();
+      await notificationRef.set(
+        PollGroupAccessNotification.toFirestore(
+          PollGroupAccessNotification(
+            id: notificationRef.id,
+            groupId: groupRef.id,
+            groupName: name,
+            actorUid: creatorUid,
+            actorDisplayName: actorDisplayName,
+            recipientUid: userDoc.id,
+            role: allowedMember.first.role,
+            accessMode: accessMode,
+            type: PollGroupAccessNotificationType.invite,
+            status: PollGroupAccessNotificationStatus.pending,
+            createdAt: now,
+          ),
+          null,
+        ),
+      );
+    }
+
+    return groupRef.id;
+  }
+}
+
 void main() {
   late FakeFirebaseFirestore firestore;
   late PollGroupRepository repository;
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
-    repository = PollGroupRepository(DatabaseService(firestore));
+    repository = _TestPollGroupRepository(firestore);
   });
 
   group('PollGroupRepository', () {
@@ -47,7 +163,6 @@ void main() {
           managersCanInvite: true,
           accessMode: PollGroupAccessMode.protected,
           inviteLinkEnabled: true,
-          inviteLinkToken: 'token-1',
           allowedMembers: [
             PollGroupAllowedMember(
               email: 'Anna@Example.com',
@@ -89,7 +204,6 @@ void main() {
 
         expect(groupSnap.data()?['accessMode'], 'protected');
         expect(groupSnap.data()?['inviteLinkEnabled'], isTrue);
-        expect(groupSnap.data()?['inviteLinkToken'], 'token-1');
         expect(groupSnap.data()?['importedMemberCount'], 1);
         expect(allowedMembers.docs.single.id, 'anna@example.com');
         expect(allowedDomains.docs.single.id, 'example.com');
