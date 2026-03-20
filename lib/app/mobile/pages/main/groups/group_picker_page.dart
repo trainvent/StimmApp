@@ -58,11 +58,6 @@ class GroupPickerPage extends StatelessWidget {
                 return ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
-                    Text(
-                      context.l10n.pickExistingGroupToUseOrEditOrCreateNewOne,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 20),
                     FilledButton.icon(
                       key: const Key('open_group_creator_button'),
                       onPressed: () => _openEditor(context),

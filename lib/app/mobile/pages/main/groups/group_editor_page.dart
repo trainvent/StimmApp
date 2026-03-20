@@ -38,7 +38,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   final List<_AllowedDomainDraft> _domainDrafts = [];
   bool _allowSelfNamedNicknames = true;
   bool _managersCanInvite = true;
-  bool _hasExpiration = false;
   DateTime? _expiresAt;
   bool _isCreating = false;
   PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
@@ -86,7 +85,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
     setState(() {
       _expiresAt = selected;
-      _hasExpiration = true;
     });
   }
 
@@ -101,10 +99,15 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     _allowSelfNamedNicknames =
         initialGroup.nicknameMode == PollGroupNicknameMode.selfNamed;
     _managersCanInvite = initialGroup.managersCanInvite;
-    _hasExpiration = initialGroup.expiresAt != null;
     _expiresAt = initialGroup.expiresAt;
     _accessMode = initialGroup.accessMode;
     _loadExistingRules(initialGroup.id);
+  }
+
+  void _clearExpirationDate() {
+    setState(() {
+      _expiresAt = null;
+    });
   }
 
   Future<void> _loadExistingRules(String groupId) async {
@@ -517,7 +520,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         final existingGroup = widget.initialGroup!;
         group = existingGroup.copyWith(
           name: groupName,
-          expiresAt: _hasExpiration ? _expiresAt : null,
+          expiresAt: _expiresAt,
           nicknameMode: _allowSelfNamedNicknames
               ? PollGroupNicknameMode.selfNamed
               : PollGroupNicknameMode.adminAssigned,
@@ -542,7 +545,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           managersCanInvite: _managersCanInvite,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
-          expiresAt: _hasExpiration ? _expiresAt : null,
+          expiresAt: _expiresAt,
           allowedMembers: allowedMembers,
           allowedDomains: allowedDomains,
         );
@@ -758,11 +761,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          context.l10n.inviteMembersDescription,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
         const SizedBox(height: 16),
         ...List.generate(_memberDrafts.length, (index) {
           final draft = _memberDrafts[index];
@@ -771,25 +769,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             child: _buildMemberDraftRow(draft, index),
           );
         }),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            OutlinedButton.icon(
-              key: const Key('paste_csv_button'),
-              onPressed: _openCsvPasteDialog,
-              icon: const Icon(Icons.content_paste),
-              label: Text(context.l10n.pasteCsvLabel),
-            ),
-            OutlinedButton.icon(
-              key: const Key('pick_csv_button'),
-              onPressed: _pickCsvFile,
-              icon: const Icon(Icons.upload_file),
-              label: Text(context.l10n.importCsvFileLabel),
-            ),
-          ],
-        ),
         const SizedBox(height: 12),
         DropTarget(
           onDragEntered: (_) => setState(() => _isDraggingCsv = true),
@@ -823,6 +802,25 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 Text(
                   context.l10n.acceptedCsvFormat,
                   style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    OutlinedButton.icon(
+                      key: const Key('paste_csv_button'),
+                      onPressed: _openCsvPasteDialog,
+                      icon: const Icon(Icons.content_paste),
+                      label: Text(context.l10n.pasteCsvLabel),
+                    ),
+                    OutlinedButton.icon(
+                      key: const Key('pick_csv_button'),
+                      onPressed: _pickCsvFile,
+                      icon: const Icon(Icons.upload_file),
+                      label: Text(context.l10n.importCsvFileLabel),
+                    ),
+                  ],
                 ),
                 if (_lastImportedCsvRows > 0 || _lastInvalidCsvRows > 0) ...[
                   const SizedBox(height: 8),
@@ -922,6 +920,58 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
+  Widget _buildExpirationDateSection() {
+    final hasExpiration = _expiresAt != null;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).dividerColor),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.setExpirationDate,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            hasExpiration
+                ? context.l10n.expiresOnShort(formatPollGroupDate(_expiresAt!))
+                : context.l10n.noExpirationDateSet,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _pickExpirationDate,
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  label: Text(
+                    hasExpiration
+                        ? formatPollGroupDate(_expiresAt!)
+                        : context.l10n.pickExpirationDate,
+                  ),
+                ),
+              ),
+              if (hasExpiration) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: _clearExpirationDate,
+                  tooltip: context.l10n.remove,
+                  icon: const Icon(Icons.cleaning_services_outlined),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
@@ -949,7 +999,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: context.l10n.groupNameLabel,
+                    labelText: '${context.l10n.groupNameLabel} *',
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -977,36 +1027,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                     setState(() => _managersCanInvite = value);
                   },
                 ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: _hasExpiration,
-                  title: Text(context.l10n.setExpirationDate),
-                  onChanged: (value) {
-                    setState(() {
-                      _hasExpiration = value;
-                      if (!value) {
-                        _expiresAt = null;
-                      }
-                    });
-                    if (value) {
-                      _pickExpirationDate();
-                    }
-                  },
-                ),
-                if (_hasExpiration) ...[
-                  OutlinedButton.icon(
-                    onPressed: _pickExpirationDate,
-                    icon: const Icon(Icons.event),
-                    label: Text(
-                      _expiresAt == null
-                          ? context.l10n.pickExpirationDate
-                          : context.l10n.expiresOnShort(
-                              formatPollGroupDate(_expiresAt!),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+                const SizedBox(height: 8),
+                _buildExpirationDateSection(),
                 if (_isLoadingExistingRules) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),

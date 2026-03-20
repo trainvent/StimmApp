@@ -755,6 +755,8 @@
 	"createGroupDescription": "Create a members-only polling space for teams, events, and companies.",
 	"membersCanChooseTheirOwnNickname": "Members can choose their own nickname",
 	"managersCanPrepareAccessLists": "Managers can prepare access lists",
+	"expirationDateOptional": "Expiration date (optional)",
+	"noExpirationDateSet": "No expiration date set.",
 	"setExpirationDate": "Set an expiration date",
 	"pickExpirationDate": "Pick expiration date",
 	"savingGroup": "Saving...",

@@ -56,8 +56,6 @@ class _UpdateUsernamePageState extends State<UpdateUsernamePage> {
               children: [
                 const SizedBox(height: 60.0),
                 Text(context.l10n.updateUsername, style: AppTextStyles.xxlBold),
-                const SizedBox(height: 20.0),
-                const Text('✏️', style: AppTextStyles.icons),
                 const SizedBox(height: 50),
                 Form(
                   key: _formKey,

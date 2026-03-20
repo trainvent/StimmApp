@@ -3542,6 +3542,18 @@ abstract class AppLocalizations {
   /// **'Managers can prepare access lists'**
   String get managersCanPrepareAccessLists;
 
+  /// No description provided for @expirationDateOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiration date (optional)'**
+  String get expirationDateOptional;
+
+  /// No description provided for @noExpirationDateSet.
+  ///
+  /// In en, this message translates to:
+  /// **'No expiration date set.'**
+  String get noExpirationDateSet;
+
   /// No description provided for @setExpirationDate.
   ///
   /// In en, this message translates to:

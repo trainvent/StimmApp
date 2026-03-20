@@ -1907,6 +1907,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Manager können Zugangslisten vorbereiten';
 
   @override
+  String get expirationDateOptional => 'Ablaufdatum (optional)';
+
+  @override
+  String get noExpirationDateSet => 'Kein Ablaufdatum festgelegt.';
+
+  @override
   String get setExpirationDate => 'Ablaufdatum festlegen';
 
   @override

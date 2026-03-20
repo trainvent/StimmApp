@@ -759,6 +759,8 @@
 	"createGroupDescription": "Erstelle einen nur für Mitglieder zugänglichen Abstimmungsbereich für Teams, Events und Firmen.",
 	"membersCanChooseTheirOwnNickname": "Mitglieder können ihren Spitznamen selbst wählen",
 	"managersCanPrepareAccessLists": "Manager können Zugangslisten vorbereiten",
+	"expirationDateOptional": "Ablaufdatum (optional)",
+	"noExpirationDateSet": "Kein Ablaufdatum festgelegt.",
 	"setExpirationDate": "Ablaufdatum festlegen",
 	"pickExpirationDate": "Ablaufdatum auswählen",
 	"savingGroup": "Speichere...",
