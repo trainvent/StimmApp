@@ -26,6 +26,7 @@ String? validatePassword(BuildContext context, String? value) {
   }
 
   if (errors.isEmpty) {
+    Navigator.of(context).maybePop;
     return null;
   }
 

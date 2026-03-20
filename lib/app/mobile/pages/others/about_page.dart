@@ -54,7 +54,7 @@ class AboutPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 40),
-          Center(child: Image.asset("assets/images/cropped-LeLogo.png")),
+          Center(child: Image.asset("assets/images/LeLogo.png")),
           const SizedBox(height: 10),
           Center(
             child: Text(context.localizedAppName, style: AppTextStyles.xxlBold),

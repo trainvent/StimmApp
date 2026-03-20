@@ -25,10 +25,10 @@ class GooglePlacesAddressWidget extends StatefulWidget {
 
   @override
   State<GooglePlacesAddressWidget> createState() =>
-      _GooglePlacesAddressWidgetState();
+      GooglePlacesAddressWidgetState();
 }
 
-class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
+class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
   final _service = TomTomSearchService(IConst.tomTomSearchApiKey);
   final _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
@@ -59,7 +59,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
 
   void _handleFocusChanged() {
     if (!_focusNode.hasFocus) {
-      unawaited(_resolveCurrentTextIfNeeded());
+      unawaited(resolveCurrentTextIfNeeded());
       _removeOverlay();
       return;
     }
@@ -167,14 +167,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
 
   void _selectSuggestion(TomTomAddressSuggestion suggestion) {
     _isApplyingSuggestion = true;
-    widget.controller.text = suggestion.address;
-    widget.controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: suggestion.address.length),
-    );
-    widget.onStateChanged(suggestion.info.state);
-    widget.onTownChanged?.call(suggestion.info.town);
-    widget.onCountryCodeChanged?.call(suggestion.info.countryCode);
-    _lastResolvedAddress = suggestion.address.trim();
+    _applyResolvedSuggestion(suggestion);
     setState(() {
       _suggestions = const [];
       _isLoading = false;
@@ -184,7 +177,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     _isApplyingSuggestion = false;
   }
 
-  Future<void> _resolveCurrentTextIfNeeded() async {
+  Future<void> resolveCurrentTextIfNeeded() async {
     final text = widget.controller.text.trim();
     if (!mounted ||
         text.isEmpty ||
@@ -194,10 +187,16 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
       return;
     }
 
-    final info = await _service.resolveAddress(
-      text,
-      countries: widget.countries,
-    );
+    final exactSuggestion = await _findExactSuggestionMatch(text);
+    if (!mounted) {
+      return;
+    }
+    if (exactSuggestion != null) {
+      _applyResolvedSuggestion(exactSuggestion);
+      return;
+    }
+
+    final info = await _service.resolveAddress(text, countries: widget.countries);
     if (!mounted) {
       return;
     }
@@ -213,6 +212,54 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     widget.onTownChanged?.call(info.town);
     widget.onCountryCodeChanged?.call(info.countryCode);
   }
+
+  Future<TomTomAddressSuggestion?> _findExactSuggestionMatch(String text) async {
+    final normalizedText = _normalizeAddress(text);
+    TomTomAddressSuggestion? exactSuggestion = _suggestions.cast<TomTomAddressSuggestion?>().firstWhere(
+      (suggestion) => suggestion != null && _normalizeAddress(suggestion.address) == normalizedText,
+      orElse: () => null,
+    );
+
+    if (exactSuggestion != null) {
+      return exactSuggestion;
+    }
+
+    final suggestions = await _service.searchAddresses(
+      text,
+      countries: widget.countries,
+    );
+    if (!mounted) {
+      return null;
+    }
+
+    exactSuggestion = suggestions.cast<TomTomAddressSuggestion?>().firstWhere(
+      (suggestion) => suggestion != null && _normalizeAddress(suggestion.address) == normalizedText,
+      orElse: () => null,
+    );
+
+    if (exactSuggestion != null) {
+      setState(() {
+        _suggestions = suggestions;
+        _isLoading = false;
+      });
+    }
+
+    return exactSuggestion;
+  }
+
+  void _applyResolvedSuggestion(TomTomAddressSuggestion suggestion) {
+    widget.controller.text = suggestion.address;
+    widget.controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: suggestion.address.length),
+    );
+    _lastResolvedAddress = suggestion.address.trim();
+    widget.onStateChanged(suggestion.info.state);
+    widget.onTownChanged?.call(suggestion.info.town);
+    widget.onCountryCodeChanged?.call(suggestion.info.countryCode);
+  }
+
+  String _normalizeAddress(String value) =>
+      value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +296,7 @@ class _GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
                 }
                 return null;
               },
-          onFieldSubmitted: (_) => unawaited(_resolveCurrentTextIfNeeded()),
+          onFieldSubmitted: (_) => unawaited(resolveCurrentTextIfNeeded()),
           maxLines: 1,
         ),
       ),

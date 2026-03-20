@@ -19,6 +19,7 @@ class ChangeLivingAddressPage extends StatefulWidget {
 
 class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
     with WidgetsBindingObserver {
+  final _addressFieldKey = GlobalKey<GooglePlacesAddressWidgetState>();
   String? _selectedState;
   String? _selectedCountryCode;
   String? _selectedTown;
@@ -70,6 +71,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                     child: Column(
                       children: [
                         GooglePlacesAddressWidget(
+                          key: _addressFieldKey,
                           controller: _controllerAddress,
                           onStateChanged: (state) {
                             setState(() {
@@ -120,22 +122,25 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
           isFilled: true,
           label: context.l10n.confirm,
           callback: () async {
+            final l10n = context.l10n;
+            await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded();
+
             if (_controllerAddress.text.trim().isEmpty) {
-              showErrorSnackBar(context.l10n.enterSomething);
+              showErrorSnackBar(l10n.enterSomething);
               return;
             }
             if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
-              showErrorSnackBar(context.l10n.pleaseSelectAddressWithTown);
+              showErrorSnackBar(l10n.pleaseSelectAddressWithTown);
               return;
             }
             if (_requiresStateScope && _selectedState == null) {
               showErrorSnackBar(
-                context.l10n.weFailedToGetYourStatePleaseProofreadYourLivingaddress,
+                l10n.weFailedToGetYourStatePleaseProofreadYourLivingaddress,
               );
               return;
             }
             if (_formKey.currentState!.validate()) {
-              final successMessage = context.l10n.addressUpdatedSuccessfully;
+              final successMessage = l10n.addressUpdatedSuccessfully;
               try {
                 final userRepository = UserRepository.create();
                 final uid = authService.currentUser!.uid;
@@ -153,6 +158,8 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                 return;
               }
               showSuccessSnackBar(successMessage);
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
             }
           },
         ),

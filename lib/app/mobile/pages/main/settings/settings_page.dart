@@ -350,19 +350,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         actions: [
                           FilledButton(
                             onPressed: () async {
-                              // Add your app's license to the registry before showing the page
-                              /*    LicenseRegistry.addLicense(() async* {
-                                try {
-                                  final license = await rootBundle.loadString('LICENSE');
-                                  yield LicenseEntryWithLineBreaks(
-                                    ['stimmapp'],
-                                    license,
-                                  );
-                                } catch (e) {
-                                  debugPrint('Failed to load LICENSE file: $e');
-                                }
-                              });*/
-
                               if (!context.mounted) return;
                               showLicensePage(
                                 context: context,
@@ -372,7 +359,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 applicationIcon: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
-                                    "assets/images/cropped-LeLogo.png",
+                                    "assets/images/LeLogo.png",
                                     width: 48,
                                     height: 48,
                                   ),

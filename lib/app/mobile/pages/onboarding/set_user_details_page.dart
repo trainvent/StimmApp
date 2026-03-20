@@ -32,6 +32,7 @@ class SetUserDetailsPage extends StatefulWidget {
 
 class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final _formKey = GlobalKey<FormState>();
+  final _addressFieldKey = GlobalKey<GooglePlacesAddressWidgetState>();
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
   final TextEditingController controllerDisplayName = TextEditingController();
@@ -279,36 +280,39 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                       Text(_selectedState ?? context.l10n.state),
                       const SizedBox(height: 10),
                     ],
-                    GooglePlacesAddressWidget(
+                    KeyedSubtree(
                       key: const Key('addressTextField'),
-                      controller: controllerAddress,
-                      onStateChanged: (state) {
-                        setState(() {
-                          _selectedState = state;
-                        });
-                      },
-                      onTownChanged: (town) {
-                        setState(() {
-                          _selectedTown = town;
-                        });
-                      },
-                      onCountryCodeChanged: (countryCode) {
-                        setState(() {
-                          _selectedCountryCode = countryCode?.toUpperCase();
-                          if (_selectedCountryCode != 'DE') {
-                            _selectedState = null;
+                      child: GooglePlacesAddressWidget(
+                        key: _addressFieldKey,
+                        controller: controllerAddress,
+                        onStateChanged: (state) {
+                          setState(() {
+                            _selectedState = state;
+                          });
+                        },
+                        onTownChanged: (town) {
+                          setState(() {
+                            _selectedTown = town;
+                          });
+                        },
+                        onCountryCodeChanged: (countryCode) {
+                          setState(() {
+                            _selectedCountryCode = countryCode?.toUpperCase();
+                            if (_selectedCountryCode != 'DE') {
+                              _selectedState = null;
+                            }
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).faultyInput;
                           }
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return S.of(context).faultyInput;
-                        }
-                        if (_selectedTown == null || _selectedTown!.isEmpty) {
-                          return 'Please select an address with a town';
-                        }
-                        return null;
-                      },
+                          if (_selectedTown == null || _selectedTown!.isEmpty) {
+                            return 'Please select an address with a town';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                     const SizedBox(height: 10),
                     CheckboxListTile(
@@ -347,13 +351,17 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                 key: const Key('saveButton'),
                 isFilled: true,
                 label: context.l10n.save,
-                callback: () {
+                callback: () async {
+                  final faultyInput = S.of(context).faultyInput;
                   setState(() {
                     _autoValidateMode = AutovalidateMode.onUserInteraction;
                   });
 
+                  await _addressFieldKey.currentState
+                      ?.resolveCurrentTextIfNeeded();
+
                   if (controllerAddress.text.trim().isEmpty) {
-                    showErrorSnackBar(S.of(context).faultyInput);
+                    showErrorSnackBar(faultyInput);
                     // Force validation to show error on address field if it has a validator
                     _formKey.currentState!.validate();
                     return;

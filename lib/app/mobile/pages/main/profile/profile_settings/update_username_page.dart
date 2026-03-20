@@ -25,14 +25,15 @@ class _UpdateUsernamePageState extends State<UpdateUsernamePage> {
     super.dispose();
   }
 
-  void changeUsername() async {
-    final username = controllerUsername.text;
+  Future<void> changeUsername() async {
+    final username = controllerUsername.text.trim();
     final successMessage = context.l10n.usernameChangedSuccessfully;
     try {
       await updateUsername(username);
 
       if (!mounted) return;
       showSuccessSnackBar(successMessage);
+      Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       if (e is DatabaseException) {
@@ -100,7 +101,7 @@ class _UpdateUsernamePageState extends State<UpdateUsernamePage> {
           label: context.l10n.updateUsername,
           callback: () async {
             if (_formKey.currentState!.validate()) {
-              changeUsername();
+              await changeUsername();
             }
           },
         ),
