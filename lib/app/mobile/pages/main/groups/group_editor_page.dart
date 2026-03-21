@@ -37,7 +37,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   final List<_InviteMemberDraft> _memberDrafts = [];
   final List<_AllowedDomainDraft> _domainDrafts = [];
   bool _allowSelfNamedNicknames = true;
-  bool _managersCanInvite = true;
   DateTime? _expiresAt;
   bool _isCreating = false;
   PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
@@ -98,7 +97,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     _nameController.text = initialGroup.name;
     _allowSelfNamedNicknames =
         initialGroup.nicknameMode == PollGroupNicknameMode.selfNamed;
-    _managersCanInvite = initialGroup.managersCanInvite;
     _expiresAt = initialGroup.expiresAt;
     _accessMode = initialGroup.accessMode;
     _loadExistingRules(initialGroup.id);
@@ -135,6 +133,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                         email: member.email,
                         nickname: member.nickname ?? '',
                         role: member.role,
+                        isCommitted: true,
                       ),
                     )
                     .toList(),
@@ -151,6 +150,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               )
               .toList(),
         );
+      _ensurePendingMemberDraft();
     } catch (error, stackTrace) {
       if (mounted) {
         showInternalDifficultiesSnackBar(error, stackTrace);
@@ -166,10 +166,16 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     String email = '',
     String nickname = '',
     PollGroupRole role = PollGroupRole.user,
+    bool isCommitted = false,
   }) {
     setState(() {
       _memberDrafts.add(
-        _InviteMemberDraft(email: email, nickname: nickname, role: role),
+        _InviteMemberDraft(
+          email: email,
+          nickname: nickname,
+          role: role,
+          isCommitted: isCommitted,
+        ),
       );
     });
   }
@@ -180,12 +186,48 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       _memberDrafts[index].nicknameController.clear();
       setState(() {
         _memberDrafts[index].role = PollGroupRole.user;
+        _memberDrafts[index].isCommitted = false;
       });
       return;
     }
     final draft = _memberDrafts.removeAt(index);
     draft.dispose();
     setState(() {});
+    _ensurePendingMemberDraft();
+  }
+
+  bool _isMemberDraftBlank(_InviteMemberDraft draft) {
+    return draft.emailController.text.trim().isEmpty &&
+        draft.nicknameController.text.trim().isEmpty &&
+        draft.role == PollGroupRole.user;
+  }
+
+  bool _hasPendingMemberDraft() {
+    return _memberDrafts.any((draft) => !draft.isCommitted);
+  }
+
+  void _ensurePendingMemberDraft() {
+    if (_hasPendingMemberDraft()) {
+      return;
+    }
+    _addMemberDraft();
+  }
+
+  void _confirmMemberDraft(int index) {
+    final draft = _memberDrafts[index];
+    final email = draft.emailController.text.trim().toLowerCase();
+    if (email.isEmpty || !_looksLikeEmail(email)) {
+      showErrorSnackBar(
+        context.l10n.pleaseEnterValidEmailForEveryInvitedMember,
+      );
+      return;
+    }
+
+    setState(() {
+      draft.emailController.text = email;
+      draft.isCommitted = true;
+    });
+    _ensurePendingMemberDraft();
   }
 
   void _addDomainDraft({
@@ -380,10 +422,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       return;
     }
     final shouldReplaceEmptySeed =
-        _memberDrafts.length == 1 &&
-        _memberDrafts.first.emailController.text.trim().isEmpty &&
-        _memberDrafts.first.nicknameController.text.trim().isEmpty &&
-        _memberDrafts.first.role == PollGroupRole.user;
+        _memberDrafts.length == 1 && _isMemberDraftBlank(_memberDrafts.first);
     if (shouldReplaceEmptySeed) {
       final seed = _memberDrafts.removeLast();
       seed.dispose();
@@ -395,10 +434,12 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             email: member.email,
             nickname: member.nickname,
             role: member.role,
+            isCommitted: true,
           ),
         );
       }
     });
+    _ensurePendingMemberDraft();
   }
 
   void _showCsvFeedback({required int validRows, required int invalidRows}) {
@@ -441,9 +482,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     for (final draft in _memberDrafts) {
       final email = draft.emailController.text.trim().toLowerCase();
       final nickname = draft.nicknameController.text.trim();
-      if (email.isEmpty &&
-          nickname.isEmpty &&
-          draft.role == PollGroupRole.user) {
+      if (_isMemberDraftBlank(draft)) {
         continue;
       }
       if (!_looksLikeEmail(email)) {
@@ -524,7 +563,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           nicknameMode: _allowSelfNamedNicknames
               ? PollGroupNicknameMode.selfNamed
               : PollGroupNicknameMode.adminAssigned,
-          managersCanInvite: _managersCanInvite,
+          managersCanInvite: true,
           importedMemberCount: allowedMembers.length,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
@@ -542,7 +581,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           nicknameMode: _allowSelfNamedNicknames
               ? PollGroupNicknameMode.selfNamed
               : PollGroupNicknameMode.adminAssigned,
-          managersCanInvite: _managersCanInvite,
+          managersCanInvite: true,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
           expiresAt: _expiresAt,
@@ -681,6 +720,24 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
+  Widget _buildMemberDraftAction(_InviteMemberDraft draft, int index) {
+    if (draft.isCommitted) {
+      return IconButton(
+        key: Key('remove_member_row_$index'),
+        onPressed: () => _removeMemberDraft(index),
+        icon: const Icon(Icons.delete_outline),
+        tooltip: context.l10n.removeMemberTooltip,
+      );
+    }
+
+    return IconButton(
+      key: Key('confirm_member_row_$index'),
+      onPressed: () => _confirmMemberDraft(index),
+      icon: const Icon(Icons.check_circle_outline),
+      tooltip: context.l10n.addMember,
+    );
+  }
+
   Widget _buildMemberDraftRow(_InviteMemberDraft draft, int index) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -695,12 +752,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               const SizedBox(width: 12),
               Expanded(flex: 2, child: _buildMemberRoleField(draft, index)),
               const SizedBox(width: 8),
-              IconButton(
-                key: Key('remove_member_row_$index'),
-                onPressed: () => _removeMemberDraft(index),
-                icon: const Icon(Icons.delete_outline),
-                tooltip: context.l10n.removeMemberTooltip,
-              ),
+              _buildMemberDraftAction(draft, index),
             ],
           );
         }
@@ -718,12 +770,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 children: [
                   Expanded(child: _buildMemberEmailField(draft, index)),
                   const SizedBox(width: 8),
-                  IconButton(
-                    key: Key('remove_member_row_$index'),
-                    onPressed: () => _removeMemberDraft(index),
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: context.l10n.removeMemberTooltip,
-                  ),
+                  _buildMemberDraftAction(draft, index),
                 ],
               ),
               const SizedBox(height: 12),
@@ -746,20 +793,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              context.l10n.inviteMembersTitle,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const Spacer(),
-            TextButton.icon(
-              key: const Key('add_member_row'),
-              onPressed: _addMemberDraft,
-              icon: const Icon(Icons.add),
-              label: Text(context.l10n.addMember),
-            ),
-          ],
+        Text(
+          context.l10n.inviteMembersTitle,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 16),
         ...List.generate(_memberDrafts.length, (index) {
@@ -1019,14 +1055,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                     setState(() => _allowSelfNamedNicknames = value);
                   },
                 ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: _managersCanInvite,
-                  title: Text(context.l10n.managersCanPrepareAccessLists),
-                  onChanged: (value) {
-                    setState(() => _managersCanInvite = value);
-                  },
-                ),
                 const SizedBox(height: 8),
                 _buildExpirationDateSection(),
                 if (_isLoadingExistingRules) ...[
@@ -1068,12 +1096,14 @@ class _InviteMemberDraft {
     String email = '',
     String nickname = '',
     this.role = PollGroupRole.user,
+    this.isCommitted = false,
   }) : emailController = TextEditingController(text: email),
        nicknameController = TextEditingController(text: nickname);
 
   final TextEditingController emailController;
   final TextEditingController nicknameController;
   PollGroupRole role;
+  bool isCommitted;
 
   void dispose() {
     emailController.dispose();

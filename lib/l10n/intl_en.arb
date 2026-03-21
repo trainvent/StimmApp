@@ -185,6 +185,9 @@
 	"idNumber": "ID Number",
 	"idScan": "ID Scan",
 	"filter": "Filter",
+	"publishTo": "zeigen in",
+	"public": "öffentlich",
+	"createOrManageGroups": "create or manage groups",
 	"displayQrCode": "display qr-code",
 	"accentPallette": "accent pallette",
 	"imagePreviewDescription": "This is a preview of your new profile picture.",
@@ -227,6 +230,14 @@
 	"notSignedUpYet": "Not signed up yet? Forgot password?",
 	"goToWelcome": "Go to Welcome",
 	"option": "Option",
+	"@optionNumber": {
+		"placeholders": {
+			"number": {
+				"type": "int"
+			}
+		}
+	},
+	"optionNumber": "Option {number}",
 	"optionRequired": "Option is required",
 	"options": "Options",
 	"other": "other",
@@ -255,6 +266,15 @@
 	"polls": "Polls",
 	"popularPetitions": "Popular Petitions",
 	"prioritySupport": "Priority support",
+	"removeAbusiveLanguageBeforePublishing": "Please remove abusive or objectionable language before publishing.",
+	"@maximumPollOptionsAllowed": {
+		"placeholders": {
+			"count": {
+				"type": "int"
+			}
+		}
+	},
+	"maximumPollOptionsAllowed": "Maximum {count} options allowed",
 	"communityRulesAcceptance": "I agree to the Terms of Service and understand that StimmApp does not tolerate objectionable content or abusive behavior.",
 	"proMember": "Pro Member",
 	"processId": "Process ID",

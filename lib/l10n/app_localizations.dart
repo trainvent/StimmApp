@@ -962,6 +962,24 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get filter;
 
+  /// No description provided for @publishTo.
+  ///
+  /// In en, this message translates to:
+  /// **'zeigen in'**
+  String get publishTo;
+
+  /// No description provided for @public.
+  ///
+  /// In en, this message translates to:
+  /// **'öffentlich'**
+  String get public;
+
+  /// No description provided for @createOrManageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'create or manage groups'**
+  String get createOrManageGroups;
+
   /// No description provided for @displayQrCode.
   ///
   /// In en, this message translates to:
@@ -1214,6 +1232,12 @@ abstract class AppLocalizations {
   /// **'Option'**
   String get option;
 
+  /// No description provided for @optionNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Option {number}'**
+  String optionNumber(int number);
+
   /// No description provided for @optionRequired.
   ///
   /// In en, this message translates to:
@@ -1381,6 +1405,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Priority support'**
   String get prioritySupport;
+
+  /// No description provided for @removeAbusiveLanguageBeforePublishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please remove abusive or objectionable language before publishing.'**
+  String get removeAbusiveLanguageBeforePublishing;
+
+  /// No description provided for @maximumPollOptionsAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {count} options allowed'**
+  String maximumPollOptionsAllowed(int count);
 
   /// No description provided for @communityRulesAcceptance.
   ///

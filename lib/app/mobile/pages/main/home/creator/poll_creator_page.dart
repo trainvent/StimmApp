@@ -14,7 +14,6 @@ import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:uuid/uuid.dart';
 
 const String _publicGroupValue = '__public__';
@@ -53,24 +52,6 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     final navigator = Navigator.of(context);
     final currentUser = authService.currentUser;
     if (currentUser == null) {
-      return;
-    }
-    final user = await UserRepository.create().getById(currentUser.uid);
-    final canUseGroups = (user?.isPro ?? false) == true;
-    if (!mounted) {
-      return;
-    }
-    if (!canUseGroups) {
-      final opened = await PurchasesService.instance.presentPaywall(
-        context: context,
-      );
-      if (!opened) {
-        showErrorSnackBar('Could not open paywall');
-      }
-      return;
-    }
-
-    if (!mounted) {
       return;
     }
 
@@ -139,14 +120,14 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       return DropdownButtonFormField<String>(
         key: const Key('poll_group_dropdown'),
         initialValue: _publicGroupValue,
-        decoration: const InputDecoration(
-          labelText: 'Publish to',
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          labelText: context.l10n.publishTo,
+          border: const OutlineInputBorder(),
         ),
-        items: const [
+        items: [
           DropdownMenuItem<String>(
             value: _publicGroupValue,
-            child: Text('Public'),
+            child: Text(context.l10n.public),
           ),
         ],
         onChanged: null,
@@ -161,18 +142,18 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
           return DropdownButtonFormField<String>(
             key: const Key('poll_group_dropdown'),
             initialValue: _publicGroupValue,
-            decoration: const InputDecoration(
-              labelText: 'Publish to',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.publishTo,
+              border: const OutlineInputBorder(),
             ),
-            items: const [
+            items: [
               DropdownMenuItem<String>(
                 value: _publicGroupValue,
-                child: Text('Public'),
+                child: Text(context.l10n.public),
               ),
               DropdownMenuItem<String>(
                 value: _manageGroupsValue,
-                child: Text('Create or manage groups...'),
+                child: Text(context.l10n.createOrManageGroups),
               ),
             ],
             onChanged: (value) async {
@@ -201,14 +182,14 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
             return DropdownButtonFormField<String>(
               key: const Key('poll_group_dropdown'),
               initialValue: selectedValue,
-              decoration: const InputDecoration(
-                labelText: 'Publish to',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.publishTo,
+                border: const OutlineInputBorder(),
               ),
               items: [
-                const DropdownMenuItem<String>(
+                DropdownMenuItem<String>(
                   value: _publicGroupValue,
-                  child: Text('Public'),
+                  child: Text(context.l10n.public),
                 ),
                 ...groups.map(
                   (group) => DropdownMenuItem<String>(
@@ -216,9 +197,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                     child: Text(group.name),
                   ),
                 ),
-                const DropdownMenuItem<String>(
+                DropdownMenuItem<String>(
                   value: _manageGroupsValue,
-                  child: Text('Create or manage groups...'),
+                  child: Text(context.l10n.createOrManageGroups),
                 ),
               ],
               onChanged: _handleGroupSelection,
@@ -231,7 +212,9 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
 
   void _addOption() {
     if (_optionControllers.length >= AppLimits.maxPollOptions) {
-      showErrorSnackBar('Maximum ${AppLimits.maxPollOptions} options allowed');
+      showErrorSnackBar(
+        context.l10n.maximumPollOptionsAllowed(AppLimits.maxPollOptions),
+      );
       return;
     }
     setState(() {
@@ -281,9 +264,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     if (ContentModerationService.instance.containsObjectionableContent(
       moderationInputs,
     )) {
-      showErrorSnackBar(
-        'Please remove abusive or objectionable language before publishing.',
-      );
+      showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
       return;
     }
 
@@ -406,7 +387,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
                       controller: controller,
                       maxLength: AppLimits.maxPollOptionLength,
                       decoration: InputDecoration(
-                        labelText: context.l10n.option + (index + 1).toString(),
+                        labelText: context.l10n.optionNumber(index + 1),
                         border: const OutlineInputBorder(),
                         counterText: "",
                       ),

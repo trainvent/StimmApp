@@ -460,6 +460,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
+  String get publishTo => 'zeigen in';
+
+  @override
+  String get public => 'öffentlich';
+
+  @override
+  String get createOrManageGroups => 'create or manage groups';
+
+  @override
   String get displayQrCode => 'display qr-code';
 
   @override
@@ -597,6 +606,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get option => 'Option';
 
   @override
+  String optionNumber(int number) {
+    return 'Option $number';
+  }
+
+  @override
   String get optionRequired => 'Option is required';
 
   @override
@@ -681,6 +695,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get prioritySupport => 'Priority support';
+
+  @override
+  String get removeAbusiveLanguageBeforePublishing =>
+      'Please remove abusive or objectionable language before publishing.';
+
+  @override
+  String maximumPollOptionsAllowed(int count) {
+    return 'Maximum $count options allowed';
+  }
 
   @override
   String get communityRulesAcceptance =>

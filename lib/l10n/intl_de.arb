@@ -225,6 +225,14 @@
 	"notSignedUpYet": "Noch nicht registriert? Passwort vergessen?",
 	"goToWelcome": "Zum Startbildschirm",
 	"option": "Option",
+	"@optionNumber": {
+		"placeholders": {
+			"number": {
+				"type": "int"
+			}
+		}
+	},
+	"optionNumber": "Option {number}",
 	"optionRequired": "Option ist erforderlich",
 	"options": "Optionen",
 	"other": "Andere",
@@ -253,6 +261,15 @@
 	"polls": "Umfragen",
 	"popularPetitions": "Beliebte Petitionen",
 	"prioritySupport": "Prioritätssupport",
+	"removeAbusiveLanguageBeforePublishing": "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
+	"@maximumPollOptionsAllowed": {
+		"placeholders": {
+			"count": {
+				"type": "int"
+			}
+		}
+	},
+	"maximumPollOptionsAllowed": "Maximal {count} Optionen erlaubt",
 	"communityRulesAcceptance": "Ich stimme den Nutzungsbedingungen zu und verstehe, dass StimmApp keine anstößigen Inhalte oder missbräuchliches Verhalten toleriert.",
 	"proMember": "Pro-Mitglied",
 	"processId": "Ausweis verarbeiten",
@@ -409,6 +426,9 @@
 	"filter": "filter",
 	"accentPallette": "Akzent Palette",
 	"tagOther": "Sonstiges",
+	"publishTo": "zeigen in",
+	"createOrManageGroups": "erstelle oder verwalte Gruppen",
+	"public": "öffentlich",
 	"displayQrCode": "QR Code anzeigen",
 	"pollTutorialStep1Title": "1. Sei kristallklar über das Ziel",
 	"pollTutorialStep1Desc": "Wisse genau, was du lernen willst – nur eine Idee.",

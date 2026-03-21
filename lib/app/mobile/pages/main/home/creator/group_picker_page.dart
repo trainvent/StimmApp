@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
+import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/subscription_provider.dart';
+import 'package:stimmapp/core/services/purchases_service.dart';
 
 class GroupPickerPage extends StatelessWidget {
   const GroupPickerPage({
@@ -22,6 +26,35 @@ class GroupPickerPage extends StatelessWidget {
   PollGroupRepository get _repository =>
       repository ?? PollGroupRepository.create();
   AuthService get _auth => auth ?? authService;
+
+  Future<void> _openCreateGroup(BuildContext context) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
+
+    await PurchasesService.instance.refreshCustomerInfo();
+    await syncSubscriptionStatus(uid, PurchasesService.instance.currentStatus);
+
+    final user = await UserRepository.create().getById(uid);
+    final createdCount = await _repository.countGroupsCreatedByUser(uid);
+    final requiresPro = createdCount >= 1 && (user?.isPro ?? false) != true;
+    if (!context.mounted) {
+      return;
+    }
+    if (requiresPro) {
+      final opened = await PurchasesService.instance.presentPaywall(
+        context: context,
+      );
+      if (!opened && context.mounted) {
+        showErrorSnackBar(context.l10n.couldNotOpenPaywall);
+      }
+      return;
+    }
+
+    await _openEditor(context);
+  }
 
   Future<void> _openEditor(BuildContext context, {PollGroup? group}) async {
     final selectedGroup = await Navigator.of(context).push<PollGroup>(
@@ -78,7 +111,7 @@ class GroupPickerPage extends StatelessWidget {
                     const SizedBox(height: 20),
                     FilledButton.icon(
                       key: const Key('open_group_creator_button'),
-                      onPressed: () => _openEditor(context),
+                      onPressed: () => _openCreateGroup(context),
                       icon: const Icon(Icons.group_add),
                       label: Text(context.l10n.createNewGroup),
                     ),
