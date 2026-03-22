@@ -962,16 +962,28 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get filter;
 
+  /// No description provided for @filterBy.
+  ///
+  /// In en, this message translates to:
+  /// **'filter by'**
+  String get filterBy;
+
+  /// No description provided for @filterByGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'filter by group'**
+  String get filterByGroup;
+
   /// No description provided for @publishTo.
   ///
   /// In en, this message translates to:
-  /// **'zeigen in'**
+  /// **'publish to'**
   String get publishTo;
 
   /// No description provided for @public.
   ///
   /// In en, this message translates to:
-  /// **'öffentlich'**
+  /// **'public'**
   String get public;
 
   /// No description provided for @createOrManageGroups.
@@ -2833,6 +2845,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scope and group'**
   String get scopeAndGroup;
+
+  /// No description provided for @groupsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groupsLabel;
 
   /// No description provided for @myGroups.
   ///

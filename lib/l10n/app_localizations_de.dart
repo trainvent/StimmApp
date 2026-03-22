@@ -463,7 +463,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get idScan => 'Ausweisscan';
 
   @override
-  String get filter => 'filter';
+  String get filter => 'Filter';
+
+  @override
+  String get filterBy => 'filtern nach';
+
+  @override
+  String get filterByGroup => 'filtern nach Gruppe';
 
   @override
   String get publishTo => 'zeigen in';
@@ -1496,6 +1502,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scopeAndGroup => 'Geltungsbereich und Gruppe';
+
+  @override
+  String get groupsLabel => 'Gruppen';
 
   @override
   String get myGroups => 'Meine Gruppen';

@@ -460,10 +460,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
-  String get publishTo => 'zeigen in';
+  String get filterBy => 'filter by';
 
   @override
-  String get public => 'öffentlich';
+  String get filterByGroup => 'filter by group';
+
+  @override
+  String get publishTo => 'publish to';
+
+  @override
+  String get public => 'public';
 
   @override
   String get createOrManageGroups => 'create or manage groups';
@@ -1479,6 +1485,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scopeAndGroup => 'Scope and group';
+
+  @override
+  String get groupsLabel => 'Groups';
 
   @override
   String get myGroups => 'My groups';

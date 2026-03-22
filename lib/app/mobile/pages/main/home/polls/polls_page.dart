@@ -84,9 +84,9 @@ class _PollsPageState extends State<PollsPage> {
                       DropdownButtonFormField<String>(
                         key: const Key('poll_group_filter_dropdown'),
                         initialValue: _selectedGroupId,
-                        decoration: const InputDecoration(
-                          hintText: 'All groups',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          hintText: context.l10n.filterByGroup,
+                          border: const OutlineInputBorder(),
                           isDense: true,
                         ),
                         disabledHint: Text(context.l10n.allGroups),

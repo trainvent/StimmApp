@@ -143,7 +143,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                         tilePadding: EdgeInsets.zero,
                         childrenPadding: const EdgeInsets.only(bottom: 8),
                         title: Text(
-                          'Group',
+                          context.l10n.groupsLabel,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         children: [

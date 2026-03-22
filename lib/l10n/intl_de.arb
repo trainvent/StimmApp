@@ -423,7 +423,7 @@
 	"tagSafety": "Sicherheit",
 	"tagTraffic": "Verkehr",
 	"tagHousing": "Wohnen",
-	"filter": "filter",
+	"filter": "Filter",
 	"accentPallette": "Akzent Palette",
 	"tagOther": "Sonstiges",
 	"publishTo": "zeigen in",
@@ -560,6 +560,8 @@
 			}
 		}
 	},
+	"filterBy": "filtern nach",
+	"filterByGroup": "filtern nach Gruppe",
 	"globalScopeLabel": "Global",
 	"europeScopeLabel": "Europa",
 	"countryScopeFallback": "Land",
@@ -568,6 +570,7 @@
 	"info": "Info",
 	"scopeDetails": "Details zum Geltungsbereich",
 	"scopeAndGroup": "Geltungsbereich und Gruppe",
+	"groupsLabel": "Gruppen",
 	"myGroups": "Meine Gruppen",
 	"pleaseSignInToViewYourGroups": "Bitte melde dich an, um deine Gruppen anzuzeigen.",
 	"failedToLoadYourGroups": "Deine Gruppen konnten nicht geladen werden.",

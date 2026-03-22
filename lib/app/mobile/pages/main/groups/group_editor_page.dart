@@ -888,11 +888,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Spacer(),
-            TextButton.icon(
+            IconButton(
               key: const Key('add_domain_row'),
               onPressed: _addDomainDraft,
               icon: const Icon(Icons.add_business),
-              label: Text(context.l10n.addDomain),
             ),
           ],
         ),
