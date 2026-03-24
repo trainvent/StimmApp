@@ -1224,6 +1224,61 @@ class S {
     return Intl.message('Filter', name: 'filter', desc: '', args: []);
   }
 
+  /// `filter by`
+  String get filterBy {
+    return Intl.message('filter by', name: 'filterBy', desc: '', args: []);
+  }
+
+  /// `filter by group`
+  String get filterByGroup {
+    return Intl.message(
+      'filter by group',
+      name: 'filterByGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `publish to`
+  String get publishTo {
+    return Intl.message('publish to', name: 'publishTo', desc: '', args: []);
+  }
+
+  /// `public`
+  String get public {
+    return Intl.message('public', name: 'public', desc: '', args: []);
+  }
+
+  /// `create or manage groups`
+  String get createOrManageGroups {
+    return Intl.message(
+      'create or manage groups',
+      name: 'createOrManageGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `display qr-code`
+  String get displayQrCode {
+    return Intl.message(
+      'display qr-code',
+      name: 'displayQrCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `accent pallette`
+  String get accentPallette {
+    return Intl.message(
+      'accent pallette',
+      name: 'accentPallette',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `This is a preview of your new profile picture.`
   String get imagePreviewDescription {
     return Intl.message(
@@ -1544,6 +1599,16 @@ class S {
     return Intl.message('Option', name: 'option', desc: '', args: []);
   }
 
+  /// `Option {number}`
+  String optionNumber(int number) {
+    return Intl.message(
+      'Option $number',
+      name: 'optionNumber',
+      desc: '',
+      args: [number],
+    );
+  }
+
   /// `Option is required`
   String get optionRequired {
     return Intl.message(
@@ -1781,6 +1846,26 @@ class S {
       name: 'prioritySupport',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Please remove abusive or objectionable language before publishing.`
+  String get removeAbusiveLanguageBeforePublishing {
+    return Intl.message(
+      'Please remove abusive or objectionable language before publishing.',
+      name: 'removeAbusiveLanguageBeforePublishing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum {count} options allowed`
+  String maximumPollOptionsAllowed(int count) {
+    return Intl.message(
+      'Maximum $count options allowed',
+      name: 'maximumPollOptionsAllowed',
+      desc: '',
+      args: [count],
     );
   }
 
@@ -3681,6 +3766,1346 @@ class S {
       name: 'couldNotSaveYourAcceptance',
       desc: '',
       args: [error],
+    );
+  }
+
+  /// `Search powered by TomTom`
+  String get searchPoweredByTomTom {
+    return Intl.message(
+      'Search powered by TomTom',
+      name: 'searchPoweredByTomTom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set TOMTOM_SEARCH_API_KEY to enable address suggestions`
+  String get setTomTomApiKeyToEnableSuggestions {
+    return Intl.message(
+      'Set TOMTOM_SEARCH_API_KEY to enable address suggestions',
+      name: 'setTomTomApiKeyToEnableSuggestions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select an address with a town`
+  String get pleaseSelectAddressWithTown {
+    return Intl.message(
+      'Please select an address with a town',
+      name: 'pleaseSelectAddressWithTown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detected state: {state}`
+  String detectedStateLabel(String state) {
+    return Intl.message(
+      'Detected state: $state',
+      name: 'detectedStateLabel',
+      desc: '',
+      args: [state],
+    );
+  }
+
+  /// `Scope: {scope}`
+  String scopeLabelWithValue(String scope) {
+    return Intl.message(
+      'Scope: $scope',
+      name: 'scopeLabelWithValue',
+      desc: '',
+      args: [scope],
+    );
+  }
+
+  /// `Group: {group}`
+  String groupLabelWithValue(String group) {
+    return Intl.message(
+      'Group: $group',
+      name: 'groupLabelWithValue',
+      desc: '',
+      args: [group],
+    );
+  }
+
+  /// `Global`
+  String get globalScopeLabel {
+    return Intl.message('Global', name: 'globalScopeLabel', desc: '', args: []);
+  }
+
+  /// `Europe`
+  String get europeScopeLabel {
+    return Intl.message('Europe', name: 'europeScopeLabel', desc: '', args: []);
+  }
+
+  /// `Country`
+  String get countryScopeFallback {
+    return Intl.message(
+      'Country',
+      name: 'countryScopeFallback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `State / Region`
+  String get stateRegionScopeFallback {
+    return Intl.message(
+      'State / Region',
+      name: 'stateRegionScopeFallback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `City`
+  String get cityScopeFallback {
+    return Intl.message('City', name: 'cityScopeFallback', desc: '', args: []);
+  }
+
+  /// `Info`
+  String get info {
+    return Intl.message('Info', name: 'info', desc: '', args: []);
+  }
+
+  /// `Scope details`
+  String get scopeDetails {
+    return Intl.message(
+      'Scope details',
+      name: 'scopeDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scope and group`
+  String get scopeAndGroup {
+    return Intl.message(
+      'Scope and group',
+      name: 'scopeAndGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Groups`
+  String get groupsLabel {
+    return Intl.message('Groups', name: 'groupsLabel', desc: '', args: []);
+  }
+
+  /// `My groups`
+  String get myGroups {
+    return Intl.message('My groups', name: 'myGroups', desc: '', args: []);
+  }
+
+  /// `Please sign in to view your groups.`
+  String get pleaseSignInToViewYourGroups {
+    return Intl.message(
+      'Please sign in to view your groups.',
+      name: 'pleaseSignInToViewYourGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load your groups.`
+  String get failedToLoadYourGroups {
+    return Intl.message(
+      'Failed to load your groups.',
+      name: 'failedToLoadYourGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are not a member of any groups yet.`
+  String get youAreNotMemberOfAnyGroupsYet {
+    return Intl.message(
+      'You are not a member of any groups yet.',
+      name: 'youAreNotMemberOfAnyGroupsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No expiry`
+  String get noExpiry {
+    return Intl.message('No expiry', name: 'noExpiry', desc: '', args: []);
+  }
+
+  /// `Expires {date}`
+  String expiresOnDate(String date) {
+    return Intl.message(
+      'Expires $date',
+      name: 'expiresOnDate',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// `Creator`
+  String get creatorRoleLabel {
+    return Intl.message(
+      'Creator',
+      name: 'creatorRoleLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Admin`
+  String get adminRoleLabel {
+    return Intl.message('Admin', name: 'adminRoleLabel', desc: '', args: []);
+  }
+
+  /// `Member`
+  String get memberRoleLabel {
+    return Intl.message('Member', name: 'memberRoleLabel', desc: '', args: []);
+  }
+
+  /// `Access: {accessMode} • Members: {memberCount} • {expiry}`
+  String groupAccessSummary(String accessMode, int memberCount, String expiry) {
+    return Intl.message(
+      'Access: $accessMode • Members: $memberCount • $expiry',
+      name: 'groupAccessSummary',
+      desc: '',
+      args: [accessMode, memberCount, expiry],
+    );
+  }
+
+  /// `Swipe for delete.`
+  String get swipeForDelete {
+    return Intl.message(
+      'Swipe for delete.',
+      name: 'swipeForDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Swipe to leave the group.`
+  String get swipeToLeaveGroup {
+    return Intl.message(
+      'Swipe to leave the group.',
+      name: 'swipeToLeaveGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave group`
+  String get leaveGroup {
+    return Intl.message('Leave group', name: 'leaveGroup', desc: '', args: []);
+  }
+
+  /// `Delete group`
+  String get deleteGroup {
+    return Intl.message(
+      'Delete group',
+      name: 'deleteGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want to leave "{groupName}"?`
+  String doYouWantToLeaveGroup(String groupName) {
+    return Intl.message(
+      'Do you want to leave "$groupName"?',
+      name: 'doYouWantToLeaveGroup',
+      desc: '',
+      args: [groupName],
+    );
+  }
+
+  /// `You left the group.`
+  String get youLeftTheGroup {
+    return Intl.message(
+      'You left the group.',
+      name: 'youLeftTheGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group creators cannot leave their own group. Edit or delete it instead.`
+  String get groupCreatorsCannotLeaveOwnGroup {
+    return Intl.message(
+      'Group creators cannot leave their own group. Edit or delete it instead.',
+      name: 'groupCreatorsCannotLeaveOwnGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type "{groupName}" to confirm deletion. This cannot be undone.`
+  String typeGroupNameToConfirmDeletion(String groupName) {
+    return Intl.message(
+      'Type "$groupName" to confirm deletion. This cannot be undone.',
+      name: 'typeGroupNameToConfirmDeletion',
+      desc: '',
+      args: [groupName],
+    );
+  }
+
+  /// `Group name`
+  String get groupNameLabel {
+    return Intl.message(
+      'Group name',
+      name: 'groupNameLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group name did not match.`
+  String get groupNameDidNotMatch {
+    return Intl.message(
+      'Group name did not match.',
+      name: 'groupNameDidNotMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group deleted.`
+  String get groupDeleted {
+    return Intl.message(
+      'Group deleted.',
+      name: 'groupDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan QR code`
+  String get scanQrCode {
+    return Intl.message('Scan QR code', name: 'scanQrCode', desc: '', args: []);
+  }
+
+  /// `Scan group QR code`
+  String get scanGroupQrCode {
+    return Intl.message(
+      'Scan group QR code',
+      name: 'scanGroupQrCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This QR code does not contain a valid group invite.`
+  String get invalidGroupInviteQrCode {
+    return Intl.message(
+      'This QR code does not contain a valid group invite.',
+      name: 'invalidGroupInviteQrCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No joined or accepted groups available yet.`
+  String get groupFilterEmpty {
+    return Intl.message(
+      'No joined or accepted groups available yet.',
+      name: 'groupFilterEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All groups`
+  String get allGroups {
+    return Intl.message('All groups', name: 'allGroups', desc: '', args: []);
+  }
+
+  /// `Clear group filter`
+  String get clearGroupFilter {
+    return Intl.message(
+      'Clear group filter',
+      name: 'clearGroupFilter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Protected`
+  String get protectedAccessMode {
+    return Intl.message(
+      'Protected',
+      name: 'protectedAccessMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open`
+  String get openAccessMode {
+    return Intl.message('Open', name: 'openAccessMode', desc: '', args: []);
+  }
+
+  /// `Completely private`
+  String get completelyPrivateAccessMode {
+    return Intl.message(
+      'Completely private',
+      name: 'completelyPrivateAccessMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group access`
+  String get groupAccess {
+    return Intl.message(
+      'Group access',
+      name: 'groupAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This action is no longer available.`
+  String get actionNoLongerAvailable {
+    return Intl.message(
+      'This action is no longer available.',
+      name: 'actionNoLongerAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saved. Group access accepted.`
+  String get groupAccessAccepted {
+    return Intl.message(
+      'Saved. Group access accepted.',
+      name: 'groupAccessAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invite denied.`
+  String get inviteDenied {
+    return Intl.message(
+      'Invite denied.',
+      name: 'inviteDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A user`
+  String get aUser {
+    return Intl.message('A user', name: 'aUser', desc: '', args: []);
+  }
+
+  /// `Access request sent.`
+  String get accessRequestSent {
+    return Intl.message(
+      'Access request sent.',
+      name: 'accessRequestSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You joined the group.`
+  String get youJoinedTheGroup {
+    return Intl.message(
+      'You joined the group.',
+      name: 'youJoinedTheGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Approve request`
+  String get approveRequest {
+    return Intl.message(
+      'Approve request',
+      name: 'approveRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept invite`
+  String get acceptInvite {
+    return Intl.message(
+      'Accept invite',
+      name: 'acceptInvite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deny request`
+  String get denyRequest {
+    return Intl.message(
+      'Deny request',
+      name: 'denyRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deny invite`
+  String get denyInvite {
+    return Intl.message('Deny invite', name: 'denyInvite', desc: '', args: []);
+  }
+
+  /// `You are already a member of this group.`
+  String get alreadyMemberOfGroup {
+    return Intl.message(
+      'You are already a member of this group.',
+      name: 'alreadyMemberOfGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This group is completely private. Please wait for a direct invite from the group admins.`
+  String get privateGroupWaitForInvite {
+    return Intl.message(
+      'This group is completely private. Please wait for a direct invite from the group admins.',
+      name: 'privateGroupWaitForInvite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This invite link is not valid for the protected group.`
+  String get invalidProtectedInviteLink {
+    return Intl.message(
+      'This invite link is not valid for the protected group.',
+      name: 'invalidProtectedInviteLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request access`
+  String get requestAccess {
+    return Intl.message(
+      'Request access',
+      name: 'requestAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join group`
+  String get joinGroup {
+    return Intl.message('Join group', name: 'joinGroup', desc: '', args: []);
+  }
+
+  /// `Group access`
+  String get groupAccessTitle {
+    return Intl.message(
+      'Group access',
+      name: 'groupAccessTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name} invited you to this group.`
+  String invitedYouToThisGroup(String name) {
+    return Intl.message(
+      '$name invited you to this group.',
+      name: 'invitedYouToThisGroup',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `{name} requested access to this group.`
+  String requestedAccessToThisGroup(String name) {
+    return Intl.message(
+      '$name requested access to this group.',
+      name: 'requestedAccessToThisGroup',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Access mode: {mode}`
+  String accessModeLabel(String mode) {
+    return Intl.message(
+      'Access mode: $mode',
+      name: 'accessModeLabel',
+      desc: '',
+      args: [mode],
+    );
+  }
+
+  /// `Protected groups require a valid invite link and an approval request.`
+  String get protectedGroupsRequireInviteLink {
+    return Intl.message(
+      'Protected groups require a valid invite link and an approval request.',
+      name: 'protectedGroupsRequireInviteLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open groups can be joined immediately.`
+  String get openGroupsCanBeJoinedImmediately {
+    return Intl.message(
+      'Open groups can be joined immediately.',
+      name: 'openGroupsCanBeJoinedImmediately',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group details are temporarily unavailable, but you can still respond to this notification.`
+  String get groupDetailsTemporarilyUnavailableRespond {
+    return Intl.message(
+      'Group details are temporarily unavailable, but you can still respond to this notification.',
+      name: 'groupDetailsTemporarilyUnavailableRespond',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group details are temporarily unavailable.`
+  String get groupDetailsTemporarilyUnavailable {
+    return Intl.message(
+      'Group details are temporarily unavailable.',
+      name: 'groupDetailsTemporarilyUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage groups`
+  String get manageGroupsTitle {
+    return Intl.message(
+      'Manage groups',
+      name: 'manageGroupsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please sign in to manage groups.`
+  String get pleaseSignInToManageGroups {
+    return Intl.message(
+      'Please sign in to manage groups.',
+      name: 'pleaseSignInToManageGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pick an existing group to use or edit, or create a new one.`
+  String get pickExistingGroupToUseOrEditOrCreateNewOne {
+    return Intl.message(
+      'Pick an existing group to use or edit, or create a new one.',
+      name: 'pickExistingGroupToUseOrEditOrCreateNewOne',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create new group`
+  String get createNewGroup {
+    return Intl.message(
+      'Create new group',
+      name: 'createNewGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your groups`
+  String get yourGroupsTitle {
+    return Intl.message(
+      'Your groups',
+      name: 'yourGroupsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No groups yet. Create one above to start team polling.`
+  String get noGroupsYetCreateOneAboveToStartTeamPolling {
+    return Intl.message(
+      'No groups yet. Create one above to start team polling.',
+      name: 'noGroupsYetCreateOneAboveToStartTeamPolling',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join code: {joinCode}`
+  String joinCodeWithValue(Object joinCode) {
+    return Intl.message(
+      'Join code: $joinCode',
+      name: 'joinCodeWithValue',
+      desc: '',
+      args: [joinCode],
+    );
+  }
+
+  /// `Expires {date}`
+  String expiresOnShort(Object date) {
+    return Intl.message(
+      'Expires $date',
+      name: 'expiresOnShort',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// `Imported members: {count}`
+  String importedMembersCount(Object count) {
+    return Intl.message(
+      'Imported members: $count',
+      name: 'importedMembersCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Invite link on`
+  String get inviteLinkOnLabel {
+    return Intl.message(
+      'Invite link on',
+      name: 'inviteLinkOnLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit`
+  String get editLabel {
+    return Intl.message('Edit', name: 'editLabel', desc: '', args: []);
+  }
+
+  /// `Keep selected`
+  String get keepSelected {
+    return Intl.message(
+      'Keep selected',
+      name: 'keepSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use for this poll`
+  String get useForThisPoll {
+    return Intl.message(
+      'Use for this poll',
+      name: 'useForThisPoll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notifications`
+  String get notificationsTitle {
+    return Intl.message(
+      'Notifications',
+      name: 'notificationsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please sign in to view group invitations.`
+  String get pleaseSignInToViewGroupInvitations {
+    return Intl.message(
+      'Please sign in to view group invitations.',
+      name: 'pleaseSignInToViewGroupInvitations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No group notifications yet.`
+  String get noGroupNotificationsYet {
+    return Intl.message(
+      'No group notifications yet.',
+      name: 'noGroupNotificationsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pending`
+  String get notificationStatusPending {
+    return Intl.message(
+      'Pending',
+      name: 'notificationStatusPending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accepted`
+  String get notificationStatusAccepted {
+    return Intl.message(
+      'Accepted',
+      name: 'notificationStatusAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Denied`
+  String get notificationStatusDenied {
+    return Intl.message(
+      'Denied',
+      name: 'notificationStatusDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `invited you`
+  String get notificationActionInvitedYou {
+    return Intl.message(
+      'invited you',
+      name: 'notificationActionInvitedYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `requested access`
+  String get notificationActionRequestedAccess {
+    return Intl.message(
+      'requested access',
+      name: 'notificationActionRequestedAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open app`
+  String get openApp {
+    return Intl.message('Open app', name: 'openApp', desc: '', args: []);
+  }
+
+  /// `Sign in to join`
+  String get signInToJoinGroup {
+    return Intl.message(
+      'Sign in to join',
+      name: 'signInToJoinGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in to request access`
+  String get signInToRequestGroupAccess {
+    return Intl.message(
+      'Sign in to request access',
+      name: 'signInToRequestGroupAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Protected groups require an approval request before you can join.`
+  String get protectedGroupsRequireApprovalRequest {
+    return Intl.message(
+      'Protected groups require an approval request before you can join.',
+      name: 'protectedGroupsRequireApprovalRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in to join this group automatically.`
+  String get signInToJoinGroupAutomatically {
+    return Intl.message(
+      'Sign in to join this group automatically.',
+      name: 'signInToJoinGroupAutomatically',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This group is private or requires sign-in before more details can be shown.`
+  String get privateGroupOrSignInRequired {
+    return Intl.message(
+      'This group is private or requires sign-in before more details can be shown.',
+      name: 'privateGroupOrSignInRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create group`
+  String get createGroupTooltip {
+    return Intl.message(
+      'Create group',
+      name: 'createGroupTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This group has no active invite link.`
+  String get groupHasNoActiveInviteLink {
+    return Intl.message(
+      'This group has no active invite link.',
+      name: 'groupHasNoActiveInviteLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy link`
+  String get copyLinkLabel {
+    return Intl.message('Copy link', name: 'copyLinkLabel', desc: '', args: []);
+  }
+
+  /// `Copy invite link`
+  String get copyInviteLinkTooltip {
+    return Intl.message(
+      'Copy invite link',
+      name: 'copyInviteLinkTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste CSV members`
+  String get pasteCsvMembers {
+    return Intl.message(
+      'Paste CSV members',
+      name: 'pasteCsvMembers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `email,nickname,role\nanna@company.com,Anna,user`
+  String get csvMembersHint {
+    return Intl.message(
+      'email,nickname,role\nanna@company.com,Anna,user',
+      name: 'csvMembersHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import`
+  String get importLabel {
+    return Intl.message('Import', name: 'importLabel', desc: '', args: []);
+  }
+
+  /// `No CSV rows were imported.`
+  String get noCsvRowsImported {
+    return Intl.message(
+      'No CSV rows were imported.',
+      name: 'noCsvRowsImported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Imported {count} CSV rows.`
+  String importedCsvRows(Object count) {
+    return Intl.message(
+      'Imported $count CSV rows.',
+      name: 'importedCsvRows',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Imported {validRows} rows. Skipped {invalidRows} malformed rows.`
+  String importedRowsSkippedMalformed(Object validRows, Object invalidRows) {
+    return Intl.message(
+      'Imported $validRows rows. Skipped $invalidRows malformed rows.',
+      name: 'importedRowsSkippedMalformed',
+      desc: '',
+      args: [validRows, invalidRows],
+    );
+  }
+
+  /// `Please enter a valid email for every invited member.`
+  String get pleaseEnterValidEmailForEveryInvitedMember {
+    return Intl.message(
+      'Please enter a valid email for every invited member.',
+      name: 'pleaseEnterValidEmailForEveryInvitedMember',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter valid email domains like company.com.`
+  String get pleaseEnterValidEmailDomains {
+    return Intl.message(
+      'Please enter valid email domains like company.com.',
+      name: 'pleaseEnterValidEmailDomains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a group name.`
+  String get pleaseEnterGroupName {
+    return Intl.message(
+      'Please enter a group name.',
+      name: 'pleaseEnterGroupName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group updated.`
+  String get groupUpdated {
+    return Intl.message(
+      'Group updated.',
+      name: 'groupUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group created.`
+  String get groupCreated {
+    return Intl.message(
+      'Group created.',
+      name: 'groupCreated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manager`
+  String get managerRoleLabel {
+    return Intl.message(
+      'Manager',
+      name: 'managerRoleLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User`
+  String get userRoleLabel {
+    return Intl.message('User', name: 'userRoleLabel', desc: '', args: []);
+  }
+
+  /// `Only members prepared by admins or managers can participate.`
+  String get onlyPreparedMembersCanParticipate {
+    return Intl.message(
+      'Only members prepared by admins or managers can participate.',
+      name: 'onlyPreparedMembersCanParticipate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `People with the invite link can request access to the group.`
+  String get peopleWithInviteLinkCanRequestAccessToGroup {
+    return Intl.message(
+      'People with the invite link can request access to the group.',
+      name: 'peopleWithInviteLinkCanRequestAccessToGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Everyone can join without approval.`
+  String get everyoneCanJoinWithoutApproval {
+    return Intl.message(
+      'Everyone can join without approval.',
+      name: 'everyoneCanJoinWithoutApproval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Role`
+  String get roleLabel {
+    return Intl.message('Role', name: 'roleLabel', desc: '', args: []);
+  }
+
+  /// `Remove member`
+  String get removeMemberTooltip {
+    return Intl.message(
+      'Remove member',
+      name: 'removeMemberTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invite members`
+  String get inviteMembersTitle {
+    return Intl.message(
+      'Invite members',
+      name: 'inviteMembersTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add member`
+  String get addMember {
+    return Intl.message('Add member', name: 'addMember', desc: '', args: []);
+  }
+
+  /// `Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.`
+  String get inviteMembersDescription {
+    return Intl.message(
+      'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.',
+      name: 'inviteMembersDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste CSV`
+  String get pasteCsvLabel {
+    return Intl.message('Paste CSV', name: 'pasteCsvLabel', desc: '', args: []);
+  }
+
+  /// `Import CSV file`
+  String get importCsvFileLabel {
+    return Intl.message(
+      'Import CSV file',
+      name: 'importCsvFileLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drop a CSV here`
+  String get dropCsvHere {
+    return Intl.message(
+      'Drop a CSV here',
+      name: 'dropCsvHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accepted format: CSV or TSV with email,nickname,role`
+  String get acceptedCsvFormat {
+    return Intl.message(
+      'Accepted format: CSV or TSV with email,nickname,role',
+      name: 'acceptedCsvFormat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last import: {validRows} valid rows, {invalidRows} malformed rows.`
+  String lastImportSummary(Object validRows, Object invalidRows) {
+    return Intl.message(
+      'Last import: $validRows valid rows, $invalidRows malformed rows.',
+      name: 'lastImportSummary',
+      desc: '',
+      args: [validRows, invalidRows],
+    );
+  }
+
+  /// `Allowed mail domains`
+  String get allowedMailDomains {
+    return Intl.message(
+      'Allowed mail domains',
+      name: 'allowedMailDomains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add domain`
+  String get addDomain {
+    return Intl.message('Add domain', name: 'addDomain', desc: '', args: []);
+  }
+
+  /// `Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.`
+  String get allowedMailDomainsDescription {
+    return Intl.message(
+      'Useful for companies: everyone with a matching email domain can be prepared with the chosen default role.',
+      name: 'allowedMailDomainsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No domain rules yet.`
+  String get noDomainRulesYet {
+    return Intl.message(
+      'No domain rules yet.',
+      name: 'noDomainRulesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domain`
+  String get domainLabel {
+    return Intl.message('Domain', name: 'domainLabel', desc: '', args: []);
+  }
+
+  /// `company.com`
+  String get domainHint {
+    return Intl.message('company.com', name: 'domainHint', desc: '', args: []);
+  }
+
+  /// `Remove domain`
+  String get removeDomainTooltip {
+    return Intl.message(
+      'Remove domain',
+      name: 'removeDomainTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit group`
+  String get editGroupTitle {
+    return Intl.message(
+      'Edit group',
+      name: 'editGroupTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create group`
+  String get createGroupTitle {
+    return Intl.message(
+      'Create group',
+      name: 'createGroupTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Adjust the access rules, invites, and settings for this group.`
+  String get editGroupDescription {
+    return Intl.message(
+      'Adjust the access rules, invites, and settings for this group.',
+      name: 'editGroupDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a members-only polling space for teams, events, and companies.`
+  String get createGroupDescription {
+    return Intl.message(
+      'Create a members-only polling space for teams, events, and companies.',
+      name: 'createGroupDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Members can choose their own nickname`
+  String get membersCanChooseTheirOwnNickname {
+    return Intl.message(
+      'Members can choose their own nickname',
+      name: 'membersCanChooseTheirOwnNickname',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Managers can prepare access lists`
+  String get managersCanPrepareAccessLists {
+    return Intl.message(
+      'Managers can prepare access lists',
+      name: 'managersCanPrepareAccessLists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expiration date (optional)`
+  String get expirationDateOptional {
+    return Intl.message(
+      'Expiration date (optional)',
+      name: 'expirationDateOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No expiration date set.`
+  String get noExpirationDateSet {
+    return Intl.message(
+      'No expiration date set.',
+      name: 'noExpirationDateSet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set an expiration date`
+  String get setExpirationDate {
+    return Intl.message(
+      'Set an expiration date',
+      name: 'setExpirationDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pick expiration date`
+  String get pickExpirationDate {
+    return Intl.message(
+      'Pick expiration date',
+      name: 'pickExpirationDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saving...`
+  String get savingGroup {
+    return Intl.message('Saving...', name: 'savingGroup', desc: '', args: []);
+  }
+
+  /// `Creating...`
+  String get creatingGroup {
+    return Intl.message(
+      'Creating...',
+      name: 'creatingGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save group`
+  String get saveGroupLabel {
+    return Intl.message(
+      'Save group',
+      name: 'saveGroupLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Supported roles: {admin}, {manager}, {user}.`
+  String supportedRoles(Object admin, Object manager, Object user) {
+    return Intl.message(
+      'Supported roles: $admin, $manager, $user.',
+      name: 'supportedRoles',
+      desc: '',
+      args: [admin, manager, user],
+    );
+  }
+
+  /// `Scan QR code`
+  String get scanQrCodeTooltip {
+    return Intl.message(
+      'Scan QR code',
+      name: 'scanQrCodeTooltip',
+      desc: '',
+      args: [],
     );
   }
 }
