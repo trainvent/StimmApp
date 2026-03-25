@@ -26,9 +26,9 @@ class IConst {
   static const String tomTomSearchApiKey = 'IAa218B56ALkr3sDdVUpSkhbChKbFVWG';
 
   static const String googleAdMobAppId =
-      'ca-app-pub-5296065079333841~8760518694';
+      'ca-app-pub-6799570171188466~3945205436';
   static const String googleAdMobBannerAdUnitId =
-      'ca-app-pub-5296065079333841/9371840244';
+      'ca-app-pub-6799570171188466/8441562649';
 
   static const String imapServer = "imap.ionos.de";
 
