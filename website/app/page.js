@@ -45,7 +45,7 @@ export default function HomePage() {
           <a className="nav-link" href="#mission">{copy.navMission}</a>
           <a className="nav-link" href="/faq.html">FAQ</a>
           <a className="nav-link" href="/privacy-policy.html">{copy.navPrivacy}</a>
-          <a className="nav-link" href="mailto:support@trainvent.com">{copy.navContact}</a>
+          <a className="nav-link" href="mailto:hello@trainvent.com">{copy.navContact}</a>
           <a className="button" href={copy.appUrl}>{copy.navOpenApp}</a>
         </nav>
       </header>
@@ -82,6 +82,10 @@ export default function HomePage() {
                   <strong>{copy.microTitle}</strong>
                   <span>{copy.microText}</span>
                 </div>
+                <a className="micro-card micro-card-link" href={copy.microSupportHref}>
+                  <strong>{copy.microSupportTitle}</strong>
+                  <span>{copy.microSupportText}</span>
+                </a>
               </div>
             </div>
 
@@ -183,7 +187,7 @@ export default function HomePage() {
               <h3>{copy.contactTitle}</h3>
               <p>
                 <span>{copy.contactEmailLabel}</span>{' '}
-                <a href="mailto:support@trainvent.com">support@trainvent.com</a>
+                <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>
               </p>
               <p>{copy.contactText}</p>
               <div className="cta-row contact-row">
