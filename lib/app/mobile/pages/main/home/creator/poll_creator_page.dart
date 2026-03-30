@@ -12,7 +12,6 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:uuid/uuid.dart';
 
@@ -116,77 +115,45 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       );
     }
 
-    return StreamBuilder<UserProfile?>(
-      stream: UserRepository.create().watchById(currentUser.uid),
+    return StreamBuilder<List<PollGroup>>(
+      stream: PollGroupRepository.create().watchGroupsForUser(currentUser.uid),
       builder: (context, snapshot) {
-        final canUseGroups = (snapshot.data?.isPro ?? false) == true;
-        if (!canUseGroups) {
-          return DropdownButtonFormField<String>(
-            key: const Key('poll_group_dropdown'),
-            initialValue: _publicGroupValue,
-            decoration: InputDecoration(
-              labelText: context.l10n.publishTo,
-              border: const OutlineInputBorder(),
-            ),
-            items: [
-              DropdownMenuItem<String>(
-                value: _publicGroupValue,
-                child: Text(context.l10n.public),
-              ),
-              DropdownMenuItem<String>(
-                value: _manageGroupsValue,
-                child: Text(context.l10n.createOrManageGroups),
-              ),
-            ],
-            onChanged: (value) async {
-              if (value == _manageGroupsValue) {
-                await _openManageGroups();
-              }
-            },
-          );
+        final latestGroups = List<PollGroup>.from(
+          snapshot.data ?? const <PollGroup>[],
+        );
+        if (latestGroups.isNotEmpty) {
+          _rememberGroups(latestGroups);
         }
-
-        return StreamBuilder<List<PollGroup>>(
-          stream: PollGroupRepository.create().watchGroupsForUser(currentUser.uid),
-          builder: (context, groupSnapshot) {
-            final latestGroups = List<PollGroup>.from(
-              groupSnapshot.data ?? const <PollGroup>[],
-            );
-            if (latestGroups.isNotEmpty) {
-              _rememberGroups(latestGroups);
-            }
-            final groups = _knownGroupsById.values.toList();
-            if (_selectedGroup != null &&
-                !_knownGroupsById.containsKey(_selectedGroup!.id)) {
-              groups.insert(0, _selectedGroup!);
-            }
-            final selectedValue = _selectedGroup?.id ?? _publicGroupValue;
-            return DropdownButtonFormField<String>(
-              key: const Key('poll_group_dropdown'),
-              initialValue: selectedValue,
-              decoration: InputDecoration(
-                labelText: context.l10n.publishTo,
-                border: const OutlineInputBorder(),
+        final groups = _knownGroupsById.values.toList();
+        if (_selectedGroup != null &&
+            !_knownGroupsById.containsKey(_selectedGroup!.id)) {
+          groups.insert(0, _selectedGroup!);
+        }
+        final selectedValue = _selectedGroup?.id ?? _publicGroupValue;
+        return DropdownButtonFormField<String>(
+          key: const Key('poll_group_dropdown'),
+          initialValue: selectedValue,
+          decoration: InputDecoration(
+            labelText: context.l10n.publishTo,
+            border: const OutlineInputBorder(),
+          ),
+          items: [
+            DropdownMenuItem<String>(
+              value: _publicGroupValue,
+              child: Text(context.l10n.public),
+            ),
+            ...groups.map(
+              (group) => DropdownMenuItem<String>(
+                value: group.id,
+                child: Text(group.name),
               ),
-              items: [
-                DropdownMenuItem<String>(
-                  value: _publicGroupValue,
-                  child: Text(context.l10n.public),
-                ),
-                ...groups.map(
-                  (group) => DropdownMenuItem<String>(
-                    value: group.id,
-                    child: Text(group.name),
-                  ),
-                ),
-                DropdownMenuItem<String>(
-                  value: _manageGroupsValue,
-                  child: Text(context.l10n.createOrManageGroups),
-                ),
-              ],
-              onChanged: _handleGroupSelection,
-            );
-          },
+            ),
+            DropdownMenuItem<String>(
+              value: _manageGroupsValue,
+              child: Text(context.l10n.createOrManageGroups),
+            ),
+          ],
+          onChanged: _handleGroupSelection,
         );
       },
     );
