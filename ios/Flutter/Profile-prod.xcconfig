@@ -1,7 +1,7 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile-prod.xcconfig"
 #include "Generated.xcconfig"
 FLUTTER_TARGET=lib/main.dart
-GAD_APPLICATION_IDENTIFIER=ca-app-pub-5296065079333841~8760518694
+GAD_APPLICATION_IDENTIFIER=ca-app-pub-6799570171188466~3626151987
 DEEP_LINK_HOST=stimmapp.net
 APP_DISPLAY_NAME=Vivot
 APP_BUNDLE_NAME=Vivot

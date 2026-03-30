@@ -67,7 +67,8 @@ class AdService {
       if (kDebugMode || Environment.isDev) return _androidTestBannerAdUnitId;
       return IConst.googleAdMobBannerAdUnitId;
     } else if (Platform.isIOS) {
-      return _iosTestBannerAdUnitId;
+      if (kDebugMode || Environment.isDev) return _iosTestBannerAdUnitId;
+      return IConst.googleAdMobBannerAdUnitIdIos;
     }
     throw UnsupportedError("Unsupported platform");
   }
