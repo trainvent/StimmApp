@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/groups/group_picker_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
@@ -48,28 +48,10 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
     super.dispose();
   }
 
-  Future<void> _openGroupSelector() async {
-    final navigator = Navigator.of(context);
-    final currentUser = authService.currentUser;
-    if (currentUser == null) {
-      return;
-    }
-
-    final selectedGroup = await navigator.push<PollGroup>(
-      MaterialPageRoute(
-        builder: (context) => GroupPickerPage(
-          selectedGroupId: _selectedGroup?.id,
-          initialGroups: _knownGroupsById.values.toList(),
-        ),
-      ),
+  Future<void> _openManageGroups() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(builder: (context) => const MemberGroupsPage()),
     );
-    if (!mounted || selectedGroup == null) {
-      return;
-    }
-    setState(() {
-      _selectedGroup = selectedGroup;
-      _rememberGroups(<PollGroup>[selectedGroup]);
-    });
   }
 
   Future<void> _handleGroupSelection(String? value) async {
@@ -83,7 +65,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       return;
     }
     if (value == _manageGroupsValue) {
-      await _openGroupSelector();
+      await _openManageGroups();
       return;
     }
 
@@ -158,7 +140,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
             ],
             onChanged: (value) async {
               if (value == _manageGroupsValue) {
-                await _openGroupSelector();
+                await _openManageGroups();
               }
             },
           );

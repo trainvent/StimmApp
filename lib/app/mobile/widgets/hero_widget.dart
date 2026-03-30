@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 
 class HeroWidget extends StatelessWidget {
   const HeroWidget({super.key, this.title, this.nextPage});
@@ -10,7 +11,6 @@ class HeroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUrl = authService.currentUser?.photoURL;
     return GestureDetector(
       onTap: nextPage != null
           ? () {
@@ -38,29 +38,38 @@ class HeroWidget extends StatelessWidget {
                 children: [
                   Hero(
                     tag: 'profile_picture',
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: (currentUrl != null && currentUrl.isNotEmpty)
-                          ? Image.network(
-                              currentUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
+                    child: ValueListenableBuilder<String?>(
+                      valueListenable:
+                          ProfilePictureService.instance.profileUrlNotifier,
+                      builder: (context, profileUrl, _) {
+                        final currentUrl =
+                            profileUrl ?? authService.currentUser?.photoURL;
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: (currentUrl != null && currentUrl.isNotEmpty)
+                              ? Image.network(
+                                  currentUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  gaplessPlayback: true,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      AppAssets.defaultAvatar,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    );
+                                  },
+                                )
+                              : Image.asset(
                                   AppAssets.defaultAvatar,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: double.infinity,
-                                );
-                              },
-                            )
-                          : Image.asset(
-                              AppAssets.defaultAvatar,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
+                                ),
+                        );
+                      },
                     ),
                   ),
                   if (title != null)

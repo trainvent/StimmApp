@@ -258,7 +258,7 @@ class MemberGroupsPage extends StatelessWidget {
             icon: const Icon(Icons.add),
           ),
           IconButton(
-            tooltip: context.l10n.displayQrCode,
+            tooltip: context.l10n.scanQrCodeTooltip,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
