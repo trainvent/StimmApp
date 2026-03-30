@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/password_textfield.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
@@ -73,12 +74,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      TextFormField(
-                        obscureText: true,
+                      PasswordTextField(
                         controller: controllerCurrentPassword,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.currentPassword,
-                        ),
+                        labelText: context.l10n.currentPassword,
                         validator: (String? value) {
                           if (value == null) {
                             return context.l10n.enterSomething;
@@ -90,12 +88,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      TextFormField(
-                        obscureText: true,
+                      PasswordTextField(
                         controller: controllerNewPassword,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.newPassword,
-                        ),
+                        labelText: context.l10n.newPassword,
                         validator: (value) => validatePassword(context, value),
                       ),
                       const SizedBox(height: 10),

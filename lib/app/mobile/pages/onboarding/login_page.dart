@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/password_textfield.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -115,18 +116,11 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: DConst.padBox),
-                  TextFormField(
+                  PasswordTextField(
                     key: keys.loginPage.passwordTextField,
-                    obscureText: true,
                     controller: controllerPw,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.password,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      isDense: true,
-                    ),
+                    labelText: context.l10n.password,
+                    isDense: true,
                     validator: (String? value) {
                       if (value == null) {
                         return context.l10n.enterSomething;

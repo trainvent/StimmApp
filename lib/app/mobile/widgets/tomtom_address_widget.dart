@@ -5,8 +5,8 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
-class GooglePlacesAddressWidget extends StatefulWidget {
-  const GooglePlacesAddressWidget({
+class TomTomAddressWidget extends StatefulWidget {
+  const TomTomAddressWidget({
     super.key,
     required this.controller,
     required this.onStateChanged,
@@ -24,11 +24,10 @@ class GooglePlacesAddressWidget extends StatefulWidget {
   final String? Function(String?)? validator;
 
   @override
-  State<GooglePlacesAddressWidget> createState() =>
-      GooglePlacesAddressWidgetState();
+  State<TomTomAddressWidget> createState() => TomTomAddressWidgetState();
 }
 
-class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
+class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
   final _service = TomTomSearchService(IConst.tomTomSearchApiKey);
   final _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
@@ -143,10 +142,13 @@ class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
                       title: Text(suggestion.address),
                       subtitle: Text(
                         [
-                          suggestion.info.town,
-                          suggestion.info.state,
-                          suggestion.info.countryCode,
-                        ].whereType<String>().where((part) => part.isNotEmpty).join(' • '),
+                              suggestion.info.town,
+                              suggestion.info.state,
+                              suggestion.info.countryCode,
+                            ]
+                            .whereType<String>()
+                            .where((part) => part.isNotEmpty)
+                            .join(' • '),
                       ),
                       onTap: () => _selectSuggestion(suggestion),
                     );
@@ -196,7 +198,10 @@ class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
       return;
     }
 
-    final info = await _service.resolveAddress(text, countries: widget.countries);
+    final info = await _service.resolveAddress(
+      text,
+      countries: widget.countries,
+    );
     if (!mounted) {
       return;
     }
@@ -213,12 +218,18 @@ class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     widget.onCountryCodeChanged?.call(info.countryCode);
   }
 
-  Future<TomTomAddressSuggestion?> _findExactSuggestionMatch(String text) async {
+  Future<TomTomAddressSuggestion?> _findExactSuggestionMatch(
+    String text,
+  ) async {
     final normalizedText = _normalizeAddress(text);
-    TomTomAddressSuggestion? exactSuggestion = _suggestions.cast<TomTomAddressSuggestion?>().firstWhere(
-      (suggestion) => suggestion != null && _normalizeAddress(suggestion.address) == normalizedText,
-      orElse: () => null,
-    );
+    TomTomAddressSuggestion? exactSuggestion = _suggestions
+        .cast<TomTomAddressSuggestion?>()
+        .firstWhere(
+          (suggestion) =>
+              suggestion != null &&
+              _normalizeAddress(suggestion.address) == normalizedText,
+          orElse: () => null,
+        );
 
     if (exactSuggestion != null) {
       return exactSuggestion;
@@ -233,7 +244,9 @@ class GooglePlacesAddressWidgetState extends State<GooglePlacesAddressWidget> {
     }
 
     exactSuggestion = suggestions.cast<TomTomAddressSuggestion?>().firstWhere(
-      (suggestion) => suggestion != null && _normalizeAddress(suggestion.address) == normalizedText,
+      (suggestion) =>
+          suggestion != null &&
+          _normalizeAddress(suggestion.address) == normalizedText,
       orElse: () => null,
     );
 

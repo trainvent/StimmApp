@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
-import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/tomtom_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -19,7 +19,7 @@ class ChangeLivingAddressPage extends StatefulWidget {
 
 class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
     with WidgetsBindingObserver {
-  final _addressFieldKey = GlobalKey<GooglePlacesAddressWidgetState>();
+  final _addressFieldKey = GlobalKey<TomTomAddressWidgetState>();
   String? _selectedState;
   String? _selectedCountryCode;
   String? _selectedTown;
@@ -70,7 +70,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
                   child: Center(
                     child: Column(
                       children: [
-                        GooglePlacesAddressWidget(
+                        TomTomAddressWidget(
                           key: _addressFieldKey,
                           controller: _controllerAddress,
                           onStateChanged: (state) {

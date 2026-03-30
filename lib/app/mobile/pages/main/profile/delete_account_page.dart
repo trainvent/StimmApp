@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/password_textfield.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -135,15 +136,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                         : null,
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  PasswordTextField(
                     key: const Key('deleteAccountPasswordField'),
                     controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.password,
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.lock),
-                    ),
-                    obscureText: true,
+                    labelText: context.l10n.password,
+                    prefixIcon: const Icon(Icons.lock),
                     validator: (value) => (value == null || value.isEmpty)
                         ? context.l10n.enterSomething
                         : null,

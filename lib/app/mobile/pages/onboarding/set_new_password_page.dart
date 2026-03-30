@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/password_textfield.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -68,7 +69,10 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 60.0),
-                  Text("${S.of(context).hello} $userName", style: AppTextStyles.xlBold),
+                  Text(
+                    "${S.of(context).hello} $userName",
+                    style: AppTextStyles.xlBold,
+                  ),
                   const SizedBox(height: 20.0),
                   Text(
                     context.l10n.resetPassword,
@@ -77,23 +81,17 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
                   const SizedBox(height: 20.0),
                   const Text('🔐', style: AppTextStyles.icons),
                   const SizedBox(height: 50),
-                  TextFormField(
+                  PasswordTextField(
                     key: const Key('newPasswordTextField'),
                     controller: controllerPw,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.newPassword,
-                    ),
+                    labelText: context.l10n.newPassword,
                     validator: (value) => validatePassword(context, value),
                   ),
                   const SizedBox(height: 10),
-                  TextFormField(
+                  PasswordTextField(
                     key: const Key('confirmPasswordTextField'),
                     controller: controllerConfirmPw,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.confirmPassword,
-                    ),
+                    labelText: context.l10n.confirmPassword,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.l10n.enterSomething;

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/debounced_button_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/password_textfield.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
@@ -161,31 +162,17 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   const SizedBox(height: DConst.padBox),
-                  TextFormField(
+                  PasswordTextField(
                     key: keys.onboardingPage.passwordTextField,
-                    obscureText: true,
                     controller: controllerPw,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.password,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    labelText: context.l10n.password,
                     validator: (value) => validatePassword(context, value),
                   ),
                   const SizedBox(height: DConst.padBox),
-                  TextFormField(
+                  PasswordTextField(
                     key: const Key('repeatPasswordTextField'),
-                    obscureText: true,
                     controller: controllerConfirmPw,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.confirmPassword,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    labelText: context.l10n.confirmPassword,
                     validator: (String? value) {
                       if (value == null || value.trim().isEmpty) {
                         return context.l10n.pleaseEnterYourPassword;

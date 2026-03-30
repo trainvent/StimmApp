@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
-import 'package:stimmapp/app/mobile/widgets/google_places_address_widget.dart';
+import 'package:stimmapp/app/mobile/widgets/tomtom_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -32,7 +32,7 @@ class SetUserDetailsPage extends StatefulWidget {
 
 class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
   final _formKey = GlobalKey<FormState>();
-  final _addressFieldKey = GlobalKey<GooglePlacesAddressWidgetState>();
+  final _addressFieldKey = GlobalKey<TomTomAddressWidgetState>();
   final TextEditingController controllerSurname = TextEditingController();
   final TextEditingController controllerGivenName = TextEditingController();
   final TextEditingController controllerDisplayName = TextEditingController();
@@ -282,7 +282,7 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     ],
                     KeyedSubtree(
                       key: const Key('addressTextField'),
-                      child: GooglePlacesAddressWidget(
+                      child: TomTomAddressWidget(
                         key: _addressFieldKey,
                         controller: controllerAddress,
                         onStateChanged: (state) {
