@@ -37,6 +37,25 @@ class AdService {
 
   AdService._internal();
 
+  void _logLoadAdError({
+    required String adType,
+    required String adUnitId,
+    required LoadAdError error,
+  }) {
+    debugPrint(
+      '[$adType] failed to load '
+      '(unitId: $adUnitId, code: ${error.code}, domain: ${error.domain})',
+    );
+    debugPrint('[$adType] message: ${error.message}');
+    debugPrint('[$adType] responseInfo: ${error.responseInfo}');
+    final adapterResponses = error.responseInfo?.adapterResponses;
+    if (adapterResponses != null && adapterResponses.isNotEmpty) {
+      for (final adapterResponse in adapterResponses) {
+        debugPrint('[$adType] adapterResponse: $adapterResponse');
+      }
+    }
+  }
+
   Future<void> initialize() async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
     await MobileAds.instance.initialize();
@@ -76,14 +95,19 @@ class AdService {
       return BannerAdWrapper(null);
     }
 
+    final unitId = bannerAdUnitId;
     final banner = BannerAd(
-      adUnitId: bannerAdUnitId,
+      adUnitId: unitId,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) => onAdLoaded(),
         onAdFailedToLoad: (ad, error) {
-          debugPrint('BannerAd failed to load: $error');
+          _logLoadAdError(
+            adType: 'BannerAd',
+            adUnitId: unitId,
+            error: error,
+          );
           ad.dispose();
           onAdFailedToLoad?.call(error.message);
         },
@@ -100,13 +124,18 @@ class AdService {
   }) {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
+    final unitId = interstitialAdUnitId;
     InterstitialAd.load(
-      adUnitId: interstitialAdUnitId,
+      adUnitId: unitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: onAdLoaded,
         onAdFailedToLoad: (LoadAdError error) {
-          debugPrint('InterstitialAd failed to load: $error');
+          _logLoadAdError(
+            adType: 'InterstitialAd',
+            adUnitId: unitId,
+            error: error,
+          );
           onAdFailedToLoad?.call(error);
         },
       ),

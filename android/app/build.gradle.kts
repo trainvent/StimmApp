@@ -87,7 +87,7 @@ android {
             manifestPlaceholders["deepLinkHost"] = "stimmapp.net"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.net"
             manifestPlaceholders["adMobAppId"] =
-                "ca-app-pub-5296065079333841~8760518694"
+                "ca-app-pub-6799570171188466~3945205436"
             resValue("string", "app_name", "StimmApp")
         }
     }
