@@ -20,6 +20,40 @@ class AuthService {
   FirebaseAuth get firebaseAuth => _firebaseAuth ?? FirebaseAuth.instance;
   FirebaseFunctions get functions => _functions ?? FirebaseFunctions.instance;
 
+  void _logFirebaseAuthError(
+    String action,
+    FirebaseAuthException error,
+    StackTrace stackTrace,
+  ) {
+    debugPrint(
+      'AuthService.$action FirebaseAuthException '
+      '(code: ${error.code}, message: ${error.message}, email: ${error.email}, '
+      'credential: ${error.credential != null})',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  void _logFirebaseFunctionsError(
+    String action,
+    FirebaseFunctionsException error,
+    StackTrace stackTrace,
+  ) {
+    debugPrint(
+      'AuthService.$action FirebaseFunctionsException '
+      '(code: ${error.code}, message: ${error.message}, details: ${error.details})',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  void _logUnexpectedError(
+    String action,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    debugPrint('AuthService.$action unexpected error: $error');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
   // Widget tests often exercise UI without Firebase initialization.
   // In that case we degrade to an anonymous state instead of crashing.
   User? get currentUser {
@@ -107,8 +141,12 @@ class AuthService {
   Future<void> resetPassword({required String email}) async {
     try {
       await firebaseAuth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, st) {
+      _logFirebaseAuthError('resetPassword', e, st);
       throw AuthException(e);
+    } catch (e, st) {
+      _logUnexpectedError('resetPassword', e, st);
+      rethrow;
     }
   }
 
@@ -179,10 +217,14 @@ class AuthService {
         'locale': locale.languageCode,
         'countryCode': locale.countryCode,
       });
-    } on FirebaseFunctionsException catch (e) {
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('sendVerificationCode', e, st);
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
+    } catch (e, st) {
+      _logUnexpectedError('sendVerificationCode', e, st);
+      rethrow;
     }
   }
 
@@ -193,10 +235,14 @@ class AuthService {
       await currentUser?.reload();
       // Force refresh the token to ensure all claims are updated
       await currentUser?.getIdToken(true);
-    } on FirebaseFunctionsException catch (e) {
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('verifyCode', e, st);
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
+    } catch (e, st) {
+      _logUnexpectedError('verifyCode', e, st);
+      rethrow;
     }
   }
 
@@ -210,10 +256,14 @@ class AuthService {
         'locale': locale.languageCode,
         'countryCode': locale.countryCode,
       });
-    } on FirebaseFunctionsException catch (e) {
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('sendLoginCode', e, st);
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
+    } catch (e, st) {
+      _logUnexpectedError('sendLoginCode', e, st);
+      rethrow;
     }
   }
 
@@ -225,12 +275,17 @@ class AuthService {
       });
       final token = result.data['token'] as String;
       return await firebaseAuth.signInWithCustomToken(token);
-    } on FirebaseFunctionsException catch (e) {
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('signInWithCode.verifyLoginCode', e, st);
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, st) {
+      _logFirebaseAuthError('signInWithCode.signInWithCustomToken', e, st);
       throw AuthException(e);
+    } catch (e, st) {
+      _logUnexpectedError('signInWithCode', e, st);
+      rethrow;
     }
   }
 }
