@@ -53,9 +53,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         errorMessage = '';
       });
     } on AuthException catch (e) {
+      debugPrint('ResetPasswordPage._sendLoginCode AuthException: $e');
       if (!mounted) return;
       setState(() {
         errorMessage = e.message ?? context.l10n.error;
+        showErrorSnackBar(errorMessage);
+      });
+    } catch (e, st) {
+      debugPrint('ResetPasswordPage._sendLoginCode unexpected error: $e');
+      debugPrintStack(stackTrace: st);
+      if (!mounted) return;
+      setState(() {
+        errorMessage = e.toString();
         showErrorSnackBar(errorMessage);
       });
     }
@@ -81,8 +90,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         ),
       );
     } on AuthException catch (e) {
+      debugPrint('ResetPasswordPage._verifyCode AuthException: $e');
       if (!mounted) return;
       showErrorSnackBar(e.message ?? S.of(context).verificationFailed);
+      _codeController.clear();
+    } catch (e, st) {
+      debugPrint('ResetPasswordPage._verifyCode unexpected error: $e');
+      debugPrintStack(stackTrace: st);
+      if (!mounted) return;
+      showErrorSnackBar(e.toString());
       _codeController.clear();
     }
   }
