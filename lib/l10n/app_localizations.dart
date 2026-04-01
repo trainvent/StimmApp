@@ -2582,6 +2582,66 @@ abstract class AppLocalizations {
   /// **'Privacy Settings'**
   String get privacySettings;
 
+  /// No description provided for @privacyPolicyEssentialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicyEssentialTitle;
+
+  /// No description provided for @privacyPolicyEssentialDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential information about how the app processes personal data.'**
+  String get privacyPolicyEssentialDescription;
+
+  /// No description provided for @neededForAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed for ads'**
+  String get neededForAds;
+
+  /// No description provided for @neededForAdsEnabledForFreeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Active for free accounts because ad-supported features may use cookies, local storage, or similar technologies.'**
+  String get neededForAdsEnabledForFreeDescription;
+
+  /// No description provided for @neededForAdsDisabledForProDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive while Pro is active because ads are disabled for Pro members.'**
+  String get neededForAdsDisabledForProDescription;
+
+  /// No description provided for @personalizedAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized ads'**
+  String get personalizedAds;
+
+  /// No description provided for @personalizedAdsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for free users in the EU, UK, and Switzerland before personalized ads are shown. You can change this here at any time.'**
+  String get personalizedAdsDescription;
+
+  /// No description provided for @adsCurrentlyDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Ads are currently disabled'**
+  String get adsCurrentlyDisabled;
+
+  /// No description provided for @adsCurrentlyDisabledDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We keep ads off until you choose whether personalized ads are allowed.'**
+  String get adsCurrentlyDisabledDescription;
+
+  /// No description provided for @adsDisabledForProDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro members do not see ads, so ad consent is not required while Pro is active.'**
+  String get adsDisabledForProDescription;
+
   /// No description provided for @sendCrashLogs.
   ///
   /// In en, this message translates to:

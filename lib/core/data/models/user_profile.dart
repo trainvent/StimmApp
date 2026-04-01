@@ -17,6 +17,8 @@ class UserProfile {
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
   final bool? sendCrashLogs;
+  final bool? adsConsentGranted;
+  final DateTime? adsConsentUpdatedAt;
   final DateTime? acceptedCommunityRulesAt;
 
   // Settings
@@ -77,6 +79,8 @@ class UserProfile {
     this.isVerified,
     this.gotVerifiedAt,
     this.sendCrashLogs,
+    this.adsConsentGranted,
+    this.adsConsentUpdatedAt,
     this.acceptedCommunityRulesAt,
     this.showPetitionReason,
     this.themeMode,
@@ -108,6 +112,8 @@ class UserProfile {
     bool? isVerified,
     DateTime? gotVerifiedAt,
     bool? sendCrashLogs,
+    Object? adsConsentGranted = _unset,
+    Object? adsConsentUpdatedAt = _unset,
     DateTime? acceptedCommunityRulesAt,
     bool? showPetitionReason,
     String? themeMode,
@@ -143,6 +149,12 @@ class UserProfile {
       isVerified: isVerified ?? this.isVerified,
       gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
+      adsConsentGranted: identical(adsConsentGranted, _unset)
+          ? this.adsConsentGranted
+          : adsConsentGranted as bool?,
+      adsConsentUpdatedAt: identical(adsConsentUpdatedAt, _unset)
+          ? this.adsConsentUpdatedAt
+          : adsConsentUpdatedAt as DateTime?,
       acceptedCommunityRulesAt:
           acceptedCommunityRulesAt ?? this.acceptedCommunityRulesAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
@@ -180,6 +192,9 @@ class UserProfile {
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
       sendCrashLogs: json['sendCrashLogs'] as bool?,
+      adsConsentGranted: json['adsConsentGranted'] as bool?,
+      adsConsentUpdatedAt: (json['adsConsentUpdatedAt'] as Timestamp?)
+          ?.toDate(),
       acceptedCommunityRulesAt: (json['acceptedCommunityRulesAt'] as Timestamp?)
           ?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
@@ -215,6 +230,10 @@ class UserProfile {
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
       'sendCrashLogs': sendCrashLogs,
+      'adsConsentGranted': adsConsentGranted,
+      'adsConsentUpdatedAt': adsConsentUpdatedAt != null
+          ? Timestamp.fromDate(adsConsentUpdatedAt!)
+          : null,
       'acceptedCommunityRulesAt': acceptedCommunityRulesAt != null
           ? Timestamp.fromDate(acceptedCommunityRulesAt!)
           : null,

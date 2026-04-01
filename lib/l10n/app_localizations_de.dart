@@ -1349,6 +1349,42 @@ class AppLocalizationsDe extends AppLocalizations {
   String get privacySettings => 'Datenschutzeinstellungen';
 
   @override
+  String get privacyPolicyEssentialTitle => 'Datenschutzerklärung';
+
+  @override
+  String get privacyPolicyEssentialDescription =>
+      'Wesentliche Informationen darüber, wie die App personenbezogene Daten verarbeitet.';
+
+  @override
+  String get neededForAds => 'Für Werbung nötig';
+
+  @override
+  String get neededForAdsEnabledForFreeDescription =>
+      'Für kostenlose Konten aktiv, da werbefinanzierte Funktionen Cookies, lokalen Speicher oder ähnliche Technologien verwenden können.';
+
+  @override
+  String get neededForAdsDisabledForProDescription =>
+      'Während Pro aktiv ist inaktiv, da für Pro-Mitglieder keine Werbung angezeigt wird.';
+
+  @override
+  String get personalizedAds => 'Personalisierte Werbung';
+
+  @override
+  String get personalizedAdsDescription =>
+      'Für kostenlose Nutzer in der EU, im Vereinigten Königreich und in der Schweiz erforderlich, bevor personalisierte Werbung angezeigt wird. Du kannst diese Auswahl hier jederzeit ändern.';
+
+  @override
+  String get adsCurrentlyDisabled => 'Werbung ist derzeit deaktiviert';
+
+  @override
+  String get adsCurrentlyDisabledDescription =>
+      'Wir lassen Werbung ausgeschaltet, bis du entscheidest, ob personalisierte Werbung erlaubt ist.';
+
+  @override
+  String get adsDisabledForProDescription =>
+      'Pro-Mitglieder sehen keine Werbung, daher ist keine Werbeeinwilligung erforderlich, solange Pro aktiv ist.';
+
+  @override
   String get sendCrashLogs => 'Absturzberichte senden';
 
   @override

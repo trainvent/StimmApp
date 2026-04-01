@@ -15,6 +15,7 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/ad_consent_service.dart';
 
 class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   const BaseOverviewPage({
@@ -545,7 +546,9 @@ class _BaseOverviewPageState<T extends HomeItem>
                         if (items.isEmpty) {
                           return Center(child: Text(context.l10n.noData));
                         }
-                        final showAds = !(userProfile?.isPro ?? false);
+                        final showAds = AdConsentService.canShowAds(
+                          userProfile,
+                        );
                         final standardAdCount = showAds
                             ? (items.length / _itemsPerAd).floor()
                             : 0;

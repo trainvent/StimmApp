@@ -44,6 +44,11 @@ class IConst {
   static String get appName => Environment.appName;
   static String get supportEmail => Environment.supportEmail;
   static String get privacyPolicyUrl => Environment.privacyPolicyUrl;
+  static String get privacyPolicyCrashDataUrl =>
+      Environment.privacyPolicyCrashDataUrl;
+  static String get privacyPolicyAdsUrl => Environment.privacyPolicyAdsUrl;
+  static String get privacyPolicyCookiesUrl =>
+      Environment.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => Environment.termsOfServiceUrl;
   static String get faqUrl => Environment.faqUrl;
 

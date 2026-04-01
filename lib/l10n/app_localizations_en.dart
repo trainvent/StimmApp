@@ -1333,6 +1333,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacySettings => 'Privacy Settings';
 
   @override
+  String get privacyPolicyEssentialTitle => 'Privacy policy';
+
+  @override
+  String get privacyPolicyEssentialDescription =>
+      'Essential information about how the app processes personal data.';
+
+  @override
+  String get neededForAds => 'Needed for ads';
+
+  @override
+  String get neededForAdsEnabledForFreeDescription =>
+      'Active for free accounts because ad-supported features may use cookies, local storage, or similar technologies.';
+
+  @override
+  String get neededForAdsDisabledForProDescription =>
+      'Inactive while Pro is active because ads are disabled for Pro members.';
+
+  @override
+  String get personalizedAds => 'Personalized ads';
+
+  @override
+  String get personalizedAdsDescription =>
+      'Required for free users in the EU, UK, and Switzerland before personalized ads are shown. You can change this here at any time.';
+
+  @override
+  String get adsCurrentlyDisabled => 'Ads are currently disabled';
+
+  @override
+  String get adsCurrentlyDisabledDescription =>
+      'We keep ads off until you choose whether personalized ads are allowed.';
+
+  @override
+  String get adsDisabledForProDescription =>
+      'Pro members do not see ads, so ad consent is not required while Pro is active.';
+
+  @override
   String get sendCrashLogs => 'Send Crash Logs';
 
   @override
