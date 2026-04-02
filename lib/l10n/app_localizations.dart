@@ -2594,6 +2594,30 @@ abstract class AppLocalizations {
   /// **'Essential information about how the app processes personal data.'**
   String get privacyPolicyEssentialDescription;
 
+  /// No description provided for @adsConsentPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized ads consent'**
+  String get adsConsentPromptTitle;
+
+  /// No description provided for @adsConsentPromptDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission before showing personalized ads. You can change this choice later on the ad privacy page.'**
+  String get adsConsentPromptDescription;
+
+  /// No description provided for @allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get allow;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
   /// No description provided for @neededForAds.
   ///
   /// In en, this message translates to:
@@ -2641,6 +2665,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pro members do not see ads, so ad consent is not required while Pro is active.'**
   String get adsDisabledForProDescription;
+
+  /// No description provided for @adsConsentManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad privacy choices'**
+  String get adsConsentManagementTitle;
+
+  /// No description provided for @adsConsentManagementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage whether the free version may use ad-related consent and cookies. Revoking this will lock the free app until you allow it again or switch to Pro.'**
+  String get adsConsentManagementDescription;
+
+  /// No description provided for @adsConsentRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent required for free use'**
+  String get adsConsentRequiredTitle;
+
+  /// No description provided for @adsConsentRequiredDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'To use the free version, you need to allow the ad-related consent described in our ads privacy policy.'**
+  String get adsConsentRequiredDescription;
+
+  /// No description provided for @adsConsentGrantedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent is currently granted.'**
+  String get adsConsentGrantedStatus;
+
+  /// No description provided for @adsConsentRevokedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent is currently revoked.'**
+  String get adsConsentRevokedStatus;
+
+  /// No description provided for @adsConsentStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Your decision is still pending.'**
+  String get adsConsentStatusUnknown;
+
+  /// No description provided for @adsConsentGrantedDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'You can revoke your choice here at any time. Revoking will immediately disable the free version until consent is granted again.'**
+  String get adsConsentGrantedDetails;
+
+  /// No description provided for @adsConsentRevokedDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'The free version stays locked until you allow ad-related consent again or subscribe to Pro.'**
+  String get adsConsentRevokedDetails;
+
+  /// No description provided for @adsConsentPendingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose whether the free version may use ad-related consent before continuing.'**
+  String get adsConsentPendingDetails;
+
+  /// No description provided for @adsConsentRevokeDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable free tier access?'**
+  String get adsConsentRevokeDialogTitle;
+
+  /// No description provided for @adsConsentRevokeDialogDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This consent is necessary for the free tier to function. If you disagree, you will be logged out now and asked again the next time you sign in.'**
+  String get adsConsentRevokeDialogDescription;
+
+  /// No description provided for @adsManagedInMobileAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad privacy in mobile app'**
+  String get adsManagedInMobileAppTitle;
+
+  /// No description provided for @adsManagedInMobileAppDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'AdMob consent and ad-supported free-tier settings are managed only in the Android and iOS app, not on the web version.'**
+  String get adsManagedInMobileAppDescription;
+
+  /// No description provided for @openAdsPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open ads privacy policy'**
+  String get openAdsPrivacyPolicy;
+
+  /// No description provided for @allowCookiesAndContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow cookies and continue'**
+  String get allowCookiesAndContinue;
+
+  /// No description provided for @revokeAdsConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke consent'**
+  String get revokeAdsConsent;
+
+  /// No description provided for @continueToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to app'**
+  String get continueToApp;
 
   /// No description provided for @sendCrashLogs.
   ///

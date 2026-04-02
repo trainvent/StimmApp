@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/web_adsense_frame_stub.dart'
+    if (dart.library.html) 'package:stimmapp/app/mobile/widgets/web_adsense_frame_web.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/services/ad_service.dart';
 
 class BannerAdWidget extends StatefulWidget {
@@ -41,6 +45,11 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
         }
       },
     );
+    if (!(_bannerAd?.hasAd ?? false) && mounted) {
+      setState(() {
+        _isAdLoadFailed = true;
+      });
+    }
   }
 
   @override
@@ -52,6 +61,15 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
+    if (kIsWeb) {
+      if (IConst.googleAdSenseListTileSlotId.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return const WebAdSenseFrame(adSlot: IConst.googleAdSenseListTileSlotId);
+    }
+    if (!(_bannerAd?.hasAd ?? false)) {
+      return const SizedBox.shrink();
+    }
     if (_isAdLoaded && _bannerAd != null) {
       return Container(
         height: 50,

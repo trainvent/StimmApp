@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .ad-shell {
+      width: 100%;
+      min-height: 96px;
+      box-sizing: border-box;
+      padding: 8px 0;
+      overflow: hidden;
+    }
+
+    .adsbygoogle {
+      display: block;
+      width: 100%;
+      min-height: 80px;
+    }
+  </style>
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6799570171188466"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="ad-shell">
+    <ins
+      id="adsense-slot"
+      class="adsbygoogle"
+      data-ad-client="ca-pub-6799570171188466"
+      data-ad-format="horizontal"
+      data-full-width-responsive="true"></ins>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const slot = params.get('slot');
+    const height = Number(params.get('height') || '96');
+    const format = params.get('format') || 'horizontal';
+    const adElement = document.getElementById('adsense-slot');
+    const shell = document.querySelector('.ad-shell');
+
+    shell.style.minHeight = `${height}px`;
+    adElement.style.minHeight = `${Math.max(height - 16, 80)}px`;
+    adElement.setAttribute('data-ad-format', format);
+
+    if (!slot) {
+      shell.style.display = 'none';
+    } else {
+      adElement.setAttribute('data-ad-slot', slot);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  </script>
+</body>
+</html>

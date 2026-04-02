@@ -33,6 +33,11 @@ class IConst {
       'ca-app-pub-6799570171188466~3626151987';
   static const String googleAdMobBannerAdUnitIdIos =
       'ca-app-pub-6799570171188466/9960752746';
+  static const String googleAdSenseClientId = 'ca-pub-6799570171188466';
+  static const String googleAdSenseListTileSlotId = String.fromEnvironment(
+    'ADSENSE_LIST_TILE_SLOT_ID',
+    defaultValue: '',
+  );
 
   static const String imapServer = "imap.ionos.de";
 

@@ -13,8 +13,10 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/providers/subscription_provider.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/ad_consent_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
+import 'package:stimmapp/services/ad_service.dart';
 
 class AuthLayout extends ConsumerStatefulWidget {
   const AuthLayout({super.key, this.pageIfNotConnected});
@@ -27,13 +29,7 @@ class AuthLayout extends ConsumerStatefulWidget {
 
 class _AuthLayoutState extends ConsumerState<AuthLayout> {
   String? _adsConsentPromptUid;
-
-  Future<void> _recordAdsConsent(String uid, bool granted) async {
-    await UserRepository.create().update(uid, {
-      'adsConsentGranted': granted,
-      'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
-    });
-  }
+  final AdService _adService = AdService();
 
   void _maybePromptForAdsConsent(UserProfile? profile) {
     if (!mounted || profile == null) return;
@@ -44,37 +40,22 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-
-      final granted = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Text('Personalized ads consent'),
-          content: const Text(
-            'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission before showing personalized ads. You can change this choice later in Privacy Settings.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Decline'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Allow'),
-            ),
-          ],
-        ),
-      );
-
-      if (!mounted || granted == null) {
-        _adsConsentPromptUid = null;
-        return;
-      }
-
       try {
-        await _recordAdsConsent(profile.uid, granted);
-      } finally {
-        _adsConsentPromptUid = null;
+        final granted = await _adService
+            .requestConsentInfoUpdateAndMaybeShowForm();
+        if (!mounted) return;
+        if (granted) {
+          await UserRepository.create().update(profile.uid, {
+            'adsConsentGranted': true,
+            'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      } catch (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${context.l10n.error}: $error')),
+          );
+        }
       }
     });
   }

@@ -1340,6 +1340,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Essential information about how the app processes personal data.';
 
   @override
+  String get adsConsentPromptTitle => 'Personalized ads consent';
+
+  @override
+  String get adsConsentPromptDescription =>
+      'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission before showing personalized ads. You can change this choice later on the ad privacy page.';
+
+  @override
+  String get allow => 'Allow';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
   String get neededForAds => 'Needed for ads';
 
   @override
@@ -1367,6 +1380,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adsDisabledForProDescription =>
       'Pro members do not see ads, so ad consent is not required while Pro is active.';
+
+  @override
+  String get adsConsentManagementTitle => 'Ad privacy choices';
+
+  @override
+  String get adsConsentManagementDescription =>
+      'Manage whether the free version may use ad-related consent and cookies. Revoking this will lock the free app until you allow it again or switch to Pro.';
+
+  @override
+  String get adsConsentRequiredTitle => 'Consent required for free use';
+
+  @override
+  String get adsConsentRequiredDescription =>
+      'To use the free version, you need to allow the ad-related consent described in our ads privacy policy.';
+
+  @override
+  String get adsConsentGrantedStatus => 'Consent is currently granted.';
+
+  @override
+  String get adsConsentRevokedStatus => 'Consent is currently revoked.';
+
+  @override
+  String get adsConsentStatusUnknown => 'Your decision is still pending.';
+
+  @override
+  String get adsConsentGrantedDetails =>
+      'You can revoke your choice here at any time. Revoking will immediately disable the free version until consent is granted again.';
+
+  @override
+  String get adsConsentRevokedDetails =>
+      'The free version stays locked until you allow ad-related consent again or subscribe to Pro.';
+
+  @override
+  String get adsConsentPendingDetails =>
+      'Please choose whether the free version may use ad-related consent before continuing.';
+
+  @override
+  String get adsConsentRevokeDialogTitle => 'Disable free tier access?';
+
+  @override
+  String get adsConsentRevokeDialogDescription =>
+      'This consent is necessary for the free tier to function. If you disagree, you will be logged out now and asked again the next time you sign in.';
+
+  @override
+  String get adsManagedInMobileAppTitle => 'Ad privacy in mobile app';
+
+  @override
+  String get adsManagedInMobileAppDescription =>
+      'AdMob consent and ad-supported free-tier settings are managed only in the Android and iOS app, not on the web version.';
+
+  @override
+  String get openAdsPrivacyPolicy => 'Open ads privacy policy';
+
+  @override
+  String get allowCookiesAndContinue => 'Allow cookies and continue';
+
+  @override
+  String get revokeAdsConsent => 'Revoke consent';
+
+  @override
+  String get continueToApp => 'Continue to app';
 
   @override
   String get sendCrashLogs => 'Send Crash Logs';

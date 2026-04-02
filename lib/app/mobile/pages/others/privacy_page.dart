@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -7,6 +8,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/ad_consent_service.dart';
+import 'package:stimmapp/services/ad_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPage extends StatefulWidget {
@@ -19,6 +21,7 @@ class PrivacyPage extends StatefulWidget {
 class _PrivacyPageState extends State<PrivacyPage> {
   final _userRepo = UserRepository.create();
   final _currentUser = authService.currentUser;
+  final _adService = AdService();
 
   Future<void> _openPolicyUrl(String url) async {
     final ok = await launchUrl(
@@ -45,12 +48,58 @@ class _PrivacyPageState extends State<PrivacyPage> {
     }
   }
 
-  Future<void> _updateAdsConsent(bool value, UserProfile profile) async {
+  Future<void> _grantAdsConsent(UserProfile profile) async {
     try {
+      final granted = await _adService
+          .requestConsentInfoUpdateAndMaybeShowForm();
       await _userRepo.update(profile.uid, {
-        'adsConsentGranted': value,
+        'adsConsentGranted': granted ? true : null,
         'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
       });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
+    }
+  }
+
+  Future<void> _revokeAdsConsentAndLogout(UserProfile profile) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.l10n.adsConsentRevokeDialogTitle),
+        content: Text(dialogContext.l10n.adsConsentRevokeDialogDescription),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(dialogContext.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(dialogContext.l10n.logout),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final granted = await _adService.showPrivacyOptionsFormIfRequired();
+      if (granted) {
+        await _userRepo.update(profile.uid, {
+          'adsConsentGranted': true,
+          'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
+        });
+        return;
+      }
+      await _userRepo.update(profile.uid, {
+        'adsConsentGranted': null,
+        'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
+      });
+      await authService.signOut();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -122,9 +171,8 @@ class _PrivacyPageState extends State<PrivacyPage> {
           final sendCrashLogs = profile.sendCrashLogs ?? true;
           final isPro = profile.isPro == true;
           final canManageAdsConsent =
-              !isPro && AdConsentService.isInConsentRegion(profile);
-          final adsConsentGranted = profile.adsConsentGranted ?? false;
-          final cookiesActive = !isPro;
+              !kIsWeb && !isPro && AdConsentService.isInConsentRegion(profile);
+          final adsConsentGranted = profile.adsConsentGranted == true;
 
           return ListView(
             children: [
@@ -133,38 +181,35 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 subtitle: context.l10n.privacyPolicyEssentialDescription,
                 url: IConst.privacyPolicyUrl,
               ),
-              _buildPolicyTile(
-                title: context.l10n.neededForAds,
-                subtitle: isPro
-                    ? context.l10n.neededForAdsDisabledForProDescription
-                    : context.l10n.neededForAdsEnabledForFreeDescription,
-                url: IConst.privacyPolicyAdsUrl,
-                switchValue: cookiesActive,
-                enabled: false,
-              ),
-              if (canManageAdsConsent) ...[
+              if (canManageAdsConsent)
                 _buildPolicyTile(
                   title: context.l10n.personalizedAds,
                   subtitle: context.l10n.personalizedAdsDescription,
                   url: IConst.privacyPolicyAdsUrl,
                   switchValue: adsConsentGranted,
-                  onChanged: (value) => _updateAdsConsent(value, profile),
-                ),
-                if (!AdConsentService.hasResolvedAdsConsent(profile))
-                  ListTile(
-                    title: Text(context.l10n.adsCurrentlyDisabled),
-                    subtitle: Text(
-                      context.l10n.adsCurrentlyDisabledDescription,
-                    ),
-                  ),
-              ],
-              if (isPro)
+                  onChanged: (value) {
+                    if (value) {
+                      _grantAdsConsent(profile);
+                    } else {
+                      _revokeAdsConsentAndLogout(profile);
+                    }
+                  },
+                )
+              else
                 _buildPolicyTile(
-                  title: context.l10n.personalizedAds,
-                  subtitle: context.l10n.adsDisabledForProDescription,
+                  title: context.l10n.neededForAds,
+                  subtitle: isPro
+                      ? context.l10n.neededForAdsDisabledForProDescription
+                      : context.l10n.neededForAdsEnabledForFreeDescription,
                   url: IConst.privacyPolicyAdsUrl,
-                  switchValue: false,
+                  switchValue: !isPro,
                   enabled: false,
+                ),
+              if (canManageAdsConsent &&
+                  !AdConsentService.hasResolvedAdsConsent(profile))
+                ListTile(
+                  title: Text(context.l10n.adsCurrentlyDisabled),
+                  subtitle: Text(context.l10n.adsCurrentlyDisabledDescription),
                 ),
               _buildPolicyTile(
                 title: context.l10n.sendCrashLogs,

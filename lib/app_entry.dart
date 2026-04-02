@@ -14,6 +14,7 @@ import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart'
 import 'package:stimmapp/app/mobile/pages/main/profile/delete_account_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
+import 'package:stimmapp/app/mobile/pages/others/privacy_policy_ads_revoke_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -156,6 +157,10 @@ class _MyAppState extends State<MyApp> {
         return null;
       }
       return GroupEntryPage(groupId: groupId);
+    }
+
+    if (uri.path == '/privacy-policy-ads-revoke') {
+      return const PrivacyPolicyAdsRevokePage();
     }
 
     if (uri.path.isEmpty || uri.path == '/') {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 
 class AdConsentService {
@@ -57,7 +58,17 @@ class AdConsentService {
   }
 
   static bool canShowAds(UserProfile? profile) {
+    if (kIsWeb) {
+      if (profile?.isPro == true) return false;
+      return IConst.googleAdSenseListTileSlotId.isNotEmpty;
+    }
     if (profile?.isPro == true) return false;
+    if (!requiresAdsConsent(profile)) return true;
+    return profile?.adsConsentGranted == true;
+  }
+
+  static bool canUseFreeTier(UserProfile? profile) {
+    if (profile?.isPro == true) return true;
     if (!requiresAdsConsent(profile)) return true;
     return profile?.adsConsentGranted == true;
   }
