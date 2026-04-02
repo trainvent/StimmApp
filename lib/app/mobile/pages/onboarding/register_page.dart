@@ -12,6 +12,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/validate_password.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
@@ -48,14 +49,24 @@ class _RegisterPageState extends State<RegisterPage> {
         email: controllerEm.text.trim(),
         password: controllerPw.text,
       );
+      await AnalyticsService.instance.logAuthResult(
+        action: 'register',
+        success: true,
+      );
       if (!mounted) return;
       await authService.sendVerificationCode();
+      await AnalyticsService.instance.logVerificationCodeSent('register');
       if (!mounted) return;
       // AuthLayout already switches the root content to EmailConfirmationPage
       // for unverified users. Returning to the first route avoids stacking
       // a second visually identical confirmation page on top of it.
       Navigator.of(context).popUntil((route) => route.isFirst);
     } on AuthException catch (e) {
+      await AnalyticsService.instance.logAuthResult(
+        action: 'register',
+        success: false,
+        errorCode: e.code,
+      );
       setState(() {
         errorMessage = '${e.code}: ${e.message ?? 'Unknown error'}';
       });

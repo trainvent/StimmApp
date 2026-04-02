@@ -26,6 +26,7 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -295,8 +296,17 @@ class ProfilePage extends StatelessWidget {
                               if (!context.mounted) {
                                 return;
                               }
-                              await PurchasesService.instance.presentPaywall(
-                                context: context,
+                              await AnalyticsService.instance.logPaywallOpened(
+                                'profile',
+                              );
+                              if (!context.mounted) {
+                                return;
+                              }
+                              final success = await PurchasesService.instance
+                                  .presentPaywall(context: context);
+                              await AnalyticsService.instance.logPaywallResult(
+                                source: 'profile',
+                                success: success,
                               );
                             },
                           ),

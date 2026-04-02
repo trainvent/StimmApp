@@ -17,6 +17,7 @@ import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/data/services/storage_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 
 class PetitionCreatorPage extends StatefulWidget {
   const PetitionCreatorPage({super.key});
@@ -160,6 +161,10 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
 
       final petitionId = await PetitionRepository.create().createPetition(
         petition,
+      );
+      await AnalyticsService.instance.logPetitionCreated(
+        scopeType: scopeType,
+        hasImage: imageUrl != null,
       );
 
       if (mounted) {

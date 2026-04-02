@@ -7,6 +7,7 @@ import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
@@ -39,8 +40,17 @@ class _LoginPageState extends State<LoginPage> {
         email: controllerEm.text,
         password: controllerPw.text,
       );
+      await AnalyticsService.instance.logAuthResult(
+        action: 'login',
+        success: true,
+      );
       if (mounted) popPage();
     } on AuthException catch (e) {
+      await AnalyticsService.instance.logAuthResult(
+        action: 'login',
+        success: false,
+        errorCode: e.code,
+      );
       errorMessage = e.toString();
       if (!mounted) return;
       showErrorSnackBar(errorMessage);

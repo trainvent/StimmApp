@@ -20,6 +20,7 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -117,6 +118,10 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       );
 
       await UserRepository.create().upsert(profile);
+      await AnalyticsService.instance.logProfileCompleted(
+        countryCode: profile.countryCode,
+        supportsStateScope: profile.supportsStateScope,
+      );
 
       AppData.isAuthConnected.value = true; // Signal that auth is connected
 

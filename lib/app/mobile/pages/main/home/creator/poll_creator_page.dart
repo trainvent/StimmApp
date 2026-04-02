@@ -13,6 +13,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:uuid/uuid.dart';
 
 const String _publicGroupValue = '__public__';
@@ -276,6 +277,11 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       await PublishingQuotaService.instance.incrementPoll();
 
       final pollId = await PollRepository.create().createPoll(poll);
+      await AnalyticsService.instance.logPollCreated(
+        scopeType: scopeType,
+        visibility: poll.visibility,
+        optionCount: options.length,
+      );
 
       if (mounted) {
         showSuccessSnackBar(context.l10n.createdPoll + pollId);
@@ -302,10 +308,7 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
       title: context.l10n.createPoll,
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createPoll,
-      additionalTopFields: [
-        _buildGroupSelector(),
-        const SizedBox(height: 20),
-      ],
+      additionalTopFields: [_buildGroupSelector(), const SizedBox(height: 20)],
       additionalMiddleFields: [
         const SizedBox(height: 20),
         Text(

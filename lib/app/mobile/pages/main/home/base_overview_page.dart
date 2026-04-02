@@ -16,6 +16,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/ad_consent_service.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 
 class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   const BaseOverviewPage({
@@ -58,6 +59,7 @@ class _BaseOverviewPageState<T extends HomeItem>
   Set<FormScopeType> _selectedScopes = {};
   bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
+  bool _hasLoggedSearchForSession = false;
 
   @override
   void initState() {
@@ -637,7 +639,20 @@ class _BaseOverviewPageState<T extends HomeItem>
                 Expanded(
                   child: SearchTextField(
                     hint: context.l10n.searchTextField,
-                    onChanged: (q) => setState(() => _query = q),
+                    onChanged: (q) {
+                      final trimmedQuery = q.trim();
+                      if (trimmedQuery.isEmpty) {
+                        _hasLoggedSearchForSession = false;
+                      } else if (!_hasLoggedSearchForSession &&
+                          trimmedQuery.length >= 2) {
+                        _hasLoggedSearchForSession = true;
+                        AnalyticsService.instance.logSearchUsed(
+                          queryLength: trimmedQuery.length,
+                          filterCount: filterCount,
+                        );
+                      }
+                      setState(() => _query = q);
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),

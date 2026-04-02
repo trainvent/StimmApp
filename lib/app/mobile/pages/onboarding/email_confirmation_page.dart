@@ -3,13 +3,11 @@ import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/verification_widget.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
 class EmailConfirmationPage extends StatefulWidget {
-  const EmailConfirmationPage({
-    super.key,
-    this.sendCodeOnLoad = false,
-  });
+  const EmailConfirmationPage({super.key, this.sendCodeOnLoad = false});
 
   final bool sendCodeOnLoad;
 
@@ -45,6 +43,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
 
     try {
       await authService.verifyCode(code);
+      await AnalyticsService.instance.logEmailVerified();
       if (!mounted) return;
       // If this page was pushed onto the stack (e.g. from OnboardingPage),
       // popping it might reveal the AuthLayout underneath which has now updated.
@@ -52,6 +51,11 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
         Navigator.pop(context);
       }
     } on AuthException catch (e) {
+      await AnalyticsService.instance.logAuthResult(
+        action: 'verify_email',
+        success: false,
+        errorCode: e.code,
+      );
       if (!mounted) return;
       showErrorSnackBar(e.message ?? S.of(context).verificationFailed);
       _codeController.clear();
@@ -82,6 +86,9 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
   Future<void> _resendCode({bool showSuccessFeedback = true}) async {
     try {
       await authService.sendVerificationCode();
+      await AnalyticsService.instance.logVerificationCodeSent(
+        showSuccessFeedback ? 'resend' : 'auto_send',
+      );
       if (!mounted) return;
       if (showSuccessFeedback) {
         showSuccessSnackBar(S.of(context).verificationCodeResent);
@@ -104,9 +111,7 @@ class _EmailConfirmationPageState extends State<EmailConfirmationPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: BackButton(
-            onPressed: _leaveConfirmationFlow,
-          ),
+          leading: BackButton(onPressed: _leaveConfirmationFlow),
           title: Text(context.l10n.emailVerification),
         ),
         body: Padding(

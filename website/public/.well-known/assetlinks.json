@@ -1,13 +1,15 @@
 [
   {
     "relation": [
-      "delegate_permission/common.handle_all_urls"
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
     ],
     "target": {
       "namespace": "android_app",
       "package_name": "de.lemarq.stimmapp",
       "sha256_cert_fingerprints": [
-        "4E:E5:BF:B9:E8:EC:01:DD:38:02:34:D8:9F:75:D0:47:42:C7:4A:0A:60:5E:B5:2D:27:DF:13:53:23:F6:CB:C1"
+        "4E:E5:BF:B9:E8:EC:01:DD:38:02:34:D8:9F:75:D0:47:42:C7:4A:0A:60:5E:B5:2D:27:DF:13:53:23:F6:CB:C1",
+        "80:CC:50:94:94:C6:E7:54:3C:4C:73:6C:2A:8D:B5:C0:17:CD:3F:CD:9C:B9:0A:DF:6D:C6:43:61:C2:01:67:BB"
       ]
     }
   },

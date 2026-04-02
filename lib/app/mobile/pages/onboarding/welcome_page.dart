@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 import 'login_page.dart';
@@ -59,6 +60,7 @@ class WelcomePage extends StatelessWidget {
           label: context.l10n.register,
           isFilled: true,
           callback: () {
+            AnalyticsService.instance.logAuthFlowOpened('register');
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -74,6 +76,7 @@ class WelcomePage extends StatelessWidget {
           key: const Key('login_button'),
           label: context.l10n.login,
           callback: () {
+            AnalyticsService.instance.logAuthFlowOpened('login');
             Navigator.push(
               context,
               MaterialPageRoute(
