@@ -5,6 +5,10 @@ import './globals.css';
 export const metadata = {
   title: 'StimmApp',
   description: 'StimmApp ist als Werkzeug fuer digitale Beteiligung gedacht.',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({ children }) {
