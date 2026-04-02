@@ -509,6 +509,8 @@
 	"allowCookiesAndContinue": "Allow ad consent and continue",
 	"revokeAdsConsent": "Revoke consent",
 	"continueToApp": "Continue to app",
+	"analyticsData": "Analytics data",
+	"analyticsDataDescription": "Allow anonymous usage analytics so we can understand app usage and improve features over time.",
 	"sendCrashLogs": "Send Crash Logs",
 	"sendCrashLogsDescription": "Help us improve the app by automatically sending crash reports.",
 	"reasonYourSignature": "Reason your signature",

@@ -31,3 +31,6 @@ ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true);
 
 final ValueNotifier<Locale?> appLocale = ValueNotifier<Locale?>(null);
 final ValueNotifier<bool> showPetitionReasonNotifier = ValueNotifier(false);
+final ValueNotifier<bool> analyticsCollectionEnabledNotifier = ValueNotifier(
+  false,
+);

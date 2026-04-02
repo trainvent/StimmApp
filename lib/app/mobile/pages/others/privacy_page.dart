@@ -7,6 +7,7 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/ad_consent_service.dart';
 import 'package:stimmapp/services/ad_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,6 +41,25 @@ class _PrivacyPageState extends State<PrivacyPage> {
       final updatedProfile = profile.copyWith(sendCrashLogs: value);
       await _userRepo.upsert(updatedProfile);
       // TODO: Initialize/Deinitialize crash reporting SDK here if possible
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
+    }
+  }
+
+  Future<void> _toggleAnalyticsCollection(
+    bool value,
+    UserProfile profile,
+  ) async {
+    try {
+      final updatedProfile = profile.copyWith(
+        analyticsCollectionEnabled: value,
+      );
+      await _userRepo.upsert(updatedProfile);
+      analyticsCollectionEnabledNotifier.value = value;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -125,18 +145,16 @@ class _PrivacyPageState extends State<PrivacyPage> {
     ValueChanged<bool>? onChanged,
     bool enabled = true,
   }) {
-    final infoButton = IconButton(
-      tooltip: context.l10n.about,
-      onPressed: () => _openPolicyUrl(url),
-      icon: const Icon(Icons.info_outline),
-    );
-
     if (switchValue == null) {
       return ListTile(
+        leading: IconButton(
+          tooltip: context.l10n.about,
+          onPressed: () => _openPolicyUrl(url),
+          icon: const Icon(Icons.info_outline),
+        ),
         title: Text(title),
         subtitle: Text(subtitle),
         onTap: () => _openPolicyUrl(url),
-        trailing: infoButton,
       );
     }
 
@@ -145,7 +163,11 @@ class _PrivacyPageState extends State<PrivacyPage> {
       subtitle: Text(subtitle),
       value: switchValue,
       onChanged: enabled ? onChanged : null,
-      secondary: infoButton,
+      secondary: IconButton(
+        tooltip: context.l10n.about,
+        onPressed: () => _openPolicyUrl(url),
+        icon: const Icon(Icons.info_outline),
+      ),
     );
   }
 
@@ -177,6 +199,8 @@ class _PrivacyPageState extends State<PrivacyPage> {
           }
 
           final sendCrashLogs = profile.sendCrashLogs ?? true;
+          final analyticsCollectionEnabled =
+              profile.analyticsCollectionEnabled ?? false;
           final isPro = profile.isPro == true;
           final canManageAdsConsent =
               !kIsWeb && !isPro && AdConsentService.isInConsentRegion(profile);
@@ -221,6 +245,14 @@ class _PrivacyPageState extends State<PrivacyPage> {
                   title: Text(context.l10n.adsCurrentlyDisabled),
                   subtitle: Text(context.l10n.adsCurrentlyDisabledDescription),
                 ),
+              _buildPolicyTile(
+                title: context.l10n.analyticsData,
+                subtitle: context.l10n.analyticsDataDescription,
+                url: IConst.privacyPolicyUrl,
+                switchValue: analyticsCollectionEnabled,
+                onChanged: (value) =>
+                    _toggleAnalyticsCollection(value, profile),
+              ),
               _buildPolicyTile(
                 title: context.l10n.sendCrashLogs,
                 subtitle: context.l10n.sendCrashLogsDescription,

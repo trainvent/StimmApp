@@ -2597,13 +2597,13 @@ abstract class AppLocalizations {
   /// No description provided for @adsConsentPromptTitle.
   ///
   /// In en, this message translates to:
-  /// **'Personalized ads consent'**
+  /// **'Ad consent for free use'**
   String get adsConsentPromptTitle;
 
   /// No description provided for @adsConsentPromptDescription.
   ///
   /// In en, this message translates to:
-  /// **'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission before showing personalized ads. You can change this choice later on the ad privacy page.'**
+  /// **'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission for ad-related consent before the free version can continue. You can change this choice later on the ad privacy page.'**
   String get adsConsentPromptDescription;
 
   /// No description provided for @allow.
@@ -2639,13 +2639,13 @@ abstract class AppLocalizations {
   /// No description provided for @personalizedAds.
   ///
   /// In en, this message translates to:
-  /// **'Personalized ads'**
+  /// **'Ad consent for free use'**
   String get personalizedAds;
 
   /// No description provided for @personalizedAdsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Required for free users in the EU, UK, and Switzerland for the free tier to stay active. Turning this off logs you out and you will be asked again the next time you sign in.'**
+  /// **'Required for free users in the EU, UK, and Switzerland so the free tier can stay active. Turning this off logs you out and you will be asked again the next time you sign in.'**
   String get personalizedAdsDescription;
 
   /// No description provided for @adsCurrentlyDisabled.
@@ -2657,7 +2657,7 @@ abstract class AppLocalizations {
   /// No description provided for @adsCurrentlyDisabledDescription.
   ///
   /// In en, this message translates to:
-  /// **'We keep ads off until you choose whether personalized ads are allowed.'**
+  /// **'We keep the free tier locked until you choose whether ad-related consent is allowed.'**
   String get adsCurrentlyDisabledDescription;
 
   /// No description provided for @adsDisabledForProDescription.
@@ -2759,7 +2759,7 @@ abstract class AppLocalizations {
   /// No description provided for @allowCookiesAndContinue.
   ///
   /// In en, this message translates to:
-  /// **'Allow cookies and continue'**
+  /// **'Allow ad consent and continue'**
   String get allowCookiesAndContinue;
 
   /// No description provided for @revokeAdsConsent.
@@ -2773,6 +2773,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue to app'**
   String get continueToApp;
+
+  /// No description provided for @analyticsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics data'**
+  String get analyticsData;
+
+  /// No description provided for @analyticsDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow anonymous usage analytics so we can understand app usage and improve features over time.'**
+  String get analyticsDataDescription;
 
   /// No description provided for @sendCrashLogs.
   ///

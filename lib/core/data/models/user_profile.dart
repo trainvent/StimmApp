@@ -17,6 +17,7 @@ class UserProfile {
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
   final bool? sendCrashLogs;
+  final bool? analyticsCollectionEnabled;
   final bool? adsConsentGranted;
   final DateTime? adsConsentUpdatedAt;
   final DateTime? acceptedCommunityRulesAt;
@@ -79,6 +80,7 @@ class UserProfile {
     this.isVerified,
     this.gotVerifiedAt,
     this.sendCrashLogs,
+    this.analyticsCollectionEnabled,
     this.adsConsentGranted,
     this.adsConsentUpdatedAt,
     this.acceptedCommunityRulesAt,
@@ -112,6 +114,7 @@ class UserProfile {
     bool? isVerified,
     DateTime? gotVerifiedAt,
     bool? sendCrashLogs,
+    bool? analyticsCollectionEnabled,
     Object? adsConsentGranted = _unset,
     Object? adsConsentUpdatedAt = _unset,
     DateTime? acceptedCommunityRulesAt,
@@ -149,6 +152,8 @@ class UserProfile {
       isVerified: isVerified ?? this.isVerified,
       gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
+      analyticsCollectionEnabled:
+          analyticsCollectionEnabled ?? this.analyticsCollectionEnabled,
       adsConsentGranted: identical(adsConsentGranted, _unset)
           ? this.adsConsentGranted
           : adsConsentGranted as bool?,
@@ -192,6 +197,7 @@ class UserProfile {
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
       sendCrashLogs: json['sendCrashLogs'] as bool?,
+      analyticsCollectionEnabled: json['analyticsCollectionEnabled'] as bool?,
       adsConsentGranted: json['adsConsentGranted'] as bool?,
       adsConsentUpdatedAt: (json['adsConsentUpdatedAt'] as Timestamp?)
           ?.toDate(),
@@ -230,6 +236,7 @@ class UserProfile {
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
       'sendCrashLogs': sendCrashLogs,
+      'analyticsCollectionEnabled': analyticsCollectionEnabled,
       'adsConsentGranted': adsConsentGranted,
       'adsConsentUpdatedAt': adsConsentUpdatedAt != null
           ? Timestamp.fromDate(adsConsentUpdatedAt!)

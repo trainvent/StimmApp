@@ -1443,6 +1443,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueToApp => 'Continue to app';
 
   @override
+  String get analyticsData => 'Analytics data';
+
+  @override
+  String get analyticsDataDescription =>
+      'Allow anonymous usage analytics so we can understand app usage and improve features over time.';
+
+  @override
   String get sendCrashLogs => 'Send Crash Logs';
 
   @override

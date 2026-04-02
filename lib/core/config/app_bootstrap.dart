@@ -11,6 +11,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/services/ad_service.dart';
 
@@ -27,6 +28,7 @@ class AppBootstrap {
     await _initLocale();
     // load persisted petition reason setting
     await _initPetitionReasonSetting();
+    await _initAnalyticsCollectionSetting();
     // initialize ads
     await _adService.initialize();
 
@@ -39,6 +41,7 @@ class AppBootstrap {
     // Persist runtime locale changes
     appLocale.addListener(_onLocaleChanged);
     showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
+    analyticsCollectionEnabledNotifier.addListener(_onAnalyticsChanged);
     themeModeNotifier.addListener(_onThemeChanged);
     themeSchemeNotifier.addListener(_onThemeSchemeChanged);
 
@@ -68,6 +71,10 @@ class AppBootstrap {
             }
             if (profile.showPetitionReason != null) {
               showPetitionReasonNotifier.value = profile.showPetitionReason!;
+            }
+            if (profile.analyticsCollectionEnabled != null) {
+              analyticsCollectionEnabledNotifier.value =
+                  profile.analyticsCollectionEnabled!;
             }
             if (profile.themeMode != null) {
               themeModeNotifier.value = _themeModeFromString(
@@ -99,6 +106,7 @@ class AppBootstrap {
     _authSub?.cancel();
     appLocale.removeListener(_onLocaleChanged);
     showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
+    analyticsCollectionEnabledNotifier.removeListener(_onAnalyticsChanged);
     themeModeNotifier.removeListener(_onThemeChanged);
     themeSchemeNotifier.removeListener(_onThemeSchemeChanged);
     _appStateNotifier?.dispose();
@@ -147,6 +155,30 @@ class AppBootstrap {
         debugPrint(
           '[AppBootstrap] Error syncing petition reason setting to Firestore: $e',
         );
+      }
+    }
+  }
+
+  void _onAnalyticsChanged() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(
+      IConst.analyticsCollectionEnabledKey,
+      analyticsCollectionEnabledNotifier.value,
+    );
+    await AnalyticsService.instance.setCollectionEnabled(
+      analyticsCollectionEnabledNotifier.value,
+    );
+
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {
+          'analyticsCollectionEnabled':
+              analyticsCollectionEnabledNotifier.value,
+        });
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing analytics setting: $e');
       }
     }
   }
@@ -223,6 +255,14 @@ class AppBootstrap {
     final prefs = await SharedPreferences.getInstance();
     final themeScheme = prefs.getString(IConst.themeSchemeKey);
     themeSchemeNotifier.value = AppColorThemeX.fromId(themeScheme);
+  }
+
+  Future<void> _initAnalyticsCollectionSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled =
+        prefs.getBool(IConst.analyticsCollectionEnabledKey) ?? false;
+    analyticsCollectionEnabledNotifier.value = enabled;
+    await AnalyticsService.instance.setCollectionEnabled(enabled);
   }
 
   Future<void> _initLocale() async {

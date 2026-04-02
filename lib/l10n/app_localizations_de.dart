@@ -1357,7 +1357,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get adsConsentPromptTitle =>
-      'Werbeeinwilligung fuer die kostenlose Nutzung';
+      'Werbeeinwilligung für die kostenlose Nutzung';
 
   @override
   String get adsConsentPromptDescription =>
@@ -1381,7 +1381,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Während Pro aktiv ist inaktiv, da für Pro-Mitglieder keine Werbung angezeigt wird.';
 
   @override
-  String get personalizedAds => 'Werbeeinwilligung fuer kostenlose Nutzung';
+  String get personalizedAds => 'Werbeeinwilligung für kostenlose Nutzung';
 
   @override
   String get personalizedAdsDescription =>
@@ -1461,6 +1461,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get continueToApp => 'Zur App';
+
+  @override
+  String get analyticsData => 'Analysedaten';
+
+  @override
+  String get analyticsDataDescription =>
+      'Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern koennen.';
 
   @override
   String get sendCrashLogs => 'Absturzberichte senden';
