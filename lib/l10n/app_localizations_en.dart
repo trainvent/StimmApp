@@ -1340,11 +1340,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Essential information about how the app processes personal data.';
 
   @override
-  String get adsConsentPromptTitle => 'Personalized ads consent';
+  String get adsConsentPromptTitle => 'Ad consent for free use';
 
   @override
   String get adsConsentPromptDescription =>
-      'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission before showing personalized ads. You can change this choice later on the ad privacy page.';
+      'StimmApp shows ads only to non-Pro users. If you are in the EU, UK, or Switzerland, we need your permission for ad-related consent before the free version can continue. You can change this choice later on the ad privacy page.';
 
   @override
   String get allow => 'Allow';
@@ -1364,18 +1364,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Inactive while Pro is active because ads are disabled for Pro members.';
 
   @override
-  String get personalizedAds => 'Personalized ads';
+  String get personalizedAds => 'Ad consent for free use';
 
   @override
   String get personalizedAdsDescription =>
-      'Required for free users in the EU, UK, and Switzerland before personalized ads are shown. You can change this here at any time.';
+      'Required for free users in the EU, UK, and Switzerland so the free tier can stay active. Turning this off logs you out and you will be asked again the next time you sign in.';
 
   @override
   String get adsCurrentlyDisabled => 'Ads are currently disabled';
 
   @override
   String get adsCurrentlyDisabledDescription =>
-      'We keep ads off until you choose whether personalized ads are allowed.';
+      'We keep the free tier locked until you choose whether ad-related consent is allowed.';
 
   @override
   String get adsDisabledForProDescription =>
@@ -1434,7 +1434,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openAdsPrivacyPolicy => 'Open ads privacy policy';
 
   @override
-  String get allowCookiesAndContinue => 'Allow cookies and continue';
+  String get allowCookiesAndContinue => 'Allow ad consent and continue';
 
   @override
   String get revokeAdsConsent => 'Revoke consent';

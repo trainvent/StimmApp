@@ -1356,11 +1356,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wesentliche Informationen darüber, wie die App personenbezogene Daten verarbeitet.';
 
   @override
-  String get adsConsentPromptTitle => 'Einwilligung in personalisierte Werbung';
+  String get adsConsentPromptTitle =>
+      'Werbeeinwilligung fuer die kostenlose Nutzung';
 
   @override
   String get adsConsentPromptDescription =>
-      'StimmApp zeigt Werbung nur fuer Nutzer ohne Pro an. Wenn du dich in der EU, im Vereinigten Koenigreich oder in der Schweiz befindest, brauchen wir deine Erlaubnis, bevor personalisierte Werbung gezeigt wird. Du kannst diese Entscheidung spaeter jederzeit auf der Werbe-Datenschutzseite aendern.';
+      'StimmApp zeigt Werbung nur fuer Nutzer ohne Pro an. Wenn du dich in der EU, im Vereinigten Koenigreich oder in der Schweiz befindest, brauchen wir deine Erlaubnis fuer werbebezogene Einwilligung, bevor die kostenlose Version weiter genutzt werden kann. Du kannst diese Entscheidung spaeter jederzeit auf der Werbe-Datenschutzseite aendern.';
 
   @override
   String get allow => 'Erlauben';
@@ -1380,18 +1381,18 @@ class AppLocalizationsDe extends AppLocalizations {
       'Während Pro aktiv ist inaktiv, da für Pro-Mitglieder keine Werbung angezeigt wird.';
 
   @override
-  String get personalizedAds => 'Personalisierte Werbung';
+  String get personalizedAds => 'Werbeeinwilligung fuer kostenlose Nutzung';
 
   @override
   String get personalizedAdsDescription =>
-      'Für kostenlose Nutzer in der EU, im Vereinigten Königreich und in der Schweiz erforderlich, bevor personalisierte Werbung angezeigt wird. Du kannst diese Auswahl hier jederzeit ändern.';
+      'Für kostenlose Nutzer in der EU, im Vereinigten Königreich und in der Schweiz notwendig, damit die kostenlose Version aktiv bleibt. Wenn du dies ausschaltest, wirst du abgemeldet und beim naechsten Login erneut gefragt.';
 
   @override
   String get adsCurrentlyDisabled => 'Werbung ist derzeit deaktiviert';
 
   @override
   String get adsCurrentlyDisabledDescription =>
-      'Wir lassen Werbung ausgeschaltet, bis du entscheidest, ob personalisierte Werbung erlaubt ist.';
+      'Wir lassen die kostenlose Version gesperrt, bis du entscheidest, ob werbebezogene Einwilligung erlaubt ist.';
 
   @override
   String get adsDisabledForProDescription =>
@@ -1452,7 +1453,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get openAdsPrivacyPolicy => 'Werbe-Datenschutzerklaerung oeffnen';
 
   @override
-  String get allowCookiesAndContinue => 'Cookies erlauben und fortfahren';
+  String get allowCookiesAndContinue =>
+      'Werbeeinwilligung erlauben und fortfahren';
 
   @override
   String get revokeAdsConsent => 'Einwilligung widerrufen';

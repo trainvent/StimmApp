@@ -44,9 +44,14 @@ class _PrivacyPolicyAdsRevokePageState
 
     setState(() => _saving = true);
     try {
-      final canRequestAds = granted
-          ? await _adService.requestConsentInfoUpdateAndMaybeShowForm()
-          : await _adService.showPrivacyOptionsFormIfRequired();
+      final bool canRequestAds;
+      if (granted) {
+        canRequestAds = await _adService
+            .requestConsentInfoUpdateAndMaybeShowForm();
+      } else {
+        await _adService.showPrivacyOptionsFormIfRequired();
+        canRequestAds = false;
+      }
       await _userRepo.update(profile.uid, {
         'adsConsentGranted': canRequestAds ? true : null,
         'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
@@ -88,14 +93,7 @@ class _PrivacyPolicyAdsRevokePageState
     if (_saving) return;
     setState(() => _saving = true);
     try {
-      final canRequestAds = await _adService.showPrivacyOptionsFormIfRequired();
-      if (canRequestAds) {
-        await _userRepo.update(profile.uid, {
-          'adsConsentGranted': true,
-          'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
-        });
-        return;
-      }
+      await _adService.showPrivacyOptionsFormIfRequired();
       await _userRepo.update(profile.uid, {
         'adsConsentGranted': null,
         'adsConsentUpdatedAt': FieldValue.serverTimestamp(),

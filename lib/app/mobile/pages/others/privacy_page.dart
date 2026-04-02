@@ -22,6 +22,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
   final _userRepo = UserRepository.create();
   final _currentUser = authService.currentUser;
   final _adService = AdService();
+  bool _saving = false;
 
   Future<void> _openPolicyUrl(String url) async {
     final ok = await launchUrl(
@@ -49,6 +50,9 @@ class _PrivacyPageState extends State<PrivacyPage> {
   }
 
   Future<void> _grantAdsConsent(UserProfile profile) async {
+    if (_saving) return;
+
+    setState(() => _saving = true);
     try {
       final granted = await _adService
           .requestConsentInfoUpdateAndMaybeShowForm();
@@ -61,6 +65,10 @@ class _PrivacyPageState extends State<PrivacyPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
       }
     }
   }
@@ -86,15 +94,11 @@ class _PrivacyPageState extends State<PrivacyPage> {
 
     if (confirmed != true) return;
 
+    if (_saving) return;
+
+    setState(() => _saving = true);
     try {
-      final granted = await _adService.showPrivacyOptionsFormIfRequired();
-      if (granted) {
-        await _userRepo.update(profile.uid, {
-          'adsConsentGranted': true,
-          'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
-        });
-        return;
-      }
+      await _adService.showPrivacyOptionsFormIfRequired();
       await _userRepo.update(profile.uid, {
         'adsConsentGranted': null,
         'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
@@ -105,6 +109,10 @@ class _PrivacyPageState extends State<PrivacyPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
       }
     }
   }
@@ -187,13 +195,15 @@ class _PrivacyPageState extends State<PrivacyPage> {
                   subtitle: context.l10n.personalizedAdsDescription,
                   url: IConst.privacyPolicyAdsUrl,
                   switchValue: adsConsentGranted,
-                  onChanged: (value) {
-                    if (value) {
-                      _grantAdsConsent(profile);
-                    } else {
-                      _revokeAdsConsentAndLogout(profile);
-                    }
-                  },
+                  onChanged: _saving
+                      ? null
+                      : (value) {
+                          if (value) {
+                            _grantAdsConsent(profile);
+                          } else {
+                            _revokeAdsConsentAndLogout(profile);
+                          }
+                        },
                 )
               else
                 _buildPolicyTile(

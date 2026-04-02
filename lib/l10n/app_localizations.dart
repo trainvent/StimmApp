@@ -2645,7 +2645,7 @@ abstract class AppLocalizations {
   /// No description provided for @personalizedAdsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Required for free users in the EU, UK, and Switzerland before personalized ads are shown. You can change this here at any time.'**
+  /// **'Required for free users in the EU, UK, and Switzerland for the free tier to stay active. Turning this off logs you out and you will be asked again the next time you sign in.'**
   String get personalizedAdsDescription;
 
   /// No description provided for @adsCurrentlyDisabled.
