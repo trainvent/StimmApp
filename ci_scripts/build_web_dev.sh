@@ -2,7 +2,12 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-flutter build web --release --target lib/main_dev.dart
+
+if [[ -f .env ]]; then
+  flutter build web --release --target lib/main_dev.dart --dart-define-from-file=.env
+else
+  flutter build web --release --target lib/main_dev.dart
+fi
 
 # Flutter's web build does not reliably preserve custom dot-directories such as
 # `web/.well-known`, so copy the platform association and ad metadata files

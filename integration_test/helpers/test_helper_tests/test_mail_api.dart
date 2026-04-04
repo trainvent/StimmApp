@@ -1,10 +1,15 @@
-// Copied from IConst to avoid Flutter dependency in pure Dart script
 import 'dart:developer';
 
 import '../mail_api.dart';
 
-const String testMail = "leon.marquardt@mail.de";
-const String testSecurePassword = "iJJmo12L_abeO";
+const String testMail = String.fromEnvironment(
+  'TEST_HELPER_MAIL',
+  defaultValue: '',
+);
+const String testSecurePassword = String.fromEnvironment(
+  'TEST_HELPER_SECURE_PASSWORD',
+  defaultValue: '',
+);
 
 void main() async {
   final mailApi = MailApi(

@@ -10,7 +10,7 @@
 # - firebase aliases: dev, prod, prod
 
 # dev: local web debug
-flutter run --debug -d chrome -t lib/main_dev.dart
+flutter run --debug -d chrome -t lib/main_dev.dart --dart-define-from-file=.env
 
 # dev: build Flutter web app bundle for deploy
 ./ci_scripts/build_web_dev.sh
@@ -19,7 +19,7 @@ flutter run --debug -d chrome -t lib/main_dev.dart
 firebase deploy --only hosting --project stimmapp-dev
 
 # dev: android app debug run
-flutter run --debug --flavor dev -t lib/main_dev.dart
+flutter run --debug --flavor dev -t lib/main_dev.dart --dart-define-from-file=.env
 
 # dev: test links with
 # https://stimmapp-dev.web.app/petition/<id>
@@ -35,27 +35,27 @@ firebase deploy --only hosting --project stimmapp-f0141
 cd website && npm ci && npm run build && cd ..
 
 # prod: build Android release bundle
-flutter build appbundle --release --flavor prod -t lib/main.dart
+flutter build appbundle --release --flavor prod -t lib/main.dart --dart-define-from-file=.env
 
 # prod app: test links with
 # https://web.stimmapp.net/petition/<id>
 # https://web.stimmapp.net/poll/<id>
 
 # vivot: android debug run
-flutter run --debug --flavor prod -t lib/main_vivot.dart
+flutter run --debug --flavor prod -t lib/main_vivot.dart --dart-define-from-file=.env
 
 # vivot: build Android release bundle
-flutter build appbundle --release --flavor prod -t lib/main_vivot.dart
+flutter build appbundle --release --flavor prod -t lib/main_vivot.dart --dart-define-from-file=.env
 
 # vivot: build iOS archive/ipa on macOS
-flutter build ipa --release --flavor prod -t lib/main_vivot.dart
+flutter build ipa --release --flavor prod -t lib/main_vivot.dart --dart-define-from-file=.env
 
 # vivot app: test links with
 # https://web.vivot.net/petition/<id>
 # https://web.vivot.net/poll/<id>
 
 # common: run a single patrol test
-patrol test --target integration_test/
+patrol test --target integration_test/ --dart-define-from-file=.env
 
 # common: set a secret to store hidden data
 firebase functions:secrets:set
