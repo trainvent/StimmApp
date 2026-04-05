@@ -12,7 +12,7 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 *   **State Management:** **Riverpod** (Migrated from ValueNotifier/StreamBuilder)
 *   **Dependency Injection:** `get_it` (Service Locator pattern) & Riverpod Providers
 *   **Testing:** `flutter_test`, `patrol` (Integration tests)
-*   **CI/CD:** **GitLab CI/CD** (Migrated from GitHub Actions)
+*   **CI/CD:** **GitHub Actions** (GitHub Pages deployment for `website/`)
 *   **Sandbox:** a seperate enviroment which mirrors the content and User.git ad
 
 

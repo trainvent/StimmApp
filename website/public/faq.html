@@ -44,18 +44,18 @@
     <h1>FAQ</h1>
 
     <h2 id="q1">Wie kann ich mein Konto löschen?</h2>
-    <p id="a1">Nutzen Sie die Seite <a id="delete-link" href="/delete-account.html">Konto löschen</a> oder schreiben Sie an <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>.</p>
+    <p id="a1">Nutzen Sie die Seite <a id="delete-link" href="./delete-account.html">Konto löschen</a> oder schreiben Sie an <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>.</p>
 
     <h2 id="q2">Ich habe ein technisches Problem. Was soll ich senden?</h2>
     <p id="a2">Bitte nennen Sie Ihre Konto-E-Mail-Adresse, Ihr Gerätemodell, die iOS-Version und eine kurze Fehlerbeschreibung.</p>
 
     <h2 id="q3">Wo finde ich Datenschutz und Nutzungsbedingungen?</h2>
     <p>
-      <a id="privacy-link" href="/privacy">Datenschutzerklaerung</a><br>
-      <a id="terms-link" href="/terms">Nutzungsbedingungen</a>
+      <a id="privacy-link" href="./privacy_policy.html">Datenschutzerklaerung</a><br>
+      <a id="terms-link" href="./terms-of-service.html">Nutzungsbedingungen</a>
     </p>
 
-    <p><a id="back-link" href="/support.html">Zurueck zum Support</a></p>
+    <p><a id="back-link" href="./support.html">Zurueck zum Support</a></p>
   </div>
   <script>
     const isEnglishHost = window.location.hostname.toLowerCase().includes('vivot.net');
@@ -91,7 +91,7 @@
     document.title = copy.title;
     document.getElementById('q1').textContent = copy.q1;
     document.getElementById('delete-link').textContent = copy.deleteLink;
-    document.getElementById('a1').innerHTML = `${copy.a1}<a id="delete-link-inline" href="/delete-account.html">${copy.deleteLink}</a>${copy.a1b}<a href="mailto:hello@trainvent.com">hello@trainvent.com</a>.`;
+    document.getElementById('a1').innerHTML = `${copy.a1}<a id="delete-link-inline" href="./delete-account.html">${copy.deleteLink}</a>${copy.a1b}<a href="mailto:hello@trainvent.com">hello@trainvent.com</a>.`;
     document.getElementById('q2').textContent = copy.q2;
     document.getElementById('a2').textContent = copy.a2;
     document.getElementById('q3').textContent = copy.q3;

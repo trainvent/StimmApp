@@ -22,3 +22,20 @@ Dadurch können aussagekräftige Standpunkte entstehen und verlässliche Umfrage
 ## Lizenz
 Dieses Projekt ist unter der **GNU General Public License v3.0** lizenziert.
 Siehe `LICENSE`.
+
+## Website Deployment
+Die statische Website liegt im Ordner `website` und wird per GitHub Pages aus GitHub Actions veröffentlicht.
+
+### Deployment Workflow
+- Workflow: `.github/workflows/deploy-pages.yml`
+- Branch: `main`
+- Build-Verzeichnis: `website/out`
+- GitHub Pages Base Path: `/StimmApp`
+
+### Lokaler Build
+```bash
+cd website
+npm ci
+npm run build
+PAGES_BASE_PATH=/StimmApp npm run build
+```

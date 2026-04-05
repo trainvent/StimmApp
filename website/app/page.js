@@ -37,14 +37,14 @@ export default function HomePage() {
   return (
     <div className="shell">
       <header className="nav">
-        <a className="brand" href="/">
-          <img className="brand-mark" src="/icons/Icon-512.png" alt={copy.logoAlt} />
+        <a className="brand" href="./">
+          <img className="brand-mark" src="icons/Icon-512.png" alt={copy.logoAlt} />
           <span>{copy.brand}</span>
         </a>
         <nav className="nav-links">
           <a className="nav-link" href="#mission">{copy.navMission}</a>
-          <a className="nav-link" href="/faq.html">FAQ</a>
-          <a className="nav-link" href="/privacy_policy.html">{copy.navPrivacy}</a>
+          <a className="nav-link" href="faq.html">FAQ</a>
+          <a className="nav-link" href="privacy_policy.html">{copy.navPrivacy}</a>
           <a className="nav-link" href="mailto:hello@trainvent.com">{copy.navContact}</a>
           <a className="button" href={copy.appUrl}>{copy.navOpenApp}</a>
         </nav>
@@ -202,10 +202,10 @@ export default function HomePage() {
       <footer className="footer">
         <p>{copy.footerBrand}</p>
         <div className="footer-links">
-          <a href="/privacy_policy.html">{copy.footerPrivacy}</a>
-          <a href="/terms-of-service.html">{copy.footerTerms}</a>
-          <a href="/support.html">{copy.footerSupport}</a>
-          <a href="/faq.html">FAQ</a>
+          <a href="privacy_policy.html">{copy.footerPrivacy}</a>
+          <a href="terms-of-service.html">{copy.footerTerms}</a>
+          <a href="support.html">{copy.footerSupport}</a>
+          <a href="faq.html">FAQ</a>
         </div>
       </footer>
     </div>
