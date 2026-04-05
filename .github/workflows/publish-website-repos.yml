@@ -52,4 +52,4 @@ jobs:
           TARGET_DOMAIN: ${{ matrix.domain }}
           TARGET_REPO: ${{ matrix.repo }}
           WEBSITE_DEPLOY_TOKEN: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
-        run: ../ci_scripts/publish_website_repo.sh out
+        run: bash ../ci_scripts/publish_website_repo.sh out
