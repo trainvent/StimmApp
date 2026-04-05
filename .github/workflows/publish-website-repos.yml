@@ -46,10 +46,13 @@ jobs:
       - name: Build website
         run: npm run build
 
+      - name: Make publish script executable
+        run: chmod +x ../ci_scripts/publish_website_repo.sh
+
       - name: Publish static output to deploy repo
         env:
           TARGET_BRANCH: ${{ matrix.branch }}
           TARGET_DOMAIN: ${{ matrix.domain }}
           TARGET_REPO: ${{ matrix.repo }}
           WEBSITE_DEPLOY_TOKEN: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
-        run: bash ../ci_scripts/publish_website_repo.sh out
+        run: ../ci_scripts/publish_website_repo.sh out
