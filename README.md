@@ -30,12 +30,12 @@ Die statische Website liegt im Ordner `website` und wird per GitHub Pages aus Gi
 - Workflow: `.github/workflows/deploy-pages.yml`
 - Branch: `main`
 - Build-Verzeichnis: `website/out`
-- GitHub Pages Base Path: `/StimmApp`
+- GitHub Pages Base Path: leer bei Custom Domain `stimmapp.net`
+- GitHub Pages Domain: `stimmapp.net`
 
 ### Lokaler Build
 ```bash
 cd website
 npm ci
 npm run build
-PAGES_BASE_PATH=/StimmApp npm run build
 ```

@@ -24,8 +24,6 @@ jobs:
     defaults:
       run:
         working-directory: website
-    env:
-      PAGES_BASE_PATH: /StimmApp
     steps:
       - name: Checkout
         uses: actions/checkout@v4
