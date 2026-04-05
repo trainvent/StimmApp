@@ -39,3 +39,7 @@ cd website
 npm ci
 npm run build
 ```
+
+### Shared Source -> Two Deploy Repos
+Wenn `stimmapp.net` und `vivot.net` parallel mit domainbasierter Sprache laufen sollen, nutze die Shared-Source-Struktur in [website-deploy-repos.md](/home/leonmarq/Code/stimmapp/docs/developer/website-deploy-repos.md).
+Die dort beschriebenen Deploy-Repos verwenden `main` als Publish-Branch.

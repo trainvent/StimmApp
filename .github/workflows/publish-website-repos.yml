@@ -1,0 +1,55 @@
+name: Publish Website Deploy Repos
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/**'
+      - 'ci_scripts/publish_website_repo.sh'
+      - '.github/workflows/publish-website-repos.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: Trainvent/stimmapp-website
+            domain: stimmapp.net
+            branch: main
+          - repo: Trainvent/vivot-website
+            domain: vivot.net
+            branch: main
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
+      - name: Publish static output to deploy repo
+        env:
+          TARGET_BRANCH: ${{ matrix.branch }}
+          TARGET_DOMAIN: ${{ matrix.domain }}
+          TARGET_REPO: ${{ matrix.repo }}
+          WEBSITE_DEPLOY_TOKEN: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
+        run: ../ci_scripts/publish_website_repo.sh out
