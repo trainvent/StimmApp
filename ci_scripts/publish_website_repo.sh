@@ -17,13 +17,15 @@ if [[ -z "${WEBSITE_DEPLOY_TOKEN:-}" ]]; then
   exit 1
 fi
 
-SOURCE_DIR="${1:-website/out}"
+SOURCE_DIR_INPUT="${1:-website/out}"
 TARGET_BRANCH="${TARGET_BRANCH:-main}"
 
-if [[ ! -d "$SOURCE_DIR" ]]; then
-  echo "Source directory '$SOURCE_DIR' does not exist" >&2
+if [[ ! -d "$SOURCE_DIR_INPUT" ]]; then
+  echo "Source directory '$SOURCE_DIR_INPUT' does not exist" >&2
   exit 1
 fi
+
+SOURCE_DIR="$(cd "$SOURCE_DIR_INPUT" && pwd -P)"
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
