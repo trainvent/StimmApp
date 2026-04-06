@@ -33,17 +33,17 @@ REPO_URL="https://x-access-token:${WEBSITE_DEPLOY_TOKEN}@github.com/${TARGET_REP
 
 git clone "$REPO_URL" "$TARGET_DIR"
 
+pushd "$TARGET_DIR" >/dev/null
+
+git checkout "$TARGET_BRANCH"
+
 find "$TARGET_DIR" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-rsync -a --delete "$SOURCE_DIR"/ "$TARGET_DIR"/
+rsync -a --delete --exclude '.git' "$SOURCE_DIR"/ "$TARGET_DIR"/
 printf '%s\n' "$TARGET_DOMAIN" > "$TARGET_DIR/CNAME"
 touch "$TARGET_DIR/.nojekyll"
 
-pushd "$TARGET_DIR" >/dev/null
-
 git config user.name "${GIT_AUTHOR_NAME:-github-actions[bot]}"
 git config user.email "${GIT_AUTHOR_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
-
-git checkout "$TARGET_BRANCH"
 
 if git diff --quiet && git diff --cached --quiet; then
   echo "No changes to publish for ${TARGET_REPO}"
