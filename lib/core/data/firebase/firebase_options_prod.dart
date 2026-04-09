@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDufQ7DMs7iytGJnQMlWQw8vw5boFUmna8',
-    appId: '1:223242419578:ios:3e93442161af012588aac3',
+    appId: '1:223242419578:ios:5912abd51d388e4b88aac3',
     messagingSenderId: '223242419578',
     projectId: 'stimmapp-f0141',
     storageBucket: 'stimmapp-f0141.firebasestorage.app',
@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDufQ7DMs7iytGJnQMlWQw8vw5boFUmna8',
-    appId: '1:223242419578:ios:3e93442161af012588aac3',
+    appId: '1:223242419578:ios:5912abd51d388e4b88aac3',
     messagingSenderId: '223242419578',
     projectId: 'stimmapp-f0141',
     storageBucket: 'stimmapp-f0141.firebasestorage.app',
