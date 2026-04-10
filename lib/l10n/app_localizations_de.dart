@@ -1361,7 +1361,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get adsConsentPromptDescription =>
-      'StimmApp zeigt Werbung nur fuer Nutzer ohne Pro an. Wenn du dich in der EU, im Vereinigten Koenigreich oder in der Schweiz befindest, brauchen wir deine Erlaubnis fuer werbebezogene Einwilligung, bevor die kostenlose Version weiter genutzt werden kann. Du kannst diese Entscheidung spaeter jederzeit auf der Werbe-Datenschutzseite aendern.';
+      'StimmApp zeigt Werbung nur fuer Nutzer ohne Pro an. In der EU, im Vereinigten Koenigreich und in der Schweiz bleibt die kostenlose Version gesperrt, bis du die dort erforderliche Werbe-Datenschutzentscheidung triffst. In anderen Regionen koennen je nach lokalem Recht und Anbieteranforderungen ebenfalls Werbe-Datenschutz- oder Einwilligungsentscheidungen gelten. Du kannst diese Entscheidung spaeter jederzeit auf der Werbe-Datenschutzseite aendern.';
 
   @override
   String get allow => 'Erlauben';
@@ -1385,7 +1385,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get personalizedAdsDescription =>
-      'Für kostenlose Nutzer in der EU, im Vereinigten Königreich und in der Schweiz notwendig, damit die kostenlose Version aktiv bleibt. Wenn du dies ausschaltest, wirst du abgemeldet und beim naechsten Login erneut gefragt.';
+      'Fuer kostenlose Nutzer in der EU, im Vereinigten Koenigreich und in der Schweiz notwendig, damit die kostenlose Version dort aktiv bleibt. In anderen Regionen koennen je nach lokalem Recht und Anbieteranforderungen ebenfalls Werbe-Datenschutz- oder Einwilligungsentscheidungen gelten. Wenn du dies ausschaltest, wirst du abgemeldet und beim naechsten Login erneut gefragt.';
 
   @override
   String get adsCurrentlyDisabled => 'Werbung ist derzeit deaktiviert';
