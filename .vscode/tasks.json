@@ -135,16 +135,16 @@
 		{
 			"label": "Build Android AAB (Prod Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"appbundle",
 				"--release",
 				"--flavor",
 				"prod",
 				"-t",
-				"lib/main.dart"
+				"lib/main.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": {
 				"kind": "build",
@@ -155,16 +155,16 @@
 		{
 			"label": "Build Android AAB (Dev Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"appbundle",
 				"--release",
 				"--flavor",
 				"dev",
 				"-t",
-				"lib/main_dev.dart"
+				"lib/main_dev.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -172,16 +172,16 @@
 		{
 			"label": "Build Android APK (Prod Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"apk",
 				"--release",
 				"--flavor",
 				"prod",
 				"-t",
-				"lib/main.dart"
+				"lib/main.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -189,16 +189,16 @@
 		{
 			"label": "Build Android APK (Dev Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"apk",
 				"--release",
 				"--flavor",
 				"dev",
 				"-t",
-				"lib/main_dev.dart"
+				"lib/main_dev.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -206,16 +206,16 @@
 		{
 			"label": "Build iOS IPA (Prod Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"ipa",
 				"--release",
 				"--flavor",
 				"prod",
 				"-t",
-				"lib/main.dart"
+				"lib/main.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": "build",
 			"problemMatcher": []
@@ -223,16 +223,16 @@
 		{
 			"label": "Build iOS IPA (Dev Release)",
 			"type": "shell",
-			"command": "bash",
+			"command": "flutter",
 			"args": [
-				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"ipa",
 				"--release",
 				"--flavor",
 				"dev",
 				"-t",
-				"lib/main_dev.dart"
+				"lib/main_dev.dart",
+				"--dart-define-from-file=.env"
 			],
 			"group": "build",
 			"problemMatcher": []

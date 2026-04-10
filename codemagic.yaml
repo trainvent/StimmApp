@@ -41,7 +41,7 @@ workflows:
           pod install --repo-update
       - name: Flutter build ipa
         script: |
-          bash ./ci_scripts/flutter_with_defines.sh build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist --dart-define-from-file=.env
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
