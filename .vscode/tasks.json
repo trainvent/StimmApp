@@ -135,8 +135,9 @@
 		{
 			"label": "Build Android AAB (Prod Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"appbundle",
 				"--release",
@@ -154,8 +155,9 @@
 		{
 			"label": "Build Android AAB (Dev Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"appbundle",
 				"--release",
@@ -170,8 +172,9 @@
 		{
 			"label": "Build Android APK (Prod Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"apk",
 				"--release",
@@ -186,8 +189,9 @@
 		{
 			"label": "Build Android APK (Dev Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"apk",
 				"--release",
@@ -202,8 +206,9 @@
 		{
 			"label": "Build iOS IPA (Prod Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"ipa",
 				"--release",
@@ -218,8 +223,9 @@
 		{
 			"label": "Build iOS IPA (Dev Release)",
 			"type": "shell",
-			"command": "flutter",
+			"command": "bash",
 			"args": [
+				"./ci_scripts/flutter_with_defines.sh",
 				"build",
 				"ipa",
 				"--release",

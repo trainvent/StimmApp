@@ -4,9 +4,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 if [[ -f .env ]]; then
-  flutter build web --release --target lib/main_dev.dart --dart-define-from-file=.env
+  bash ./ci_scripts/flutter_with_defines.sh build web --release --target lib/main_dev.dart
 else
-  flutter build web --release --target lib/main_dev.dart
+  bash ./ci_scripts/flutter_with_defines.sh build web --release --target lib/main_dev.dart
 fi
 
 # Flutter's web build does not reliably preserve custom dot-directories such as

@@ -6,6 +6,9 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"dev"
@@ -17,6 +20,9 @@
 			"type": "dart",
 			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main_dev.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"dev"
@@ -27,6 +33,9 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"prod"
@@ -38,6 +47,9 @@
 			"type": "dart",
 			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"prod"
@@ -50,6 +62,9 @@
 			"preLaunchTask": "Flutter: Prepare iOS Debug",
 			"program": "lib/main.dart",
 			"flutterMode": "profile",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"prod"
@@ -61,6 +76,9 @@
 			"type": "dart",
 			"program": "lib/main.dart",
 			"flutterMode": "release",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"args": [
 				"--flavor",
 				"prod"
@@ -71,6 +89,9 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"deviceId": "chrome"
 		},
 		{
@@ -78,6 +99,9 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
 			"deviceId": "chrome"
 		}
 	]

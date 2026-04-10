@@ -31,7 +31,7 @@ flutter precache --ios
 
 cd "$REPO_ROOT"
 flutter pub get
-flutter build ios --release --no-codesign --flavor "$FLAVOR"
+bash "$REPO_ROOT/ci_scripts/flutter_with_defines.sh" build ios --release --no-codesign --flavor "$FLAVOR"
 
 cd ios
 pod install
