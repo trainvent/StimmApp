@@ -21,6 +21,13 @@ function currentCopy() {
 
 export default function HomePage() {
   const [copy, setCopy] = useState(copyByHost.de);
+  const scrollToContact = (event) => {
+    event.preventDefault();
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   useEffect(() => {
     const nextCopy = currentCopy();
@@ -43,9 +50,7 @@ export default function HomePage() {
         </a>
         <nav className="nav-links">
           <a className="nav-link" href="#mission">{copy.navMission}</a>
-          <a className="nav-link" href="faq.html">FAQ</a>
-          <a className="nav-link" href="privacy_policy.html">{copy.navPrivacy}</a>
-          <a className="nav-link" href="mailto:hello@trainvent.com">{copy.navContact}</a>
+          <a className="nav-link" href="#contact" onClick={scrollToContact}>{copy.navContact}</a>
           <a className="button" href={copy.appUrl}>{copy.navOpenApp}</a>
         </nav>
       </header>
@@ -58,8 +63,6 @@ export default function HomePage() {
               <h1>{copy.heroTitle}</h1>
               <p className="lede">{copy.heroLede}</p>
               <div className="cta-row">
-                <a className="button" href={copy.appUrl}>{copy.heroOpenApp}</a>
-                <a className="button secondary" href={copy.heroContactHref}>{copy.heroContact}</a>
                 <a
                   className="button secondary"
                   href="https://play.google.com/store/apps/details?id=de.lemarq.stimmapp"
@@ -145,6 +148,7 @@ export default function HomePage() {
               <div className="panel-note">
                 <strong>{copy.panelNoteTitle}</strong>
                 <p>{copy.panelNoteText}</p>
+                <a className="button secondary" href="#contact" onClick={scrollToContact}>{copy.heroContact}</a>
               </div>
             </aside>
           </div>
@@ -182,7 +186,7 @@ export default function HomePage() {
                 <li>{copy.storyListThree}</li>
               </ul>
             </article>
-            <article className="section-card">
+            <article id="contact" className="section-card">
               <span className="kicker">{copy.contactKicker}</span>
               <h3>{copy.contactTitle}</h3>
               <p>
@@ -200,7 +204,14 @@ export default function HomePage() {
       </main>
 
       <footer className="footer">
-        <p>{copy.footerBrand}</p>
+        <div className="footer-meta">
+          <p className="footer-subservice">
+            {copy.footerSubserviceText}{' '}
+            <a href="https://next.trainvent.com/" target="_blank" rel="noreferrer">
+              {copy.footerSubserviceLink}
+            </a>
+          </p>
+        </div>
         <div className="footer-links">
           <a href="privacy_policy.html">{copy.footerPrivacy}</a>
           <a href="terms-of-service.html">{copy.footerTerms}</a>

@@ -291,6 +291,10 @@ h1 {
   line-height: 1.6;
 }
 
+.panel-note .button {
+  margin-top: 14px;
+}
+
 .section {
   padding: 16px 0 26px;
 }
@@ -359,6 +363,16 @@ h1 {
   gap: 20px;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.footer-meta {
+  display: grid;
+  gap: 6px;
+}
+
+.footer-subservice {
+  margin: 0;
+  max-width: 56ch;
 }
 
 .footer-links {
