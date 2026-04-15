@@ -53,11 +53,16 @@ class PurchasesService {
 
   bool _isInitialized = false;
   String? _appUserId;
+  bool get isInitialized => _isInitialized;
 
   /// Call this early in app startup.
   Future<void> init({required String apiKey, String? appUserId}) async {
     if (_isInitialized) {
       log('PurchasesService already initialized. Skipping configuration.');
+      return;
+    }
+    if (apiKey.isEmpty) {
+      log('PurchasesService.init skipped: RevenueCat API key is empty.');
       return;
     }
     try {
@@ -78,6 +83,16 @@ class PurchasesService {
     } catch (e, st) {
       log('PurchasesService.init error: $e\n$st');
     }
+  }
+
+  bool _ensureInitialized({String? action}) {
+    if (_isInitialized) {
+      return true;
+    }
+    log(
+      'PurchasesService ${action ?? 'action'} skipped: SDK is not initialized.',
+    );
+    return false;
   }
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
@@ -121,7 +136,7 @@ class PurchasesService {
 
   /// Sync RevenueCat app user with Firebase user.
   Future<void> syncAppUser(String? uid) async {
-    if (!_isInitialized) return;
+    if (!_ensureInitialized(action: 'syncAppUser')) return;
     if (_appUserId == uid) return;
 
     try {
@@ -143,6 +158,7 @@ class PurchasesService {
 
   /// Restore purchases (required for iOS).
   Future<void> restorePurchases() async {
+    if (!_ensureInitialized(action: 'restorePurchases')) return;
     try {
       if (kIsWeb) {
         await refreshCustomerInfo();
@@ -159,6 +175,9 @@ class PurchasesService {
   Future<bool> presentPaywall({BuildContext? context}) async {
     if (kIsWeb) {
       return _presentWebPaywall(context: context);
+    }
+    if (!_ensureInitialized(action: 'presentPaywall')) {
+      return false;
     }
     try {
       final result = await RevenueCatUI.presentPaywall();
@@ -182,6 +201,9 @@ class PurchasesService {
         'Falling back to package selection.',
       );
       return _presentWebPaywall(context: context);
+    }
+    if (!_ensureInitialized(action: 'presentPaywallIfNeeded')) {
+      return false;
     }
     try {
       final result = await RevenueCatUI.presentPaywallIfNeeded(paywallId);
@@ -303,6 +325,9 @@ class PurchasesService {
   }
 
   Future<Uri?> getManagementUri() async {
+    if (!_ensureInitialized(action: 'getManagementUri')) {
+      return null;
+    }
     try {
       final info = await Purchases.getCustomerInfo();
       final url = info.managementURL;
@@ -318,6 +343,7 @@ class PurchasesService {
 
   /// Convenience: refresh customer info and entitlement.
   Future<void> refreshCustomerInfo() async {
+    if (!_ensureInitialized(action: 'refreshCustomerInfo')) return;
     try {
       final info = await Purchases.getCustomerInfo();
       _onCustomerInfoUpdated(info);
@@ -328,6 +354,11 @@ class PurchasesService {
 
   /// Log out current user and clear state.
   Future<void> logOut() async {
+    if (!_ensureInitialized(action: 'logOut')) {
+      _currentStatus = EntitlementTier.free;
+      _entitlementController.add(_currentStatus);
+      return;
+    }
     try {
       await Purchases.logOut();
       _currentStatus = EntitlementTier.free;
