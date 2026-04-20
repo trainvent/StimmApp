@@ -204,7 +204,7 @@ class _MyAppState extends State<MyApp> {
         return ValueListenableBuilder<AppColorTheme?>(
           valueListenable: themeSchemeNotifier,
           builder: (context, themeScheme, child) {
-            final selectedTheme = themeScheme ?? AppColorTheme.stimm;
+            final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
             return ValueListenableBuilder<Locale?>(
               valueListenable: appLocale,
               builder: (context, locale, child) {

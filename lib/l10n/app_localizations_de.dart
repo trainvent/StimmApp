@@ -487,6 +487,36 @@ class AppLocalizationsDe extends AppLocalizations {
   String get accentPallette => 'Akzent Palette';
 
   @override
+  String get themePaletteForest => 'Wald';
+
+  @override
+  String get themePaletteOcean => 'Ozean';
+
+  @override
+  String get themePaletteSunset => 'Sonnenuntergang';
+
+  @override
+  String get themePaletteRose => 'Rose';
+
+  @override
+  String get themePaletteAmber => 'Amber';
+
+  @override
+  String get themePalettePlum => 'Pflaume';
+
+  @override
+  String get themePaletteSlate => 'Schiefer';
+
+  @override
+  String get themePaletteMint => 'Minze';
+
+  @override
+  String get themePaletteSky => 'Himmel';
+
+  @override
+  String get themePaletteTrainvent => 'Trainvent';
+
+  @override
   String get imagePreviewDescription => 'Bildvorschau';
 
   @override

@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterYourSurname => 'Please enter your surname';
 
   @override
-  String get displayName => 'displayed name';
+  String get displayName => 'Displayed Name';
 
   @override
   String get about => 'About';
@@ -255,7 +255,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daysLeft => 'Days Left';
 
   @override
-  String get deleteAccount => 'delete Account';
+  String get deleteAccount => 'Delete Account';
 
   @override
   String get deleteAccountButton => 'PERMANENTLY DELETE ACCOUNT';
@@ -326,7 +326,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get energy => 'Energy';
 
   @override
-  String get english => 'english';
+  String get english => 'English';
 
   @override
   String get enterCode => 'Enter Code';
@@ -341,7 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterTitle => 'Enter title';
 
   @override
-  String get enterYourAddress => 'enter Your Address';
+  String get enterYourAddress => 'Enter your address';
 
   @override
   String get enterYourEmail => 'Enter your email';
@@ -416,13 +416,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freeMember => 'Free Member';
 
   @override
-  String get french => 'french';
+  String get french => 'French';
 
   @override
   String get frontSide => 'Front Side';
 
   @override
-  String get german => 'german';
+  String get german => 'German';
 
   @override
   String get getStarted => 'Get started';
@@ -460,25 +460,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
-  String get filterBy => 'filter by';
+  String get filterBy => 'Filter by';
 
   @override
-  String get filterByGroup => 'filter by group';
+  String get filterByGroup => 'Filter by group';
 
   @override
-  String get publishTo => 'publish to';
+  String get publishTo => 'Publish to';
 
   @override
-  String get public => 'public';
+  String get public => 'Public';
 
   @override
-  String get createOrManageGroups => 'create or manage groups';
+  String get createOrManageGroups => 'Create or manage groups';
 
   @override
-  String get displayQrCode => 'display qr-code';
+  String get displayQrCode => 'Display QR code';
 
   @override
-  String get accentPallette => 'accent pallette';
+  String get accentPallette => 'Accent Palette';
+
+  @override
+  String get themePaletteForest => 'Forest';
+
+  @override
+  String get themePaletteOcean => 'Ocean';
+
+  @override
+  String get themePaletteSunset => 'Sunset';
+
+  @override
+  String get themePaletteRose => 'Rose';
+
+  @override
+  String get themePaletteAmber => 'Amber';
+
+  @override
+  String get themePalettePlum => 'Plum';
+
+  @override
+  String get themePaletteSlate => 'Slate';
+
+  @override
+  String get themePaletteMint => 'Mint';
+
+  @override
+  String get themePaletteSky => 'Sky';
+
+  @override
+  String get themePaletteTrainvent => 'Trainvent';
 
   @override
   String get imagePreviewDescription =>
@@ -494,7 +524,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get isProMember => 'Is Pro Member';
 
   @override
-  String get language => 'language';
+  String get language => 'Language';
 
   @override
   String get lastStep => 'Last step!';
@@ -509,7 +539,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
-  String get loginCodeSent => 'login code sent';
+  String get loginCodeSent => 'Login code sent';
 
   @override
   String get loginLinkSent => 'Code sent!';
@@ -544,7 +574,7 @@ class AppLocalizationsEn extends AppLocalizations {
       newMessages,
       locale: localeName,
       other: '$newMessages new messages',
-      two: 'Two new Messages',
+      two: 'Two new messages',
       one: 'One new message',
       zero: 'No new messages',
     );
@@ -579,7 +609,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noImageSelected => 'No image selected';
 
   @override
-  String get noOptions => 'no options';
+  String get noOptions => 'No options';
 
   @override
   String get noFittingOptions => 'No fitting options';
@@ -591,7 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTitle => 'No Title';
 
   @override
-  String get noUsernameFound => 'no username found';
+  String get noUsernameFound => 'No username found';
 
   @override
   String get notAuthenticated => 'Not authenticated';
@@ -623,7 +653,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get options => 'Options';
 
   @override
-  String get other => 'other';
+  String get other => 'Other';
 
   @override
   String get participants => 'Participants';
@@ -906,7 +936,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stateUpdatedSuccessfully => 'State updated successfully';
 
   @override
-  String get stimmapp => 'stimmapp';
+  String get stimmapp => 'StimmApp';
 
   @override
   String get subscriptionCancelledAccessWillRemainUntilExpiry =>
@@ -1036,7 +1066,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You subscribed to following benefits';
 
   @override
-  String get pleaseEnterYourEmail => 'please enter your Email';
+  String get pleaseEnterYourEmail => 'Please enter your email';
 
   @override
   String get welcomePleaseEnterYourDetails =>
@@ -1091,7 +1121,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknownUser => 'Unknown user';
 
   @override
-  String get petitionTitleInUseAlready => 'petition title in use already';
+  String get petitionTitleInUseAlready => 'Petition title already in use';
 
   @override
   String get loggedOutSuccessfully => 'Logged out successfully';
@@ -1125,39 +1155,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unblockedUserSuccessfully => 'User unblocked.';
 
   @override
-  String get hello => 'hello';
+  String get hello => 'Hello';
 
   @override
   String get faultyInput => 'Faulty input';
 
   @override
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
-      'we failed to get your state, please proofread your living-address';
+      'We failed to get your state, please proofread your living address.';
 
   @override
-  String get petitionGuidelines => 'petition guidelines';
+  String get petitionGuidelines => 'Petition Guidelines';
 
   @override
-  String get petitionGuidelineDescription => 'petition guideline description';
+  String get petitionGuidelineDescription => 'Petition guideline description';
 
   @override
-  String get pollGuidelines => 'poll guidelines';
+  String get pollGuidelines => 'Poll Guidelines';
 
   @override
-  String get pollGuidelineDescription => 'poll guideline description';
+  String get pollGuidelineDescription => 'Poll guideline description';
 
   @override
-  String get pleaseEnterYourDetails => 'please enter your details.';
+  String get pleaseEnterYourDetails => 'Please enter your details.';
 
   @override
-  String get thisAppWasDevelopedBy => 'this app was developed by';
+  String get thisAppWasDevelopedBy => 'This app was developed by';
 
   @override
   String get licenses => 'Licenses';
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'published under the GNU General Public License v3.0';
+      'Published under the GNU General Public License v3.0';
 
   @override
   String get enterVerificationCode => 'Enter Verification Code';
@@ -1287,14 +1317,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewInstitutionalGuide => 'View institutional guide';
 
   @override
-  String get pleaseEnterYourCredentials => 'Please enter your Credentials';
+  String get pleaseEnterYourCredentials => 'Please enter your credentials';
 
   @override
   String get pleaseEnterYourDesiredCredentials =>
-      'Please enter the Credentials you desire.';
+      'Please enter the credentials you desire.';
 
   @override
-  String get sendConfirmationEmail => 'Send confirmation Email.';
+  String get sendConfirmationEmail => 'Send confirmation email.';
 
   @override
   String get weCannotProvideSecureVerificationYetButWeAreWorking =>
@@ -1317,7 +1347,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get delete => 'delete';
+  String get delete => 'Delete';
 
   @override
   String get areYouSureYouWantToClearThisDraft =>
@@ -1460,7 +1490,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reasonYourSignature => 'Reason your signature';
 
   @override
-  String get signatureReasoning => 'signature reasoning';
+  String get signatureReasoning => 'Signature reasoning';
 
   @override
   String get signatureReasoningInfo =>

@@ -63,7 +63,28 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   String _themeSchemeLabel(BuildContext context, AppColorTheme theme) {
-    return theme.data.label;
+    switch (theme) {
+      case AppColorTheme.stimm:
+        return context.l10n.themePaletteForest;
+      case AppColorTheme.ocean:
+        return context.l10n.themePaletteOcean;
+      case AppColorTheme.sunset:
+        return context.l10n.themePaletteSunset;
+      case AppColorTheme.rose:
+        return context.l10n.themePaletteRose;
+      case AppColorTheme.amber:
+        return context.l10n.themePaletteAmber;
+      case AppColorTheme.plum:
+        return context.l10n.themePalettePlum;
+      case AppColorTheme.slate:
+        return context.l10n.themePaletteSlate;
+      case AppColorTheme.mint:
+        return context.l10n.themePaletteMint;
+      case AppColorTheme.sky:
+        return context.l10n.themePaletteSky;
+      case AppColorTheme.trainvent:
+        return context.l10n.themePaletteTrainvent;
+    }
   }
 
   Widget _themePreview(
@@ -196,7 +217,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     builder: (context) =>
                         SelectionNotifierDialog<AppColorTheme>(
                           notifier: ValueNotifier<AppColorTheme?>(
-                            themeSchemeNotifier.value ?? AppColorTheme.stimm,
+                            themeSchemeNotifier.value ??
+                                AppColorTheme.trainvent,
                           ),
                           options: AppColorTheme.values,
                           optionLabel: _themeSchemeLabel,
@@ -219,11 +241,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 trailing: ValueListenableBuilder<AppColorTheme?>(
                   valueListenable: themeSchemeNotifier,
                   builder: (context, theme, child) {
-                    final selected = theme ?? AppColorTheme.stimm;
+                    final selected = theme ?? AppColorTheme.trainvent;
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(selected.data.label),
+                        Text(_themeSchemeLabel(context, selected)),
                         const SizedBox(width: 10),
                         _themePreview(selected, size: 12, spacing: 4),
                       ],

@@ -205,7 +205,7 @@ class AppBootstrap {
 
   void _onThemeSchemeChanged() async {
     final prefs = await SharedPreferences.getInstance();
-    final currentTheme = themeSchemeNotifier.value ?? AppColorTheme.stimm;
+    final currentTheme = themeSchemeNotifier.value ?? AppColorTheme.trainvent;
     await prefs.setString(IConst.themeSchemeKey, currentTheme.data.id);
 
     final user = authService.currentUser;

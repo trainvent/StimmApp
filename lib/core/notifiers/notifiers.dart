@@ -24,7 +24,7 @@ ValueNotifier<int> selectedPageNotifier = ValueNotifier(0);
 // ThemeMode: system, light, dark
 ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.system);
 ValueNotifier<AppColorTheme?> themeSchemeNotifier = ValueNotifier(
-  AppColorTheme.stimm,
+  AppColorTheme.trainvent,
 );
 // Deprecated: kept for backward compatibility if needed, but should be removed eventually
 ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true);

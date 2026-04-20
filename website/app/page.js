@@ -194,7 +194,7 @@ export default function HomePage() {
                 <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>
               </p>
               <p>{copy.contactText}</p>
-              <div className="cta-row contact-row">
+              <div className="cta-row contact-row">8
                 <a className="button" href={copy.contactButtonHref}>{copy.contactButton}</a>
                 <a className="button secondary" href={copy.appUrl}>{copy.contactOpenApp}</a>
               </div>

@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @displayName.
   ///
   /// In en, this message translates to:
-  /// **'displayed name'**
+  /// **'Displayed Name'**
   String get displayName;
 
   /// No description provided for @about.
@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAccount.
   ///
   /// In en, this message translates to:
-  /// **'delete Account'**
+  /// **'Delete Account'**
   String get deleteAccount;
 
   /// No description provided for @deleteAccountButton.
@@ -701,7 +701,7 @@ abstract class AppLocalizations {
   /// No description provided for @english.
   ///
   /// In en, this message translates to:
-  /// **'english'**
+  /// **'English'**
   String get english;
 
   /// No description provided for @enterCode.
@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterYourAddress.
   ///
   /// In en, this message translates to:
-  /// **'enter Your Address'**
+  /// **'Enter your address'**
   String get enterYourAddress;
 
   /// No description provided for @enterYourEmail.
@@ -881,7 +881,7 @@ abstract class AppLocalizations {
   /// No description provided for @french.
   ///
   /// In en, this message translates to:
-  /// **'french'**
+  /// **'French'**
   String get french;
 
   /// No description provided for @frontSide.
@@ -893,7 +893,7 @@ abstract class AppLocalizations {
   /// No description provided for @german.
   ///
   /// In en, this message translates to:
-  /// **'german'**
+  /// **'German'**
   String get german;
 
   /// No description provided for @getStarted.
@@ -965,44 +965,104 @@ abstract class AppLocalizations {
   /// No description provided for @filterBy.
   ///
   /// In en, this message translates to:
-  /// **'filter by'**
+  /// **'Filter by'**
   String get filterBy;
 
   /// No description provided for @filterByGroup.
   ///
   /// In en, this message translates to:
-  /// **'filter by group'**
+  /// **'Filter by group'**
   String get filterByGroup;
 
   /// No description provided for @publishTo.
   ///
   /// In en, this message translates to:
-  /// **'publish to'**
+  /// **'Publish to'**
   String get publishTo;
 
   /// No description provided for @public.
   ///
   /// In en, this message translates to:
-  /// **'public'**
+  /// **'Public'**
   String get public;
 
   /// No description provided for @createOrManageGroups.
   ///
   /// In en, this message translates to:
-  /// **'create or manage groups'**
+  /// **'Create or manage groups'**
   String get createOrManageGroups;
 
   /// No description provided for @displayQrCode.
   ///
   /// In en, this message translates to:
-  /// **'display qr-code'**
+  /// **'Display QR code'**
   String get displayQrCode;
 
   /// No description provided for @accentPallette.
   ///
   /// In en, this message translates to:
-  /// **'accent pallette'**
+  /// **'Accent Palette'**
   String get accentPallette;
+
+  /// No description provided for @themePaletteForest.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest'**
+  String get themePaletteForest;
+
+  /// No description provided for @themePaletteOcean.
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean'**
+  String get themePaletteOcean;
+
+  /// No description provided for @themePaletteSunset.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset'**
+  String get themePaletteSunset;
+
+  /// No description provided for @themePaletteRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rose'**
+  String get themePaletteRose;
+
+  /// No description provided for @themePaletteAmber.
+  ///
+  /// In en, this message translates to:
+  /// **'Amber'**
+  String get themePaletteAmber;
+
+  /// No description provided for @themePalettePlum.
+  ///
+  /// In en, this message translates to:
+  /// **'Plum'**
+  String get themePalettePlum;
+
+  /// No description provided for @themePaletteSlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Slate'**
+  String get themePaletteSlate;
+
+  /// No description provided for @themePaletteMint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mint'**
+  String get themePaletteMint;
+
+  /// No description provided for @themePaletteSky.
+  ///
+  /// In en, this message translates to:
+  /// **'Sky'**
+  String get themePaletteSky;
+
+  /// No description provided for @themePaletteTrainvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Trainvent'**
+  String get themePaletteTrainvent;
 
   /// No description provided for @imagePreviewDescription.
   ///
@@ -1031,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
-  /// **'language'**
+  /// **'Language'**
   String get language;
 
   /// No description provided for @lastStep.
@@ -1061,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginCodeSent.
   ///
   /// In en, this message translates to:
-  /// **'login code sent'**
+  /// **'Login code sent'**
   String get loginCodeSent;
 
   /// No description provided for @loginLinkSent.
@@ -1121,7 +1181,7 @@ abstract class AppLocalizations {
   /// Number of new messages in inbox.
   ///
   /// In en, this message translates to:
-  /// **'You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new Messages} other {{newMessages} new messages}}'**
+  /// **'You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new messages} other {{newMessages} new messages}}'**
   String newMessages(int newMessages);
 
   /// No description provided for @newPassword.
@@ -1181,7 +1241,7 @@ abstract class AppLocalizations {
   /// No description provided for @noOptions.
   ///
   /// In en, this message translates to:
-  /// **'no options'**
+  /// **'No options'**
   String get noOptions;
 
   /// No description provided for @noFittingOptions.
@@ -1205,7 +1265,7 @@ abstract class AppLocalizations {
   /// No description provided for @noUsernameFound.
   ///
   /// In en, this message translates to:
-  /// **'no username found'**
+  /// **'No username found'**
   String get noUsernameFound;
 
   /// No description provided for @notAuthenticated.
@@ -1265,7 +1325,7 @@ abstract class AppLocalizations {
   /// No description provided for @other.
   ///
   /// In en, this message translates to:
-  /// **'other'**
+  /// **'Other'**
   String get other;
 
   /// No description provided for @participants.
@@ -1811,7 +1871,7 @@ abstract class AppLocalizations {
   /// No description provided for @stimmapp.
   ///
   /// In en, this message translates to:
-  /// **'stimmapp'**
+  /// **'StimmApp'**
   String get stimmapp;
 
   /// No description provided for @subscriptionCancelledAccessWillRemainUntilExpiry.
@@ -2057,7 +2117,7 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseEnterYourEmail.
   ///
   /// In en, this message translates to:
-  /// **'please enter your Email'**
+  /// **'Please enter your email'**
   String get pleaseEnterYourEmail;
 
   /// No description provided for @welcomePleaseEnterYourDetails.
@@ -2159,7 +2219,7 @@ abstract class AppLocalizations {
   /// No description provided for @petitionTitleInUseAlready.
   ///
   /// In en, this message translates to:
-  /// **'petition title in use already'**
+  /// **'Petition title already in use'**
   String get petitionTitleInUseAlready;
 
   /// No description provided for @loggedOutSuccessfully.
@@ -2225,7 +2285,7 @@ abstract class AppLocalizations {
   /// No description provided for @hello.
   ///
   /// In en, this message translates to:
-  /// **'hello'**
+  /// **'Hello'**
   String get hello;
 
   /// No description provided for @faultyInput.
@@ -2237,43 +2297,43 @@ abstract class AppLocalizations {
   /// No description provided for @weFailedToGetYourStatePleaseProofreadYourLivingaddress.
   ///
   /// In en, this message translates to:
-  /// **'we failed to get your state, please proofread your living-address'**
+  /// **'We failed to get your state, please proofread your living address.'**
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress;
 
   /// No description provided for @petitionGuidelines.
   ///
   /// In en, this message translates to:
-  /// **'petition guidelines'**
+  /// **'Petition Guidelines'**
   String get petitionGuidelines;
 
   /// No description provided for @petitionGuidelineDescription.
   ///
   /// In en, this message translates to:
-  /// **'petition guideline description'**
+  /// **'Petition guideline description'**
   String get petitionGuidelineDescription;
 
   /// No description provided for @pollGuidelines.
   ///
   /// In en, this message translates to:
-  /// **'poll guidelines'**
+  /// **'Poll Guidelines'**
   String get pollGuidelines;
 
   /// No description provided for @pollGuidelineDescription.
   ///
   /// In en, this message translates to:
-  /// **'poll guideline description'**
+  /// **'Poll guideline description'**
   String get pollGuidelineDescription;
 
   /// No description provided for @pleaseEnterYourDetails.
   ///
   /// In en, this message translates to:
-  /// **'please enter your details.'**
+  /// **'Please enter your details.'**
   String get pleaseEnterYourDetails;
 
   /// No description provided for @thisAppWasDevelopedBy.
   ///
   /// In en, this message translates to:
-  /// **'this app was developed by'**
+  /// **'This app was developed by'**
   String get thisAppWasDevelopedBy;
 
   /// No description provided for @licenses.
@@ -2285,7 +2345,7 @@ abstract class AppLocalizations {
   /// No description provided for @publishedUnderTheGnuGeneralPublicLicenseV30.
   ///
   /// In en, this message translates to:
-  /// **'published under the GNU General Public License v3.0'**
+  /// **'Published under the GNU General Public License v3.0'**
   String get publishedUnderTheGnuGeneralPublicLicenseV30;
 
   /// No description provided for @enterVerificationCode.
@@ -2519,19 +2579,19 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseEnterYourCredentials.
   ///
   /// In en, this message translates to:
-  /// **'Please enter your Credentials'**
+  /// **'Please enter your credentials'**
   String get pleaseEnterYourCredentials;
 
   /// No description provided for @pleaseEnterYourDesiredCredentials.
   ///
   /// In en, this message translates to:
-  /// **'Please enter the Credentials you desire.'**
+  /// **'Please enter the credentials you desire.'**
   String get pleaseEnterYourDesiredCredentials;
 
   /// No description provided for @sendConfirmationEmail.
   ///
   /// In en, this message translates to:
-  /// **'Send confirmation Email.'**
+  /// **'Send confirmation email.'**
   String get sendConfirmationEmail;
 
   /// No description provided for @weCannotProvideSecureVerificationYetButWeAreWorking.
@@ -2555,7 +2615,7 @@ abstract class AppLocalizations {
   /// No description provided for @delete.
   ///
   /// In en, this message translates to:
-  /// **'delete'**
+  /// **'Delete'**
   String get delete;
 
   /// No description provided for @areYouSureYouWantToClearThisDraft.
@@ -2807,7 +2867,7 @@ abstract class AppLocalizations {
   /// No description provided for @signatureReasoning.
   ///
   /// In en, this message translates to:
-  /// **'signature reasoning'**
+  /// **'Signature reasoning'**
   String get signatureReasoning;
 
   /// No description provided for @signatureReasoningInfo.

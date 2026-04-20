@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-enum AppColorTheme { stimm, ocean, sunset, rose, amber, plum, slate, mint, sky }
+enum AppColorTheme {
+  stimm,
+  ocean,
+  sunset,
+  rose,
+  amber,
+  plum,
+  slate,
+  mint,
+  sky,
+  trainvent,
+}
 
 @immutable
 class AppColorThemeData {
@@ -27,7 +38,7 @@ extension AppColorThemeX on AppColorTheme {
       case AppColorTheme.stimm:
         return const AppColorThemeData(
           id: 'stimm',
-          label: 'Stimm',
+          label: 'Forest/Wald',
           seedColor: Color(0xFF2E7D32),
           previewColors: [
             Color(0xFF2E7D32),
@@ -136,6 +147,18 @@ extension AppColorThemeX on AppColorTheme {
           primaryForegroundColor: Colors.black,
           secondaryForegroundColor: Colors.black,
         );
+      case AppColorTheme.trainvent:
+        return const AppColorThemeData(
+          id: 'trainvent',
+          label: 'Trainvent',
+          seedColor: Color(0xFFB71C1C),
+          previewColors: [
+            Color(0xFF111111),
+            Color(0xFFB71C1C),
+            Color(0xFFFFD700),
+            Color(0xFF40E0D0),
+          ],
+        );
     }
   }
 
@@ -145,6 +168,6 @@ extension AppColorThemeX on AppColorTheme {
         return theme;
       }
     }
-    return AppColorTheme.stimm;
+    return AppColorTheme.trainvent;
   }
 }
