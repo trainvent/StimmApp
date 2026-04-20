@@ -153,10 +153,10 @@ extension AppColorThemeX on AppColorTheme {
           label: 'Trainvent',
           seedColor: Color(0xFFB71C1C),
           previewColors: [
-            Color(0xFF111111),
             Color(0xFFB71C1C),
             Color(0xFFFFD700),
             Color(0xFF40E0D0),
+            Color(0xFF111111),
           ],
         );
     }

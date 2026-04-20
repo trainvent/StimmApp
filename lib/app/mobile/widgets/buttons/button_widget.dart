@@ -18,7 +18,7 @@ class ButtonWidget extends StatelessWidget {
       widget = ElevatedButton(
         onPressed: callback,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.black, // Ensure text is black on filled buttons
           minimumSize: const Size(double.infinity, 50),
         ),
