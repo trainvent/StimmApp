@@ -3,16 +3,15 @@ import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 
 final AuthService authService = AuthService();
 
 class AuthService {
-  AuthService({
-    FirebaseAuth? firebaseAuth,
-    FirebaseFunctions? functions,
-  })  : _firebaseAuth = firebaseAuth,
-        _functions = functions;
+  AuthService({FirebaseAuth? firebaseAuth, FirebaseFunctions? functions})
+    : _firebaseAuth = firebaseAuth,
+      _functions = functions;
 
   final FirebaseAuth? _firebaseAuth;
   final FirebaseFunctions? _functions;
@@ -45,11 +44,7 @@ class AuthService {
     debugPrintStack(stackTrace: stackTrace);
   }
 
-  void _logUnexpectedError(
-    String action,
-    Object error,
-    StackTrace stackTrace,
-  ) {
+  void _logUnexpectedError(String action, Object error, StackTrace stackTrace) {
     debugPrint('AuthService.$action unexpected error: $error');
     debugPrintStack(stackTrace: stackTrace);
   }
@@ -101,9 +96,7 @@ class AuthService {
     }
   }
 
-  Future<void> assertSignupEligible({
-    required String email,
-  }) async {
+  Future<void> assertSignupEligible({required String email}) async {
     try {
       await functions.httpsCallable('assertSignupEligible').call({
         'email': email.trim(),
@@ -151,8 +144,12 @@ class AuthService {
   }
 
   Future<void> updateUsername({required String username}) async {
+    final normalized = username.trim();
+    final clamped = normalized.length > AppLimits.maxDisplayNameLength
+        ? normalized.substring(0, AppLimits.maxDisplayNameLength)
+        : normalized;
     try {
-      await currentUser!.updateDisplayName(username);
+      await currentUser!.updateDisplayName(clamped);
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
     }

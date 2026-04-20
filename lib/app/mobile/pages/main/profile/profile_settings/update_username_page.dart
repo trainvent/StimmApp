@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/update_user_name.dart';
@@ -64,14 +66,25 @@ class _UpdateUsernamePageState extends State<UpdateUsernamePage> {
                       children: [
                         TextFormField(
                           controller: controllerUsername,
+                          maxLength: AppLimits.maxDisplayNameLength,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                              AppLimits.maxDisplayNameLength,
+                            ),
+                          ],
                           decoration: InputDecoration(
                             labelText: context.l10n.newUsername,
+                            counterText: '',
                           ),
                           validator: (String? value) {
                             if (value == null) {
                               return context.l10n.enterSomething;
                             }
                             if (value.trim().isEmpty) {
+                              return context.l10n.enterSomething;
+                            }
+                            if (value.trim().length >
+                                AppLimits.maxDisplayNameLength) {
                               return context.l10n.enterSomething;
                             }
                             return null;

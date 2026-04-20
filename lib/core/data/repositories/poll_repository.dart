@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -89,7 +90,35 @@ class PollRepository {
   }
 
   Future<String> createPoll(Poll poll) async {
-    final docRef = await _col().add(poll);
+    final normalizedTitle = poll.title.trim();
+    final normalizedDescription = poll.description.trim();
+    if (normalizedTitle.isEmpty ||
+        normalizedTitle.length > AppLimits.maxTitleLength) {
+      throw StateError('invalid_poll_title_length');
+    }
+    if (normalizedDescription.isEmpty ||
+        normalizedDescription.length > AppLimits.maxDescriptionLength) {
+      throw StateError('invalid_poll_description_length');
+    }
+
+    final normalizedOptions = poll.options
+        .map((option) => PollOption(id: option.id, label: option.label.trim()))
+        .where((option) => option.label.isNotEmpty)
+        .toList(growable: false);
+    if (normalizedOptions.length < 2 ||
+        normalizedOptions.length > AppLimits.maxPollOptions ||
+        normalizedOptions.any(
+          (option) => option.label.length > AppLimits.maxPollOptionLength,
+        )) {
+      throw StateError('invalid_poll_options');
+    }
+
+    final normalizedPoll = poll.copyWith(
+      title: normalizedTitle,
+      description: normalizedDescription,
+      options: normalizedOptions,
+    );
+    final docRef = await _col().add(normalizedPoll);
     return docRef.id;
   }
 

@@ -665,7 +665,7 @@ abstract class AppLocalizations {
   /// No description provided for @devContactInformation.
   ///
   /// In en, this message translates to:
-  /// **'This app is developed by Team LeEd with help of yannic'**
+  /// **'This app is developed by Trainvent'**
   String get devContactInformation;
 
   /// No description provided for @developerSandbox.

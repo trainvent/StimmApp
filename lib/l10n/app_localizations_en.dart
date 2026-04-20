@@ -307,8 +307,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get descriptionTooShort => 'Description is too short';
 
   @override
-  String get devContactInformation =>
-      'This app is developed by Team LeEd with help of yannic';
+  String get devContactInformation => 'This app is developed by Trainvent';
 
   @override
   String get developerSandbox => 'Developer Sandbox';

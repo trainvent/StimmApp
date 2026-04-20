@@ -312,7 +312,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get devContactInformation =>
-      'Diese App wurde von Team LeEd mit Hilfe von Yannic entwickelt';
+      'Diese App wurde von Trainvent entwickelt';
 
   @override
   String get developerSandbox => 'Entwickler-Sandbox';

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:stimmapp/core/config/environment.dart';
 
 class IConst {
@@ -9,9 +8,6 @@ class IConst {
       'analyticsCollectionEnabled';
   static const String active = 'active';
   static const String closed = 'closed';
-
-  static const Color appColor = Colors.green;
-  static const Color lightColor = Colors.teal;
 
   static const String adminEmail = String.fromEnvironment(
     'ADMIN_EMAIL',

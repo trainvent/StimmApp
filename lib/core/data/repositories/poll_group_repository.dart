@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -51,15 +52,13 @@ class PollGroupRepository {
   );
 
   Stream<List<PollGroup>> watchGroupsForUser(String uid) {
-    return _fs
-        .watchCol(
-          _groups().where('memberIds', arrayContains: uid),
-        )
-        .map((groups) {
-          final sortedGroups = groups.toList()
-            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return sortedGroups;
-        });
+    return _fs.watchCol(_groups().where('memberIds', arrayContains: uid)).map((
+      groups,
+    ) {
+      final sortedGroups = groups.toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return sortedGroups;
+    });
   }
 
   Stream<List<PollGroup>> watchAccessibleGroupsForUser(String uid) {
@@ -75,7 +74,8 @@ class PollGroupRepository {
           .where(
             (notification) =>
                 notification.type == PollGroupAccessNotificationType.invite &&
-                notification.status == PollGroupAccessNotificationStatus.accepted,
+                notification.status ==
+                    PollGroupAccessNotificationStatus.accepted,
           )
           .map((notification) => notification.groupId)
           .where((groupId) => groupId.isNotEmpty)
@@ -107,20 +107,14 @@ class PollGroupRepository {
       }
     }
 
-    final groupsSub = watchGroupsForUser(uid).listen(
-      (groups) async {
-        memberGroups = groups;
-        await emitGroups();
-      },
-      onError: controller.addError,
-    );
-    final notificationsSub = watchNotifications(uid).listen(
-      (items) async {
-        notifications = items;
-        await emitGroups();
-      },
-      onError: controller.addError,
-    );
+    final groupsSub = watchGroupsForUser(uid).listen((groups) async {
+      memberGroups = groups;
+      await emitGroups();
+    }, onError: controller.addError);
+    final notificationsSub = watchNotifications(uid).listen((items) async {
+      notifications = items;
+      await emitGroups();
+    }, onError: controller.addError);
 
     controller.onCancel = () async {
       await groupsSub.cancel();
@@ -132,9 +126,7 @@ class PollGroupRepository {
 
   Future<List<PollGroup>> getAccessibleGroupsForUser(String uid) async {
     final memberGroups = await _fs
-        .watchCol(
-          _groups().where('memberIds', arrayContains: uid),
-        )
+        .watchCol(_groups().where('memberIds', arrayContains: uid))
         .first;
     final notifications = await watchNotifications(uid).first;
 
@@ -184,6 +176,11 @@ class PollGroupRepository {
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
   }) async {
+    final normalizedName = name.trim();
+    if (normalizedName.isEmpty ||
+        normalizedName.length > AppLimits.maxGroupNameLength) {
+      throw StateError('invalid_group_name');
+    }
     final normalizedMembers = normalizeAllowedMembers(allowedMembers);
     final normalizedDomains = normalizeAllowedDomains(allowedDomains);
     try {
@@ -191,7 +188,7 @@ class PollGroupRepository {
         'createPollGroup',
       );
       final result = await callable.call(<String, Object?>{
-        'name': name,
+        'name': normalizedName,
         'joinCode': joinCode,
         'nicknameMode': pollGroupNicknameModeToFirestore(nicknameMode),
         'managersCanInvite': managersCanInvite,
@@ -250,15 +247,26 @@ class PollGroupRepository {
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
   }) async {
+    final normalizedName = group.name.trim();
+    if (normalizedName.isEmpty ||
+        normalizedName.length > AppLimits.maxGroupNameLength) {
+      throw StateError('invalid_group_name');
+    }
     final normalizedMembers = normalizeAllowedMembers(allowedMembers);
     final normalizedDomains = normalizeAllowedDomains(allowedDomains);
     final existingMemberDocs = await _allowedMembers(group.id).get();
     final existingDomainDocs = await _allowedDomains(group.id).get();
     final batch = _fs.instance.batch();
 
-    batch.set(_groups().doc(group.id), group, SetOptions(merge: true));
+    batch.set(
+      _groups().doc(group.id),
+      group.copyWith(name: normalizedName),
+      SetOptions(merge: true),
+    );
 
-    final nextMemberIds = normalizedMembers.map((member) => member.email).toSet();
+    final nextMemberIds = normalizedMembers
+        .map((member) => member.email)
+        .toSet();
     for (final doc in existingMemberDocs.docs) {
       if (!nextMemberIds.contains(doc.id)) {
         batch.delete(doc.reference);
@@ -271,7 +279,9 @@ class PollGroupRepository {
       );
     }
 
-    final nextDomainIds = normalizedDomains.map((domain) => domain.domain).toSet();
+    final nextDomainIds = normalizedDomains
+        .map((domain) => domain.domain)
+        .toSet();
     for (final doc in existingDomainDocs.docs) {
       if (!nextDomainIds.contains(doc.id)) {
         batch.delete(doc.reference);
@@ -448,11 +458,16 @@ class PollGroupRepository {
       if (email.isEmpty) {
         continue;
       }
+      final trimmedNickname = member.nickname?.trim();
+      final normalizedNickname =
+          trimmedNickname == null || trimmedNickname.isEmpty
+          ? null
+          : (trimmedNickname.length > AppLimits.maxGroupNicknameLength
+                ? trimmedNickname.substring(0, AppLimits.maxGroupNicknameLength)
+                : trimmedNickname);
       deduped[email] = PollGroupAllowedMember(
         email: email,
-        nickname: member.nickname?.trim().isEmpty == true
-            ? null
-            : member.nickname?.trim(),
+        nickname: normalizedNickname,
         role: member.role,
         createdAt: member.createdAt,
         createdBy: member.createdBy,
@@ -487,6 +502,7 @@ class PollGroupRepository {
     }
     final withoutAt = trimmed.startsWith('@') ? trimmed.substring(1) : trimmed;
     if (withoutAt.isEmpty ||
+        withoutAt.length > AppLimits.maxDomainLength ||
         withoutAt.startsWith('.') ||
         withoutAt.endsWith('.') ||
         withoutAt.contains('@') ||

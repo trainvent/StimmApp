@@ -5,8 +5,10 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -46,6 +48,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   bool _isLoadingExistingRules = false;
 
   bool get _isEditing => widget.initialGroup != null;
+
+  String _truncateToLength(String value, int maxLength) {
+    if (value.length <= maxLength) {
+      return value;
+    }
+    return value.substring(0, maxLength);
+  }
 
   PollGroupRepository get _repository =>
       widget.repository ?? PollGroupRepository.create();
@@ -356,6 +365,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         continue;
       }
       final nickname = cells.length > 1 ? cells[1].trim() : '';
+      final normalizedNickname = _truncateToLength(
+        nickname,
+        AppLimits.maxGroupNicknameLength,
+      );
       final roleText = cells.length > 2
           ? cells[2].trim().toLowerCase()
           : 'user';
@@ -365,7 +378,11 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         continue;
       }
       members.add(
-        _ImportedMemberDraft(email: email, nickname: nickname, role: role),
+        _ImportedMemberDraft(
+          email: email,
+          nickname: normalizedNickname,
+          role: role,
+        ),
       );
     }
     return _CsvImportResult(members: members, invalidRows: invalidRows);
@@ -481,7 +498,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     final members = <PollGroupAllowedMember>[];
     for (final draft in _memberDrafts) {
       final email = draft.emailController.text.trim().toLowerCase();
-      final nickname = draft.nicknameController.text.trim();
+      final nickname = _truncateToLength(
+        draft.nicknameController.text.trim(),
+        AppLimits.maxGroupNicknameLength,
+      );
       if (_isMemberDraftBlank(draft)) {
         continue;
       }
@@ -539,6 +559,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
     final groupName = _nameController.text.trim();
     if (groupName.isEmpty) {
+      showErrorSnackBar(context.l10n.pleaseEnterGroupName);
+      return;
+    }
+    if (groupName.length > AppLimits.maxGroupNameLength) {
       showErrorSnackBar(context.l10n.pleaseEnterGroupName);
       return;
     }
@@ -698,9 +722,14 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     return TextField(
       key: Key('member_nickname_$index'),
       controller: draft.nicknameController,
+      maxLength: AppLimits.maxGroupNicknameLength,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(AppLimits.maxGroupNicknameLength),
+      ],
       decoration: InputDecoration(
         labelText: context.l10n.nickname,
         border: const OutlineInputBorder(),
+        counterText: '',
       ),
     );
   }
@@ -917,10 +946,17 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   child: TextField(
                     key: Key('domain_value_$index'),
                     controller: draft.domainController,
+                    maxLength: AppLimits.maxDomainLength,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(
+                        AppLimits.maxDomainLength,
+                      ),
+                    ],
                     decoration: InputDecoration(
                       labelText: context.l10n.domainLabel,
                       hintText: context.l10n.domainHint,
                       border: const OutlineInputBorder(),
+                      counterText: '',
                     ),
                   ),
                 ),
@@ -1033,9 +1069,16 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _nameController,
+                  maxLength: AppLimits.maxGroupNameLength,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(
+                      AppLimits.maxGroupNameLength,
+                    ),
+                  ],
                   decoration: InputDecoration(
                     labelText: '${context.l10n.groupNameLabel} *',
                     border: const OutlineInputBorder(),
+                    counterText: '',
                   ),
                 ),
                 const SizedBox(height: 16),

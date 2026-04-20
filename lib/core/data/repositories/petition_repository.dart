@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -67,7 +68,22 @@ class PetitionRepository {
   }
 
   Future<String> createPetition(Petition petition) async {
-    final docRef = await _col().add(petition);
+    final normalizedTitle = petition.title.trim();
+    final normalizedDescription = petition.description.trim();
+    if (normalizedTitle.isEmpty ||
+        normalizedTitle.length > AppLimits.maxTitleLength) {
+      throw StateError('invalid_petition_title_length');
+    }
+    if (normalizedDescription.isEmpty ||
+        normalizedDescription.length > AppLimits.maxDescriptionLength) {
+      throw StateError('invalid_petition_description_length');
+    }
+
+    final normalizedPetition = petition.copyWith(
+      title: normalizedTitle,
+      description: normalizedDescription,
+    );
+    final docRef = await _col().add(normalizedPetition);
     return docRef.id;
   }
 
@@ -121,13 +137,15 @@ class PetitionRepository {
   }
 
   // Fetch participants once (used by CSV export)
-  Future<List<Map<String, dynamic>>> getParticipantsWithSignaturesOnce(String petitionId) async {
+  Future<List<Map<String, dynamic>>> getParticipantsWithSignaturesOnce(
+    String petitionId,
+  ) async {
     final snap = await _fs.instance
         .collection('petitions')
         .doc(petitionId)
         .collection('signatures')
         .get();
-    
+
     final signatures = snap.docs.map((d) => d.data()).toList();
     if (signatures.isEmpty) return [];
 
@@ -138,10 +156,7 @@ class PetitionRepository {
       final uid = sig['uid'] as String;
       final profile = await userRepo.getById(uid);
       if (profile != null) {
-        results.add({
-          'profile': profile,
-          'reason': sig['reason'],
-        });
+        results.add({'profile': profile, 'reason': sig['reason']});
       }
     }
     return results;

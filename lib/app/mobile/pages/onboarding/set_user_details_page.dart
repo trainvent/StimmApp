@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart'
+    show LengthLimitingTextInputFormatter, rootBundle;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
@@ -10,6 +11,7 @@ import 'package:stimmapp/app/mobile/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/tomtom_address_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -105,14 +107,14 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: controllerDisplayName.text,
+        displayName: controllerDisplayName.text.trim(),
         state: _requiresStateScope ? _selectedState : null,
         countryCode: _selectedCountryCode,
         createdAt: DateTime.now(),
-        surname: controllerSurname.text,
-        givenName: controllerGivenName.text,
+        surname: controllerSurname.text.trim(),
+        givenName: controllerGivenName.text.trim(),
         dateOfBirth: _selectedDateOfBirth,
-        address: controllerAddress.text,
+        address: controllerAddress.text.trim(),
         town: _selectedTown,
         acceptedCommunityRulesAt: DateTime.now(),
       );
@@ -209,12 +211,23 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('surnameTextField'),
                       controller: controllerSurname,
+                      maxLength: AppLimits.maxPersonNameLength,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          AppLimits.maxPersonNameLength,
+                        ),
+                      ],
                       decoration: InputDecoration(
                         labelText: context.l10n.surname,
+                        counterText: '',
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
                           return S.of(context).pleaseEnterYourSurname;
+                        }
+                        if (value.trim().length >
+                            AppLimits.maxPersonNameLength) {
+                          return S.of(context).faultyInput;
                         }
                         return null;
                       },
@@ -223,11 +236,22 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('givenNameTextField'),
                       controller: controllerGivenName,
+                      maxLength: AppLimits.maxPersonNameLength,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          AppLimits.maxPersonNameLength,
+                        ),
+                      ],
                       decoration: InputDecoration(
                         labelText: context.l10n.givenName,
+                        counterText: '',
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
+                          return S.of(context).faultyInput;
+                        }
+                        if (value.trim().length >
+                            AppLimits.maxPersonNameLength) {
                           return S.of(context).faultyInput;
                         }
                         return null;
@@ -237,11 +261,22 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('displayNameTextField'),
                       controller: controllerDisplayName,
+                      maxLength: AppLimits.maxDisplayNameLength,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          AppLimits.maxDisplayNameLength,
+                        ),
+                      ],
                       decoration: InputDecoration(
                         labelText: context.l10n.displayName,
+                        counterText: '',
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
+                          return S.of(context).faultyInput;
+                        }
+                        if (value.trim().length >
+                            AppLimits.maxDisplayNameLength) {
                           return S.of(context).faultyInput;
                         }
                         return null;
