@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 enum AppColorTheme {
   stimm,
+  trainvent,
   ocean,
   sunset,
   rose,
@@ -10,7 +11,7 @@ enum AppColorTheme {
   slate,
   mint,
   sky,
-  trainvent,
+
 }
 
 @immutable
@@ -38,7 +39,7 @@ extension AppColorThemeX on AppColorTheme {
       case AppColorTheme.stimm:
         return const AppColorThemeData(
           id: 'stimm',
-          label: 'Forest/Wald',
+          label: 'Forest',
           seedColor: Color(0xFF2E7D32),
           previewColors: [
             Color(0xFF2E7D32),
