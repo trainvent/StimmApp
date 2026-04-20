@@ -32,7 +32,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final contributors = [
       const Contributor(
-        name: 'LeEd',
+        name: 'Leon',
         role: 'Core Development',
         email: 'contact@trainvent.com',
       ),

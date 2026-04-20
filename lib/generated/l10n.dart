@@ -844,10 +844,9 @@ class S {
     );
   }
 
-  /// `This app is developed by Team LeEd with help of yannic`
   String get devContactInformation {
     return Intl.message(
-      'This app is developed by Team LeEd with help of yannic',
+      'This app is developed by Trainvent with help of yannic',
       name: 'devContactInformation',
       desc: '',
       args: [],
