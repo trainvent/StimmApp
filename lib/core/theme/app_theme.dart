@@ -31,23 +31,34 @@ class AppTheme {
     required ColorScheme scheme,
     required bool isDark,
   }) {
-    final primary = theme.data.previewColors.first;
-    final secondary = theme.data.previewColors[1];
-    final onPrimary =
-        theme.data.primaryForegroundColor ??
-        (ThemeData.estimateBrightnessForColor(primary) == Brightness.dark
-            ? Colors.white
-            : Colors.black);
+    final previewColors = theme.data.previewColors;
+    final primary = previewColors.first;
+    final secondary = previewColors.length > 1 ? previewColors[1] : primary;
+    final tertiary = previewColors.length > 2 ? previewColors[2] : secondary;
+    // Material ColorScheme has no dedicated "quaternary" slot; use tertiaryContainer.
+    final quaternary = previewColors.length > 3 ? previewColors[3] : tertiary;
+
+    Color onColor(Color color) {
+      return ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+          ? Colors.white
+          : Colors.black;
+    }
+
+    final onPrimary = theme.data.primaryForegroundColor ?? onColor(primary);
     final onSecondary =
-        theme.data.secondaryForegroundColor ??
-        (ThemeData.estimateBrightnessForColor(secondary) == Brightness.dark
-            ? Colors.white
-            : Colors.black);
+        theme.data.secondaryForegroundColor ?? onColor(secondary);
+    final onTertiary = onColor(tertiary);
+    final onQuaternary = onColor(quaternary);
+
     final themedScheme = scheme.copyWith(
       primary: primary,
       onPrimary: onPrimary,
       secondary: secondary,
       onSecondary: onSecondary,
+      tertiary: tertiary,
+      onTertiary: onTertiary,
+      tertiaryContainer: quaternary,
+      onTertiaryContainer: onQuaternary,
     );
 
     return ThemeData(

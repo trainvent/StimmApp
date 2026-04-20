@@ -12,7 +12,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pleaseEnterYourSurname => 'Bitte geben Sie Ihren Nachnamen ein';
 
   @override
-  String get displayName => 'angezeigter Name';
+  String get displayName => 'Angezeigter Name';
 
   @override
   String get about => 'Über';
@@ -345,7 +345,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterTitle => 'Titel eingeben';
 
   @override
-  String get enterYourAddress => 'gib deine Wohnanschrift ein';
+  String get enterYourAddress => 'Gib deine Wohnanschrift ein';
 
   @override
   String get enterYourEmail => 'Geben Sie Ihre E-Mail-Adresse ein';
@@ -454,7 +454,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get hintTextTags => 'z.B. umwelt, verkehr';
+  String get hintTextTags => 'Z. B. Umwelt, Verkehr';
 
   @override
   String get idNumber => 'Ausweisnummer';
@@ -466,19 +466,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
-  String get filterBy => 'filtern nach';
+  String get filterBy => 'Filtern nach';
 
   @override
-  String get filterByGroup => 'filtern nach Gruppe';
+  String get filterByGroup => 'Filtern nach Gruppe';
 
   @override
-  String get publishTo => 'zeigen in';
+  String get publishTo => 'Zeigen in';
 
   @override
-  String get public => 'öffentlich';
+  String get public => 'Öffentlich';
 
   @override
-  String get createOrManageGroups => 'erstelle oder verwalte Gruppen';
+  String get createOrManageGroups => 'Erstelle oder verwalte Gruppen';
 
   @override
   String get displayQrCode => 'QR Code anzeigen';
@@ -944,7 +944,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stateUpdatedSuccessfully => 'Bundesland erfolgreich aktualisiert';
 
   @override
-  String get stimmapp => 'stimmapp';
+  String get stimmapp => 'StimmApp';
 
   @override
   String get subscriptionCancelledAccessWillRemainUntilExpiry =>
@@ -1079,7 +1079,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get welcomePleaseEnterYourDetails =>
-      'Willkommen! Bitte geben sie ihre Daten ein.';
+      'Willkommen! Bitte geben Sie Ihre Daten ein.';
 
   @override
   String get noUserFoundForThatEmail =>
@@ -1202,7 +1202,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get publishedUnderTheGnuGeneralPublicLicenseV30 =>
-      'veröffentlicht unter der GNU General Public License v3.0';
+      'Veröffentlicht unter der GNU General Public License v3.0';
 
   @override
   String get enterVerificationCode => 'Bestätigungscode eingeben';
@@ -1332,11 +1332,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseEnterYourCredentials =>
-      'Bitte geben Sie ihre Zugangsdaten ein.';
+      'Bitte geben Sie Ihre Zugangsdaten ein.';
 
   @override
   String get pleaseEnterYourDesiredCredentials =>
-      'Bitte geben sie ihre gewünschten Zugangsdaten ein.';
+      'Bitte geben Sie Ihre gewünschten Zugangsdaten ein.';
 
   @override
   String get sendConfirmationEmail => 'Sende Bestätigungs-E-Mail';
@@ -1362,11 +1362,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get delete => 'löschen';
+  String get delete => 'Löschen';
 
   @override
   String get areYouSureYouWantToClearThisDraft =>
-      'Sind sie sicher das sie das Formular löschen wollen?';
+      'Sind Sie sicher, dass Sie das Formular löschen wollen?';
 
   @override
   String get sharingNotSupported =>

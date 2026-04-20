@@ -46,7 +46,7 @@ class WelcomePage extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     context.l10n.theWelcomePhrase,
-                    style: AppTextStyles.m.copyWith(color: Colors.blue),
+                    style: AppTextStyles.m.copyWith(color: Colors.teal),
                   ),
                 ],
               ),
