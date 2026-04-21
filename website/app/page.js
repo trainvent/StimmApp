@@ -21,6 +21,14 @@ function currentCopy() {
 
 export default function HomePage() {
   const [copy, setCopy] = useState(copyByHost.de);
+  const isEnglish = copy.lang === 'en';
+  const playBadgeSrc = isEnglish
+    ? '/store-badges/google-play-en.svg'
+    : '/store-badges/google-play-de.svg';
+  const appStoreBadgeSrc = isEnglish
+    ? '/store-badges/app-store-en.svg'
+    : '/store-badges/app-store-de.svg';
+
   const scrollToContact = (event) => {
     event.preventDefault();
     const contactSection = document.getElementById('contact');
@@ -64,20 +72,20 @@ export default function HomePage() {
               <p className="lede">{copy.heroLede}</p>
               <div className="cta-row">
                 <a
-                  className="button secondary"
+                  className="store-badge-link"
                   href="https://play.google.com/store/apps/details?id=de.lemarq.stimmapp"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {copy.heroPlayStore}
+                  <img className="store-badge" src={playBadgeSrc} alt={copy.heroPlayStore} />
                 </a>
                 <a
-                  className="button secondary"
+                  className="store-badge-link"
                   href="https://apps.apple.com/app/stimmapp/id6759249651"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {copy.heroAppStore}
+                  <img className="store-badge" src={appStoreBadgeSrc} alt={copy.heroAppStore} />
                 </a>
               </div>
               <div className="micro-list">
@@ -85,10 +93,10 @@ export default function HomePage() {
                   <strong>{copy.microTitle}</strong>
                   <span>{copy.microText}</span>
                 </div>
-                <a className="micro-card micro-card-link" href={copy.microSupportHref}>
+                <div className="micro-card">
                   <strong>{copy.microSupportTitle}</strong>
                   <span>{copy.microSupportText}</span>
-                </a>
+                </div>
               </div>
             </div>
 
@@ -144,12 +152,6 @@ export default function HomePage() {
                   />
                 </div>
               </div>
-
-              <div className="panel-note">
-                <strong>{copy.panelNoteTitle}</strong>
-                <p>{copy.panelNoteText}</p>
-                <a className="button secondary" href="#contact" onClick={scrollToContact}>{copy.heroContact}</a>
-              </div>
             </aside>
           </div>
         </section>
@@ -194,9 +196,8 @@ export default function HomePage() {
                 <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>
               </p>
               <p>{copy.contactText}</p>
-              <div className="cta-row contact-row">8
+              <div className="cta-row contact-row">
                 <a className="button" href={copy.contactButtonHref}>{copy.contactButton}</a>
-                <a className="button secondary" href={copy.appUrl}>{copy.contactOpenApp}</a>
               </div>
             </article>
           </div>
