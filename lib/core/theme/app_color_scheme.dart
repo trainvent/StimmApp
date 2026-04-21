@@ -11,7 +11,6 @@ enum AppColorTheme {
   slate,
   mint,
   sky,
-
 }
 
 @immutable
@@ -164,6 +163,10 @@ extension AppColorThemeX on AppColorTheme {
   }
 
   static AppColorTheme fromId(String? id) {
+    // Backward compatibility for persisted data before the rename.
+    if (id == 'stimm') {
+      return AppColorTheme.forest;
+    }
     for (final theme in AppColorTheme.values) {
       if (theme.data.id == id) {
         return theme;

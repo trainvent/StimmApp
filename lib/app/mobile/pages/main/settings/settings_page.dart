@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _themeSchemeLabel(BuildContext context, AppColorTheme theme) {
     switch (theme) {
-      case AppColorTheme.stimm:
+      case AppColorTheme.forest:
         return context.l10n.themePaletteForest;
       case AppColorTheme.ocean:
         return context.l10n.themePaletteOcean;
