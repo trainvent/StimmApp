@@ -206,6 +206,28 @@ h1 {
   border: 1px solid rgba(16, 32, 24, 0.07);
 }
 
+/* Highlighted clickable micro-card (anchor) */
+a.micro-card {
+  text-decoration: none;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+  background: linear-gradient(90deg, #1570ef, #6ea9ff);
+  color: var(--ink);
+  border: 1px solid rgba(20, 70, 200, 0.12);
+}
+
+a.micro-card:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.02);
+}
+
+a.micro-card strong {
+  color: var(--ink);
+}
+
+a.micro-card span {
+  color: var(--ink);
+}
+
 .micro-card-link {
   text-decoration: none;
   transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;

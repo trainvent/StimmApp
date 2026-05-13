@@ -67,7 +67,6 @@ export default function HomePage() {
         <section className="hero">
           <div className="hero-grid">
             <div className="hero-copy">
-              <div className="eyebrow">{copy.heroEyebrow}</div>
               <h1>{copy.heroTitle}</h1>
               <p className="lede">{copy.heroLede}</p>
               <div className="cta-row">
@@ -89,14 +88,15 @@ export default function HomePage() {
                 </a>
               </div>
               <div className="micro-list">
-                <div className="micro-card">
-                  <strong>{copy.microTitle}</strong>
-                  <span>{copy.microText}</span>
-                </div>
-                <div className="micro-card">
+                <a
+                  className="micro-card"
+                  href="#contact"
+                  onClick={scrollToContact}
+                  role="button"
+                >
                   <strong>{copy.microSupportTitle}</strong>
                   <span>{copy.microSupportText}</span>
-                </div>
+                </a>
               </div>
             </div>
 

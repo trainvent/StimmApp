@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
         <Script
           id="adsense-site-code"
           async
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6799570171188466"
           crossOrigin="anonymous"
         />
