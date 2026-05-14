@@ -24,9 +24,20 @@ Create a fine-grained personal access token with:
 - access to `Trainvent/vivot-website`
 - repository contents: read and write
 
-Add it to this repo as:
+Add it to GitHub as a repository secret:
 
-- `WEBSITE_DEPLOY_TOKEN`
+1. Go to this repo (`trainvent/StimmApp`) → `Settings` → `Secrets and variables` → `Actions`
+2. Click `New repository secret`
+3. Name: `WEBSITE_DEPLOY_TOKEN`
+4. Value: paste your fine-grained PAT
+5. Click `Add secret`
+
+The workflow will read this secret and pass it to the deploy script. If running the publish script manually on your machine, export it as an environment variable:
+
+```bash
+export WEBSITE_DEPLOY_TOKEN=your_token_here
+bash ci_scripts/publish_website_repo.sh
+```
 
 ## One-time setup for each deploy repo
 
