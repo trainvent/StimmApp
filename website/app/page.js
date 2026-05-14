@@ -193,7 +193,7 @@ export default function HomePage() {
               <h3>{copy.contactTitle}</h3>
               <p>
                 <span>{copy.contactEmailLabel}</span>{' '}
-                <a href="mailto:hello@trainvent.com">hello@trainvent.com</a>
+                <a href="mailto:info@trainvent.com">info@trainvent.com</a>
               </p>
               <p>{copy.contactText}</p>
               <div className="cta-row contact-row">
