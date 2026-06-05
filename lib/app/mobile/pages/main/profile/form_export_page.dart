@@ -59,6 +59,92 @@ class _FormExportPageState extends State<FormExportPage>
     );
   }
 
+  Future<void> _exportPetition(Petition petition) async {
+    final exportContext = context;
+    final action = await _selectExportAction();
+    if (action == null || !exportContext.mounted) return;
+
+    try {
+      if (action == _CsvExportAction.save) {
+        await CsvExportService.instance.savePetitionResults(
+          exportContext,
+          petition,
+          petition.id,
+        );
+      } else {
+        await CsvExportService.instance.sharePetitionResults(
+          exportContext,
+          petition,
+          petition.id,
+        );
+      }
+    } on CsvExportCanceledException {
+      return;
+    } on MissingPluginException {
+      if (!mounted) return;
+      showErrorSnackBar(context.l10n.notAvailableOnWebApp);
+    } catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar('${context.l10n.exportFailed}: $e');
+    }
+  }
+
+  Future<void> _exportPoll(Poll poll) async {
+    final exportContext = context;
+    final action = await _selectExportAction();
+    if (action == null || !exportContext.mounted) return;
+
+    try {
+      if (action == _CsvExportAction.save) {
+        await CsvExportService.instance.savePollResults(
+          exportContext,
+          poll,
+          poll.id,
+        );
+      } else {
+        await CsvExportService.instance.sharePollResults(
+          exportContext,
+          poll,
+          poll.id,
+        );
+      }
+    } on CsvExportCanceledException {
+      return;
+    } on MissingPluginException {
+      if (!mounted) return;
+      showErrorSnackBar(context.l10n.notAvailableOnWebApp);
+    } catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar('${context.l10n.exportFailed}: $e');
+    }
+  }
+
+  Future<_CsvExportAction?> _selectExportAction() {
+    return showModalBottomSheet<_CsvExportAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.save_alt),
+                title: Text(context.l10n.save),
+                onTap: () => Navigator.pop(context, _CsvExportAction.save),
+              ),
+              ListTile(
+                leading: const Icon(Icons.ios_share),
+                title: Text(context.l10n.share),
+                onTap: () => Navigator.pop(context, _CsvExportAction.share),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,20 +187,7 @@ class _FormExportPageState extends State<FormExportPage>
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
               trailing: TextButton(
-                onPressed: () async {
-                  try {
-                    final path = await CsvExportService.instance
-                        .exportPetitionResults(context, p, p.id);
-                    if (!context.mounted) return;
-                    showSuccessSnackBar('${context.l10n.exportSuccess}: $path');
-                  } on MissingPluginException {
-                    if (!context.mounted) return;
-                    showErrorSnackBar(context.l10n.notAvailableOnWebApp);
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    showErrorSnackBar('${context.l10n.exportFailed}: $e');
-                  }
-                },
+                onPressed: () => _exportPetition(p),
                 child: Text(context.l10n.exportCsv),
               ),
             );
@@ -146,20 +219,7 @@ class _FormExportPageState extends State<FormExportPage>
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
               trailing: TextButton(
-                onPressed: () async {
-                  try {
-                    final path = await CsvExportService.instance
-                        .exportPollResults(context, p, p.id);
-                    if (!context.mounted) return;
-                    showSuccessSnackBar('${context.l10n.exportSuccess}: $path');
-                  } on MissingPluginException {
-                    if (!context.mounted) return;
-                    showErrorSnackBar(context.l10n.notAvailableOnWebApp);
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    showErrorSnackBar('${context.l10n.exportFailed}: $e');
-                  }
-                },
+                onPressed: () => _exportPoll(p),
                 child: Text(context.l10n.exportCsv),
               ),
             );
@@ -169,3 +229,5 @@ class _FormExportPageState extends State<FormExportPage>
     );
   }
 }
+
+enum _CsvExportAction { save, share }

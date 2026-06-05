@@ -6,6 +6,7 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main_dev.dart",
+			"deviceId": "38161FDJH000KY",
 			"toolArgs": [
 				"--dart-define-from-file=.env"
 			],
@@ -33,6 +34,7 @@
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
+			"deviceId": "38161FDJH000KY",
 			"toolArgs": [
 				"--dart-define-from-file=.env"
 			],
