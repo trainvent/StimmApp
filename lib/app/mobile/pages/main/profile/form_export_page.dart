@@ -63,19 +63,23 @@ class _FormExportPageState extends State<FormExportPage>
     final exportContext = context;
     final action = await _selectExportAction();
     if (action == null || !exportContext.mounted) return;
+    final format = await _selectExportFormat();
+    if (format == null || !exportContext.mounted) return;
 
     try {
-      if (action == _CsvExportAction.save) {
+      if (action == _ExportAction.save) {
         await CsvExportService.instance.savePetitionResults(
           exportContext,
           petition,
           petition.id,
+          format,
         );
       } else {
         await CsvExportService.instance.sharePetitionResults(
           exportContext,
           petition,
           petition.id,
+          format,
         );
       }
     } on CsvExportCanceledException {
@@ -93,19 +97,23 @@ class _FormExportPageState extends State<FormExportPage>
     final exportContext = context;
     final action = await _selectExportAction();
     if (action == null || !exportContext.mounted) return;
+    final format = await _selectExportFormat();
+    if (format == null || !exportContext.mounted) return;
 
     try {
-      if (action == _CsvExportAction.save) {
+      if (action == _ExportAction.save) {
         await CsvExportService.instance.savePollResults(
           exportContext,
           poll,
           poll.id,
+          format,
         );
       } else {
         await CsvExportService.instance.sharePollResults(
           exportContext,
           poll,
           poll.id,
+          format,
         );
       }
     } on CsvExportCanceledException {
@@ -119,8 +127,8 @@ class _FormExportPageState extends State<FormExportPage>
     }
   }
 
-  Future<_CsvExportAction?> _selectExportAction() {
-    return showModalBottomSheet<_CsvExportAction>(
+  Future<_ExportAction?> _selectExportAction() {
+    return showModalBottomSheet<_ExportAction>(
       context: context,
       showDragHandle: true,
       builder: (context) {
@@ -130,19 +138,65 @@ class _FormExportPageState extends State<FormExportPage>
             children: [
               ListTile(
                 leading: const Icon(Icons.save_alt),
-                title: Text(context.l10n.save),
-                onTap: () => Navigator.pop(context, _CsvExportAction.save),
+                title: Text(_downloadLabel(context)),
+                onTap: () => Navigator.pop(context, _ExportAction.save),
               ),
               ListTile(
                 leading: const Icon(Icons.ios_share),
-                title: Text(context.l10n.share),
-                onTap: () => Navigator.pop(context, _CsvExportAction.share),
+                title: Text(_exportLabel(context)),
+                onTap: () => Navigator.pop(context, _ExportAction.share),
               ),
             ],
           ),
         );
       },
     );
+  }
+
+  Future<ExportFileFormat?> _selectExportFormat() {
+    return showModalBottomSheet<ExportFileFormat>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.table_chart),
+                title: const Text('CSV'),
+                subtitle: const Text('.csv'),
+                onTap: () => Navigator.pop(context, ExportFileFormat.csv),
+              ),
+              ListTile(
+                leading: const Icon(Icons.data_object),
+                title: const Text('JSON'),
+                subtitle: const Text('.json'),
+                onTap: () => Navigator.pop(context, ExportFileFormat.json),
+              ),
+              ListTile(
+                leading: const Icon(Icons.description),
+                title: const Text('Plain text'),
+                subtitle: const Text('.txt'),
+                onTap: () => Navigator.pop(context, ExportFileFormat.plainText),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _downloadLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Herunterladen'
+        : 'Download';
+  }
+
+  String _exportLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Exportieren'
+        : 'Export';
   }
 
   @override
@@ -186,10 +240,7 @@ class _FormExportPageState extends State<FormExportPage>
             return ListTile(
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
-              trailing: TextButton(
-                onPressed: () => _exportPetition(p),
-                child: Text(context.l10n.exportCsv),
-              ),
+              onTap: () => _exportPetition(p),
             );
           },
         );
@@ -218,10 +269,7 @@ class _FormExportPageState extends State<FormExportPage>
             return ListTile(
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
-              trailing: TextButton(
-                onPressed: () => _exportPoll(p),
-                child: Text(context.l10n.exportCsv),
-              ),
+              onTap: () => _exportPoll(p),
             );
           },
         );
@@ -230,4 +278,4 @@ class _FormExportPageState extends State<FormExportPage>
   }
 }
 
-enum _CsvExportAction { save, share }
+enum _ExportAction { save, share }

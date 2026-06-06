@@ -31,22 +31,57 @@ class CsvExportService {
     return const ListToCsvConverter().convert(rows);
   }
 
-  Uint8List _csvBytes(String content) {
-    // UTF-8 BOM helps spreadsheet apps detect umlauts and other non-ASCII text.
-    return Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(content)]);
+  String _buildJson(List<List<String>> rows) {
+    if (rows.isEmpty) {
+      return '[]';
+    }
+    final headers = rows.first;
+    final items = rows.skip(1).map((row) {
+      return {
+        for (var i = 0; i < headers.length; i++)
+          headers[i]: i < row.length ? row[i] : '',
+      };
+    }).toList();
+    return const JsonEncoder.withIndent('  ').convert(items);
   }
 
-  String _csvFileName(String baseName) {
+  String _buildPlainText(List<List<String>> rows) {
+    return rows.map((row) => row.join('\t')).join('\n');
+  }
+
+  String _buildContent(List<List<String>> rows, ExportFileFormat format) {
+    return switch (format) {
+      ExportFileFormat.csv => _buildCsv(rows),
+      ExportFileFormat.json => _buildJson(rows),
+      ExportFileFormat.plainText => _buildPlainText(rows),
+    };
+  }
+
+  Uint8List _textBytes(String content, ExportFileFormat format) {
+    final bytes = utf8.encode(content);
+    if (format != ExportFileFormat.csv) {
+      return Uint8List.fromList(bytes);
+    }
+
+    // UTF-8 BOM helps spreadsheet apps detect umlauts and other non-ASCII text.
+    return Uint8List.fromList([0xEF, 0xBB, 0xBF, ...bytes]);
+  }
+
+  String _fileName(String baseName, ExportFileFormat format) {
     final date = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final sanitizedBaseName = baseName
         .replaceAll(RegExp(r'[\\/:*?"<>|]+'), '_')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
-    return '${sanitizedBaseName}_$date.csv';
+    return '${sanitizedBaseName}_$date.${format.extension}';
   }
 
-  Future<String> _saveCsv(String baseName, String content) async {
-    final fileName = _csvFileName(baseName);
+  Future<String> _saveExport(
+    String baseName,
+    String content,
+    ExportFileFormat format,
+  ) async {
+    final fileName = _fileName(baseName, format);
     try {
       // Temporarily disable Firestore network to avoid repeated reconnect attempts
       // while the native file picker may background the app/process.
@@ -57,11 +92,11 @@ class CsvExportService {
 
     try {
       final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save CSV export',
+        dialogTitle: 'Save export',
         fileName: fileName,
         type: FileType.custom,
-        allowedExtensions: const ['csv'],
-        bytes: _csvBytes(content),
+        allowedExtensions: [format.extension],
+        bytes: _textBytes(content, format),
       );
       if (path == null) {
         throw const CsvExportCanceledException();
@@ -76,11 +111,15 @@ class CsvExportService {
     }
   }
 
-  Future<String> _shareCsv(String baseName, String content) async {
-    final fileName = _csvFileName(baseName);
+  Future<String> _shareExport(
+    String baseName,
+    String content,
+    ExportFileFormat format,
+  ) async {
+    final fileName = _fileName(baseName, format);
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/$fileName');
-    await file.writeAsBytes(_csvBytes(content));
+    await file.writeAsBytes(_textBytes(content, format));
 
     try {
       // Temporarily disable Firestore network to avoid repeated reconnect attempts
@@ -93,8 +132,8 @@ class CsvExportService {
     try {
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(file.path, mimeType: 'text/csv; charset=utf-8')],
-          text: 'CSV export: $fileName',
+          files: [XFile(file.path, mimeType: format.mimeType)],
+          text: 'Export: $fileName',
         ),
       );
       return file.path;
@@ -111,25 +150,35 @@ class CsvExportService {
   Future<String> savePetitionResults(
     BuildContext context,
     Petition petition,
-    String petitionId,
-  ) async {
-    final csv = await _buildPetitionResultsCsv(
+    String petitionId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+  ]) async {
+    final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
       petitionId,
     );
-    return _saveCsv('petition_${petition.title}', csv);
+    return _saveExport(
+      'petition_${petition.title}',
+      _buildContent(rows, format),
+      format,
+    );
   }
 
   Future<String> sharePetitionResults(
     BuildContext context,
     Petition petition,
-    String petitionId,
-  ) async {
-    final csv = await _buildPetitionResultsCsv(
+    String petitionId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+  ]) async {
+    final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
       petitionId,
     );
-    return _shareCsv('petition_${petition.title}', csv);
+    return _shareExport(
+      'petition_${petition.title}',
+      _buildContent(rows, format),
+      format,
+    );
   }
 
   Future<String> exportPetitionResults(
@@ -140,7 +189,7 @@ class CsvExportService {
     return savePetitionResults(context, petition, petitionId);
   }
 
-  Future<String> _buildPetitionResultsCsv(
+  Future<List<List<String>>> _buildPetitionResultsRows(
     CsvExportLabels labels,
     String petitionId,
   ) async {
@@ -169,34 +218,44 @@ class CsvExportService {
         reason,
       ]);
     }
-    return _buildCsv(rows);
+    return rows;
   }
 
   // Poll export: per-user chosen option if available; otherwise aggregate only
   Future<String> savePollResults(
     BuildContext context,
     Poll poll,
-    String pollId,
-  ) async {
-    final csv = await _buildPollResultsCsv(
+    String pollId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+  ]) async {
+    final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
       poll,
       pollId,
     );
-    return _saveCsv('poll_${poll.title}', csv);
+    return _saveExport(
+      'poll_${poll.title}',
+      _buildContent(rows, format),
+      format,
+    );
   }
 
   Future<String> sharePollResults(
     BuildContext context,
     Poll poll,
-    String pollId,
-  ) async {
-    final csv = await _buildPollResultsCsv(
+    String pollId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+  ]) async {
+    final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
       poll,
       pollId,
     );
-    return _shareCsv('poll_${poll.title}', csv);
+    return _shareExport(
+      'poll_${poll.title}',
+      _buildContent(rows, format),
+      format,
+    );
   }
 
   Future<String> exportPollResults(
@@ -207,7 +266,7 @@ class CsvExportService {
     return savePollResults(context, poll, pollId);
   }
 
-  Future<String> _buildPollResultsCsv(
+  Future<List<List<String>>> _buildPollResultsRows(
     CsvExportLabels labels,
     Poll poll,
     String pollId,
@@ -245,8 +304,19 @@ class CsvExportService {
       );
     }
 
-    return _buildCsv(rows);
+    return rows;
   }
+}
+
+enum ExportFileFormat {
+  csv('csv', 'text/csv; charset=utf-8'),
+  json('json', 'application/json; charset=utf-8'),
+  plainText('txt', 'text/plain; charset=utf-8');
+
+  const ExportFileFormat(this.extension, this.mimeType);
+
+  final String extension;
+  final String mimeType;
 }
 
 class CsvExportCanceledException implements Exception {
