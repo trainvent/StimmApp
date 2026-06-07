@@ -9,7 +9,7 @@ import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/core/data/services/csv_export_service.dart';
+import 'package:stimmapp/core/data/services/file_output/file_format_router.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class FormExportPage extends StatefulWidget {
@@ -61,6 +61,8 @@ class _FormExportPageState extends State<FormExportPage>
 
   Future<void> _exportPetition(Petition petition) async {
     final exportContext = context;
+    final includeContent = await _selectIncludeContent(isPoll: false);
+    if (includeContent == null || !exportContext.mounted) return;
     final action = await _selectExportAction();
     if (action == null || !exportContext.mounted) return;
     final format = await _selectExportFormat();
@@ -68,18 +70,20 @@ class _FormExportPageState extends State<FormExportPage>
 
     try {
       if (action == _ExportAction.save) {
-        await CsvExportService.instance.savePetitionResults(
+        await FileFormatRouter.instance.savePetitionResults(
           exportContext,
           petition,
           petition.id,
           format,
+          includeContent,
         );
       } else {
-        await CsvExportService.instance.sharePetitionResults(
+        await FileFormatRouter.instance.sharePetitionResults(
           exportContext,
           petition,
           petition.id,
           format,
+          includeContent,
         );
       }
     } on CsvExportCanceledException {
@@ -95,6 +99,8 @@ class _FormExportPageState extends State<FormExportPage>
 
   Future<void> _exportPoll(Poll poll) async {
     final exportContext = context;
+    final includeContent = await _selectIncludeContent(isPoll: true);
+    if (includeContent == null || !exportContext.mounted) return;
     final action = await _selectExportAction();
     if (action == null || !exportContext.mounted) return;
     final format = await _selectExportFormat();
@@ -102,18 +108,20 @@ class _FormExportPageState extends State<FormExportPage>
 
     try {
       if (action == _ExportAction.save) {
-        await CsvExportService.instance.savePollResults(
+        await FileFormatRouter.instance.savePollResults(
           exportContext,
           poll,
           poll.id,
           format,
+          includeContent,
         );
       } else {
-        await CsvExportService.instance.sharePollResults(
+        await FileFormatRouter.instance.sharePollResults(
           exportContext,
           poll,
           poll.id,
           format,
+          includeContent,
         );
       }
     } on CsvExportCanceledException {
@@ -125,6 +133,36 @@ class _FormExportPageState extends State<FormExportPage>
       if (!mounted) return;
       showErrorSnackBar('${context.l10n.exportFailed}: $e');
     }
+  }
+
+  Future<bool?> _selectIncludeContent({required bool isPoll}) {
+    final resultsLabel = isPoll
+        ? _resultsLabel(context)
+        : _signaturesLabel(context);
+    return showModalBottomSheet<bool>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.article_outlined),
+                title: Text(_includeContentLabel(context)),
+                subtitle: Text(_includeContentSubtitle(context, resultsLabel)),
+                onTap: () => Navigator.pop(context, true),
+              ),
+              ListTile(
+                leading: const Icon(Icons.format_list_bulleted),
+                title: Text(_resultsOnlyLabel(context, resultsLabel)),
+                onTap: () => Navigator.pop(context, false),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<_ExportAction?> _selectExportAction() {
@@ -197,6 +235,36 @@ class _FormExportPageState extends State<FormExportPage>
     return Localizations.localeOf(context).languageCode == 'de'
         ? 'Exportieren'
         : 'Export';
+  }
+
+  String _includeContentLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Inhalt mit exportieren'
+        : 'Export with content';
+  }
+
+  String _includeContentSubtitle(BuildContext context, String resultsLabel) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Kopf, Text und Details oberhalb von $resultsLabel'
+        : 'Header, body, and details above $resultsLabel';
+  }
+
+  String _resultsOnlyLabel(BuildContext context, String resultsLabel) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Nur $resultsLabel'
+        : '$resultsLabel only';
+  }
+
+  String _signaturesLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Unterschriften'
+        : 'signatures';
+  }
+
+  String _resultsLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Ergebnisse'
+        : 'results';
   }
 
   @override
