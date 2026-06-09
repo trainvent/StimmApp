@@ -12,7 +12,7 @@ void showSuccessSnackBar([String? message]) {
   messenger.clearSnackBars();
   messenger.showSnackBar(
     SnackBar(
-      backgroundColor: Theme.of(ctx).colorScheme.primary,
+      backgroundColor: Colors.green,
       behavior: SnackBarBehavior.floating,
       content: Text(message ?? '', style: AppTextStyles.m),
       showCloseIcon: true,
