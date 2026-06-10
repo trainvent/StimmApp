@@ -153,6 +153,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cancelSubscription => 'Abo kündigen';
 
   @override
+  String get changeEmail => 'E-Mail ändern';
+
+  @override
+  String get changeEmailCodeSent =>
+      'Wir haben einen Bestätigungscode an deine neue E-Mail-Adresse gesendet.';
+
+  @override
+  String get changeEmailFailed => 'E-Mail-Änderung fehlgeschlagen';
+
+  @override
+  String get changeEmailInstructions =>
+      'Gib deine neue E-Mail-Adresse und dein aktuelles Passwort ein. Wir senden einen Bestätigungscode an die neue Adresse.';
+
+  @override
   String get changeLanguage => 'Sprache ändern';
 
   @override
@@ -587,6 +601,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get newEmail => 'Neue E-Mail';
+
+  @override
   String get newPassword => 'Neues Passwort';
 
   @override
@@ -1016,6 +1033,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get usernameChangedSuccessfully => 'Benutzername erfolgreich geändert';
+
+  @override
+  String get emailChangedSuccessfully => 'E-Mail erfolgreich geändert';
 
   @override
   String get users => 'Benutzer';

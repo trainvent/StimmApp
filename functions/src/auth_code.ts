@@ -116,7 +116,7 @@ function generateCode(): string {
 async function sendEmail(
 	email: string,
 	code: string,
-	type: 'verification' | 'login',
+	type: 'verification' | 'login' | 'email_change',
 	mailConfig: MailRuntimeConfig,
 ) {
 	const password = smtpPassword.value();
@@ -139,15 +139,27 @@ async function sendEmail(
 	} as nodemailer.TransportOptions);
 
 	const subject = mailConfig.locale === 'en'
-		? (type === 'login' ? 'Your login code' : 'Your verification code')
-		: (type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode');
+		? (type === 'login'
+			? 'Your login code'
+			: type === 'email_change'
+				? 'Confirm your new email address'
+				: 'Your verification code')
+		: (type === 'login'
+			? 'Dein Login-Code'
+			: type === 'email_change'
+				? 'Bestätige deine neue E-Mail-Adresse'
+				: 'Dein Bestätigungscode');
 	const actionText = mailConfig.locale === 'en'
 		? (type === 'login'
 			? `to sign in to ${mailConfig.appName}`
-			: 'to verify your email address')
+			: type === 'email_change'
+				? 'to confirm your new email address'
+				: 'to verify your email address')
 		: (type === 'login'
 			? `um dich bei ${mailConfig.appName} anzumelden`
-			: 'um deine E-Mail zu bestätigen');
+			: type === 'email_change'
+				? 'um deine neue E-Mail-Adresse zu bestätigen'
+				: 'um deine E-Mail zu bestätigen');
 	const greeting = mailConfig.locale === 'en' ? 'Hello' : 'Hallo';
 	const expiresText = mailConfig.locale === 'en'
 		? 'This code expires in 15 minutes.'
@@ -178,14 +190,15 @@ async function sendEmail(
 async function storeCode(
 	uid: string,
 	email: string,
-	type: 'verification' | 'login',
+	type: 'verification' | 'login' | 'email_change',
 	mailConfig: MailRuntimeConfig,
+	collection = 'verificationCodes',
 ) {
 	const code = generateCode();
 	const expirationTime = Date.now() + 15 * 60 * 1000; // 15 minutes from now
 
 	try {
-		await db.collection('verificationCodes').doc(uid).set({
+		await db.collection(collection).doc(uid).set({
 			code: code,
 			email: email,
 			expiresAt: expirationTime,
@@ -201,9 +214,9 @@ async function storeCode(
 	await sendEmail(email, code, type, mailConfig);
 }
 
-async function verifyCodeLogic(uid: string, code: string, email?: string) {
+async function verifyCodeLogic(uid: string, code: string, email?: string, collection = 'verificationCodes') {
 	console.log(`[VERIFY LOGIC] Verifying code for uid: ${uid}, email: ${email}`);
-	const docRef = db.collection('verificationCodes').doc(uid);
+	const docRef = db.collection(collection).doc(uid);
 
 	let doc;
 	try {
@@ -245,6 +258,29 @@ async function verifyCodeLogic(uid: string, code: string, email?: string) {
 	// Code is valid. Clean up.
 	await docRef.delete();
 	return true;
+}
+
+function assertValidEmailFormat(email: string) {
+	if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+		throw new HttpsError('invalid-argument', 'Please enter a valid email address.');
+	}
+}
+
+async function assertEmailAvailable(email: string, currentUid: string) {
+	try {
+		const userRecord = await admin.auth().getUserByEmail(email);
+		if (userRecord.uid !== currentUid) {
+			throw new HttpsError('already-exists', 'This email address is already in use.');
+		}
+	} catch (error: any) {
+		if (error instanceof HttpsError) {
+			throw error;
+		}
+		if (error?.code !== 'auth/user-not-found') {
+			console.error('Email availability check failed:', error);
+			throw new HttpsError('internal', 'Failed to check email availability.');
+		}
+	}
 }
 
 /**
@@ -360,6 +396,78 @@ export const verifyCode = onCall(async (request) => {
 	});
 
 	return { success: true, message: 'Email verified successfully.' };
+});
+
+/**
+ * Sends a code to the requested new email address. The app reauthenticates the
+ * user with their current password before calling this function.
+ */
+export const sendEmailChangeCode = onCall({ secrets: [smtpPassword] }, async (request) => {
+	if (!request.auth) {
+		throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+	}
+
+	const rawNewEmail = request.data?.newEmail as string | undefined;
+	if (!rawNewEmail) {
+		throw new HttpsError('invalid-argument', 'New email is required.');
+	}
+
+	const newEmail = normalizeEmail(rawNewEmail);
+	assertValidEmailFormat(newEmail);
+	await assertEmailNotKicked(newEmail);
+
+	const userRecord = await admin.auth().getUser(request.auth.uid);
+	const currentEmail = userRecord.email ? normalizeEmail(userRecord.email) : undefined;
+	if (currentEmail === newEmail) {
+		throw new HttpsError('invalid-argument', 'Please enter a different email address.');
+	}
+
+	await assertEmailAvailable(newEmail, request.auth.uid);
+
+	const localeHint = request.data?.locale as string | undefined;
+	const countryCodeHint = request.data?.countryCode as string | undefined;
+	const mailConfig = await resolveMailConfig({
+		uid: request.auth.uid,
+		localeHint,
+		countryCodeHint,
+	});
+
+	await storeCode(request.auth.uid, newEmail, 'email_change', mailConfig, 'emailChangeCodes');
+	return { success: true, message: 'Email change code sent.' };
+});
+
+/**
+ * Verifies the code sent to the new address, then updates Firebase Auth and the
+ * mirrored Firestore profile email.
+ */
+export const verifyEmailChangeCode = onCall(async (request) => {
+	if (!request.auth) {
+		throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+	}
+
+	const rawNewEmail = request.data?.newEmail as string | undefined;
+	const code = request.data?.code as string | undefined;
+	if (!rawNewEmail || !code) {
+		throw new HttpsError('invalid-argument', 'New email and code are required.');
+	}
+
+	const newEmail = normalizeEmail(rawNewEmail);
+	assertValidEmailFormat(newEmail);
+	await assertEmailNotKicked(newEmail);
+	await assertEmailAvailable(newEmail, request.auth.uid);
+
+	await verifyCodeLogic(request.auth.uid, code, newEmail, 'emailChangeCodes');
+
+	await admin.auth().updateUser(request.auth.uid, {
+		email: newEmail,
+		emailVerified: true,
+	});
+	await db.collection('users').doc(request.auth.uid).set({
+		email: newEmail,
+		updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+	}, { merge: true });
+
+	return { success: true, message: 'Email changed successfully.' };
 });
 
 /**

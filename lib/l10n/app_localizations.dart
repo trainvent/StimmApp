@@ -362,6 +362,30 @@ abstract class AppLocalizations {
   /// **'Cancel subscription'**
   String get cancelSubscription;
 
+  /// No description provided for @changeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change email'**
+  String get changeEmail;
+
+  /// No description provided for @changeEmailCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a verification code to your new email address.'**
+  String get changeEmailCodeSent;
+
+  /// No description provided for @changeEmailFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Email change failed'**
+  String get changeEmailFailed;
+
+  /// No description provided for @changeEmailInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new email address and current password. We will send a verification code to the new address.'**
+  String get changeEmailInstructions;
+
   /// No description provided for @changeLanguage.
   ///
   /// In en, this message translates to:
@@ -1183,6 +1207,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new messages} other {{newMessages} new messages}}'**
   String newMessages(int newMessages);
+
+  /// No description provided for @newEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'New email'**
+  String get newEmail;
 
   /// No description provided for @newPassword.
   ///
@@ -2011,6 +2041,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Username changed successfully'**
   String get usernameChangedSuccessfully;
+
+  /// No description provided for @emailChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Email changed successfully'**
+  String get emailChangedSuccessfully;
 
   /// No description provided for @users.
   ///

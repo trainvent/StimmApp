@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assertSignupEligible = exports.verifyLoginCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
+exports.assertSignupEligible = exports.verifyLoginCode = exports.verifyEmailChangeCode = exports.sendEmailChangeCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const nodemailer = __importStar(require("nodemailer"));
@@ -136,15 +136,27 @@ async function sendEmail(email, code, type, mailConfig) {
         },
     });
     const subject = mailConfig.locale === 'en'
-        ? (type === 'login' ? 'Your login code' : 'Your verification code')
-        : (type === 'login' ? 'Dein Login-Code' : 'Dein Bestätigungscode');
+        ? (type === 'login'
+            ? 'Your login code'
+            : type === 'email_change'
+                ? 'Confirm your new email address'
+                : 'Your verification code')
+        : (type === 'login'
+            ? 'Dein Login-Code'
+            : type === 'email_change'
+                ? 'Bestätige deine neue E-Mail-Adresse'
+                : 'Dein Bestätigungscode');
     const actionText = mailConfig.locale === 'en'
         ? (type === 'login'
             ? `to sign in to ${mailConfig.appName}`
-            : 'to verify your email address')
+            : type === 'email_change'
+                ? 'to confirm your new email address'
+                : 'to verify your email address')
         : (type === 'login'
             ? `um dich bei ${mailConfig.appName} anzumelden`
-            : 'um deine E-Mail zu bestätigen');
+            : type === 'email_change'
+                ? 'um deine neue E-Mail-Adresse zu bestätigen'
+                : 'um deine E-Mail zu bestätigen');
     const greeting = mailConfig.locale === 'en' ? 'Hello' : 'Hallo';
     const expiresText = mailConfig.locale === 'en'
         ? 'This code expires in 15 minutes.'
@@ -170,11 +182,11 @@ async function sendEmail(email, code, type, mailConfig) {
         throw new https_1.HttpsError('internal', `Failed to send email: ${error}`);
     }
 }
-async function storeCode(uid, email, type, mailConfig) {
+async function storeCode(uid, email, type, mailConfig, collection = 'verificationCodes') {
     const code = generateCode();
     const expirationTime = Date.now() + 15 * 60 * 1000; // 15 minutes from now
     try {
-        await db.collection('verificationCodes').doc(uid).set({
+        await db.collection(collection).doc(uid).set({
             code: code,
             email: email,
             expiresAt: expirationTime,
@@ -189,9 +201,9 @@ async function storeCode(uid, email, type, mailConfig) {
     console.log(`[${type.toUpperCase()}] Code for ${email}: ${code}`);
     await sendEmail(email, code, type, mailConfig);
 }
-async function verifyCodeLogic(uid, code, email) {
+async function verifyCodeLogic(uid, code, email, collection = 'verificationCodes') {
     console.log(`[VERIFY LOGIC] Verifying code for uid: ${uid}, email: ${email}`);
-    const docRef = db.collection('verificationCodes').doc(uid);
+    const docRef = db.collection(collection).doc(uid);
     let doc;
     try {
         doc = await docRef.get();
@@ -227,6 +239,28 @@ async function verifyCodeLogic(uid, code, email) {
     // Code is valid. Clean up.
     await docRef.delete();
     return true;
+}
+function assertValidEmailFormat(email) {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        throw new https_1.HttpsError('invalid-argument', 'Please enter a valid email address.');
+    }
+}
+async function assertEmailAvailable(email, currentUid) {
+    try {
+        const userRecord = await admin.auth().getUserByEmail(email);
+        if (userRecord.uid !== currentUid) {
+            throw new https_1.HttpsError('already-exists', 'This email address is already in use.');
+        }
+    }
+    catch (error) {
+        if (error instanceof https_1.HttpsError) {
+            throw error;
+        }
+        if ((error === null || error === void 0 ? void 0 : error.code) !== 'auth/user-not-found') {
+            console.error('Email availability check failed:', error);
+            throw new https_1.HttpsError('internal', 'Failed to check email availability.');
+        }
+    }
 }
 /**
  * Sends a verification code to the user's email.
@@ -325,6 +359,67 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
         emailVerified: true
     });
     return { success: true, message: 'Email verified successfully.' };
+});
+/**
+ * Sends a code to the requested new email address. The app reauthenticates the
+ * user with their current password before calling this function.
+ */
+exports.sendEmailChangeCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (request) => {
+    var _a, _b, _c;
+    if (!request.auth) {
+        throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+    const rawNewEmail = (_a = request.data) === null || _a === void 0 ? void 0 : _a.newEmail;
+    if (!rawNewEmail) {
+        throw new https_1.HttpsError('invalid-argument', 'New email is required.');
+    }
+    const newEmail = normalizeEmail(rawNewEmail);
+    assertValidEmailFormat(newEmail);
+    await assertEmailNotKicked(newEmail);
+    const userRecord = await admin.auth().getUser(request.auth.uid);
+    const currentEmail = userRecord.email ? normalizeEmail(userRecord.email) : undefined;
+    if (currentEmail === newEmail) {
+        throw new https_1.HttpsError('invalid-argument', 'Please enter a different email address.');
+    }
+    await assertEmailAvailable(newEmail, request.auth.uid);
+    const localeHint = (_b = request.data) === null || _b === void 0 ? void 0 : _b.locale;
+    const countryCodeHint = (_c = request.data) === null || _c === void 0 ? void 0 : _c.countryCode;
+    const mailConfig = await resolveMailConfig({
+        uid: request.auth.uid,
+        localeHint,
+        countryCodeHint,
+    });
+    await storeCode(request.auth.uid, newEmail, 'email_change', mailConfig, 'emailChangeCodes');
+    return { success: true, message: 'Email change code sent.' };
+});
+/**
+ * Verifies the code sent to the new address, then updates Firebase Auth and the
+ * mirrored Firestore profile email.
+ */
+exports.verifyEmailChangeCode = (0, https_1.onCall)(async (request) => {
+    var _a, _b;
+    if (!request.auth) {
+        throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+    const rawNewEmail = (_a = request.data) === null || _a === void 0 ? void 0 : _a.newEmail;
+    const code = (_b = request.data) === null || _b === void 0 ? void 0 : _b.code;
+    if (!rawNewEmail || !code) {
+        throw new https_1.HttpsError('invalid-argument', 'New email and code are required.');
+    }
+    const newEmail = normalizeEmail(rawNewEmail);
+    assertValidEmailFormat(newEmail);
+    await assertEmailNotKicked(newEmail);
+    await assertEmailAvailable(newEmail, request.auth.uid);
+    await verifyCodeLogic(request.auth.uid, code, newEmail, 'emailChangeCodes');
+    await admin.auth().updateUser(request.auth.uid, {
+        email: newEmail,
+        emailVerified: true,
+    });
+    await db.collection('users').doc(request.auth.uid).set({
+        email: newEmail,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    return { success: true, message: 'Email changed successfully.' };
 });
 /**
  * Verifies the login code and returns a custom auth token.

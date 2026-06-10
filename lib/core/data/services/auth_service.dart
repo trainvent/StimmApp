@@ -193,6 +193,67 @@ class AuthService {
     }
   }
 
+  Future<void> sendEmailChangeCode({
+    required String newEmail,
+    required String currentPassword,
+  }) async {
+    try {
+      final currentEmail = currentUser?.email;
+      if (currentEmail == null) {
+        throw FirebaseAuthException(
+          code: 'missing-email',
+          message: 'Current user does not have an email address.',
+        );
+      }
+
+      final credential = EmailAuthProvider.credential(
+        email: currentEmail,
+        password: currentPassword,
+      );
+      await currentUser!.reauthenticateWithCredential(credential);
+
+      final locale = PlatformDispatcher.instance.locale;
+      await functions.httpsCallable('sendEmailChangeCode').call({
+        'newEmail': newEmail.trim(),
+        'locale': locale.languageCode,
+        'countryCode': locale.countryCode,
+      });
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('sendEmailChangeCode', e, st);
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
+    } on FirebaseAuthException catch (e, st) {
+      _logFirebaseAuthError('sendEmailChangeCode', e, st);
+      throw AuthException(e);
+    } catch (e, st) {
+      _logUnexpectedError('sendEmailChangeCode', e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> verifyEmailChangeCode({
+    required String newEmail,
+    required String code,
+  }) async {
+    try {
+      await functions.httpsCallable('verifyEmailChangeCode').call({
+        'newEmail': newEmail.trim(),
+        'code': code,
+      });
+      await currentUser?.reload();
+      await currentUser?.getIdToken(true);
+    } on FirebaseFunctionsException catch (e, st) {
+      _logFirebaseFunctionsError('verifyEmailChangeCode', e, st);
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
+    } catch (e, st) {
+      _logUnexpectedError('verifyEmailChangeCode', e, st);
+      rethrow;
+    }
+  }
+
   Future<void> setSettings({
     bool appVerificationDisabledForTesting = false,
   }) async {

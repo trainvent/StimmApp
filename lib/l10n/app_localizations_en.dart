@@ -151,6 +151,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelSubscription => 'Cancel subscription';
 
   @override
+  String get changeEmail => 'Change email';
+
+  @override
+  String get changeEmailCodeSent =>
+      'We sent a verification code to your new email address.';
+
+  @override
+  String get changeEmailFailed => 'Email change failed';
+
+  @override
+  String get changeEmailInstructions =>
+      'Enter your new email address and current password. We will send a verification code to the new address.';
+
+  @override
   String get changeLanguage => 'Change Language';
 
   @override
@@ -581,6 +595,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get newEmail => 'New email';
+
+  @override
   String get newPassword => 'New password';
 
   @override
@@ -1006,6 +1023,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usernameChangedSuccessfully => 'Username changed successfully';
+
+  @override
+  String get emailChangedSuccessfully => 'Email changed successfully';
 
   @override
   String get users => 'Users';

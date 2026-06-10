@@ -7,6 +7,7 @@ import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
@@ -261,6 +262,14 @@ class ProfilePage extends StatelessWidget {
                             context,
                             context.l10n.email,
                             userProfile.email,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChangeEmailPage(),
+                                ),
+                              );
+                            },
                           ),
                           _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
