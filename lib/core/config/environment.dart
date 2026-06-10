@@ -33,8 +33,8 @@ class Environment {
   static String get appName => config.appName;
   static String get supportEmail => config.supportEmail;
   static String get privacyPolicyUrl => config.privacyPolicyUrl;
-  static String get privacyPolicyCrashDataUrl => config.privacyPolicyCrashDataUrl;
-  static String get privacyPolicyAdsUrl => config.privacyPolicyAdsUrl;
+  static String get privacyPolicyCrashDataUrl =>
+      config.privacyPolicyCrashDataUrl;
   static String get privacyPolicyCookiesUrl => config.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => config.termsOfServiceUrl;
   static String get faqUrl => config.faqUrl;

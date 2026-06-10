@@ -13,9 +13,6 @@ class SubscriptionNotifier extends ChangeNotifier {
   bool get isBasic => _status == EntitlementTier.basic;
   bool get isFree => _status == EntitlementTier.free;
 
-  /// Helper to determine if ads should be shown (e.g., only for free users).
-  bool get shouldShowAds => isFree;
-
   SubscriptionNotifier() {
     _init();
   }

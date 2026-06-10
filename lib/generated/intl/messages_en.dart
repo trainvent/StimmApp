@@ -598,9 +598,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "noActivityFound": MessageLookupByLibrary.simpleMessage(
       "No activity found yet.",
     ),
-    "noAdvertisements": MessageLookupByLibrary.simpleMessage(
-      "No advertisements",
-    ),
     "noCsvRowsImported": MessageLookupByLibrary.simpleMessage(
       "No CSV rows were imported.",
     ),

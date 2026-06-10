@@ -1473,16 +1473,6 @@ class S {
     );
   }
 
-  /// `No advertisements`
-  String get noAdvertisements {
-    return Intl.message(
-      'No advertisements',
-      name: 'noAdvertisements',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `No data`
   String get noData {
     return Intl.message('No data', name: 'noData', desc: '', args: []);

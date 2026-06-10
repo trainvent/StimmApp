@@ -36,31 +36,6 @@ class IConst {
     defaultValue: '',
   );
 
-  static const String googleAdMobAppId = String.fromEnvironment(
-    'GOOGLE_ADMOB_APP_ID',
-    defaultValue: '',
-  );
-  static const String googleAdMobBannerAdUnitId = String.fromEnvironment(
-    'GOOGLE_ADMOB_BANNER_AD_UNIT_ID',
-    defaultValue: '',
-  );
-  static const String googleAdMobAppIdIos = String.fromEnvironment(
-    'GOOGLE_ADMOB_APP_ID_IOS',
-    defaultValue: '',
-  );
-  static const String googleAdMobBannerAdUnitIdIos = String.fromEnvironment(
-    'GOOGLE_ADMOB_BANNER_AD_UNIT_ID_IOS',
-    defaultValue: '',
-  );
-  static const String googleAdSenseClientId = String.fromEnvironment(
-    'GOOGLE_ADSENSE_CLIENT_ID',
-    defaultValue: '',
-  );
-  static const String googleAdSenseListTileSlotId = String.fromEnvironment(
-    'ADSENSE_LIST_TILE_SLOT_ID',
-    defaultValue: '',
-  );
-
   static const String imapServer = String.fromEnvironment(
     'IMAP_SERVER',
     defaultValue: '',
@@ -76,7 +51,6 @@ class IConst {
   static String get privacyPolicyUrl => Environment.privacyPolicyUrl;
   static String get privacyPolicyCrashDataUrl =>
       Environment.privacyPolicyCrashDataUrl;
-  static String get privacyPolicyAdsUrl => Environment.privacyPolicyAdsUrl;
   static String get privacyPolicyCookiesUrl =>
       Environment.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => Environment.termsOfServiceUrl;

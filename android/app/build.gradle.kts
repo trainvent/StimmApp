@@ -76,9 +76,6 @@ android {
             applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
-            // Use official AdMob test app id for development builds.
-            manifestPlaceholders["adMobAppId"] =
-                "ca-app-pub-3940256099942544~3347511713"
             resValue("string", "app_name", "StimmApp Dev")
         }
         create("prod") {
@@ -86,8 +83,6 @@ android {
             applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.net"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.net"
-            manifestPlaceholders["adMobAppId"] =
-                "ca-app-pub-6799570171188466~3945205436"
             resValue("string", "app_name", "StimmApp")
         }
     }
@@ -103,7 +98,6 @@ flutter {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-ads:23.0.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.fragment:fragment-ktx:1.6.2")

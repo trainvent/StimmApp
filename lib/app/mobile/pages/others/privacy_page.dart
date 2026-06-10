@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -8,8 +6,6 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
-import 'package:stimmapp/core/services/ad_consent_service.dart';
-import 'package:stimmapp/services/ad_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPage extends StatefulWidget {
@@ -22,8 +18,6 @@ class PrivacyPage extends StatefulWidget {
 class _PrivacyPageState extends State<PrivacyPage> {
   final _userRepo = UserRepository.create();
   final _currentUser = authService.currentUser;
-  final _adService = AdService();
-  bool _saving = false;
 
   Future<void> _openPolicyUrl(String url) async {
     final ok = await launchUrl(
@@ -65,74 +59,6 @@ class _PrivacyPageState extends State<PrivacyPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
-      }
-    }
-  }
-
-  Future<void> _grantAdsConsent(UserProfile profile) async {
-    if (_saving) return;
-
-    setState(() => _saving = true);
-    try {
-      final granted = await _adService
-          .requestConsentInfoUpdateAndMaybeShowForm();
-      await _userRepo.update(profile.uid, {
-        'adsConsentGranted': granted ? true : null,
-        'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _saving = false);
-      }
-    }
-  }
-
-  Future<void> _revokeAdsConsentAndLogout(UserProfile profile) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.l10n.adsConsentRevokeDialogTitle),
-        content: Text(dialogContext.l10n.adsConsentRevokeDialogDescription),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(dialogContext.l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(dialogContext.l10n.logout),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    if (_saving) return;
-
-    setState(() => _saving = true);
-    try {
-      await _adService.showPrivacyOptionsFormIfRequired();
-      await _userRepo.update(profile.uid, {
-        'adsConsentGranted': null,
-        'adsConsentUpdatedAt': FieldValue.serverTimestamp(),
-      });
-      await authService.signOut();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _saving = false);
       }
     }
   }
@@ -201,11 +127,6 @@ class _PrivacyPageState extends State<PrivacyPage> {
           final sendCrashLogs = profile.sendCrashLogs ?? true;
           final analyticsCollectionEnabled =
               profile.analyticsCollectionEnabled ?? false;
-          final isPro = profile.isPro == true;
-          final canManageAdsConsent =
-              !kIsWeb && !isPro && AdConsentService.isInConsentRegion(profile);
-          final adsConsentGranted = profile.adsConsentGranted == true;
-
           return ListView(
             children: [
               _buildPolicyTile(
@@ -213,38 +134,6 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 subtitle: context.l10n.privacyPolicyEssentialDescription,
                 url: IConst.privacyPolicyUrl,
               ),
-              if (canManageAdsConsent)
-                _buildPolicyTile(
-                  title: context.l10n.personalizedAds,
-                  subtitle: context.l10n.personalizedAdsDescription,
-                  url: IConst.privacyPolicyAdsUrl,
-                  switchValue: adsConsentGranted,
-                  onChanged: _saving
-                      ? null
-                      : (value) {
-                          if (value) {
-                            _grantAdsConsent(profile);
-                          } else {
-                            _revokeAdsConsentAndLogout(profile);
-                          }
-                        },
-                )
-              else
-                _buildPolicyTile(
-                  title: context.l10n.neededForAds,
-                  subtitle: isPro
-                      ? context.l10n.neededForAdsDisabledForProDescription
-                      : context.l10n.neededForAdsEnabledForFreeDescription,
-                  url: IConst.privacyPolicyAdsUrl,
-                  switchValue: !isPro,
-                  enabled: false,
-                ),
-              if (canManageAdsConsent &&
-                  !AdConsentService.hasResolvedAdsConsent(profile))
-                ListTile(
-                  title: Text(context.l10n.adsCurrentlyDisabled),
-                  subtitle: Text(context.l10n.adsCurrentlyDisabledDescription),
-                ),
               _buildPolicyTile(
                 title: context.l10n.analyticsData,
                 subtitle: context.l10n.analyticsDataDescription,

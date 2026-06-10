@@ -10,7 +10,6 @@ class BrandConfig {
     required this.supportEmail,
     required this.privacyPolicyUrl,
     required this.privacyPolicyCrashDataUrl,
-    required this.privacyPolicyAdsUrl,
     required this.privacyPolicyCookiesUrl,
     required this.termsOfServiceUrl,
     required this.faqUrl,
@@ -23,7 +22,6 @@ class BrandConfig {
   final String supportEmail;
   final String privacyPolicyUrl;
   final String privacyPolicyCrashDataUrl;
-  final String privacyPolicyAdsUrl;
   final String privacyPolicyCookiesUrl;
   final String termsOfServiceUrl;
   final String faqUrl;
@@ -46,7 +44,6 @@ class BrandConfig {
     privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
     privacyPolicyCrashDataUrl:
         'https://www.stimmapp.net/privacy_policy_crashdata.html',
-    privacyPolicyAdsUrl: 'https://www.stimmapp.net/privacy_policy_ads.html',
     privacyPolicyCookiesUrl: 'https://www.stimmapp.net/privacy-policy',
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
@@ -61,7 +58,6 @@ class BrandConfig {
     privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
     privacyPolicyCrashDataUrl:
         'https://www.stimmapp.net/privacy_policy_crashdata.html',
-    privacyPolicyAdsUrl: 'https://www.stimmapp.net/privacy_policy_ads.html',
     privacyPolicyCookiesUrl: 'https://www.stimmapp.net/privacy-policy',
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
@@ -75,7 +71,6 @@ class BrandConfig {
     supportEmail: 'support@trainvent.com',
     privacyPolicyUrl: 'https://vivot.net/privacy',
     privacyPolicyCrashDataUrl: 'https://vivot.net/privacy',
-    privacyPolicyAdsUrl: 'https://vivot.net/privacy',
     privacyPolicyCookiesUrl: 'https://vivot.net/privacy',
     termsOfServiceUrl: 'https://vivot.net/terms',
     faqUrl: 'https://vivot.net/faq',
@@ -89,7 +84,6 @@ class BrandConfig {
     supportEmail: 'support@trainvent.com',
     privacyPolicyUrl: 'https://vivot.net/privacy',
     privacyPolicyCrashDataUrl: 'https://vivot.net/privacy',
-    privacyPolicyAdsUrl: 'https://vivot.net/privacy',
     privacyPolicyCookiesUrl: 'https://vivot.net/privacy',
     termsOfServiceUrl: 'https://vivot.net/terms',
     faqUrl: 'https://vivot.net/faq',

@@ -8,10 +8,8 @@ import 'package:stimmapp/app/mobile/pages/onboarding/set_user_details_page.dart'
 import 'package:stimmapp/app/mobile/pages/onboarding/welcome_page.dart'
     show WelcomePage;
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
-import 'package:stimmapp/app/mobile/pages/others/privacy_policy_ads_revoke_page.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/providers/subscription_provider.dart';
-import 'package:stimmapp/core/services/ad_consent_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 
 class AuthLayout extends ConsumerStatefulWidget {
@@ -70,9 +68,6 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
         Widget buildProfileRoute(profile) {
           if (profile == null) {
             return const SetUserDetailsPage();
-          }
-          if (!AdConsentService.canUseFreeTier(profile)) {
-            return const PrivacyPolicyAdsRevokePage(showAppBar: false);
           }
           if (profile.acceptedCommunityRulesAt == null) {
             return CommunityGuidelinesPage(profile: profile);

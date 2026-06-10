@@ -602,9 +602,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noActivityFound => 'Noch keine Aktivität gefunden.';
 
   @override
-  String get noAdvertisements => 'Keine Werbung';
-
-  @override
   String get noData => 'Keine Daten';
 
   @override
@@ -1386,108 +1383,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wesentliche Informationen darüber, wie die App personenbezogene Daten verarbeitet.';
 
   @override
-  String get adsConsentPromptTitle =>
-      'Werbeeinwilligung für die kostenlose Nutzung';
-
-  @override
-  String get adsConsentPromptDescription =>
-      'StimmApp zeigt Werbung nur fuer Nutzer ohne Pro an. In der EU, im Vereinigten Koenigreich und in der Schweiz bleibt die kostenlose Version gesperrt, bis du die dort erforderliche Werbe-Datenschutzentscheidung triffst. In anderen Regionen koennen je nach lokalem Recht und Anbieteranforderungen ebenfalls Werbe-Datenschutz- oder Einwilligungsentscheidungen gelten. Du kannst diese Entscheidung spaeter jederzeit auf der Werbe-Datenschutzseite aendern.';
-
-  @override
   String get allow => 'Erlauben';
 
   @override
   String get decline => 'Ablehnen';
-
-  @override
-  String get neededForAds => 'Für Werbung nötig';
-
-  @override
-  String get neededForAdsEnabledForFreeDescription =>
-      'Für kostenlose Konten aktiv, da werbefinanzierte Funktionen Cookies, lokalen Speicher oder ähnliche Technologien verwenden können.';
-
-  @override
-  String get neededForAdsDisabledForProDescription =>
-      'Während Pro aktiv ist inaktiv, da für Pro-Mitglieder keine Werbung angezeigt wird.';
-
-  @override
-  String get personalizedAds => 'Werbeeinwilligung für kostenlose Nutzung';
-
-  @override
-  String get personalizedAdsDescription =>
-      'Fuer kostenlose Nutzer in der EU, im Vereinigten Koenigreich und in der Schweiz notwendig, damit die kostenlose Version dort aktiv bleibt. In anderen Regionen koennen je nach lokalem Recht und Anbieteranforderungen ebenfalls Werbe-Datenschutz- oder Einwilligungsentscheidungen gelten. Wenn du dies ausschaltest, wirst du abgemeldet und beim naechsten Login erneut gefragt.';
-
-  @override
-  String get adsCurrentlyDisabled => 'Werbung ist derzeit deaktiviert';
-
-  @override
-  String get adsCurrentlyDisabledDescription =>
-      'Wir lassen die kostenlose Version gesperrt, bis du entscheidest, ob werbebezogene Einwilligung erlaubt ist.';
-
-  @override
-  String get adsDisabledForProDescription =>
-      'Pro-Mitglieder sehen keine Werbung, daher ist keine Werbeeinwilligung erforderlich, solange Pro aktiv ist.';
-
-  @override
-  String get adsConsentManagementTitle => 'Werbe-Datenschutz';
-
-  @override
-  String get adsConsentManagementDescription =>
-      'Verwalte hier, ob die kostenlose Version werbebezogene Einwilligung und Cookies verwenden darf. Wenn du die Einwilligung widerrufst, bleibt die kostenlose App gesperrt, bis du wieder zustimmst oder Pro nutzt.';
-
-  @override
-  String get adsConsentRequiredTitle =>
-      'Einwilligung fuer die kostenlose Nutzung erforderlich';
-
-  @override
-  String get adsConsentRequiredDescription =>
-      'Um die kostenlose Version zu verwenden, musst du der werbebezogenen Einwilligung zustimmen, die in unserer Werbe-Datenschutzerklaerung beschrieben ist.';
-
-  @override
-  String get adsConsentGrantedStatus => 'Die Einwilligung ist aktuell erteilt.';
-
-  @override
-  String get adsConsentRevokedStatus =>
-      'Die Einwilligung ist aktuell widerrufen.';
-
-  @override
-  String get adsConsentStatusUnknown => 'Deine Entscheidung steht noch aus.';
-
-  @override
-  String get adsConsentGrantedDetails =>
-      'Du kannst deine Entscheidung hier jederzeit widerrufen. Ein Widerruf deaktiviert die kostenlose Version sofort, bis du erneut zustimmst.';
-
-  @override
-  String get adsConsentRevokedDetails =>
-      'Die kostenlose Version bleibt gesperrt, bis du der werbebezogenen Einwilligung wieder zustimmst oder Pro abonnierst.';
-
-  @override
-  String get adsConsentPendingDetails =>
-      'Bitte entscheide zuerst, ob die kostenlose Version werbebezogene Einwilligung verwenden darf, bevor du fortfaehrst.';
-
-  @override
-  String get adsConsentRevokeDialogTitle => 'Kostenlose Nutzung deaktivieren?';
-
-  @override
-  String get adsConsentRevokeDialogDescription =>
-      'Diese Einwilligung ist notwendig, damit die kostenlose Version funktioniert. Wenn du nicht zustimmst, wirst du jetzt abgemeldet und beim naechsten Login erneut gefragt.';
-
-  @override
-  String get adsManagedInMobileAppTitle => 'Werbe-Datenschutz in der App';
-
-  @override
-  String get adsManagedInMobileAppDescription =>
-      'AdMob-Einwilligung und werbefinanzierte Gratisfunktionen werden nur in der Android- und iOS-App verwaltet, nicht in der Webversion.';
-
-  @override
-  String get openAdsPrivacyPolicy => 'Werbe-Datenschutzerklaerung oeffnen';
-
-  @override
-  String get allowCookiesAndContinue =>
-      'Werbeeinwilligung erlauben und fortfahren';
-
-  @override
-  String get revokeAdsConsent => 'Einwilligung widerrufen';
 
   @override
   String get continueToApp => 'Zur App';

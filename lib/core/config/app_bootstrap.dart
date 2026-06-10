@@ -13,11 +13,9 @@ import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
-import 'package:stimmapp/services/ad_service.dart';
 
 class AppBootstrap {
   StreamSubscription<User?>? _authSub;
-  final AdService _adService = AdService();
   AppStateNotifier? _appStateNotifier;
 
   Future<void> init() async {
@@ -29,9 +27,6 @@ class AppBootstrap {
     // load persisted petition reason setting
     await _initPetitionReasonSetting();
     await _initAnalyticsCollectionSetting();
-    // initialize ads
-    await _adService.initialize();
-
     // only create the composite notifier after persisted state is loaded
     _appStateNotifier = AppStateNotifier(
       themeModeNotifier.value,

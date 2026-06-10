@@ -18,8 +18,6 @@ class UserProfile {
   final DateTime? gotVerifiedAt;
   final bool? sendCrashLogs;
   final bool? analyticsCollectionEnabled;
-  final bool? adsConsentGranted;
-  final DateTime? adsConsentUpdatedAt;
   final DateTime? acceptedCommunityRulesAt;
 
   // Settings
@@ -81,8 +79,6 @@ class UserProfile {
     this.gotVerifiedAt,
     this.sendCrashLogs,
     this.analyticsCollectionEnabled,
-    this.adsConsentGranted,
-    this.adsConsentUpdatedAt,
     this.acceptedCommunityRulesAt,
     this.showPetitionReason,
     this.themeMode,
@@ -115,8 +111,6 @@ class UserProfile {
     DateTime? gotVerifiedAt,
     bool? sendCrashLogs,
     bool? analyticsCollectionEnabled,
-    Object? adsConsentGranted = _unset,
-    Object? adsConsentUpdatedAt = _unset,
     DateTime? acceptedCommunityRulesAt,
     bool? showPetitionReason,
     String? themeMode,
@@ -154,12 +148,6 @@ class UserProfile {
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
       analyticsCollectionEnabled:
           analyticsCollectionEnabled ?? this.analyticsCollectionEnabled,
-      adsConsentGranted: identical(adsConsentGranted, _unset)
-          ? this.adsConsentGranted
-          : adsConsentGranted as bool?,
-      adsConsentUpdatedAt: identical(adsConsentUpdatedAt, _unset)
-          ? this.adsConsentUpdatedAt
-          : adsConsentUpdatedAt as DateTime?,
       acceptedCommunityRulesAt:
           acceptedCommunityRulesAt ?? this.acceptedCommunityRulesAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
@@ -198,9 +186,6 @@ class UserProfile {
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
       sendCrashLogs: json['sendCrashLogs'] as bool?,
       analyticsCollectionEnabled: json['analyticsCollectionEnabled'] as bool?,
-      adsConsentGranted: json['adsConsentGranted'] as bool?,
-      adsConsentUpdatedAt: (json['adsConsentUpdatedAt'] as Timestamp?)
-          ?.toDate(),
       acceptedCommunityRulesAt: (json['acceptedCommunityRulesAt'] as Timestamp?)
           ?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
@@ -237,10 +222,6 @@ class UserProfile {
       'gotVerifiedAt': gotVerifiedAt,
       'sendCrashLogs': sendCrashLogs,
       'analyticsCollectionEnabled': analyticsCollectionEnabled,
-      'adsConsentGranted': adsConsentGranted,
-      'adsConsentUpdatedAt': adsConsentUpdatedAt != null
-          ? Timestamp.fromDate(adsConsentUpdatedAt!)
-          : null,
       'acceptedCommunityRulesAt': acceptedCommunityRulesAt != null
           ? Timestamp.fromDate(acceptedCommunityRulesAt!)
           : null,

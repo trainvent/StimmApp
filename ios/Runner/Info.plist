@@ -28,8 +28,6 @@
 	<true/>
 	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
 	<false/>
-	<key>GADApplicationIdentifier</key>
-	<string>$(GAD_APPLICATION_IDENTIFIER)</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow camera access so you can record and upload media for petitions and polls.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

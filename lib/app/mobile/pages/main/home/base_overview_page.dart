@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/widgets/banner_ad_widget.dart';
 import 'package:stimmapp/app/mobile/widgets/search_text_field.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
@@ -15,7 +14,6 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/services/ad_consent_service.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 
 class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
@@ -44,7 +42,6 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
 class _BaseOverviewPageState<T extends HomeItem>
     extends State<BaseOverviewPage<T>>
     with SingleTickerProviderStateMixin {
-  static const int _itemsPerAd = 7; // Show an ad after every 7 items.
   static const List<FormScopeType> _scopeFilterOrder = [
     FormScopeType.global,
     FormScopeType.eu,
@@ -548,41 +545,12 @@ class _BaseOverviewPageState<T extends HomeItem>
                         if (items.isEmpty) {
                           return Center(child: Text(context.l10n.noData));
                         }
-                        final showAds = AdConsentService.canShowAds(
-                          userProfile,
-                        );
-                        final standardAdCount = showAds
-                            ? (items.length / _itemsPerAd).floor()
-                            : 0;
-                        final showFallbackAd =
-                            showAds && items.isNotEmpty && standardAdCount == 0;
-                        final totalCount =
-                            items.length +
-                            standardAdCount +
-                            (showFallbackAd ? 1 : 0);
-
                         return ListView.builder(
-                          itemCount: totalCount,
+                          itemCount: items.length,
                           itemBuilder: (context, index) {
-                            if (!showAds) {
-                              return Column(
-                                children: [
-                                  widget.itemBuilder(context, items[index]),
-                                  const Divider(height: 1),
-                                ],
-                              );
-                            }
-                            final isAdTile =
-                                (index + 1) % (_itemsPerAd + 1) == 0 ||
-                                (showFallbackAd && index == totalCount - 1);
-                            if (isAdTile) {
-                              return const BannerAdWidget();
-                            }
-                            final adSlot = (index + 1) ~/ (_itemsPerAd + 1);
-                            final itemIndex = index - adSlot;
                             return Column(
                               children: [
-                                widget.itemBuilder(context, items[itemIndex]),
+                                widget.itemBuilder(context, items[index]),
                                 const Divider(height: 1),
                               ],
                             );
