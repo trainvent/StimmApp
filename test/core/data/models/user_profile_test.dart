@@ -40,6 +40,7 @@ void main() {
       'isVerified': false,
       'gotVerifiedAt': null,
       'sendCrashLogs': true,
+      'analyticsCollectionEnabled': null,
       'acceptedCommunityRulesAt': null,
       'showPetitionReason': null,
       'themeMode': null,
@@ -94,14 +95,7 @@ void main() {
     });
 
     test('isAdmin returns true for admin email', () {
-      // Assuming IConst.adminEmail is 'service@trainvent.com' based on previous context
-      // Ideally, we should import IConst, but for this test we can just check the logic if we knew the constant value.
-      // Since I cannot see IConst here, I will rely on the property logic.
-      // Let's just test the property behavior if we set the email.
-
-      // Note: This test depends on the actual value of IConst.adminEmail.
-      // If IConst.adminEmail is 'service@trainvent.com':
-      final adminUser = userProfile.copyWith(email: 'service@trainvent.com');
+      final adminUser = userProfile.copyWith(email: 'SERVICE@TRAINVENT.COM');
       expect(adminUser.isAdmin, true);
 
       final normalUser = userProfile.copyWith(email: 'user@example.com');

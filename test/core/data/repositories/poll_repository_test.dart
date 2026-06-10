@@ -25,7 +25,10 @@ void main() {
       title: 'Test Poll',
       description: 'A test poll',
       tags: [],
-      options: [PollOption(id: 'opt1', label: 'Option 1')],
+      options: [
+        PollOption(id: 'opt1', label: 'Option 1'),
+        PollOption(id: 'opt2', label: 'Option 2'),
+      ],
       votes: {},
       createdBy: 'user1',
       createdAt: DateTime(2023),

@@ -44,7 +44,14 @@ class UserProfile {
   final String? town;
   final String? height;
 
-  bool get isAdmin => email == IConst.adminEmail;
+  bool get isAdmin {
+    final normalizedEmail = email?.trim().toLowerCase();
+    final normalizedAdminEmail = IConst.adminEmail.trim().toLowerCase();
+    return normalizedEmail != null &&
+        normalizedAdminEmail.isNotEmpty &&
+        normalizedEmail == normalizedAdminEmail;
+  }
+
   bool get supportsStateScope =>
       countryCode?.toUpperCase() == 'DE' ||
       (countryCode == null && state != null && state!.isNotEmpty);

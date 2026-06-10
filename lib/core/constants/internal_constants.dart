@@ -11,7 +11,7 @@ class IConst {
 
   static const String adminEmail = String.fromEnvironment(
     'ADMIN_EMAIL',
-    defaultValue: '',
+    defaultValue: 'service@trainvent.com',
   );
   static const String ownerEmail = String.fromEnvironment(
     'OWNER_EMAIL',

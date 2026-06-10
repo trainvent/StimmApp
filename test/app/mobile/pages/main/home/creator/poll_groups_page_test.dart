@@ -216,12 +216,12 @@ void main() {
       );
 
       await tester.scrollUntilVisible(
-        find.text('Add domain'),
+        find.byKey(const Key('add_domain_row')),
         250,
         scrollable: find.byType(Scrollable).first,
       );
-      final addDomainButton = tester.widget<TextButton>(
-        find.widgetWithText(TextButton, 'Add domain'),
+      final addDomainButton = tester.widget<IconButton>(
+        find.byKey(const Key('add_domain_row')),
       );
       addDomainButton.onPressed!();
       await tester.pumpAndSettle();
