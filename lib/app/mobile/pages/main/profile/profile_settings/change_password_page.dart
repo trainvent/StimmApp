@@ -35,8 +35,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final failureMessage = context.l10n.passwordChangeFailed;
 
     try {
-      debugPrint("updating password");
-      debugPrint(authService.currentUser!.email!);
       await authService.resetPasswordfromCurrentPassword(
         currentPassword: controllerCurrentPassword.text,
         newPassword: controllerNewPassword.text,

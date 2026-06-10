@@ -120,7 +120,6 @@ async function sendEmail(
 	mailConfig: MailRuntimeConfig,
 ) {
 	const password = smtpPassword.value();
-	console.log(`[DEBUG] Preparing to send email to ${email}. Password present: ${!!password}. Host: ${smtpHost}. User: ${smtpUser}. Locale: ${mailConfig.locale}.`);
 
 	if (!password) {
 		console.error("SMTP_PASSWORD is not set in environment variables.");
@@ -323,14 +322,12 @@ export const sendLoginCode = onCall({ secrets: [smtpPassword] }, async (request)
 	const isDevEnvironment = process.env.GCLOUD_PROJECT === 'stimmapp-dev';
 	const testEmail = process.env.TEST_EMAIL;
 
-	console.log(`[DEBUG] sendLoginCode: email='${email}'`);
 	if (isDevEnvironment && testEmail) {
 		const normalizedInput = email.trim().toLowerCase();
 		const normalizedTest = testEmail.trim().toLowerCase();
-		console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
 
 		if (normalizedInput === normalizedTest) {
-			console.log(`[SEND LOGIN] Test Backdoor used for ${email}. Skipping email send.`);
+			console.log(`[SEND LOGIN] Test Backdoor used. Skipping email send.`);
 			return { success: true, message: 'Login code sent (Test Backdoor).' };
 		}
 	}
@@ -504,13 +501,10 @@ export const verifyLoginCode = onCall(async (request) => {
 	const testEmail = process.env.TEST_EMAIL;
 	const testCode = process.env.TEST_CODE;
 
-	console.log(`[DEBUG] verifyLoginCode: email='${email}', code='${code}'`);
-
 	let isBackdoor = false;
 	if (isDevEnvironment && testEmail && testCode) {
 		const normalizedInput = email.trim().toLowerCase();
 		const normalizedTest = testEmail.trim().toLowerCase();
-		console.log(`[DEBUG] Checking backdoor: '${normalizedInput}' vs '${normalizedTest}'`);
 
 		if (normalizedInput === normalizedTest && code === testCode) {
 			isBackdoor = true;
