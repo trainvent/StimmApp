@@ -9,10 +9,10 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'incomplete/forms_test.dart' as incomplete__forms_test;
-import 'incomplete/register_test.dart' as incomplete__register_test;
-import 'ios_test.dart' as ios_test;
-import 'onboarding_test.dart' as onboarding_test;
+import 'integration_test/incomplete/forms_test.dart' as incomplete__forms_test;
+import 'integration_test/incomplete/register_test.dart' as incomplete__register_test;
+import 'integration_test/ios_test.dart' as ios_test;
+import 'integration_test/onboarding_test.dart' as onboarding_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
