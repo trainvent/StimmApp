@@ -467,7 +467,18 @@ export const verifyEmailChangeCode = onCall(async (request) => {
 		updatedAt: admin.firestore.FieldValue.serverTimestamp(),
 	}, { merge: true });
 
-	return { success: true, message: 'Email changed successfully.' };
+	let token;
+	try {
+		token = await admin.auth().createCustomToken(request.auth.uid);
+	} catch (e: any) {
+		console.error("Error creating custom token after email change:", e);
+		if (e.code === 'auth/insufficient-permission' || (e.message && e.message.includes('iam.serviceAccounts.signBlob'))) {
+			throw new HttpsError('internal', 'Server configuration error: Missing IAM permissions for token creation. Please contact support.');
+		}
+		throw new HttpsError('internal', 'Failed to refresh sign-in after email change.');
+	}
+
+	return { success: true, token, message: 'Email changed successfully.' };
 });
 
 /**

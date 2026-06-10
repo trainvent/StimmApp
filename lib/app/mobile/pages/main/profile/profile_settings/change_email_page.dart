@@ -38,7 +38,14 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
   }
 
   Future<void> _sendCode() async {
-    if (!_formKey.currentState!.validate()) {
+    final formState = _formKey.currentState;
+    if (formState != null && !formState.validate()) {
+      return;
+    }
+    if (_newEmail.isEmpty ||
+        !_looksLikeEmail(_newEmail) ||
+        _passwordController.text.isEmpty) {
+      showErrorSnackBar(context.l10n.enterSomething);
       return;
     }
 
@@ -73,6 +80,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
       await authService.verifyEmailChangeCode(
         newEmail: _newEmail,
         code: _codeController.text.trim(),
+        currentPassword: _passwordController.text,
       );
       if (!mounted) return;
       showSuccessSnackBar(context.l10n.emailChangedSuccessfully);

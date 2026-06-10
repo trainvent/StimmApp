@@ -235,12 +235,21 @@ class AuthService {
   Future<void> verifyEmailChangeCode({
     required String newEmail,
     required String code,
+    required String currentPassword,
   }) async {
     try {
-      await functions.httpsCallable('verifyEmailChangeCode').call({
-        'newEmail': newEmail.trim(),
-        'code': code,
-      });
+      final result = await functions
+          .httpsCallable('verifyEmailChangeCode')
+          .call({'newEmail': newEmail.trim(), 'code': code});
+      final token = result.data['token'] as String?;
+      if (token != null && token.isNotEmpty) {
+        await firebaseAuth.signInWithCustomToken(token);
+      } else {
+        await firebaseAuth.signInWithEmailAndPassword(
+          email: newEmail.trim(),
+          password: currentPassword,
+        );
+      }
       await currentUser?.reload();
       await currentUser?.getIdToken(true);
     } on FirebaseFunctionsException catch (e, st) {
@@ -248,6 +257,9 @@ class AuthService {
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
+    } on FirebaseAuthException catch (e, st) {
+      _logFirebaseAuthError('verifyEmailChangeCode', e, st);
+      throw AuthException(e);
     } catch (e, st) {
       _logUnexpectedError('verifyEmailChangeCode', e, st);
       rethrow;

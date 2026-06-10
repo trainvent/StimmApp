@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stimmapp/app_entry.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
@@ -24,14 +25,22 @@ void showSuccessSnackBar([String? message]) {
 void showErrorSnackBar([String? message]) {
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
+  final resolvedMessage = message ?? '';
   final messenger = ScaffoldMessenger.of(ctx);
   messenger.clearSnackBars();
   messenger.showSnackBar(
     SnackBar(
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,
-      content: Text(message ?? '', style: AppTextStyles.m),
-      showCloseIcon: true,
+      duration: const Duration(seconds: 12),
+      content: SelectableText(resolvedMessage, style: AppTextStyles.m),
+      action: SnackBarAction(
+        label: 'Copy',
+        textColor: Theme.of(ctx).colorScheme.onError,
+        onPressed: () {
+          Clipboard.setData(ClipboardData(text: resolvedMessage));
+        },
+      ),
     ),
   );
 }
