@@ -424,7 +424,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   // Privacy Settings
                   PointingListTile(
-                    title: Text(context.l10n.privacySettings),
+                    title: Text(context.l10n.privacy),
                     onTap: () {
                       Navigator.push(
                         context,
