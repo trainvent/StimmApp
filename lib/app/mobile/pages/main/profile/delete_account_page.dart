@@ -122,28 +122,37 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  TextFormField(
-                    key: const Key('deleteAccountEmailField'),
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.email,
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.email),
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          key: const Key('deleteAccountEmailField'),
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.email,
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.email),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.email],
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? context.l10n.enterYourEmail
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        PasswordTextField(
+                          key: const Key('deleteAccountPasswordField'),
+                          controller: _passwordController,
+                          labelText: context.l10n.password,
+                          prefixIcon: const Icon(Icons.lock),
+                          textInputAction: TextInputAction.done,
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? context.l10n.enterSomething
+                              : null,
+                        ),
+                      ],
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) => (value == null || value.isEmpty)
-                        ? context.l10n.enterYourEmail
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-                  PasswordTextField(
-                    key: const Key('deleteAccountPasswordField'),
-                    controller: _passwordController,
-                    labelText: context.l10n.password,
-                    prefixIcon: const Icon(Icons.lock),
-                    validator: (value) => (value == null || value.isEmpty)
-                        ? context.l10n.enterSomething
-                        : null,
                   ),
                   const SizedBox(height: 24),
                   if (_statusMessage != null)

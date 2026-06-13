@@ -81,26 +81,37 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
                   const SizedBox(height: 20.0),
                   const Text('🔐', style: AppTextStyles.icons),
                   const SizedBox(height: 50),
-                  PasswordTextField(
-                    key: const Key('newPasswordTextField'),
-                    controller: controllerPw,
-                    labelText: context.l10n.newPassword,
-                    validator: (value) => validatePassword(context, value),
-                  ),
-                  const SizedBox(height: 10),
-                  PasswordTextField(
-                    key: const Key('confirmPasswordTextField'),
-                    controller: controllerConfirmPw,
-                    labelText: context.l10n.confirmPassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return context.l10n.enterSomething;
-                      }
-                      if (value != controllerPw.text) {
-                        return context.l10n.passwordsDoNotMatch;
-                      }
-                      return null;
-                    },
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        PasswordTextField(
+                          key: const Key('newPasswordTextField'),
+                          controller: controllerPw,
+                          labelText: context.l10n.newPassword,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (value) =>
+                              validatePassword(context, value),
+                        ),
+                        const SizedBox(height: 10),
+                        PasswordTextField(
+                          key: const Key('confirmPasswordTextField'),
+                          controller: controllerConfirmPw,
+                          labelText: context.l10n.confirmPassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return context.l10n.enterSomething;
+                            }
+                            if (value != controllerPw.text) {
+                              return context.l10n.passwordsDoNotMatch;
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

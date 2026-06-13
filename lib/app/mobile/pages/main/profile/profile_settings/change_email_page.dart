@@ -122,45 +122,49 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                   const SizedBox(height: 28),
                   Form(
                     key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: context.l10n.newEmail,
-                            prefixIcon: const Icon(Icons.email_outlined),
+                    child: AutofillGroup(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.email],
+                            decoration: InputDecoration(
+                              labelText: context.l10n.newEmail,
+                              prefixIcon: const Icon(Icons.email_outlined),
+                            ),
+                            validator: (value) {
+                              final email = value?.trim().toLowerCase() ?? '';
+                              if (email.isEmpty) {
+                                return context.l10n.enterSomething;
+                              }
+                              if (!_looksLikeEmail(email)) {
+                                return context.l10n.invalidEmailEntered;
+                              }
+                              if (email ==
+                                  authService.currentUser?.email
+                                      ?.trim()
+                                      .toLowerCase()) {
+                                return context.l10n.enterSomething;
+                              }
+                              return null;
+                            },
                           ),
-                          validator: (value) {
-                            final email = value?.trim().toLowerCase() ?? '';
-                            if (email.isEmpty) {
-                              return context.l10n.enterSomething;
-                            }
-                            if (!_looksLikeEmail(email)) {
-                              return context.l10n.invalidEmailEntered;
-                            }
-                            if (email ==
-                                authService.currentUser?.email
-                                    ?.trim()
-                                    .toLowerCase()) {
-                              return context.l10n.enterSomething;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        PasswordTextField(
-                          controller: _passwordController,
-                          labelText: context.l10n.currentPassword,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return context.l10n.enterSomething;
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          PasswordTextField(
+                            controller: _passwordController,
+                            labelText: context.l10n.currentPassword,
+                            textInputAction: TextInputAction.done,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return context.l10n.enterSomething;
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ] else

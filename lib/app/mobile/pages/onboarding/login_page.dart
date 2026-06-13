@@ -104,50 +104,60 @@ class _LoginPageState extends State<LoginPage> {
                     style: AppTextStyles.m.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: DConst.padBox),
-                  TextFormField(
-                    key: keys.loginPage.emailTextField,
-                    controller: controllerEm,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.email,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      isDense: true,
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          key: keys.loginPage.emailTextField,
+                          controller: controllerEm,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.email],
+                          decoration: InputDecoration(
+                            labelText: context.l10n.email,
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            isDense: true,
+                          ),
+                          validator: (String? value) {
+                            if (value == null) {
+                              return context.l10n.enterSomething;
+                            }
+                            if (value.trim().isEmpty) {
+                              return context.l10n.enterSomething;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: DConst.padBox),
+                        PasswordTextField(
+                          key: keys.loginPage.passwordTextField,
+                          controller: controllerPw,
+                          labelText: context.l10n.password,
+                          isDense: true,
+                          textInputAction: TextInputAction.done,
+                          validator: (String? value) {
+                            if (value == null) {
+                              return context.l10n.enterSomething;
+                            }
+                            if (value.trim().isEmpty) {
+                              return context.l10n.enterSomething;
+                            }
+                            return null;
+                          },
+                          style: AppTextStyles.m,
+                          onFieldSubmitted: (value) {
+                            if (Form.of(context).validate()) {
+                              signIn();
+                            } else {
+                              showErrorSnackBar(errorMessage);
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                    validator: (String? value) {
-                      if (value == null) {
-                        return context.l10n.enterSomething;
-                      }
-                      if (value.trim().isEmpty) {
-                        return context.l10n.enterSomething;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: DConst.padBox),
-                  PasswordTextField(
-                    key: keys.loginPage.passwordTextField,
-                    controller: controllerPw,
-                    labelText: context.l10n.password,
-                    isDense: true,
-                    validator: (String? value) {
-                      if (value == null) {
-                        return context.l10n.enterSomething;
-                      }
-                      if (value.trim().isEmpty) {
-                        return context.l10n.enterSomething;
-                      }
-                      return null;
-                    },
-                    style: AppTextStyles.m,
-                    onFieldSubmitted: (value) {
-                      if (Form.of(context).validate()) {
-                        signIn();
-                      } else {
-                        showErrorSnackBar(errorMessage);
-                      }
-                    },
                   ),
                   Align(
                     alignment: Alignment.centerRight,

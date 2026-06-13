@@ -150,56 +150,70 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: AppTextStyles.m.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: DConst.padBox),
-                  TextFormField(
-                    key: keys.onboardingPage.emailTextField,
-                    controller: controllerEm,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.email,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          key: keys.onboardingPage.emailTextField,
+                          controller: controllerEm,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.email],
+                          decoration: InputDecoration(
+                            labelText: context.l10n.email,
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return S.of(context).pleaseEnterYourEmail;
+                            }
+                            // Simple regex for email validation
+                            final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                            if (!emailRegex.hasMatch(value)) {
+                              return context.l10n.invalidEmailEntered;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: DConst.padBox),
+                        PasswordTextField(
+                          key: keys.onboardingPage.passwordTextField,
+                          controller: controllerPw,
+                          labelText: context.l10n.password,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (value) =>
+                              validatePassword(context, value),
+                        ),
+                        const SizedBox(height: DConst.padBox),
+                        PasswordTextField(
+                          key: const Key('repeatPasswordTextField'),
+                          controller: controllerConfirmPw,
+                          labelText: context.l10n.confirmPassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (String? value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return context.l10n.pleaseEnterYourPassword;
+                            }
+                            if (value != controllerPw.text) {
+                              return context.l10n.passwordsDoNotMatch;
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (value) {
+                            if (Form.of(context).validate()) {
+                              register();
+                            } else {
+                              showErrorSnackBar(context.l10n.error);
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                    validator: (String? value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return S.of(context).pleaseEnterYourEmail;
-                      }
-                      // Simple regex for email validation
-                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                      if (!emailRegex.hasMatch(value)) {
-                        return context.l10n.invalidEmailEntered;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: DConst.padBox),
-                  PasswordTextField(
-                    key: keys.onboardingPage.passwordTextField,
-                    controller: controllerPw,
-                    labelText: context.l10n.password,
-                    validator: (value) => validatePassword(context, value),
-                  ),
-                  const SizedBox(height: DConst.padBox),
-                  PasswordTextField(
-                    key: const Key('repeatPasswordTextField'),
-                    controller: controllerConfirmPw,
-                    labelText: context.l10n.confirmPassword,
-                    validator: (String? value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return context.l10n.pleaseEnterYourPassword;
-                      }
-                      if (value != controllerPw.text) {
-                        return context.l10n.passwordsDoNotMatch;
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: (value) {
-                      if (Form.of(context).validate()) {
-                        register();
-                      } else {
-                        showErrorSnackBar(context.l10n.error);
-                      }
-                    },
                   ),
                   const SizedBox(height: DConst.padBox),
                   Expanded(

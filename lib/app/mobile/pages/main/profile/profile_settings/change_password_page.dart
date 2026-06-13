@@ -70,35 +70,41 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 const SizedBox(height: 50),
                 Form(
                   key: _formKey,
-                  child: Column(
-                    children: [
-                      PasswordTextField(
-                        controller: controllerCurrentPassword,
-                        labelText: context.l10n.currentPassword,
-                        validator: (String? value) {
-                          if (value == null) {
-                            return context.l10n.enterSomething;
-                          }
-                          if (value.trim().isEmpty) {
-                            return context.l10n.enterSomething;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      PasswordTextField(
-                        controller: controllerNewPassword,
-                        labelText: context.l10n.newPassword,
-                        validator: (value) => validatePassword(context, value),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        errorMessage,
-                        style: AppTextStyles.m.copyWith(
-                          color: Colors.redAccent,
+                  child: AutofillGroup(
+                    child: Column(
+                      children: [
+                        PasswordTextField(
+                          controller: controllerCurrentPassword,
+                          labelText: context.l10n.currentPassword,
+                          textInputAction: TextInputAction.next,
+                          validator: (String? value) {
+                            if (value == null) {
+                              return context.l10n.enterSomething;
+                            }
+                            if (value.trim().isEmpty) {
+                              return context.l10n.enterSomething;
+                            }
+                            return null;
+                          },
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        PasswordTextField(
+                          controller: controllerNewPassword,
+                          labelText: context.l10n.newPassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.newPassword],
+                          validator: (value) =>
+                              validatePassword(context, value),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          errorMessage,
+                          style: AppTextStyles.m.copyWith(
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

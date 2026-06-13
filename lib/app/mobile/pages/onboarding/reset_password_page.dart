@@ -78,16 +78,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     try {
-      await authService.signInWithCode(
-        controllerEmail.text,
-        code,
-      );
+      await authService.signInWithCode(controllerEmail.text, code);
 
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const SetNewPasswordPage(),
-        ),
+        MaterialPageRoute(builder: (context) => const SetNewPasswordPage()),
       );
     } on AuthException catch (e) {
       debugPrint('ResetPasswordPage._verifyCode AuthException: $e');
@@ -114,10 +109,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  context.l10n.resetPassword,
-                  style: AppTextStyles.xxlBold,
-                ),
+                Text(context.l10n.resetPassword, style: AppTextStyles.xxlBold),
                 const SizedBox(height: 20.0),
                 const Text('🔐', style: AppTextStyles.icons),
                 const SizedBox(height: 30),
@@ -125,6 +117,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   TextFormField(
                     key: const Key('emailTestField'),
                     controller: controllerEmail,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.email],
                     decoration: InputDecoration(
                       labelText: context.l10n.email,
                       border: const OutlineInputBorder(),
@@ -134,9 +129,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   if (errorMessage.isNotEmpty)
                     Text(
                       errorMessage,
-                      style: AppTextStyles.m.copyWith(
-                        color: Colors.redAccent,
-                      ),
+                      style: AppTextStyles.m.copyWith(color: Colors.redAccent),
                     ),
                   const SizedBox(height: 20),
                   DebouncedButton(
