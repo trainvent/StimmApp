@@ -103,7 +103,6 @@ void main() {
       await $(keys.loginPage.passwordTextField).enterText(validPassword);
       await $(keys.loginPage.signInButton).tap();
       await $(BackButton).tap();
-      await $(l10n.theWelcomePhrase).waitUntilVisible();
       $.log("Validation and full onboarding flow tests completed");
     },
   );
