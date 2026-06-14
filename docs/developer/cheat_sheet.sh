@@ -55,7 +55,7 @@ flutter build ipa --release --flavor prod -t lib/main_vivot.dart --dart-define-f
 # https://web.vivot.net/poll/<id>
 
 # common: run a single patrol test
-patrol test --target integration_test/ --dart-define-from-file=.env
+patrol test --flavor dev --target integration_test/ --dart-define-from-file=.env
 
 # common: set a secret to store hidden data
 firebase functions:secrets:set

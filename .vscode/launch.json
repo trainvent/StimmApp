@@ -16,6 +16,13 @@
 			]
 		},
 		{
+			"name": "Patrol: Onboarding Test",
+			"request": "launch",
+			"type": "node-terminal",
+			"cwd": "${workspaceFolder}",
+			"command": "patrol test -t integration_test/onboarding_test.dart --dart-define-from-file=.env"
+		},
+		{
 			"name": "Flutter: StimmApp Dev (Debug iOS)",
 			"request": "launch",
 			"type": "dart",

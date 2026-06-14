@@ -120,7 +120,9 @@ patrol:
   app_name: StimmApp
   test_directory: integration_test
   android:
-    package_name: de.lemarq.stimmapp
+    flavor: dev
+    package_name: de.lemarq.stimmapp.dev
+    app_name: StimmApp Dev
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

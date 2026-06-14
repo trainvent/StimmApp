@@ -16,9 +16,6 @@ Dadurch können aussagekräftige Standpunkte entstehen und verlässliche Umfrage
 - 1 Petition und Umfrage pro Tag
 - Verröffentlichungen können nur solange keiner unterschrieben hat zurückgezogen werden
 
-## Regeln für Entwickler
-- autentifizierungsgetriebenes Benutzermanagment
-
 ## Lizenz
 Dieses Projekt ist unter der **GNU General Public License v3.0** lizenziert.
 Siehe `LICENSE`.
