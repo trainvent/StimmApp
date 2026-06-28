@@ -44,6 +44,7 @@ const COLLECTIONS_TO_SYNC = [
     { name: 'users' },
     { name: 'petitions', subcollections: ['signatures'] },
     { name: 'polls', subcollections: ['votes'] },
+    { name: 'surveys', subcollections: ['responses'] },
     { name: 'verificationCodes' }
 ];
 /**

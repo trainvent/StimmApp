@@ -170,6 +170,10 @@ service cloud.firestore {
         allow read, write: if isOwner(userId) || isAdmin();
       }
 
+      match /completedSurveys/{docId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
       // Catch-all for other subcollections (if any)
       match /{subcollection}/{document=**} {
         allow read, write: if isOwner(userId) || isAdmin();
@@ -187,6 +191,38 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin() ||
                     (isAuthenticated() && hasValidContentState(request.resource.data));
+    }
+
+    match /surveys/{surveyId} {
+      allow read: if true;
+      allow create: if isAdmin() ||
+                    (isAuthenticated() &&
+                     request.resource.data.createdBy == request.auth.uid &&
+                     hasValidContentState(request.resource.data));
+      allow update: if isAdmin() ||
+                    (isAuthenticated() &&
+                     resource.data.createdBy == request.auth.uid &&
+                     hasValidContentState(request.resource.data)) ||
+                    (isAuthenticated() &&
+                     request.resource.data.diff(resource.data).changedKeys()
+                       .hasOnly(['questionVotes', 'responseCount']) &&
+                     !exists(/databases/$(database)/documents/surveys/$(surveyId)/responses/$(request.auth.uid)) &&
+                     existsAfter(/databases/$(database)/documents/surveys/$(surveyId)/responses/$(request.auth.uid)));
+      allow delete: if isAdmin() ||
+                    (isAuthenticated() &&
+                     resource.data.createdBy == request.auth.uid);
+
+      match /responses/{uid} {
+        allow read: if isAdmin() ||
+                    isOwner(uid) ||
+                    (isAuthenticated() &&
+                     get(/databases/$(database)/documents/surveys/$(surveyId)).data.createdBy == request.auth.uid);
+        allow create: if isOwner(uid) &&
+                      !exists(/databases/$(database)/documents/surveys/$(surveyId)/responses/$(uid)) &&
+                      request.resource.data.uid == request.auth.uid;
+        allow update: if false;
+        allow delete: if isAdmin() || isOwner(uid);
+      }
     }
 
     match /pollGroups/{groupId} {

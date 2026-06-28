@@ -15,6 +15,7 @@ const COLLECTIONS_TO_SYNC: CollectionSyncConfig[] = [
     { name: 'users' },
     { name: 'petitions', subcollections: ['signatures'] },
     { name: 'polls', subcollections: ['votes'] },
+    { name: 'surveys', subcollections: ['responses'] },
     { name: 'verificationCodes' }
 ];
 

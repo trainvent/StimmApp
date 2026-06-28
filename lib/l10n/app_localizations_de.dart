@@ -225,16 +225,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createNewPollDescription => 'Erstelle eine neue Umfrage';
 
   @override
+  String get createNewSurveyDescription => 'Erstelle eine neue Befragung';
+
+  @override
   String get createPetition => 'Petitition erstellen';
 
   @override
   String get createPoll => 'Umfrage erstellen';
 
   @override
+  String get createSurvey => 'Befragung erstellen';
+
+  @override
   String get createdPetition => 'Petition erstellt';
 
   @override
   String get createdPoll => 'Umfrage erstellt';
+
+  @override
+  String get createdSurvey => 'Befragung erstellt';
 
   @override
   String get creator => 'Ersteller';
@@ -415,6 +424,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get failedToCreatePoll => 'Fehler beim Erstellen der Umfrage';
+
+  @override
+  String get failedToCreateSurvey => 'Fehler beim Erstellen der Befragung';
 
   @override
   String get failedToUploadImage => 'Bild konnte nicht hochgeladen werden';
@@ -981,6 +993,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tagsHint => 'Komma-getrennte Tags';
+
+  @override
+  String questionNumber(int number) {
+    return 'Frage $number';
+  }
+
+  @override
+  String get questionRequired => 'Frage ist erforderlich';
+
+  @override
+  String get questions => 'Fragen';
+
+  @override
+  String get addQuestion => 'Frage hinzufügen';
+
+  @override
+  String get surveyQuestion => 'Befragungsfrage';
+
+  @override
+  String maximumSurveyQuestionsAllowed(int count) {
+    return 'Maximal $count Fragen erlaubt';
+  }
 
   @override
   String get tagsRequired => 'Mindestens ein Tag ist erforderlich';

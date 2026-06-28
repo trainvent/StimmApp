@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/base_creator_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/widgets/choice_option_list_editor.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -316,47 +317,13 @@ class _PollCreatorPageState extends State<PollCreatorPage> {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ReorderableListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _optionControllers.length,
+        ChoiceOptionListEditor(
+          controllers: _optionControllers,
+          maxOptionLength: AppLimits.maxPollOptionLength,
+          optionLabelBuilder: (index) => context.l10n.optionNumber(index + 1),
+          optionRequiredMessage: context.l10n.optionRequired,
           onReorder: _reorderOptions,
-          buildDefaultDragHandles: false, // Disable default handles
-          itemBuilder: (context, index) {
-            final controller = _optionControllers[index];
-            return Padding(
-              key: ValueKey(controller),
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  ReorderableDragStartListener(
-                    index: index,
-                    child: const Icon(Icons.drag_handle),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextFormField(
-                      controller: controller,
-                      maxLength: AppLimits.maxPollOptionLength,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.optionNumber(index + 1),
-                        border: const OutlineInputBorder(),
-                        counterText: "",
-                      ),
-                      validator: (v) => (v?.trim().isEmpty ?? true)
-                          ? context.l10n.optionRequired
-                          : null,
-                    ),
-                  ),
-                  if (_optionControllers.length > 2)
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
-                      onPressed: () => _removeOption(index),
-                    ),
-                ],
-              ),
-            );
-          },
+          onRemove: _removeOption,
         ),
         if (_optionControllers.length < AppLimits.maxPollOptions)
           TextButton.icon(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/creator/petition_creator_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_creator_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/creator/poll_survey_creator_choice_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/home_navigation_config.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/settings/settings_page.dart';
@@ -34,7 +34,8 @@ class WidgetTree extends StatelessWidget {
                 : selectedPage == 1
                 ? CreationIconButton(
                     type: CreationType.poll,
-                    pageBuilder: (context) => const PollCreatorPage(),
+                    pageBuilder: (context) =>
+                        const PollSurveyCreatorChoicePage(),
                   )
                 : null,
             actions: [

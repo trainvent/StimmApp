@@ -109,10 +109,13 @@
 	"couldNotOpenLink": "Link konnte nicht geöffnet werden.",
 	"createNewPetitionDescription": "Erstelle eine neue Petition",
 	"createNewPollDescription": "Erstelle eine neue Umfrage",
+	"createNewSurveyDescription": "Erstelle eine neue Befragung",
 	"createPetition": "Petitition erstellen",
 	"createPoll": "Umfrage erstellen",
+	"createSurvey": "Befragung erstellen",
 	"createdPetition": "Petition erstellt",
 	"createdPoll": "Umfrage erstellt",
+	"createdSurvey": "Befragung erstellt",
 	"creator": "Ersteller",
 	"currentPassword": "Aktuelles Passwort",
 	"customPetitionAndPollPictures": "Eigene Petition- und Umfragebilder",
@@ -171,6 +174,7 @@
 	"exportFailed": "Export fehlgeschlagen",
 	"exportSuccess": "Export erstellt",
 	"failedToCreatePoll": "Fehler beim Erstellen der Umfrage",
+	"failedToCreateSurvey": "Fehler beim Erstellen der Befragung",
 	"failedToUploadImage": "Bild konnte nicht hochgeladen werden",
 	"finalNotice": "Letzter Hinweis",
 	"finishedForms": "Abgeschlossene Formulare",
@@ -357,6 +361,26 @@
 	"systemDefault": "Systemstandard",
 	"tags": "Tags",
 	"tagsHint": "Komma-getrennte Tags",
+	"@questionNumber": {
+		"placeholders": {
+			"number": {
+				"type": "int"
+			}
+		}
+	},
+	"questionNumber": "Frage {number}",
+	"questionRequired": "Frage ist erforderlich",
+	"questions": "Fragen",
+	"addQuestion": "Frage hinzufügen",
+	"surveyQuestion": "Befragungsfrage",
+	"@maximumSurveyQuestionsAllowed": {
+		"placeholders": {
+			"count": {
+				"type": "int"
+			}
+		}
+	},
+	"maximumSurveyQuestionsAllowed": "Maximal {count} Fragen erlaubt",
 	"tagsRequired": "Mindestens ein Tag ist erforderlich",
 	"testingWidgetsHere": "Widgets testen",
 	"thankYouForSigning": "Danke für deine Unterschrift!",

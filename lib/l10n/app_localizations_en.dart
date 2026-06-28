@@ -223,16 +223,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createNewPollDescription => 'Create a new poll';
 
   @override
+  String get createNewSurveyDescription => 'Create a new survey';
+
+  @override
   String get createPetition => 'Create Petition';
 
   @override
   String get createPoll => 'Create Poll';
 
   @override
+  String get createSurvey => 'Create Survey';
+
+  @override
   String get createdPetition => 'Petition created';
 
   @override
   String get createdPoll => 'Poll created';
+
+  @override
+  String get createdSurvey => 'Survey created';
 
   @override
   String get creator => 'Creator';
@@ -409,6 +418,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToCreatePoll => 'Failed to create poll';
+
+  @override
+  String get failedToCreateSurvey => 'Failed to create survey';
 
   @override
   String get failedToUploadImage => 'Failed to upload image: ';
@@ -972,6 +984,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagsHint => 'Comma-separated tags';
+
+  @override
+  String questionNumber(int number) {
+    return 'Question $number';
+  }
+
+  @override
+  String get questionRequired => 'Question is required';
+
+  @override
+  String get questions => 'Questions';
+
+  @override
+  String get addQuestion => 'Add question';
+
+  @override
+  String get surveyQuestion => 'Survey question';
+
+  @override
+  String maximumSurveyQuestionsAllowed(int count) {
+    return 'Maximum $count questions allowed';
+  }
 
   @override
   String get tagsRequired => 'At least one tag is required';

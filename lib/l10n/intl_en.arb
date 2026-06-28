@@ -108,10 +108,13 @@
 	"couldNotOpenLink": "Could not open link.",
 	"createNewPetitionDescription": "Create a new petition",
 	"createNewPollDescription": "Create a new poll",
+	"createNewSurveyDescription": "Create a new survey",
 	"createPetition": "Create Petition",
 	"createPoll": "Create Poll",
+	"createSurvey": "Create Survey",
 	"createdPetition": "Petition created",
 	"createdPoll": "Poll created",
+	"createdSurvey": "Survey created",
 	"creator": "Creator",
 	"currentPassword": "Current password",
 	"customPetitionAndPollPictures": "Custom petition and poll pictures",
@@ -169,6 +172,7 @@
 	"exportFailed": "Export failed",
 	"exportSuccess": "Export created",
 	"failedToCreatePoll": "Failed to create poll",
+	"failedToCreateSurvey": "Failed to create survey",
 	"failedToUploadImage": "Failed to upload image: ",
 	"finalNotice": "Final notice",
 	"finishedForms": "Finished forms",
@@ -362,6 +366,26 @@
 	"systemDefault": "System Default",
 	"tags": "Tags",
 	"tagsHint": "Comma-separated tags",
+	"@questionNumber": {
+		"placeholders": {
+			"number": {
+				"type": "int"
+			}
+		}
+	},
+	"questionNumber": "Question {number}",
+	"questionRequired": "Question is required",
+	"questions": "Questions",
+	"addQuestion": "Add question",
+	"surveyQuestion": "Survey question",
+	"@maximumSurveyQuestionsAllowed": {
+		"placeholders": {
+			"count": {
+				"type": "int"
+			}
+		}
+	},
+	"maximumSurveyQuestionsAllowed": "Maximum {count} questions allowed",
 	"tagsRequired": "At least one tag is required",
 	"testingWidgetsHere": "Testing widgets here",
 	"thankYouForSigning": "Thank you for signing!",

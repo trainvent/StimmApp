@@ -88,6 +88,20 @@ Future<void> _configureCrashReporting() async {
 
   try {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    final didCrashOnPreviousExecution = await FirebaseCrashlytics.instance
+        .didCrashOnPreviousExecution();
+    debugPrint(
+      '[Crashlytics] collectionEnabled='
+      '${FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled} '
+      'didCrashOnPreviousExecution=$didCrashOnPreviousExecution',
+    );
+    await FirebaseCrashlytics.instance.sendUnsentReports();
+    debugPrint('[Crashlytics] startup sendUnsentReports requested');
+    if (didCrashOnPreviousExecution) {
+      await FirebaseCrashlytics.instance.log(
+        'Previous execution crashed; requesting unsent report upload',
+      );
+    }
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);

@@ -7,6 +7,7 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 
 import 'petition_repository.dart';
 import 'poll_repository.dart';
+import 'survey_repository.dart';
 
 class UserRepository {
   UserRepository(this._fs);
@@ -48,17 +49,22 @@ class UserRepository {
   }
 
   Future<void> update(String uid, Map<String, dynamic> data) async {
-    await _fs.instance.collection(DatabaseCollections.users).doc(uid).update(data);
+    await _fs.instance
+        .collection(DatabaseCollections.users)
+        .doc(uid)
+        .update(data);
   }
 
   Future<void> delete(String uid) async {
     // Use repository helpers to remove user activity and close created items.
     final pollRepo = PollRepository.create();
     final petitionRepo = PetitionRepository.create();
+    final surveyRepo = SurveyRepository.create();
 
     // Remove votes and signatures (decrements counts and removes subdocs)
     await pollRepo.removeVotesByUser(uid);
     await petitionRepo.removeSignaturesByUser(uid);
+    await surveyRepo.removeResponsesByUser(uid);
 
     // Delete the user profile document
     await _fs.delete(_doc(uid));
@@ -75,6 +81,7 @@ class UserRepository {
     // Close polls and petitions created by this user
     await pollRepo.closePollsCreatedByUser(uid);
     await petitionRepo.closePetitionsCreatedByUser(uid);
+    await surveyRepo.closeSurveysCreatedByUser(uid);
   }
 
   Stream<UserProfile?> watchById(String uid) {

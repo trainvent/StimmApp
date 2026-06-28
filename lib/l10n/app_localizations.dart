@@ -500,6 +500,12 @@ abstract class AppLocalizations {
   /// **'Create a new poll'**
   String get createNewPollDescription;
 
+  /// No description provided for @createNewSurveyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new survey'**
+  String get createNewSurveyDescription;
+
   /// No description provided for @createPetition.
   ///
   /// In en, this message translates to:
@@ -512,6 +518,12 @@ abstract class AppLocalizations {
   /// **'Create Poll'**
   String get createPoll;
 
+  /// No description provided for @createSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Survey'**
+  String get createSurvey;
+
   /// No description provided for @createdPetition.
   ///
   /// In en, this message translates to:
@@ -523,6 +535,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Poll created'**
   String get createdPoll;
+
+  /// No description provided for @createdSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey created'**
+  String get createdSurvey;
 
   /// No description provided for @creator.
   ///
@@ -865,6 +883,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to create poll'**
   String get failedToCreatePoll;
+
+  /// No description provided for @failedToCreateSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create survey'**
+  String get failedToCreateSurvey;
 
   /// No description provided for @failedToUploadImage.
   ///
@@ -1939,6 +1963,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comma-separated tags'**
   String get tagsHint;
+
+  /// No description provided for @questionNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {number}'**
+  String questionNumber(int number);
+
+  /// No description provided for @questionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Question is required'**
+  String get questionRequired;
+
+  /// No description provided for @questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get questions;
+
+  /// No description provided for @addQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Add question'**
+  String get addQuestion;
+
+  /// No description provided for @surveyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey question'**
+  String get surveyQuestion;
+
+  /// No description provided for @maximumSurveyQuestionsAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {count} questions allowed'**
+  String maximumSurveyQuestionsAllowed(int count);
 
   /// No description provided for @tagsRequired.
   ///

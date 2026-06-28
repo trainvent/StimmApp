@@ -68,12 +68,13 @@ export const closeExpiredForms = onSchedule("every 15 minutes", async () => {
 	const now = new Date();
 
 	type CollectionTarget = {
-		name: 'petitions' | 'polls';
+		name: 'petitions' | 'polls' | 'surveys';
 	};
 
 	const targets: CollectionTarget[] = [
 		{name: 'petitions'},
 		{name: 'polls'},
+		{name: 'surveys'},
 	];
 
 	for (const target of targets) {

@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -442,6 +443,27 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
+
+                  if (!kIsWeb)
+                    PointingListTile(
+                      title: const Text('Test Crashlytics Report'),
+                      onTap: () async {
+                        showSuccessSnackBar('Crashlytics test report sent');
+                        await FirebaseCrashlytics.instance.log(
+                          'Manual non-crashing Crashlytics test from profile page',
+                        );
+                        await FirebaseCrashlytics.instance.recordError(
+                          StateError('Manual Crashlytics test report'),
+                          StackTrace.current,
+                          fatal: true,
+                          reason: 'Manual Crashlytics test from profile page',
+                        );
+                        await FirebaseCrashlytics.instance.sendUnsentReports();
+                        debugPrint(
+                          '[Crashlytics] manual test report upload requested',
+                        );
+                      },
+                    ),
 
                   // Logout
                   PointingListTile(

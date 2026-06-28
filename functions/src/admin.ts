@@ -49,14 +49,14 @@ function assertAdmin(request: Parameters<typeof onCall>[0] extends never ? never
 }
 
 type BackfillCollectionResult = {
-	collection: 'petitions' | 'polls';
+	collection: 'petitions' | 'polls' | 'surveys';
 	scanned: number;
 	updated: number;
 };
 
 async function backfillMissingCountryCode(params: {
 	db: admin.firestore.Firestore;
-	collection: 'petitions' | 'polls';
+	collection: 'petitions' | 'polls' | 'surveys';
 	countryCode: string;
 	dryRun: boolean;
 }): Promise<BackfillCollectionResult> {
@@ -349,7 +349,7 @@ export const backfillFormCountryCode = onCall(async (request) => {
 	}
 
 	const db = admin.firestore();
-	const [petitionsResult, pollsResult] = await Promise.all([
+	const [petitionsResult, pollsResult, surveysResult] = await Promise.all([
 		backfillMissingCountryCode({
 			db,
 			collection: 'petitions',
@@ -362,10 +362,16 @@ export const backfillFormCountryCode = onCall(async (request) => {
 			countryCode,
 			dryRun,
 		}),
+		backfillMissingCountryCode({
+			db,
+			collection: 'surveys',
+			countryCode,
+			dryRun,
+		}),
 	]);
 
-	const totalScanned = petitionsResult.scanned + pollsResult.scanned;
-	const totalUpdated = petitionsResult.updated + pollsResult.updated;
+	const totalScanned = petitionsResult.scanned + pollsResult.scanned + surveysResult.scanned;
+	const totalUpdated = petitionsResult.updated + pollsResult.updated + surveysResult.updated;
 
 	return {
 		success: true,
@@ -373,7 +379,7 @@ export const backfillFormCountryCode = onCall(async (request) => {
 		countryCode,
 		totalScanned,
 		totalUpdated,
-		collections: [petitionsResult, pollsResult],
+		collections: [petitionsResult, pollsResult, surveysResult],
 	};
 });
 

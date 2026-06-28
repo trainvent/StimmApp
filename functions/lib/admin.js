@@ -302,7 +302,7 @@ exports.backfillFormCountryCode = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError('invalid-argument', 'countryCode must be a 2-letter ISO country code.');
     }
     const db = admin.firestore();
-    const [petitionsResult, pollsResult] = await Promise.all([
+    const [petitionsResult, pollsResult, surveysResult] = await Promise.all([
         backfillMissingCountryCode({
             db,
             collection: 'petitions',
@@ -315,16 +315,22 @@ exports.backfillFormCountryCode = (0, https_1.onCall)(async (request) => {
             countryCode,
             dryRun,
         }),
+        backfillMissingCountryCode({
+            db,
+            collection: 'surveys',
+            countryCode,
+            dryRun,
+        }),
     ]);
-    const totalScanned = petitionsResult.scanned + pollsResult.scanned;
-    const totalUpdated = petitionsResult.updated + pollsResult.updated;
+    const totalScanned = petitionsResult.scanned + pollsResult.scanned + surveysResult.scanned;
+    const totalUpdated = petitionsResult.updated + pollsResult.updated + surveysResult.updated;
     return {
         success: true,
         dryRun,
         countryCode,
         totalScanned,
         totalUpdated,
-        collections: [petitionsResult, pollsResult],
+        collections: [petitionsResult, pollsResult, surveysResult],
     };
 });
 exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (request) => {

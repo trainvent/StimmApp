@@ -102,19 +102,51 @@ export async function cleanupUserData(uid: string) {
 			await doc.ref.delete();
 		}
 
-		// 5. Delete Signatures made by this user on OTHER petitions
+		// 5. Delete Surveys created by the user
+		const surveysSnap = await db.collection("surveys").where("createdBy", "==", uid).get();
+		for (const doc of surveysSnap.docs) {
+			// Delete responses subcollection
+			await deleteCollection(db, `surveys/${doc.id}/responses`, 100);
+			// Delete the survey itself
+			await doc.ref.delete();
+		}
+
+		// 6. Delete Signatures made by this user on OTHER petitions
 		const signaturesSnap = await db.collectionGroup("signatures").where("signerId", "==", uid).get();
 		const sigBatch = db.batch();
 		signaturesSnap.docs.forEach(doc => sigBatch.delete(doc.ref));
 		await sigBatch.commit();
 
-		// 6. Delete Votes made by this user on OTHER polls
+		// 7. Delete Votes made by this user on OTHER polls
 		const votesSnap = await db.collectionGroup("votes").where("voterId", "==", uid).get();
 		const voteBatch = db.batch();
 		votesSnap.docs.forEach(doc => voteBatch.delete(doc.ref));
 		await voteBatch.commit();
 
-		// 7. Delete Verification Codes
+		// 8. Delete survey responses made by this user on OTHER surveys
+		const responsesSnap = await db.collectionGroup("responses").where("uid", "==", uid).get();
+		for (const responseDoc of responsesSnap.docs) {
+			const surveyRef = responseDoc.ref.parent.parent;
+			if (!surveyRef) continue;
+
+			const data = responseDoc.data();
+			const answers = data.answers || {};
+			await db.runTransaction(async (txn) => {
+				const update: Record<string, admin.firestore.FieldValue> = {
+					responseCount: admin.firestore.FieldValue.increment(-1),
+				};
+				for (const [questionId, optionId] of Object.entries(answers)) {
+					if (typeof optionId === "string") {
+						update[`questionVotes.${questionId}.${optionId}`] = admin.firestore.FieldValue.increment(-1);
+					}
+				}
+				txn.update(surveyRef, update);
+				txn.delete(responseDoc.ref);
+				txn.delete(db.collection("users").doc(uid).collection("completedSurveys").doc(surveyRef.id));
+			});
+		}
+
+		// 9. Delete Verification Codes
 		await db.collection("verificationCodes").doc(uid).delete();
 
 		console.log(`[cleanupUserData] Cleanup complete for user: ${uid}`);

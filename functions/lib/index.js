@@ -94,6 +94,7 @@ exports.closeExpiredForms = (0, scheduler_1.onSchedule)("every 15 minutes", asyn
     const targets = [
         { name: 'petitions' },
         { name: 'polls' },
+        { name: 'surveys' },
     ];
     for (const target of targets) {
         const snap = await db
