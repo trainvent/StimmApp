@@ -79,6 +79,7 @@ dependencies:
   csv: ^6.0.0
   flutter_slidable: ^4.0.3
   intl_utils: ^2.8.14
+  firebase_crashlytics: ^5.2.4
 
 dev_dependencies:
   flutter_test:

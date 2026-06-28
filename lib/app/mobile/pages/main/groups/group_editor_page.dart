@@ -631,6 +631,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         }
         final opened = await PurchasesService.instance.presentPaywall(
           context: context,
+          source: 'group_editor',
         );
         if (!opened && mounted) {
           showErrorSnackBar(context.l10n.couldNotOpenPaywall);

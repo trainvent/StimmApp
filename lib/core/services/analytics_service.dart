@@ -152,4 +152,28 @@ class AnalyticsService {
       parameters: {'source': source, 'success': success},
     );
   }
+
+  Future<void> logPaywallFailure({
+    required String source,
+    required String stage,
+    required String reason,
+    String? errorCode,
+    Object? error,
+  }) {
+    final message = error?.toString();
+    return logEvent(
+      'paywall_failure',
+      parameters: {
+        'source': source,
+        'stage': stage,
+        'reason': reason,
+        'error_code': errorCode,
+        'error_message': message?.substring(
+          0,
+          message.length > 100 ? 100 : message.length,
+        ),
+        'is_web': kIsWeb,
+      },
+    );
+  }
 }

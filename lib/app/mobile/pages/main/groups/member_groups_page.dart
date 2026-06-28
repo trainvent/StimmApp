@@ -94,6 +94,7 @@ class MemberGroupsPage extends StatelessWidget {
     if (requiresPro) {
       final opened = await PurchasesService.instance.presentPaywall(
         context: context,
+        source: 'member_groups',
       );
       if (!opened && context.mounted) {
         showErrorSnackBar(context.l10n.couldNotOpenPaywall);
@@ -367,14 +368,17 @@ class MemberGroupsPage extends StatelessWidget {
                     ),
                     child: PollGroupSummaryCard(
                       group: group,
-                      onTap: canManage ? () => _openEditor(context, group) : null,
+                      onTap: canManage
+                          ? () => _openEditor(context, group)
+                          : null,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (inviteLink != null) ...[
                             IconButton(
                               tooltip: context.l10n.copyInviteLinkTooltip,
-                              onPressed: () => _copyGroupInviteLink(context, group),
+                              onPressed: () =>
+                                  _copyGroupInviteLink(context, group),
                               icon: const Icon(Icons.link),
                             ),
                             IconButton(

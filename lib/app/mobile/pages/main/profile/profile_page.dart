@@ -312,11 +312,19 @@ class ProfilePage extends StatelessWidget {
                                 return;
                               }
                               final success = await PurchasesService.instance
-                                  .presentPaywall(context: context);
+                                  .presentPaywall(
+                                    context: context,
+                                    source: 'profile',
+                                  );
                               await AnalyticsService.instance.logPaywallResult(
                                 source: 'profile',
                                 success: success,
                               );
+                              if (!success && context.mounted) {
+                                showErrorSnackBar(
+                                  context.l10n.couldNotOpenPaywall,
+                                );
+                              }
                             },
                           ),
                           //TODO: route to verificationPage once Ausweisapp Client is in place

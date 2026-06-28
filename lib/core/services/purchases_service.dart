@@ -8,6 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /*// on startup:
@@ -171,12 +172,36 @@ class PurchasesService {
     }
   }
 
+  Future<void> _logPaywallFailure({
+    required String source,
+    required String stage,
+    required String reason,
+    String? errorCode,
+    Object? error,
+  }) {
+    return AnalyticsService.instance.logPaywallFailure(
+      source: source,
+      stage: stage,
+      reason: reason,
+      errorCode: errorCode,
+      error: error,
+    );
+  }
+
   /// Hosted paywall – returns true on success.
-  Future<bool> presentPaywall({BuildContext? context}) async {
+  Future<bool> presentPaywall({
+    BuildContext? context,
+    String source = 'unknown',
+  }) async {
     if (kIsWeb) {
-      return _presentWebPaywall(context: context);
+      return _presentWebPaywall(context: context, source: source);
     }
     if (!_ensureInitialized(action: 'presentPaywall')) {
+      await _logPaywallFailure(
+        source: source,
+        stage: 'native_paywall',
+        reason: 'not_initialized',
+      );
       return false;
     }
     try {
@@ -186,6 +211,12 @@ class PurchasesService {
       return true;
     } catch (e, st) {
       log('presentPaywall error: $e\n$st');
+      await _logPaywallFailure(
+        source: source,
+        stage: 'native_paywall',
+        reason: 'exception',
+        error: e,
+      );
       return false;
     }
   }
@@ -194,15 +225,21 @@ class PurchasesService {
   Future<bool> presentPaywallIfNeeded(
     String paywallId, {
     BuildContext? context,
+    String source = 'unknown',
   }) async {
     if (kIsWeb) {
       log(
         'RevenueCat Paywalls UI is not supported on Web. '
         'Falling back to package selection.',
       );
-      return _presentWebPaywall(context: context);
+      return _presentWebPaywall(context: context, source: source);
     }
     if (!_ensureInitialized(action: 'presentPaywallIfNeeded')) {
+      await _logPaywallFailure(
+        source: source,
+        stage: 'native_paywall_if_needed',
+        reason: 'not_initialized',
+      );
       return false;
     }
     try {
@@ -212,18 +249,37 @@ class PurchasesService {
       return true;
     } catch (e, st) {
       log('presentPaywallIfNeeded error: $e\n$st');
+      await _logPaywallFailure(
+        source: source,
+        stage: 'native_paywall_if_needed',
+        reason: 'exception',
+        error: e,
+      );
       return false;
     }
   }
 
-  Future<bool> _presentWebPaywall({BuildContext? context}) async {
+  Future<bool> _presentWebPaywall({
+    BuildContext? context,
+    required String source,
+  }) async {
     if (!_isInitialized) {
       log('RevenueCat is not initialized on web. Missing web API key?');
+      await _logPaywallFailure(
+        source: source,
+        stage: 'web_paywall',
+        reason: 'not_initialized',
+      );
       showErrorSnackBar('Web billing is not configured yet.');
       return false;
     }
     if (context == null) {
       log('Web paywall requested without BuildContext.');
+      await _logPaywallFailure(
+        source: source,
+        stage: 'web_paywall',
+        reason: 'missing_context',
+      );
       return false;
     }
 
@@ -241,6 +297,11 @@ class PurchasesService {
           mode: LaunchMode.externalApplication,
         );
         if (!launched) {
+          await _logPaywallFailure(
+            source: source,
+            stage: 'web_paywall',
+            reason: 'subscription_url_launch_failed',
+          );
           showErrorSnackBar('Could not open Google Play subscriptions.');
           return false;
         }
@@ -253,6 +314,11 @@ class PurchasesService {
       }
       final offering = offerings.current;
       if (offering == null || offering.availablePackages.isEmpty) {
+        await _logPaywallFailure(
+          source: source,
+          stage: 'web_paywall',
+          reason: 'empty_offering',
+        );
         showErrorSnackBar('No web billing products are available right now.');
         return false;
       }
@@ -275,17 +341,32 @@ class PurchasesService {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
         log('presentWebPaywall error: $e\n$st');
+        await _logPaywallFailure(
+          source: source,
+          stage: 'web_paywall',
+          reason: 'platform_exception',
+          errorCode: errorCode.name,
+          error: e,
+        );
         showErrorSnackBar(e.message ?? 'Could not complete purchase.');
       }
       return false;
     } catch (e, st) {
       log('presentWebPaywall error: $e\n$st');
+      await _logPaywallFailure(
+        source: source,
+        stage: 'web_paywall',
+        reason: 'exception',
+        error: e,
+      );
       showErrorSnackBar('Could not complete purchase.');
       return false;
     }
   }
 
-  Future<_WebPaymentOption?> _selectWebPaymentOption(BuildContext context) async {
+  Future<_WebPaymentOption?> _selectWebPaymentOption(
+    BuildContext context,
+  ) async {
     final notifier = ValueNotifier<_WebPaymentOption?>(null);
     await showDialog(
       context: context,

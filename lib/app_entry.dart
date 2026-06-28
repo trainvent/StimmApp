@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
@@ -80,6 +81,39 @@ Future<void> _configureFirestore() async {
   }
 }
 
+Future<void> _configureCrashReporting() async {
+  if (kIsWeb) {
+    return;
+  }
+
+  try {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      errorLogTool(
+        exception: details.exception,
+        errorCustomMessage: 'Flutter framework error',
+      );
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    };
+
+    PlatformDispatcher.instance.onError = (error, stack) {
+      errorLogTool(
+        exception: error,
+        errorCustomMessage: 'Uncaught async error',
+      );
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  } catch (error) {
+    errorLogTool(
+      exception: error,
+      errorCustomMessage: 'Crashlytics configuration failed',
+    );
+  }
+}
+
 Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) usePathUrlStrategy();
@@ -106,6 +140,7 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
     'Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}',
   );
 
+  await _configureCrashReporting();
   await _configureFirestore();
   locator.init();
   final revenueCatApiKey = _resolveRevenueCatApiKey();

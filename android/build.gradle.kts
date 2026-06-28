@@ -28,7 +28,7 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
-    
+
     // Force stable versions of AndroidX libraries to avoid AGP 8.9.1 requirement
     project.configurations.all {
         resolutionStrategy {

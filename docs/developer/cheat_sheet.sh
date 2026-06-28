@@ -137,17 +137,3 @@ rm prod-key.json
 
 ## run the sync
 gcloud scheduler jobs run firebase-schedule-checkSubscriptions-us-central1 --location=us-central1
-
-# test SMPT
-swaks --server smtp.strato.de --port 465 --tls-on-connect --auth LOGIN \
-  --auth-user 'noreply@trainvent.com' --auth-password 'CFp9v8*)zRBFt8cogA%wIZPT' \
-  --from 'noreply@trainvent.com' --to 'leon.marquardt@mail.de'
-
-  swaks --server mail.example.com:465 \
-      --tls-on-connect \
-      --auth noreply@trainvent.com \
-      --auth-user noreply \
-      --auth-password 'CFp9v8*)zRBFt8cogA%wIZPT' \
-      --from noreply@trainvent.com \
-      --to leon.marquardt@mail.de \
-      --suppress-data
