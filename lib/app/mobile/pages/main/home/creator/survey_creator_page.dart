@@ -21,7 +21,9 @@ const String _publicGroupValue = '__public__';
 const String _manageGroupsValue = '__manage_groups__';
 
 class SurveyCreatorPage extends StatefulWidget {
-  const SurveyCreatorPage({super.key});
+  const SurveyCreatorPage({super.key, this.presentAsPoll = false});
+
+  final bool presentAsPoll;
 
   @override
   State<SurveyCreatorPage> createState() => _SurveyCreatorPageState();
@@ -327,7 +329,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       );
 
       if (mounted) {
-        showSuccessSnackBar('${context.l10n.createdSurvey} $surveyId');
+        final createdMessage = widget.presentAsPoll
+            ? context.l10n.createdPoll
+            : context.l10n.createdSurvey;
+        showSuccessSnackBar('$createdMessage $surveyId');
         Navigator.of(context).pop();
       }
     } on StateError catch (error) {
@@ -422,7 +427,9 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
-      title: context.l10n.createSurvey,
+      title: widget.presentAsPoll
+          ? context.l10n.createPoll
+          : context.l10n.createSurvey,
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createSurvey,
       additionalTopFields: [_buildGroupSelector(), const SizedBox(height: 20)],

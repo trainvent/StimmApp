@@ -70,6 +70,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
     bool? switchValue,
     ValueChanged<bool>? onChanged,
     bool enabled = true,
+    bool showInfoButton = true,
   }) {
     if (switchValue == null) {
       return ListTile(
@@ -89,11 +90,13 @@ class _PrivacyPageState extends State<PrivacyPage> {
       subtitle: Text(subtitle),
       value: switchValue,
       onChanged: enabled ? onChanged : null,
-      secondary: IconButton(
-        tooltip: context.l10n.about,
-        onPressed: () => _openPolicyUrl(url),
-        icon: const Icon(Icons.info_outline),
-      ),
+      secondary: showInfoButton
+          ? IconButton(
+              tooltip: context.l10n.about,
+              onPressed: () => _openPolicyUrl(url),
+              icon: const Icon(Icons.info_outline),
+            )
+          : null,
     );
   }
 
@@ -141,6 +144,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 switchValue: analyticsCollectionEnabled,
                 onChanged: (value) =>
                     _toggleAnalyticsCollection(value, profile),
+                showInfoButton: false,
               ),
               _buildPolicyTile(
                 title: context.l10n.sendCrashLogs,
@@ -148,6 +152,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 url: IConst.privacyPolicyCrashDataUrl,
                 switchValue: sendCrashLogs,
                 onChanged: (value) => _toggleCrashLogs(value, profile),
+                showInfoButton: false,
               ),
             ],
           );
