@@ -15,6 +15,7 @@ void showSuccessSnackBar([String? message]) {
     SnackBar(
       backgroundColor: Colors.green,
       behavior: SnackBarBehavior.floating,
+      duration: const Duration(seconds: 1),
       content: Text(message ?? '', style: AppTextStyles.m),
       showCloseIcon: true,
     ),
@@ -32,7 +33,7 @@ void showErrorSnackBar([String? message]) {
     SnackBar(
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 12),
+      duration: const Duration(seconds: 1),
       content: SelectableText(resolvedMessage, style: AppTextStyles.m),
       action: SnackBarAction(
         label: 'Copy',

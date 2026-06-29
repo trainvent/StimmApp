@@ -13,13 +13,14 @@ import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
-class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
+class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   const BaseDetailPage({
     super.key,
     required this.id,
@@ -45,6 +46,34 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   final Widget Function(BuildContext context, T item)? topRightActionBuilder;
   final String sharePathSegment;
 
+  @override
+  State<BaseDetailPage<T>> createState() => _BaseDetailPageState<T>();
+}
+
+class _BaseDetailPageState<T extends HomeItem>
+    extends State<BaseDetailPage<T>> {
+  late Stream<T?> _itemStream;
+  late Stream<T?> _topRightItemStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshItemStreams();
+  }
+
+  @override
+  void didUpdateWidget(covariant BaseDetailPage<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.id != oldWidget.id) {
+      _refreshItemStreams();
+    }
+  }
+
+  void _refreshItemStreams() {
+    _itemStream = widget.streamProvider(widget.id);
+    _topRightItemStream = widget.streamProvider(widget.id);
+  }
+
   DatabaseService get _databaseService => locator.databaseService;
 
   String? _safeCurrentUid() {
@@ -61,12 +90,12 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
     required Set<String> memberGroupIds,
     required Set<String> acceptedInviteGroupIds,
   }) {
-    if (item is! Poll) {
-      return true;
-    }
-
-    final poll = item;
-    if (poll.visibility != 'group') {
+    final visibility = switch (item) {
+      Poll(:final visibility) => visibility,
+      Survey(:final visibility) => visibility,
+      _ => 'public',
+    };
+    if (visibility != 'group') {
       return true;
     }
 
@@ -74,11 +103,15 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
       return false;
     }
 
-    if (poll.createdBy == currentUid) {
+    if (item.createdBy == currentUid) {
       return true;
     }
 
-    final groupId = poll.groupId;
+    final groupId = switch (item) {
+      Poll(:final groupId) => groupId,
+      Survey(:final groupId) => groupId,
+      _ => null,
+    };
     if (groupId == null || groupId.isEmpty) {
       return false;
     }
@@ -126,15 +159,16 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
       ),
     ];
 
-    if (item is Poll &&
-        item.visibility == 'group' &&
-        (item.groupName ?? '').trim().isNotEmpty) {
+    final groupName = switch (item) {
+      Poll(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      Survey(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      _ => null,
+    };
+    if ((groupName ?? '').trim().isNotEmpty) {
       chips.add(
-        Chip(
-          label: Text(
-            context.l10n.groupLabelWithValue(item.groupName!.trim()),
-          ),
-        ),
+        Chip(label: Text(context.l10n.groupLabelWithValue(groupName!.trim()))),
       );
     }
 
@@ -216,13 +250,14 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(appBarTitle),
+        title: Text(widget.appBarTitle),
         actions: [
-          if (actions != null) ...actions!,
+          if (widget.actions != null) ...widget.actions!,
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () async {
-              final link = '${Environment.shareBaseUrl}/$sharePathSegment/$id';
+              final link =
+                  '${Environment.shareBaseUrl}/${widget.sharePathSegment}/${widget.id}';
               final shareText = '${context.l10n.shareThis}: $link';
               final shareSubject = context.l10n.share;
               final linkCopiedText = context.l10n.linkCopiedToClipboard;
@@ -268,21 +303,21 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
               }
             },
           ),
-          if (topRightActionBuilder != null)
+          if (widget.topRightActionBuilder != null)
             StreamBuilder<T?>(
-              stream: streamProvider(id),
+              stream: _topRightItemStream,
               builder: (context, snapshot) {
                 final item = snapshot.data;
                 if (item == null) {
                   return const SizedBox.shrink();
                 }
-                return topRightActionBuilder!(context, item);
+                return widget.topRightActionBuilder!(context, item);
               },
             ),
         ],
       ),
       body: StreamBuilder<T?>(
-        stream: streamProvider(id),
+        stream: _itemStream,
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: TriangleLoadingIndicator());
@@ -385,7 +420,7 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                                 Text(
                                   '${context.l10n.participants}: ${item.participantCount}',
                                 ),
-                                if (participantsStream != null)
+                                if (widget.participantsStream != null)
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).push(
@@ -393,9 +428,9 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                                           builder: (context) =>
                                               ParticipantsListPage(
                                                 participantsStream:
-                                                    participantsStream!,
+                                                    widget.participantsStream!,
                                                 signaturesStream:
-                                                    signaturesStream,
+                                                    widget.signaturesStream,
                                               ),
                                         ),
                                       );
@@ -423,14 +458,14 @@ class BaseDetailPage<T extends HomeItem> extends StatelessWidget {
                             Expanded(
                               child: AbsorbPointer(
                                 absorbing: isExpired,
-                                child: contentBuilder(context, item),
+                                child: widget.contentBuilder(context, item),
                               ),
                             ),
-                            if (!isExpired && bottomAction != null) ...[
+                            if (!isExpired && widget.bottomAction != null) ...[
                               const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
-                                child: bottomAction!,
+                                child: widget.bottomAction!,
                               ),
                             ],
                           ],

@@ -246,6 +246,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createdSurvey => 'Befragung erstellt';
 
   @override
+  String get surveys => 'Befragungen';
+
+  @override
   String get creator => 'Ersteller';
 
   @override
@@ -272,6 +275,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get darkMode => 'Dunkler Modus';
+
+  @override
+  String get design => 'Design';
 
   @override
   String get dateOfBirth => 'Geburtsdatum';
@@ -1103,6 +1109,26 @@ class AppLocalizationsDe extends AppLocalizations {
   String get voted => 'Abgestimmt';
 
   @override
+  String get showSurveys => 'Befragungen anzeigen';
+
+  @override
+  String get showSurveysInfo =>
+      'Wenn dies aktiviert ist, erscheinen Befragungen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.';
+
+  @override
+  String get surveyDetails => 'Befragungsdetails';
+
+  @override
+  String get submitSurvey => 'Befragung absenden';
+
+  @override
+  String get surveySubmitted => 'Befragung abgesendet';
+
+  @override
+  String get answerAllSurveyQuestions =>
+      'Bitte beantworte alle Befragungsfragen.';
+
+  @override
   String get requestLoginCode => 'Login Code anfordern';
 
   @override
@@ -1494,6 +1520,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollDeleted => 'Umfrage gelöscht';
+
+  @override
+  String get cannotDeleteSurveyHasResponses =>
+      'Kann nicht gelöscht werden: Befragung hat Antworten.';
+
+  @override
+  String get surveyDeleted => 'Befragung gelöscht';
 
   @override
   String get deleteForm => 'Formular löschen';

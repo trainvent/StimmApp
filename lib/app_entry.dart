@@ -12,6 +12,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/home/polls/survey_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/delete_account_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
@@ -88,20 +89,6 @@ Future<void> _configureCrashReporting() async {
 
   try {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-    final didCrashOnPreviousExecution = await FirebaseCrashlytics.instance
-        .didCrashOnPreviousExecution();
-    debugPrint(
-      '[Crashlytics] collectionEnabled='
-      '${FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled} '
-      'didCrashOnPreviousExecution=$didCrashOnPreviousExecution',
-    );
-    await FirebaseCrashlytics.instance.sendUnsentReports();
-    debugPrint('[Crashlytics] startup sendUnsentReports requested');
-    if (didCrashOnPreviousExecution) {
-      await FirebaseCrashlytics.instance.log(
-        'Previous execution crashed; requesting unsent report upload',
-      );
-    }
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
@@ -219,6 +206,8 @@ class _MyAppState extends State<MyApp> {
         return PetitionDetailPage(id: id);
       case 'poll':
         return PollDetailPage(id: id);
+      case 'survey':
+        return SurveyDetailPage(id: id);
       default:
         return null;
     }

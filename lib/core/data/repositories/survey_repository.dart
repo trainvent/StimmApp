@@ -3,6 +3,8 @@ import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 class SurveyRepository {
@@ -121,6 +123,24 @@ class SurveyRepository {
 
   Future<void> delete(String id) async {
     await _col().doc(id).delete();
+  }
+
+  Stream<List<UserProfile>> watchParticipants(String surveyId) {
+    return _fs.instance
+        .collection(DatabaseCollections.surveys)
+        .doc(surveyId)
+        .collection(DatabaseCollections.responses)
+        .snapshots()
+        .asyncMap((snap) async {
+          final uids = snap.docs.map((doc) => doc.id).toList();
+          if (uids.isEmpty) return [];
+
+          final userRepo = UserRepository.create();
+          final profiles = await Future.wait(
+            uids.map((uid) => userRepo.getById(uid)),
+          );
+          return profiles.whereType<UserProfile>().toList();
+        });
   }
 
   Future<void> removeResponsesByUser(String uid) async {

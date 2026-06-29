@@ -244,6 +244,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createdSurvey => 'Survey created';
 
   @override
+  String get surveys => 'Surveys';
+
+  @override
   String get creator => 'Creator';
 
   @override
@@ -270,6 +273,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get darkMode => 'Dark Mode';
+
+  @override
+  String get design => 'Design';
 
   @override
   String get dateOfBirth => 'Date of Birth';
@@ -1093,6 +1099,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voted => 'Voted';
 
   @override
+  String get showSurveys => 'Show surveys';
+
+  @override
+  String get showSurveysInfo =>
+      'When this is on, surveys appear in the polls list alongside regular polls. Turn it off if you only want to browse single-question polls.';
+
+  @override
+  String get surveyDetails => 'Survey Details';
+
+  @override
+  String get submitSurvey => 'Submit survey';
+
+  @override
+  String get surveySubmitted => 'Survey submitted';
+
+  @override
+  String get answerAllSurveyQuestions => 'Please answer all survey questions.';
+
+  @override
   String get requestLoginCode => 'Request login code';
 
   @override
@@ -1476,6 +1501,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pollDeleted => 'Poll deleted';
+
+  @override
+  String get cannotDeleteSurveyHasResponses =>
+      'Cannot delete: Survey has responses.';
+
+  @override
+  String get surveyDeleted => 'Survey deleted';
 
   @override
   String get deleteForm => 'Delete Form';

@@ -99,6 +99,9 @@ class SignActionButton extends StatelessWidget {
       await onAction(reason: reason);
       if (!context.mounted) return;
       showSuccessSnackBar(successMessage);
+    } on StateError catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackBar(e.message);
     } catch (e) {
       if (!context.mounted) return;
       showErrorSnackBar(e.toString());
@@ -170,7 +173,10 @@ class _LoginContent extends StatelessWidget {
                   onPressed: () {
                     // Close the bottom sheet and navigate to WelcomePage
                     // We need to find the navigator of the main app, not the nested one
-                    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).pushAndRemoveUntil(
                       MaterialPageRoute(
                         builder: (context) => const WelcomePage(),
                       ),

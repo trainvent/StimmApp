@@ -8,6 +8,7 @@ import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -23,6 +24,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     required this.itemBuilder,
     this.extraFilter,
     this.extraFilterCount = 0,
+    this.designFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
   });
@@ -31,6 +33,8 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   final Widget Function(BuildContext context, T item) itemBuilder;
   final bool Function(T item)? extraFilter;
   final int extraFilterCount;
+  final Widget Function(BuildContext context, StateSetter setDialogState)?
+  designFilterSectionBuilder;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
   filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
@@ -93,7 +97,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExpansionTile(
-                      initiallyExpanded: true,
+                      initiallyExpanded: false,
                       tilePadding: EdgeInsets.zero,
                       childrenPadding: const EdgeInsets.only(bottom: 8),
                       title: Text(
@@ -136,10 +140,25 @@ class _BaseOverviewPageState<T extends HomeItem>
                         ),
                       ],
                     ),
+                    if (widget.designFilterSectionBuilder != null) ...[
+                      const Divider(),
+                      ExpansionTile(
+                        initiallyExpanded: false,
+                        tilePadding: EdgeInsets.zero,
+                        childrenPadding: const EdgeInsets.only(bottom: 8),
+                        title: Text(
+                          context.l10n.design,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        children: [
+                          widget.designFilterSectionBuilder!(context, setState),
+                        ],
+                      ),
+                    ],
                     if (widget.filterDialogSectionBuilder != null) ...[
                       const Divider(),
                       ExpansionTile(
-                        initiallyExpanded: true,
+                        initiallyExpanded: false,
                         tilePadding: EdgeInsets.zero,
                         childrenPadding: const EdgeInsets.only(bottom: 8),
                         title: Text(
@@ -273,12 +292,12 @@ class _BaseOverviewPageState<T extends HomeItem>
     required Set<String> memberGroupIds,
     required Set<String> acceptedInviteGroupIds,
   }) {
-    if (item is! Poll) {
-      return true;
-    }
-
-    final poll = item;
-    if (poll.visibility != 'group') {
+    final visibility = switch (item) {
+      Poll(:final visibility) => visibility,
+      Survey(:final visibility) => visibility,
+      _ => 'public',
+    };
+    if (visibility != 'group') {
       return true;
     }
 
@@ -286,11 +305,15 @@ class _BaseOverviewPageState<T extends HomeItem>
       return false;
     }
 
-    if (poll.createdBy == currentUid) {
+    if (item.createdBy == currentUid) {
       return true;
     }
 
-    final groupId = poll.groupId;
+    final groupId = switch (item) {
+      Poll(:final groupId) => groupId,
+      Survey(:final groupId) => groupId,
+      _ => null,
+    };
     if (groupId == null || groupId.isEmpty) {
       return false;
     }

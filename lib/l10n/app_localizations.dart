@@ -542,6 +542,12 @@ abstract class AppLocalizations {
   /// **'Survey created'**
   String get createdSurvey;
 
+  /// No description provided for @surveys.
+  ///
+  /// In en, this message translates to:
+  /// **'Surveys'**
+  String get surveys;
+
   /// No description provided for @creator.
   ///
   /// In en, this message translates to:
@@ -589,6 +595,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark Mode'**
   String get darkMode;
+
+  /// No description provided for @design.
+  ///
+  /// In en, this message translates to:
+  /// **'Design'**
+  String get design;
 
   /// No description provided for @dateOfBirth.
   ///
@@ -2162,6 +2174,42 @@ abstract class AppLocalizations {
   /// **'Voted'**
   String get voted;
 
+  /// No description provided for @showSurveys.
+  ///
+  /// In en, this message translates to:
+  /// **'Show surveys'**
+  String get showSurveys;
+
+  /// No description provided for @showSurveysInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'When this is on, surveys appear in the polls list alongside regular polls. Turn it off if you only want to browse single-question polls.'**
+  String get showSurveysInfo;
+
+  /// No description provided for @surveyDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey Details'**
+  String get surveyDetails;
+
+  /// No description provided for @submitSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit survey'**
+  String get submitSurvey;
+
+  /// No description provided for @surveySubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey submitted'**
+  String get surveySubmitted;
+
+  /// No description provided for @answerAllSurveyQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Please answer all survey questions.'**
+  String get answerAllSurveyQuestions;
+
   /// No description provided for @requestLoginCode.
   ///
   /// In en, this message translates to:
@@ -2851,6 +2899,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Poll deleted'**
   String get pollDeleted;
+
+  /// No description provided for @cannotDeleteSurveyHasResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete: Survey has responses.'**
+  String get cannotDeleteSurveyHasResponses;
+
+  /// No description provided for @surveyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey deleted'**
+  String get surveyDeleted;
 
   /// No description provided for @deleteForm.
   ///
