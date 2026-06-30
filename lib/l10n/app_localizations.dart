@@ -2984,6 +2984,36 @@ abstract class AppLocalizations {
   /// **'Open Privacy Policy'**
   String get openPrivacyPolicy;
 
+  /// No description provided for @loginLegalNoticePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to our '**
+  String get loginLegalNoticePrefix;
+
+  /// No description provided for @loginLegalNoticeTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get loginLegalNoticeTerms;
+
+  /// No description provided for @loginLegalNoticeAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get loginLegalNoticeAnd;
+
+  /// No description provided for @loginLegalNoticePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get loginLegalNoticePrivacy;
+
+  /// No description provided for @loginLegalNoticeSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'.'**
+  String get loginLegalNoticeSuffix;
+
   /// No description provided for @saving.
   ///
   /// In en, this message translates to:

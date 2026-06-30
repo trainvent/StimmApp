@@ -3708,6 +3708,56 @@ class S {
     );
   }
 
+  /// `By continuing, you agree to our `
+  String get loginLegalNoticePrefix {
+    return Intl.message(
+      'By continuing, you agree to our ',
+      name: 'loginLegalNoticePrefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms of Service`
+  String get loginLegalNoticeTerms {
+    return Intl.message(
+      'Terms of Service',
+      name: 'loginLegalNoticeTerms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` and `
+  String get loginLegalNoticeAnd {
+    return Intl.message(
+      ' and ',
+      name: 'loginLegalNoticeAnd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy Policy`
+  String get loginLegalNoticePrivacy {
+    return Intl.message(
+      'Privacy Policy',
+      name: 'loginLegalNoticePrivacy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `.`
+  String get loginLegalNoticeSuffix {
+    return Intl.message(
+      '.',
+      name: 'loginLegalNoticeSuffix',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Saving...`
   String get saving {
     return Intl.message('Saving...', name: 'saving', desc: '', args: []);

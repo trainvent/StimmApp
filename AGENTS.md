@@ -40,7 +40,7 @@ The app follows a clean architecture approach, separated into layers:
     *   Initializes Purchases (RevenueCat).
     *   Runs `MyApp` wrapped in `ProviderScope`.
 2.  `MyApp` (`lib/app_entry.dart`):
-    *   Uses `AppBootstrap` (`lib/core/config/app_bootstrap.dart`) to handle async setup (Theme, Locale, Ads).
+    *   Uses `AppBootstrap` (`lib/core/config/app_bootstrap.dart`) to handle async setup (Theme, Locale).
     *   Shows `AppLoadingPage` until initialized.
     *   **LayoutBuilder:** Enforces a max width/aspect ratio (2/3) for web/tablet compatibility.
     *   Routing is handled here.

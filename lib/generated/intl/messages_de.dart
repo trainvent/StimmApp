@@ -720,6 +720,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "openGroupsCanBeJoinedImmediately": MessageLookupByLibrary.simpleMessage(
       "Offene Gruppen können sofort beigetreten werden.",
     ),
+    "loginLegalNoticeAnd": MessageLookupByLibrary.simpleMessage(
+      " und unserer ",
+    ),
+    "loginLegalNoticePrefix": MessageLookupByLibrary.simpleMessage(
+      "Indem du fortfährst, stimmst du unseren ",
+    ),
+    "loginLegalNoticePrivacy": MessageLookupByLibrary.simpleMessage(
+      "Datenschutzerklärung",
+    ),
+    "loginLegalNoticeSuffix": MessageLookupByLibrary.simpleMessage(" zu."),
+    "loginLegalNoticeTerms": MessageLookupByLibrary.simpleMessage(
+      "Nutzungsbedingungen",
+    ),
     "openPrivacyPolicy": MessageLookupByLibrary.simpleMessage(
       "Datenschutzerklärung öffnen",
     ),

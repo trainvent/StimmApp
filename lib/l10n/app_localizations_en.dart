@@ -1550,6 +1550,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openPrivacyPolicy => 'Open Privacy Policy';
 
   @override
+  String get loginLegalNoticePrefix => 'By continuing, you agree to our ';
+
+  @override
+  String get loginLegalNoticeTerms => 'Terms of Service';
+
+  @override
+  String get loginLegalNoticeAnd => ' and ';
+
+  @override
+  String get loginLegalNoticePrivacy => 'Privacy Policy';
+
+  @override
+  String get loginLegalNoticeSuffix => '.';
+
+  @override
   String get saving => 'Saving...';
 
   @override

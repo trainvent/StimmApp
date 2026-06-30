@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:stimmapp/core/config/environment.dart';
 
 class IConst {
@@ -49,11 +50,15 @@ class IConst {
   static String get appName => Environment.appName;
   static String get supportEmail => Environment.supportEmail;
   static String get privacyPolicyUrl => Environment.privacyPolicyUrl;
+  static String privacyPolicyUrlForLocale(Locale locale) =>
+      Environment.privacyPolicyUrlForLocale(locale);
   static String get privacyPolicyCrashDataUrl =>
       Environment.privacyPolicyCrashDataUrl;
   static String get privacyPolicyCookiesUrl =>
       Environment.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => Environment.termsOfServiceUrl;
+  static String termsOfServiceUrlForLocale(Locale locale) =>
+      Environment.termsOfServiceUrlForLocale(locale);
   static String get faqUrl => Environment.faqUrl;
 
   static const String _revenueCatApiKeyDevAndroid = String.fromEnvironment(

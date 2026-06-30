@@ -33,10 +33,24 @@ class Environment {
   static String get appName => config.appName;
   static String get supportEmail => config.supportEmail;
   static String get privacyPolicyUrl => config.privacyPolicyUrl;
+  static String privacyPolicyUrlForLocale(Locale locale) {
+    if (!isStimmapp) return privacyPolicyUrl;
+    return locale.languageCode.toLowerCase() == 'de'
+        ? 'https://www.stimmapp.net/datenschutzerklaerung.html'
+        : 'https://www.stimmapp.net/privacy_policy.html';
+  }
+
   static String get privacyPolicyCrashDataUrl =>
       config.privacyPolicyCrashDataUrl;
   static String get privacyPolicyCookiesUrl => config.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => config.termsOfServiceUrl;
+  static String termsOfServiceUrlForLocale(Locale locale) {
+    if (!isStimmapp) return termsOfServiceUrl;
+    return locale.languageCode.toLowerCase() == 'de'
+        ? 'https://www.stimmapp.net/nutzungsbedingungen.html'
+        : 'https://www.stimmapp.net/terms-of-service.html';
+  }
+
   static String get faqUrl => config.faqUrl;
   static String get shareHost => config.shareHost;
   static String get shareBaseUrl => config.shareBaseUrl;

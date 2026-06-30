@@ -1569,6 +1569,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get openPrivacyPolicy => 'Datenschutzerklärung öffnen';
 
   @override
+  String get loginLegalNoticePrefix =>
+      'Indem du fortfährst, stimmst du unseren ';
+
+  @override
+  String get loginLegalNoticeTerms => 'Nutzungsbedingungen';
+
+  @override
+  String get loginLegalNoticeAnd => ' und unserer ';
+
+  @override
+  String get loginLegalNoticePrivacy => 'Datenschutzerklärung';
+
+  @override
+  String get loginLegalNoticeSuffix => ' zu.';
+
+  @override
   String get saving => 'Speichern...';
 
   @override
