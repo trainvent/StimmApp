@@ -639,30 +639,30 @@ class S {
     );
   }
 
-  /// `You can only publish one petition and one poll per day.`
+  /// `Free members can publish one petition and one poll per day. Pro members can publish unlimited forms.`
   String get dailyCreateLimitReached {
     return Intl.message(
-      'You can only publish one petition and one poll per day.',
+      'Free members can publish one petition and one poll per day. Pro members can publish unlimited forms.',
       name: 'dailyCreateLimitReached',
       desc: '',
       args: [],
     );
   }
 
-  /// `You can only publish one petition per day.`
+  /// `Free members can publish one petition per day. Pro members can publish unlimited forms.`
   String get dailyCreatePetitionLimitReached {
     return Intl.message(
-      'You can only publish one petition per day.',
+      'Free members can publish one petition per day. Pro members can publish unlimited forms.',
       name: 'dailyCreatePetitionLimitReached',
       desc: '',
       args: [],
     );
   }
 
-  /// `You can only publish one poll per day.`
+  /// `Free members can publish one poll or survey per day. Pro members can publish unlimited forms.`
   String get dailyCreatePollLimitReached {
     return Intl.message(
-      'You can only publish one poll per day.',
+      'Free members can publish one poll or survey per day. Pro members can publish unlimited forms.',
       name: 'dailyCreatePollLimitReached',
       desc: '',
       args: [],
@@ -1003,10 +1003,10 @@ class S {
     return Intl.message('Exercise', name: 'exercise', desc: '', args: []);
   }
 
-  /// `Expired creations`
+  /// `Finished Forms`
   String get expiredCreations {
     return Intl.message(
-      'Expired creations',
+      'Finished Forms',
       name: 'expiredCreations',
       desc: '',
       args: [],
@@ -1103,10 +1103,10 @@ class S {
     );
   }
 
-  /// `Finished forms`
+  /// `Finished Forms`
   String get finishedForms {
     return Intl.message(
-      'Finished forms',
+      'Finished Forms',
       name: 'finishedForms',
       desc: '',
       args: [],

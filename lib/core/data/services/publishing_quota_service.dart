@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stimmapp/core/constants/database_collections.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 
 class DailyPublishingStatus {
   final bool canCreatePetition;
@@ -34,12 +36,28 @@ class PublishingQuotaService {
         .doc(_todayKeyUtc());
   }
 
+  Future<bool> _isProUser(String uid) async {
+    final snap = await _firestore
+        .collection(DatabaseCollections.users)
+        .doc(uid)
+        .get();
+    final data = snap.data() ?? const <String, dynamic>{};
+    final email = data['email'] as String? ?? _auth.currentUser?.email;
+    return data['isPro'] == true || UserProfile.shouldForcePro(email);
+  }
+
   Future<DailyPublishingStatus> getDailyStatus() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) {
       return const DailyPublishingStatus(
         canCreatePetition: false,
         canCreatePoll: false,
+      );
+    }
+    if (await _isProUser(uid)) {
+      return const DailyPublishingStatus(
+        canCreatePetition: true,
+        canCreatePoll: true,
       );
     }
     final snap = await _doc(uid).get();
@@ -55,12 +73,13 @@ class PublishingQuotaService {
   Future<void> incrementPetition() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) throw StateError('No authenticated user');
+    final isPro = await _isProUser(uid);
     final ref = _doc(uid);
     await _firestore.runTransaction((txn) async {
       final snap = await txn.get(ref);
       final data = snap.data();
       final count = (data?['petitionCount'] ?? 0) as int;
-      if (count >= 1) {
+      if (!isPro && count >= 1) {
         throw StateError('petition_daily_limit_reached');
       }
       final newData = {
@@ -76,12 +95,13 @@ class PublishingQuotaService {
   Future<void> incrementPoll() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) throw StateError('No authenticated user');
+    final isPro = await _isProUser(uid);
     final ref = _doc(uid);
     await _firestore.runTransaction((txn) async {
       final snap = await txn.get(ref);
       final data = snap.data();
       final count = (data?['pollCount'] ?? 0) as int;
-      if (count >= 1) {
+      if (!isPro && count >= 1) {
         throw StateError('poll_daily_limit_reached');
       }
       final newData = {

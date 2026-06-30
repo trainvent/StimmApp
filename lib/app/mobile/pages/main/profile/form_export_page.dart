@@ -6,8 +6,10 @@ import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
+import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/file_output/file_format_router.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -19,22 +21,7 @@ class FormExportPage extends StatefulWidget {
   State<FormExportPage> createState() => _FormExportPageState();
 }
 
-class _FormExportPageState extends State<FormExportPage>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
+class _FormExportPageState extends State<FormExportPage> {
   Stream<List<Petition>> _expiredPetitionsByMe() {
     return PetitionRepository.create()
         .list(query: null, status: IConst.closed)
@@ -57,6 +44,18 @@ class _FormExportPageState extends State<FormExportPage>
             .toList();
       },
     );
+  }
+
+  Stream<List<Survey>> _expiredSurveysByMe() {
+    return SurveyRepository.create()
+        .list(query: null, status: IConst.closed)
+        .map((items) {
+          final uid = authService.currentUser?.uid;
+          final now = DateTime.now();
+          return items
+              .where((s) => s.createdBy == uid && s.expiresAt.isBefore(now))
+              .toList();
+        });
   }
 
   Future<void> _exportPetition(Petition petition) async {
@@ -120,6 +119,44 @@ class _FormExportPageState extends State<FormExportPage>
           exportContext,
           poll,
           poll.id,
+          format,
+          includeContent,
+        );
+      }
+    } on CsvExportCanceledException {
+      return;
+    } on MissingPluginException {
+      if (!mounted) return;
+      showErrorSnackBar(context.l10n.notAvailableOnWebApp);
+    } catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar('${context.l10n.exportFailed}: $e');
+    }
+  }
+
+  Future<void> _exportSurvey(Survey survey) async {
+    final exportContext = context;
+    final includeContent = await _selectIncludeContent(isPoll: true);
+    if (includeContent == null || !exportContext.mounted) return;
+    final action = await _selectExportAction();
+    if (action == null || !exportContext.mounted) return;
+    final format = await _selectExportFormat();
+    if (format == null || !exportContext.mounted) return;
+
+    try {
+      if (action == _ExportAction.save) {
+        await FileFormatRouter.instance.saveSurveyResults(
+          exportContext,
+          survey,
+          survey.id,
+          format,
+          includeContent,
+        );
+      } else {
+        await FileFormatRouter.instance.shareSurveyResults(
+          exportContext,
+          survey,
+          survey.id,
           format,
           includeContent,
         );
@@ -269,20 +306,26 @@ class _FormExportPageState extends State<FormExportPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.expiredCreations),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: context.l10n.expiredPetitions),
-            Tab(text: context.l10n.expiredPolls),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(context.l10n.finishedForms),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: context.l10n.petitions),
+              Tab(text: context.l10n.polls),
+              Tab(text: context.l10n.surveys),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildPetitionsTab(context),
+            _buildPollsTab(context),
+            _buildSurveysTab(context),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildPetitionsTab(context), _buildPollsTab(context)],
       ),
     );
   }
@@ -338,6 +381,35 @@ class _FormExportPageState extends State<FormExportPage>
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
               onTap: () => _exportPoll(p),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSurveysTab(BuildContext context) {
+    return StreamBuilder<List<Survey>>(
+      stream: _expiredSurveysByMe().map(
+        (list) => list..sort((a, b) => b.expiresAt.compareTo(a.expiresAt)),
+      ),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(child: TriangleLoadingIndicator());
+        }
+        final items = snap.data ?? const [];
+        if (items.isEmpty) {
+          return Center(child: Text(context.l10n.noExpiredItems));
+        }
+        return ListView.separated(
+          itemCount: items.length,
+          separatorBuilder: (context, i) => const Divider(height: 1),
+          itemBuilder: (context, i) {
+            final s = items[i];
+            return ListTile(
+              title: Text(s.title),
+              subtitle: Text(DateFormat('yyyy-MM-dd').format(s.expiresAt)),
+              onTap: () => _exportSurvey(s),
             );
           },
         );

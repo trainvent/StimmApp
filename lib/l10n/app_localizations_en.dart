@@ -258,15 +258,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dailyCreateLimitReached =>
-      'You can only publish one petition and one poll per day.';
+      'Free members can publish one petition and one poll per day. Pro members can publish unlimited forms.';
 
   @override
   String get dailyCreatePetitionLimitReached =>
-      'You can only publish one petition per day.';
+      'Free members can publish one petition per day. Pro members can publish unlimited forms.';
 
   @override
   String get dailyCreatePollLimitReached =>
-      'You can only publish one poll per day.';
+      'Free members can publish one poll or survey per day. Pro members can publish unlimited forms.';
 
   @override
   String get dailyHabit => 'Daily habit';
@@ -396,7 +396,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exercise => 'Exercise';
 
   @override
-  String get expiredCreations => 'Expired creations';
+  String get expiredCreations => 'Finished Forms';
 
   @override
   String get expiredPetitions => 'Expired petitions';
@@ -435,7 +435,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finalNotice => 'Final notice';
 
   @override
-  String get finishedForms => 'Finished forms';
+  String get finishedForms => 'Finished Forms';
 
   @override
   String get flutterPro => 'Flutter Pro';
@@ -1521,6 +1521,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRunningPollsFound => 'No running polls found.';
+
+  @override
+  String get noRunningSurveysFound => 'No running surveys found.';
 
   @override
   String get selectPaymentProvider => 'Select Payment Provider';

@@ -300,13 +300,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Eigene Petition- und Umfragebilder",
     ),
     "dailyCreateLimitReached": MessageLookupByLibrary.simpleMessage(
-      "Du kannst pro Tag nur eine Petition und eine Umfrage veröffentlichen.",
+      "Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyCreatePetitionLimitReached": MessageLookupByLibrary.simpleMessage(
-      "Du kannst pro Tag nur eine Petition veröffentlichen.",
+      "Kostenlose Mitglieder können pro Tag eine Petition veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyCreatePollLimitReached": MessageLookupByLibrary.simpleMessage(
-      "Du kannst pro Tag nur eine Umfrage veröffentlichen.",
+      "Kostenlose Mitglieder können pro Tag eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyHabit": MessageLookupByLibrary.simpleMessage("Tägliche Gewohnheit"),
     "darkMode": MessageLookupByLibrary.simpleMessage("Dunkler Modus"),
@@ -432,7 +432,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ablaufdatum (optional)",
     ),
     "expiredCreations": MessageLookupByLibrary.simpleMessage(
-      "Abgelaufene Einträge",
+      "Abgeschlossene Formulare",
     ),
     "expiredPetitions": MessageLookupByLibrary.simpleMessage(
       "Abgelaufene Petitionen",

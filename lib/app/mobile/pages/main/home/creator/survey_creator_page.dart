@@ -5,8 +5,10 @@ import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
+import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
+import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -282,6 +284,60 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           (userProfile?.supportsStateScope == true ? 'DE' : null);
 
       final now = DateTime.now();
+      final isSingleQuestionPoll = questions.length == 1;
+      if (isSingleQuestionPoll) {
+        final question = questions.single;
+        final poll = Poll(
+          id: '',
+          title: title,
+          description: description,
+          tags: tags,
+          options: question.options
+              .map((option) => PollOption(id: option.id, label: option.label))
+              .toList(growable: false),
+          votes: {for (final option in question.options) option.id: 0},
+          createdBy: currentUser.uid,
+          createdAt: now,
+          expiresAt: now.add(Duration(days: durationDays)),
+          scopeType: scopeType,
+          continentCode: scopeContinentCode,
+          countryCode: resolvedCountryCode,
+          groupId: _selectedGroup?.id,
+          groupName: _selectedGroup?.name,
+          visibility: _selectedGroup == null ? 'public' : 'group',
+          stateOrRegion: scopeStateOrRegion,
+          town: scopeTown,
+        );
+
+        final matchedTitles = await PollRepository.create()
+            .list(query: poll.title, status: 'active')
+            .first;
+        final matchedTitle = matchedTitles.isNotEmpty
+            ? matchedTitles.first.title
+            : '';
+        if (matchedTitle.isNotEmpty && matchedTitle == poll.title) {
+          if (mounted) {
+            showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
+          }
+          return;
+        }
+
+        await PublishingQuotaService.instance.incrementPoll();
+
+        final pollId = await PollRepository.create().createPoll(poll);
+        await AnalyticsService.instance.logPollCreated(
+          scopeType: scopeType,
+          visibility: poll.visibility,
+          optionCount: poll.options.length,
+        );
+
+        if (mounted) {
+          showSuccessSnackBar('${context.l10n.createdPoll} $pollId');
+          Navigator.of(context).pop();
+        }
+        return;
+      }
+
       final survey = Survey(
         id: '',
         title: title,
@@ -329,10 +385,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       );
 
       if (mounted) {
-        final createdMessage = widget.presentAsPoll
-            ? context.l10n.createdPoll
-            : context.l10n.createdSurvey;
-        showSuccessSnackBar('$createdMessage $surveyId');
+        showSuccessSnackBar('${context.l10n.createdSurvey} $surveyId');
         Navigator.of(context).pop();
       }
     } on StateError catch (error) {
@@ -342,11 +395,17 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       if (error.message == 'poll_daily_limit_reached') {
         showErrorSnackBar(context.l10n.dailyCreateLimitReached);
       } else {
-        showErrorSnackBar('${context.l10n.failedToCreateSurvey}: $error');
+        final failureMessage = _questions.length == 1
+            ? context.l10n.failedToCreatePoll
+            : context.l10n.failedToCreateSurvey;
+        showErrorSnackBar('$failureMessage: $error');
       }
     } catch (error) {
       if (mounted) {
-        showErrorSnackBar('${context.l10n.failedToCreateSurvey}: $error');
+        final failureMessage = _questions.length == 1
+            ? context.l10n.failedToCreatePoll
+            : context.l10n.failedToCreateSurvey;
+        showErrorSnackBar('$failureMessage: $error');
       }
     }
   }

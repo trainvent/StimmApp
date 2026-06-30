@@ -19,6 +19,7 @@ class PublicationsPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             PointingListTile(
+              leading: const Icon(Icons.playlist_add_check_circle_outlined),
               title: Text(S.of(context).runningForms),
               onTap: () {
                 Navigator.push(
@@ -30,6 +31,7 @@ class PublicationsPage extends StatelessWidget {
               },
             ),
             PointingListTile(
+              leading: const Icon(Icons.file_download_outlined),
               title: Text(context.l10n.finishedForms),
               onTap: () {
                 Navigator.push(

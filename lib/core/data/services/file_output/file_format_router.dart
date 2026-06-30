@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/file_output/export_content_service.dart';
 import 'package:stimmapp/core/data/services/file_output/export_document.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
@@ -22,6 +25,7 @@ class FileFormatRouter {
 
   final PollRepository _pollRepo = PollRepository.create();
   final PetitionRepository _petitionRepo = PetitionRepository.create();
+  final UserRepository _userRepo = UserRepository.create();
   final ExportFileWriter _writer = ExportFileWriter(locator.databaseService);
 
   ExportContentService _serviceFor(ExportFileFormat format) {
@@ -142,6 +146,64 @@ class FileFormatRouter {
     return savePollResults(context, poll, pollId);
   }
 
+  Future<String> saveSurveyResults(
+    BuildContext context,
+    Survey survey,
+    String surveyId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+    bool includeContent = false,
+  ]) async {
+    final service = _serviceFor(format);
+    final rows = await _buildSurveyResultsRows(
+      CsvExportLabels.fromContext(context),
+      survey,
+      surveyId,
+    );
+    final document = ExportDocument(
+      rows: rows,
+      details: includeContent ? _surveyDetails(survey) : null,
+      rowsTitle: 'Results',
+    );
+    return _writer.save(
+      'survey_${survey.title}',
+      service.build(document),
+      service,
+    );
+  }
+
+  Future<String> shareSurveyResults(
+    BuildContext context,
+    Survey survey,
+    String surveyId, [
+    ExportFileFormat format = ExportFileFormat.csv,
+    bool includeContent = false,
+  ]) async {
+    final service = _serviceFor(format);
+    final rows = await _buildSurveyResultsRows(
+      CsvExportLabels.fromContext(context),
+      survey,
+      surveyId,
+    );
+    final document = ExportDocument(
+      rows: rows,
+      details: includeContent ? _surveyDetails(survey) : null,
+      rowsTitle: 'Results',
+    );
+    return _writer.share(
+      'survey_${survey.title}',
+      service.build(document),
+      service,
+    );
+  }
+
+  Future<String> exportSurveyResults(
+    BuildContext context,
+    Survey survey,
+    String surveyId,
+  ) {
+    return saveSurveyResults(context, survey, surveyId);
+  }
+
   Future<List<List<String>>> _buildPetitionResultsRows(
     CsvExportLabels labels,
     String petitionId,
@@ -211,6 +273,73 @@ class FileFormatRouter {
     return rows;
   }
 
+  Future<List<List<String>>> _buildSurveyResultsRows(
+    CsvExportLabels labels,
+    Survey survey,
+    String surveyId,
+  ) async {
+    final responseSnap = await locator.database
+        .collection(DatabaseCollections.surveys)
+        .doc(surveyId)
+        .collection(DatabaseCollections.responses)
+        .get();
+    final optionLabelsByQuestion = {
+      for (final question in survey.questions)
+        question.id: {
+          for (final option in question.options) option.id: option.label,
+        },
+    };
+
+    final rows = <List<String>>[
+      [
+        labels.result,
+        labels.name,
+        labels.surname,
+        labels.email,
+        labels.livingAddress,
+        ...survey.questions.map((question) => question.title),
+      ],
+    ];
+
+    if (responseSnap.docs.isNotEmpty) {
+      for (final doc in responseSnap.docs) {
+        final data = doc.data();
+        final answers = Map<String, dynamic>.from(
+          data['answers'] as Map? ?? const <String, dynamic>{},
+        );
+        final profile = await _userRepo.getById(doc.id);
+
+        rows.add([
+          'submitted',
+          profile?.givenName ?? '',
+          profile?.surname ?? '',
+          profile?.email ?? '',
+          profile?.address ?? '',
+          for (final question in survey.questions)
+            optionLabelsByQuestion[question.id]?[answers[question.id]] ??
+                (answers[question.id] as String? ?? ''),
+        ]);
+      }
+      return rows;
+    }
+
+    for (final question in survey.questions) {
+      final votes = survey.questionVotes[question.id] ?? const <String, int>{};
+      for (final option in question.options) {
+        rows.add([
+          '${question.title} - ${option.label}: ${votes[option.id] ?? 0}',
+          '',
+          '',
+          '',
+          '',
+          ...List<String>.filled(survey.questions.length, ''),
+        ]);
+      }
+    }
+
+    return rows;
+  }
+
   List<ExportDetail> _petitionDetails(Petition petition) {
     return _withoutEmptyValues([
       ExportDetail('Type', 'Petition'),
@@ -267,6 +396,51 @@ class FileFormatRouter {
       ExportDetail('Group ID', poll.groupId ?? ''),
       ExportDetail('Group name', poll.groupName ?? ''),
       ExportDetail('Visibility', poll.visibility),
+    ]);
+  }
+
+  List<ExportDetail> _surveyDetails(Survey survey) {
+    final questions = survey.questions
+        .map((question) {
+          final options = question.options
+              .map((option) => option.label)
+              .join(', ');
+          return '${question.title} [$options]';
+        })
+        .join(' | ');
+    final votes = survey.questions
+        .map((question) {
+          final optionCounts = survey.questionVotes[question.id] ?? const {};
+          final optionVotes = question.options
+              .map((option) {
+                return '${option.label}: ${optionCounts[option.id] ?? 0}';
+              })
+              .join(', ');
+          return '${question.title} [$optionVotes]';
+        })
+        .join(' | ');
+
+    return _withoutEmptyValues([
+      ExportDetail('Type', 'Survey'),
+      ExportDetail('ID', survey.id),
+      ExportDetail('Header', survey.title),
+      ExportDetail('Body', survey.description),
+      ExportDetail('Tags', survey.tags.join(', ')),
+      ExportDetail('Questions', questions),
+      ExportDetail('Votes', votes),
+      ExportDetail('Response count', survey.responseCount.toString()),
+      ExportDetail('Created by', survey.createdBy),
+      ExportDetail('Created at', _formatDateTime(survey.createdAt)),
+      ExportDetail('Expires at', _formatDateTime(survey.expiresAt)),
+      ExportDetail('Status', survey.status),
+      ExportDetail('Scope type', survey.scopeType),
+      ExportDetail('Continent', survey.continentCode ?? ''),
+      ExportDetail('Country', survey.countryCode ?? ''),
+      ExportDetail('State or region', survey.stateOrRegion ?? ''),
+      ExportDetail('Town', survey.town ?? ''),
+      ExportDetail('Group ID', survey.groupId ?? ''),
+      ExportDetail('Group name', survey.groupName ?? ''),
+      ExportDetail('Visibility', survey.visibility),
     ]);
   }
 

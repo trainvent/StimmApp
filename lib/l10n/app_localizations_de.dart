@@ -260,15 +260,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dailyCreateLimitReached =>
-      'Du kannst pro Tag nur eine Petition und eine Umfrage veröffentlichen.';
+      'Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
 
   @override
   String get dailyCreatePetitionLimitReached =>
-      'Du kannst pro Tag nur eine Petition veröffentlichen.';
+      'Kostenlose Mitglieder können pro Tag eine Petition veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
 
   @override
   String get dailyCreatePollLimitReached =>
-      'Du kannst pro Tag nur eine Umfrage veröffentlichen.';
+      'Kostenlose Mitglieder können pro Tag eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
 
   @override
   String get dailyHabit => 'Tägliche Gewohnheit';
@@ -402,7 +402,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get exercise => 'Übung';
 
   @override
-  String get expiredCreations => 'Abgelaufene Einträge';
+  String get expiredCreations => 'Abgeschlossene Formulare';
 
   @override
   String get expiredPetitions => 'Abgelaufene Petitionen';
@@ -1540,6 +1540,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noRunningPollsFound => 'Keine laufenden Umfragen gefunden.';
+
+  @override
+  String get noRunningSurveysFound => 'Keine laufenden Befragungen gefunden.';
 
   @override
   String get selectPaymentProvider => 'Zahlungsanbieter auswählen';

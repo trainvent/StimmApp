@@ -280,13 +280,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Custom petition and poll pictures",
     ),
     "dailyCreateLimitReached": MessageLookupByLibrary.simpleMessage(
-      "You can only publish one petition and one poll per day.",
+      "Free members can publish one petition and one poll per day. Pro members can publish unlimited forms.",
     ),
     "dailyCreatePetitionLimitReached": MessageLookupByLibrary.simpleMessage(
-      "You can only publish one petition per day.",
+      "Free members can publish one petition per day. Pro members can publish unlimited forms.",
     ),
     "dailyCreatePollLimitReached": MessageLookupByLibrary.simpleMessage(
-      "You can only publish one poll per day.",
+      "Free members can publish one poll or survey per day. Pro members can publish unlimited forms.",
     ),
     "dailyHabit": MessageLookupByLibrary.simpleMessage("Daily habit"),
     "darkMode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
@@ -409,9 +409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "expirationDateOptional": MessageLookupByLibrary.simpleMessage(
       "Expiration date (optional)",
     ),
-    "expiredCreations": MessageLookupByLibrary.simpleMessage(
-      "Expired creations",
-    ),
+    "expiredCreations": MessageLookupByLibrary.simpleMessage("Finished Forms"),
     "expiredPetitions": MessageLookupByLibrary.simpleMessage(
       "Expired petitions",
     ),
@@ -441,7 +439,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "filterBy": MessageLookupByLibrary.simpleMessage("filter by"),
     "filterByGroup": MessageLookupByLibrary.simpleMessage("filter by group"),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Final notice"),
-    "finishedForms": MessageLookupByLibrary.simpleMessage("Finished forms"),
+    "finishedForms": MessageLookupByLibrary.simpleMessage("Finished Forms"),
     "flutterPro": MessageLookupByLibrary.simpleMessage("Flutter Pro"),
     "flutterProEmail": MessageLookupByLibrary.simpleMessage("Flutter@pro.com"),
     "freeMember": MessageLookupByLibrary.simpleMessage("Free Member"),

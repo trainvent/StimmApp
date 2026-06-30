@@ -569,19 +569,19 @@ abstract class AppLocalizations {
   /// No description provided for @dailyCreateLimitReached.
   ///
   /// In en, this message translates to:
-  /// **'You can only publish one petition and one poll per day.'**
+  /// **'Free members can publish one petition and one poll per day. Pro members can publish unlimited forms.'**
   String get dailyCreateLimitReached;
 
   /// No description provided for @dailyCreatePetitionLimitReached.
   ///
   /// In en, this message translates to:
-  /// **'You can only publish one petition per day.'**
+  /// **'Free members can publish one petition per day. Pro members can publish unlimited forms.'**
   String get dailyCreatePetitionLimitReached;
 
   /// No description provided for @dailyCreatePollLimitReached.
   ///
   /// In en, this message translates to:
-  /// **'You can only publish one poll per day.'**
+  /// **'Free members can publish one poll or survey per day. Pro members can publish unlimited forms.'**
   String get dailyCreatePollLimitReached;
 
   /// No description provided for @dailyHabit.
@@ -839,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @expiredCreations.
   ///
   /// In en, this message translates to:
-  /// **'Expired creations'**
+  /// **'Finished Forms'**
   String get expiredCreations;
 
   /// No description provided for @expiredPetitions.
@@ -917,7 +917,7 @@ abstract class AppLocalizations {
   /// No description provided for @finishedForms.
   ///
   /// In en, this message translates to:
-  /// **'Finished forms'**
+  /// **'Finished Forms'**
   String get finishedForms;
 
   /// No description provided for @flutterPro.
@@ -2935,6 +2935,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No running polls found.'**
   String get noRunningPollsFound;
+
+  /// No description provided for @noRunningSurveysFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No running surveys found.'**
+  String get noRunningSurveysFound;
 
   /// No description provided for @selectPaymentProvider.
   ///
