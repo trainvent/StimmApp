@@ -46,6 +46,7 @@
 
 # General safety
 -dontwarn javax.annotation.**
+-dontwarn javax.xml.stream.XMLStreamException
 -dontwarn com.google.errorprone.annotations.**
 -dontwarn org.checkerframework.**
 -keepattributes *Annotation*
