@@ -6,10 +6,12 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/moderation_report.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
+import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -20,15 +22,17 @@ class AdminDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.l10n.adminDashboard),
           bottom: TabBar(
+            isScrollable: true,
             tabs: [
               const Tab(text: 'Reports'),
               Tab(text: context.l10n.users),
               Tab(text: context.l10n.polls),
+              Tab(text: context.l10n.surveys),
               Tab(text: context.l10n.petitions),
             ],
           ),
@@ -38,6 +42,7 @@ class AdminDashboardPage extends StatelessWidget {
             ModerationReportsTab(),
             UserListTab(),
             PollListTab(),
+            SurveyListTab(),
             PetitionListTab(),
           ],
         ),
@@ -635,6 +640,74 @@ class PetitionListTab extends StatelessWidget {
               Navigator.pop(context);
               await PetitionRepository.create().delete(petition.id);
               if (context.mounted) showSuccessSnackBar(context.l10n.deleted);
+            },
+            child: Text(
+              context.l10n.deletePermanently,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SurveyListTab extends StatelessWidget {
+  const SurveyListTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = SurveyRepository.create();
+    return StreamBuilder<List<Survey>>(
+      stream: repo.list(status: IConst.active),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: TriangleLoadingIndicator());
+        }
+        final surveys = snapshot.data!;
+        if (surveys.isEmpty) {
+          return Center(child: Text(context.l10n.noRunningSurveysFound));
+        }
+        return ListView.builder(
+          itemCount: surveys.length,
+          itemBuilder: (context, index) {
+            final survey = surveys[index];
+            return ListTile(
+              title: Text(survey.title),
+              subtitle: Text(survey.status),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _confirmDeleteSurvey(context, survey),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteSurvey(BuildContext context, Survey survey) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.deleteForm),
+        content: Text(context.l10n.areYouSureYouWantToDeleteThisForm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              if (survey.responseCount != 0) {
+                showErrorSnackBar(context.l10n.cannotDeleteSurveyHasResponses);
+                return;
+              }
+              await SurveyRepository.create().delete(survey.id);
+              if (context.mounted) {
+                showSuccessSnackBar(context.l10n.surveyDeleted);
+              }
             },
             child: Text(
               context.l10n.deletePermanently,
