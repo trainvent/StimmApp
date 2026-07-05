@@ -30,8 +30,24 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
+def patch_plugin_ios_deployment_target(plugin_name, deployment_target)
+  podspec_path = File.expand_path(
+    File.join('.symlinks', 'plugins', plugin_name, 'ios', "#{plugin_name}.podspec"),
+    __dir__
+  )
+  return unless File.exist?(podspec_path)
+
+  podspec = File.read(podspec_path)
+  updated_podspec = podspec.gsub(
+    /s\.ios\.deployment_target\s*=\s*['"][^'"]+['"]/,
+    "s.ios.deployment_target = '#{deployment_target}'"
+  )
+  File.write(podspec_path, updated_podspec) if updated_podspec != podspec
+end
+
 target 'Runner' do
   use_frameworks! :linkage => :static
+  patch_plugin_ios_deployment_target('cloud_firestore', '16.0')
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
