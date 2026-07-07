@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/export_profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
@@ -450,7 +451,17 @@ class ProfilePage extends StatelessWidget {
                   //       throw Exception('Test Crash');
                   //     },
                   //   ),
-
+                  PointingListTile(
+                    title: Text(context.l10n.exportAccountData),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExportProfilePage(),
+                        ),
+                      );
+                    },
+                  ),
                   // Logout
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,

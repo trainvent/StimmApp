@@ -5,9 +5,7 @@ import 'package:stimmapp/app/mobile/pages/others/about_page.dart';
 import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
-import 'package:stimmapp/core/data/services/account_data_export_service.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
@@ -30,7 +28,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isSwitched = false;
   double sliderValue = 0.0;
   String? menuItem = 'e1';
-  bool _isExportingAccountData = false;
 
   String _languageLabel(BuildContext context, Locale locale) {
     switch (locale.languageCode) {
@@ -115,35 +112,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Future<void> _exportAccountData() async {
-    if (_isExportingAccountData) return;
-
-    setState(() {
-      _isExportingAccountData = true;
-    });
-
-    try {
-      await AccountDataExportService().saveCurrentUserData();
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.accountDataExportSuccess)),
-      );
-    } on CsvExportCanceledException {
-      // The user closed the native save sheet.
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.accountDataExportFailed)),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isExportingAccountData = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentUrl = authService.currentUser?.photoURL;
@@ -188,20 +156,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                   },
                 ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.download_outlined),
-                title: Text(context.l10n.exportAccountData),
-                subtitle: Text(context.l10n.exportAccountDataDescription),
-                trailing: _isExportingAccountData
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save_alt_outlined),
-                enabled: !_isExportingAccountData,
-                onTap: _exportAccountData,
               ),
               ListTile(
                 title: Text(context.l10n.colorTheme),
