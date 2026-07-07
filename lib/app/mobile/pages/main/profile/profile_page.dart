@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/export_profile_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/inbox_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/user_history_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/privacy_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
@@ -36,7 +36,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
-import 'delete_account_page.dart';
+import 'list/delete_account_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({

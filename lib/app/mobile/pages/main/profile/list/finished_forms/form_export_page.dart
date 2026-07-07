@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/finished_forms/form_result_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -58,17 +59,60 @@ class _FormExportPageState extends State<FormExportPage> {
         });
   }
 
-  Future<void> _exportPetition(Petition petition) async {
+  Future<void> _handlePetitionTap(Petition petition) async {
+    final action = await _selectFormAction();
+    if (action == null || !mounted) return;
+    if (action == _FormAction.viewResults) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FormResultPage.petition(petition: petition),
+        ),
+      );
+      return;
+    }
+    await _exportPetition(petition, action);
+  }
+
+  Future<void> _handlePollTap(Poll poll) async {
+    final action = await _selectFormAction();
+    if (action == null || !mounted) return;
+    if (action == _FormAction.viewResults) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FormResultPage.poll(poll: poll),
+        ),
+      );
+      return;
+    }
+    await _exportPoll(poll, action);
+  }
+
+  Future<void> _handleSurveyTap(Survey survey) async {
+    final action = await _selectFormAction();
+    if (action == null || !mounted) return;
+    if (action == _FormAction.viewResults) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FormResultPage.survey(survey: survey),
+        ),
+      );
+      return;
+    }
+    await _exportSurvey(survey, action);
+  }
+
+  Future<void> _exportPetition(Petition petition, _FormAction action) async {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: false);
     if (includeContent == null || !exportContext.mounted) return;
-    final action = await _selectExportAction();
-    if (action == null || !exportContext.mounted) return;
     final format = await _selectExportFormat();
     if (format == null || !exportContext.mounted) return;
 
     try {
-      if (action == _ExportAction.save) {
+      if (action == _FormAction.save) {
         await FileFormatRouter.instance.savePetitionResults(
           exportContext,
           petition,
@@ -96,17 +140,15 @@ class _FormExportPageState extends State<FormExportPage> {
     }
   }
 
-  Future<void> _exportPoll(Poll poll) async {
+  Future<void> _exportPoll(Poll poll, _FormAction action) async {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final action = await _selectExportAction();
-    if (action == null || !exportContext.mounted) return;
     final format = await _selectExportFormat();
     if (format == null || !exportContext.mounted) return;
 
     try {
-      if (action == _ExportAction.save) {
+      if (action == _FormAction.save) {
         await FileFormatRouter.instance.savePollResults(
           exportContext,
           poll,
@@ -134,17 +176,15 @@ class _FormExportPageState extends State<FormExportPage> {
     }
   }
 
-  Future<void> _exportSurvey(Survey survey) async {
+  Future<void> _exportSurvey(Survey survey, _FormAction action) async {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final action = await _selectExportAction();
-    if (action == null || !exportContext.mounted) return;
     final format = await _selectExportFormat();
     if (format == null || !exportContext.mounted) return;
 
     try {
-      if (action == _ExportAction.save) {
+      if (action == _FormAction.save) {
         await FileFormatRouter.instance.saveSurveyResults(
           exportContext,
           survey,
@@ -202,8 +242,8 @@ class _FormExportPageState extends State<FormExportPage> {
     );
   }
 
-  Future<_ExportAction?> _selectExportAction() {
-    return showModalBottomSheet<_ExportAction>(
+  Future<_FormAction?> _selectFormAction() {
+    return showModalBottomSheet<_FormAction>(
       context: context,
       showDragHandle: true,
       builder: (context) {
@@ -212,14 +252,19 @@ class _FormExportPageState extends State<FormExportPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
+                leading: const Icon(Icons.bar_chart),
+                title: Text(_viewResultsLabel(context)),
+                onTap: () => Navigator.pop(context, _FormAction.viewResults),
+              ),
+              ListTile(
                 leading: const Icon(Icons.save_alt),
                 title: Text(_downloadLabel(context)),
-                onTap: () => Navigator.pop(context, _ExportAction.save),
+                onTap: () => Navigator.pop(context, _FormAction.save),
               ),
               ListTile(
                 leading: const Icon(Icons.ios_share),
                 title: Text(_exportLabel(context)),
-                onTap: () => Navigator.pop(context, _ExportAction.share),
+                onTap: () => Navigator.pop(context, _FormAction.share),
               ),
             ],
           ),
@@ -266,6 +311,12 @@ class _FormExportPageState extends State<FormExportPage> {
     return Localizations.localeOf(context).languageCode == 'de'
         ? 'Herunterladen'
         : 'Download';
+  }
+
+  String _viewResultsLabel(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'de'
+        ? 'Endergebnis ansehen'
+        : 'View final results';
   }
 
   String _exportLabel(BuildContext context) {
@@ -351,7 +402,7 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
-              onTap: () => _exportPetition(p),
+              onTap: () => _handlePetitionTap(p),
             );
           },
         );
@@ -380,7 +431,7 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(p.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
-              onTap: () => _exportPoll(p),
+              onTap: () => _handlePollTap(p),
             );
           },
         );
@@ -409,7 +460,7 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(s.title),
               subtitle: Text(DateFormat('yyyy-MM-dd').format(s.expiresAt)),
-              onTap: () => _exportSurvey(s),
+              onTap: () => _handleSurveyTap(s),
             );
           },
         );
@@ -418,4 +469,4 @@ class _FormExportPageState extends State<FormExportPage> {
   }
 }
 
-enum _ExportAction { save, share }
+enum _FormAction { viewResults, save, share }
