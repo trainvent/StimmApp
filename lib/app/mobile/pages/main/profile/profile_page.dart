@@ -39,7 +39,14 @@ import '../../../scaffolds/app_bar_scaffold.dart';
 import 'delete_account_page.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({
+    super.key,
+    this.settingsPageBuilder,
+    this.settingsRouteIsBelow = false,
+  });
+
+  final WidgetBuilder? settingsPageBuilder;
+  final bool settingsRouteIsBelow;
 
   Future<void> _openManageSubscriptions(BuildContext context) async {
     final managementUri = await PurchasesService.instance.getManagementUri();
@@ -110,6 +117,20 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
+  void _openSettings(BuildContext context) {
+    if (settingsRouteIsBelow && Navigator.canPop(context)) {
+      Navigator.pop(context);
+      return;
+    }
+
+    final pageBuilder = settingsPageBuilder;
+    if (pageBuilder == null) {
+      return;
+    }
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: pageBuilder));
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = authService.currentUser;
@@ -117,6 +138,12 @@ class ProfilePage extends StatelessWidget {
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
+        if (settingsRouteIsBelow || settingsPageBuilder != null)
+          IconButton(
+            onPressed: () => _openSettings(context),
+            icon: const Icon(Icons.settings),
+            tooltip: context.l10n.settings,
+          ),
         StreamBuilder<List<PollGroupAccessNotification>>(
           stream: currentUser == null
               ? null

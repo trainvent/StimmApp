@@ -44,7 +44,12 @@ class WidgetTree extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        settingsPageBuilder: (context) =>
+                            SettingsPage(title: context.l10n.settings),
+                      ),
+                    ),
                   );
                 },
                 icon: currentUrl != null

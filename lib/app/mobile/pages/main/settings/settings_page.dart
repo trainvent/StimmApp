@@ -150,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return ProfilePage();
+                          return const ProfilePage(settingsRouteIsBelow: true);
                         },
                       ),
                     );
