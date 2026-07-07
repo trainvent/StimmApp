@@ -300,13 +300,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Eigene Petition- und Umfragebilder",
     ),
     "dailyCreateLimitReached": MessageLookupByLibrary.simpleMessage(
-      "Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
+      "Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder einen Fragebogen veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyCreatePetitionLimitReached": MessageLookupByLibrary.simpleMessage(
       "Kostenlose Mitglieder können pro Tag eine Petition veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyCreatePollLimitReached": MessageLookupByLibrary.simpleMessage(
-      "Kostenlose Mitglieder können pro Tag eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
+      "Kostenlose Mitglieder können pro Tag eine Umfrage oder einen Fragebogen veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.",
     ),
     "dailyHabit": MessageLookupByLibrary.simpleMessage("Tägliche Gewohnheit"),
     "darkMode": MessageLookupByLibrary.simpleMessage("Dunkler Modus"),
