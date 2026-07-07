@@ -859,5 +859,9 @@
 			"user": {}
 		}
 	},
-	"scanQrCodeTooltip": "QR-Code scannen"
+	"scanQrCodeTooltip": "QR-Code scannen",
+	"exportAccountData": "Kontodaten exportieren",
+	"exportAccountDataDescription": "Profil, Veröffentlichungen, Gruppen und deine eigenen Teilnahmedaten als JSON.",
+	"accountDataExportSuccess": "Kontodaten-Export erstellt.",
+	"accountDataExportFailed": "Kontodaten konnten nicht exportiert werden."
 }

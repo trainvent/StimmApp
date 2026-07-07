@@ -2122,4 +2122,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scanQrCodeTooltip => 'QR-Code scannen';
+
+  @override
+  String get exportAccountData => 'Kontodaten exportieren';
+
+  @override
+  String get exportAccountDataDescription =>
+      'Profil, Veröffentlichungen, Gruppen und deine eigenen Teilnahmedaten als JSON.';
+
+  @override
+  String get accountDataExportSuccess => 'Kontodaten-Export erstellt.';
+
+  @override
+  String get accountDataExportFailed =>
+      'Kontodaten konnten nicht exportiert werden.';
 }

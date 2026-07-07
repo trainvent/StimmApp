@@ -855,5 +855,9 @@
 			"user": {}
 		}
 	},
-	"scanQrCodeTooltip": "Scan QR code"
+	"scanQrCodeTooltip": "Scan QR code",
+	"exportAccountData": "Export account data",
+	"exportAccountDataDescription": "Profile, publications, groups, and your own participation records as JSON.",
+	"accountDataExportSuccess": "Account data export created.",
+	"accountDataExportFailed": "Could not export account data."
 }

@@ -3937,6 +3937,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan QR code'**
   String get scanQrCodeTooltip;
+
+  /// No description provided for @exportAccountData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export account data'**
+  String get exportAccountData;
+
+  /// No description provided for @exportAccountDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, publications, groups, and your own participation records as JSON.'**
+  String get exportAccountDataDescription;
+
+  /// No description provided for @accountDataExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account data export created.'**
+  String get accountDataExportSuccess;
+
+  /// No description provided for @accountDataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export account data.'**
+  String get accountDataExportFailed;
 }
 
 class _AppLocalizationsDelegate
