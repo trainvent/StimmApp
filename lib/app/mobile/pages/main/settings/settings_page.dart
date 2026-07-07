@@ -402,7 +402,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
-              Divider(color: Colors.teal, thickness: 5),
+              Divider(
+                color: Theme.of(context).colorScheme.primary,
+                thickness: 5,
+              ),
             ],
           ),
         ),
