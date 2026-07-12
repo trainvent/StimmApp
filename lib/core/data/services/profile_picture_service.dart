@@ -27,11 +27,6 @@ class ProfilePictureService {
   final DatabaseService _firestoreService;
   final FirebaseStorage _storage;
 
-  // Notifier that UI can listen to
-  final ValueNotifier<String?> profileUrlNotifier = ValueNotifier<String?>(
-    null,
-  );
-
   Future<String?> loadProfileUrl(String uid) async {
     final doc = await _firestoreService.getDoc(
       _firestoreService.docRef(
@@ -40,9 +35,7 @@ class ProfilePictureService {
         toFirestore: (data, _) => data!,
       ),
     );
-    final url = doc?['profilePictureUrl'] as String?;
-    profileUrlNotifier.value = url;
-    return url;
+    return doc?['profilePictureUrl'] as String?;
   }
 
   Future<void> setProfileUrl(String uid, String? url) async {
@@ -55,7 +48,6 @@ class ProfilePictureService {
       ),
       {'profilePictureUrl': url},
     );
-    profileUrlNotifier.value = url;
   }
 
   // Uploads file, reports progress via onProgress and returns the download URL.
@@ -104,7 +96,6 @@ class ProfilePictureService {
       // If the file doesn't exist, we don't care
       debugPrint('Error deleting profile picture: $e');
     }
-    profileUrlNotifier.value = null;
   }
 
   Future<String> uploadIdImage(

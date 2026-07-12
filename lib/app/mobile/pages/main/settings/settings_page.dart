@@ -7,6 +7,7 @@ import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -113,7 +114,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUrl = authService.currentUser?.photoURL;
+    final currentUrl =
+        ref.watch(profilePictureUrlProvider) ??
+        authService.currentUser?.photoURL;
     final themeMode = ref.watch(themeModeProvider);
     final themeScheme = ref.watch(themeSchemeProvider);
     final locale = ref.watch(appLocaleProvider);

@@ -4,23 +4,26 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
-class ChangeProfilePicturePage extends StatefulWidget {
+class ChangeProfilePicturePage extends ConsumerStatefulWidget {
   const ChangeProfilePicturePage({super.key});
 
   @override
-  State<ChangeProfilePicturePage> createState() =>
+  ConsumerState<ChangeProfilePicturePage> createState() =>
       _ChangeProfilePicturePageState();
 }
 
-class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
+class _ChangeProfilePicturePageState
+    extends ConsumerState<ChangeProfilePicturePage> {
   XFile? _imageFile;
   bool _uploading = false;
   double _progress = 0.0;
@@ -85,6 +88,7 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
       } catch (e) {
         debugPrint('[ChangeProfilePicture] error updating user photoURL: $e');
       }
+      ref.read(profilePictureUrlProvider.notifier).setUrl(url);
 
       if (!mounted) return;
       showSuccessSnackBar(context.l10n.profilePictureUpdated);
@@ -108,7 +112,9 @@ class _ChangeProfilePicturePageState extends State<ChangeProfilePicturePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUrl = authService.currentUser?.photoURL;
+    final currentUrl =
+        ref.watch(profilePictureUrlProvider) ??
+        authService.currentUser?.photoURL;
 
     Widget? preview;
     if (_imageFile != null) {

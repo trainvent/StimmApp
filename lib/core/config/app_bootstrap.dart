@@ -11,6 +11,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
@@ -34,10 +35,15 @@ class AppBootstrap {
 
     _authSub = authService.authStateChanges.listen((user) async {
       if (user != null) {
-        ProfilePictureService.instance.loadProfileUrl(user.uid).catchError((e) {
-          debugPrint('[AppBootstrap] Error loading profile URL: $e');
-          return null;
-        });
+        ProfilePictureService.instance
+            .loadProfileUrl(user.uid)
+            .then((url) {
+              ref.read(profilePictureUrlProvider.notifier).setUrl(url);
+            })
+            .catchError((e) {
+              debugPrint('[AppBootstrap] Error loading profile URL: $e');
+              return null;
+            });
 
         try {
           final userRepo = UserRepository.create();
@@ -87,7 +93,7 @@ class AppBootstrap {
           debugPrint('[AppBootstrap] Error syncing settings: $e');
         }
       } else {
-        ProfilePictureService.instance.profileUrlNotifier.value = null;
+        ref.read(profilePictureUrlProvider.notifier).clear();
       }
     });
   }

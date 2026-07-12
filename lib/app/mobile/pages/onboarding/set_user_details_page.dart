@@ -23,8 +23,8 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -130,8 +130,6 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
         supportsStateScope: profile.supportsStateScope,
       );
 
-      AppData.isAuthConnected.value = true; // Signal that auth is connected
-
       // In dev/sandbox we can run without Storage to keep costs minimal.
       if (!Environment.isDev) {
         // Try to upload a default profile picture from assets.
@@ -145,14 +143,18 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
             mimeType: 'image/png',
           );
 
-          await ProfilePictureService.instance.uploadProfilePicture(
-            currentUser.uid,
-            xFile,
-            onProgress: (p) {
-              if (!mounted) return;
-              if ((p - _progress).abs() > 0.01) setState(() => _progress = p);
-            },
-          );
+          final defaultAvatarUrl = await ProfilePictureService.instance
+              .uploadProfilePicture(
+                currentUser.uid,
+                xFile,
+                onProgress: (p) {
+                  if (!mounted) return;
+                  if ((p - _progress).abs() > 0.01) {
+                    setState(() => _progress = p);
+                  }
+                },
+              );
+          ref.read(profilePictureUrlProvider.notifier).setUrl(defaultAvatarUrl);
         } catch (e, st) {
           // Don't block registration for asset/upload failures.
           debugPrint('Default avatar upload failed: $e\n$st');

@@ -12,13 +12,16 @@ import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/navigation_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 
 class WidgetTree extends ConsumerWidget {
   const WidgetTree({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUrl = authService.currentUser?.photoURL;
+    final currentUrl =
+        ref.watch(profilePictureUrlProvider) ??
+        authService.currentUser?.photoURL;
     final selectedPage = ref.watch(selectedMainPageProvider);
     final pages = mainPagesConfig(context);
 

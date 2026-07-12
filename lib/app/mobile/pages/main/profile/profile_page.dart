@@ -34,7 +34,6 @@ import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
 import 'list/delete_account_page.dart';
 
@@ -104,8 +103,6 @@ class ProfilePage extends ConsumerWidget {
       await authService.signOut();
       if (!context.mounted) return;
       showSuccessSnackBar(S.of(context).loggedOutSuccessfully);
-      AppData.isAuthConnected.value = false;
-      AppData.onboardingCurrentIndexNotifier.value = 0;
       if (context.mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
