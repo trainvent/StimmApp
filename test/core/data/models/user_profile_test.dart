@@ -8,6 +8,7 @@ void main() {
     final userProfile = UserProfile(
       uid: '123',
       displayName: 'Test User',
+      usernameKey: 'test user',
       state: 'Hessen',
       email: 'test@example.com',
       createdAt: timestamp.toDate(),
@@ -19,6 +20,7 @@ void main() {
 
     final userProfileJson = {
       'displayName': 'Test User',
+      'usernameKey': 'test user',
       'email': 'test@example.com',
       'state': 'Hessen',
       'countryCode': null,

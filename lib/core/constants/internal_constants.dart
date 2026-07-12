@@ -7,6 +7,7 @@ class IConst {
   static const String localeKey = 'locale';
   static const String analyticsCollectionEnabledKey =
       'analyticsCollectionEnabled';
+  static const String crashLogsEnabledKey = 'sendCrashLogs';
   static const String active = 'active';
   static const String closed = 'closed';
 

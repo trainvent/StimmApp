@@ -15,6 +15,11 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 *   **CI/CD:** **GitHub Actions** (GitHub Pages deployment for `website/`)
 *   **Sandbox:** a seperate enviroment which mirrors the content and User.git ad
 
+### Product Stage / Legacy Policy
+*   The app does not yet have customers, so avoid preserving stale compatibility layers just for legacy support.
+*   When migrating old `ValueNotifier`/`StreamBuilder`/singleton state to Riverpod, prefer removing obsolete bridges and dead globals once consumers are migrated, as long as behavior is covered by analyzer/tests.
+*   Keep local, short-lived UI state local; prioritize removing old shared app/domain state.
+
 
 ## 2. Architecture
 
@@ -107,7 +112,7 @@ patrol test -t integration_test/simple_flow_test.dart
 
 ## 5. Known Flaws & Areas for Improvement
 
-1.  **State Management:** Migration to **Riverpod** is underway (Auth is done). Continue migrating other parts of the app from `StreamBuilder`/`ValueNotifier`.
+1.  **State Management:** Migration to **Riverpod** is underway (Auth and app preference state are partially migrated). Continue migrating shared app/domain state from `StreamBuilder`/`ValueNotifier`; remove old compatibility bridges instead of keeping them indefinitely.
 2.  **Hardcoded Strings:** Most strings are now localized using `AppLocalizations` (`context.l10n`), but vigilance is needed for new features.
 3.  **Error Handling:** While there is a global error logger, individual UI error handling (Snackbars) is sometimes repetitive.
 4.  **Navigation:** Navigation is mostly `Navigator.push` with `MaterialPageRoute`. Consider `go_router` for better deep linking.

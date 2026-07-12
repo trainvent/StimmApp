@@ -85,10 +85,16 @@ function getFilePathFromUrl(url) {
  * Reusable function to clean up all data associated with a user.
  */
 async function cleanupUserData(uid) {
+    var _a;
     const db = admin.firestore();
     const bucket = admin.storage().bucket();
     console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
     try {
+        const profileSnap = await db.collection("users").doc(uid).get();
+        const usernameKey = (_a = profileSnap.data()) === null || _a === void 0 ? void 0 : _a.usernameKey;
+        if (typeof usernameKey === "string" && usernameKey.trim().length > 0) {
+            await db.collection("usernames").doc(usernameKey).delete();
+        }
         // 1. Delete User Profile Document
         await db.collection("users").doc(uid).delete();
         // 2. Delete User Profile Picture from Storage

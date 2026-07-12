@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/login_page.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/welcome_page.dart';
+import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
-class SignActionButton extends StatelessWidget {
+class SignActionButton extends ConsumerWidget {
   const SignActionButton({
     super.key,
     required this.label,
@@ -26,7 +27,9 @@ class SignActionButton extends StatelessWidget {
   final bool askForReason;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showPetitionReason = ref.watch(showPetitionReasonProvider);
+
     return StreamBuilder<List<UserProfile>>(
       stream: participantsStream,
       builder: (context, snap) {
@@ -53,11 +56,11 @@ class SignActionButton extends StatelessWidget {
                     // After bottom sheet closes, check if user is logged in
                     if (authService.currentUser != null) {
                       if (!context.mounted) return;
-                      await _handleSign(context);
+                      await _handleSign(context, showPetitionReason);
                     }
                     return;
                   }
-                  await _handleSign(context);
+                  await _handleSign(context, showPetitionReason);
                 },
           child: Text(alreadySigned ? '⛔ $label ⛔' : label),
         );
@@ -65,9 +68,12 @@ class SignActionButton extends StatelessWidget {
     );
   }
 
-  Future<void> _handleSign(BuildContext context) async {
+  Future<void> _handleSign(
+    BuildContext context,
+    bool showPetitionReason,
+  ) async {
     String? reason;
-    if (askForReason && showPetitionReasonNotifier.value) {
+    if (askForReason && showPetitionReason) {
       reason = await showDialog<String>(
         context: context,
         builder: (context) {

@@ -1,19 +1,22 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
+    show
+        PlatformDispatcher,
+        TargetPlatform,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/survey_detail_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/delete_account_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/delete_account_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
@@ -22,7 +25,8 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/core/theme/app_theme.dart';
@@ -83,36 +87,11 @@ Future<void> _configureFirestore() async {
 }
 
 Future<void> _configureCrashReporting() async {
-  if (kIsWeb) {
-    return;
-  }
-
-  try {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-
-    FlutterError.onError = (details) {
-      FlutterError.presentError(details);
-      errorLogTool(
-        exception: details.exception,
-        errorCustomMessage: 'Flutter framework error',
-      );
-      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-    };
-
-    PlatformDispatcher.instance.onError = (error, stack) {
-      errorLogTool(
-        exception: error,
-        errorCustomMessage: 'Uncaught async error',
-      );
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
-  } catch (error) {
-    errorLogTool(
-      exception: error,
-      errorCustomMessage: 'Crashlytics configuration failed',
-    );
-  }
+  final prefs = await SharedPreferences.getInstance();
+  final collectionEnabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? true;
+  await CrashReportingService.instance.configure(
+    collectionEnabled: collectionEnabled,
+  );
 }
 
 Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
@@ -158,14 +137,14 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final AppBootstrap _bootstrap = AppBootstrap();
   bool _initialized = false;
 
@@ -216,7 +195,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _bootstrap.init().then((_) {
+    _bootstrap.init(ref).then((_) {
       if (mounted) setState(() => _initialized = true);
     });
   }
@@ -230,92 +209,74 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final initialUri = _initialUri();
+    final themeMode = ref.watch(themeModeProvider);
+    final themeScheme = ref.watch(themeSchemeProvider);
+    final locale = ref.watch(appLocaleProvider);
+    final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
 
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeModeNotifier,
-      builder: (context, themeMode, child) {
-        return ValueListenableBuilder<AppColorTheme?>(
-          valueListenable: themeSchemeNotifier,
-          builder: (context, themeScheme, child) {
-            final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
-            return ValueListenableBuilder<Locale?>(
-              valueListenable: appLocale,
-              builder: (context, locale, child) {
-                final app = MaterialApp(
-                  navigatorKey: navigatorKey,
-                  title: (locale?.languageCode.toLowerCase() == 'en')
-                      ? 'Vivot'
-                      : 'StimmApp',
-                  theme: AppTheme.lightFor(selectedTheme),
-                  darkTheme: AppTheme.darkFor(selectedTheme),
-                  themeMode: themeMode,
-                  locale: locale,
-                  builder: (context, child) {
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        final maxAllowedWidth = constraints.maxHeight * (5 / 6);
-                        if (constraints.maxWidth > maxAllowedWidth) {
-                          return ColoredBox(
-                            color: Colors.black,
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: maxAllowedWidth,
-                                ),
-                                child: ClipRect(child: child),
-                              ),
-                            ),
-                          );
-                        }
-                        return child ?? const SizedBox.shrink();
-                      },
-                    );
-                  },
-                  onGenerateRoute: (settings) {
-                    final page = _pageForUri(
-                      settings.name == null
-                          ? null
-                          : Uri.tryParse(settings.name!),
-                    );
-                    if (page != null) {
-                      return MaterialPageRoute(
-                        builder: (context) => page,
-                        settings: settings,
-                      );
-                    }
-                    return null;
-                  },
-                  routes: {
-                    '/delete_account': (context) => const DeleteAccountPage(),
-                  },
-                  localizationsDelegates: const [
-                    S.delegate,
-                    ...AppLocalizations.localizationsDelegates,
-                  ],
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  debugShowCheckedModeBanner: false,
-                  home: !_initialized
-                      ? const AppLoadingPage()
-                      : _pageForUri(initialUri) ?? const InitAppLayout(),
-                );
-
-                if (Environment.isDev) {
-                  return Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Banner(
-                      message: 'TEST',
-                      location: BannerLocation.topStart,
-                      color: Colors.red,
-                      child: app,
-                    ),
-                  );
-                }
-                return app;
-              },
-            );
+    final app = MaterialApp(
+      navigatorKey: navigatorKey,
+      title: (locale?.languageCode.toLowerCase() == 'en')
+          ? 'Vivot'
+          : 'StimmApp',
+      theme: AppTheme.lightFor(selectedTheme),
+      darkTheme: AppTheme.darkFor(selectedTheme),
+      themeMode: themeMode,
+      locale: locale,
+      builder: (context, child) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final maxAllowedWidth = constraints.maxHeight * (5 / 6);
+            if (constraints.maxWidth > maxAllowedWidth) {
+              return ColoredBox(
+                color: Colors.black,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                    child: ClipRect(child: child),
+                  ),
+                ),
+              );
+            }
+            return child ?? const SizedBox.shrink();
           },
         );
       },
+      onGenerateRoute: (settings) {
+        final page = _pageForUri(
+          settings.name == null ? null : Uri.tryParse(settings.name!),
+        );
+        if (page != null) {
+          return MaterialPageRoute(
+            builder: (context) => page,
+            settings: settings,
+          );
+        }
+        return null;
+      },
+      routes: {'/delete_account': (context) => const DeleteAccountPage()},
+      localizationsDelegates: const [
+        S.delegate,
+        ...AppLocalizations.localizationsDelegates,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
+      home: !_initialized
+          ? const AppLoadingPage()
+          : _pageForUri(initialUri) ?? const InitAppLayout(),
     );
+
+    if (Environment.isDev) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Banner(
+          message: 'TEST',
+          location: BannerLocation.topStart,
+          color: Colors.red,
+          child: app,
+        ),
+      );
+    }
+    return app;
   }
 }

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show LengthLimitingTextInputFormatter, rootBundle;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
@@ -21,19 +22,21 @@ import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/functions/normalize_username.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SetUserDetailsPage extends StatefulWidget {
+class SetUserDetailsPage extends ConsumerStatefulWidget {
   const SetUserDetailsPage({super.key});
 
   @override
-  State<SetUserDetailsPage> createState() => _SetUserDetailsPageState();
+  ConsumerState<SetUserDetailsPage> createState() => _SetUserDetailsPageState();
 }
 
-class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
+class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   final _formKey = GlobalKey<FormState>();
   final _addressFieldKey = GlobalKey<TomTomAddressWidgetState>();
   final TextEditingController controllerSurname = TextEditingController();
@@ -99,15 +102,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         return;
       }
 
-      // Update username (display name) - using email part as default
-      await authService.updateUsername(
-        username: currentUser.email?.split('@')[0] ?? context.l10n.newUser,
-      );
+      final displayName = normalizeUsername(controllerDisplayName.text);
 
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: controllerDisplayName.text.trim(),
+        displayName: displayName,
         state: _requiresStateScope ? _selectedState : null,
         countryCode: _selectedCountryCode,
         createdAt: DateTime.now(),
@@ -116,16 +116,19 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         dateOfBirth: _selectedDateOfBirth,
         address: controllerAddress.text.trim(),
         town: _selectedTown,
+        sendCrashLogs: true,
+        analyticsCollectionEnabled: true,
         acceptedCommunityRulesAt: DateTime.now(),
       );
 
-      await UserRepository.create().upsert(profile);
+      await UserRepository.create().upsertWithUniqueUsername(profile);
+      await authService.updateUsername(username: displayName);
+      ref.read(crashLogsEnabledProvider.notifier).setEnabled(true);
+      ref.read(analyticsCollectionEnabledProvider.notifier).setEnabled(true);
       await AnalyticsService.instance.logProfileCompleted(
         countryCode: profile.countryCode,
         supportsStateScope: profile.supportsStateScope,
       );
-
-      AppData.isAuthConnected.value = true; // Signal that auth is connected
 
       // In dev/sandbox we can run without Storage to keep costs minimal.
       if (!Environment.isDev) {
@@ -140,14 +143,18 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
             mimeType: 'image/png',
           );
 
-          await ProfilePictureService.instance.uploadProfilePicture(
-            currentUser.uid,
-            xFile,
-            onProgress: (p) {
-              if (!mounted) return;
-              if ((p - _progress).abs() > 0.01) setState(() => _progress = p);
-            },
-          );
+          final defaultAvatarUrl = await ProfilePictureService.instance
+              .uploadProfilePicture(
+                currentUser.uid,
+                xFile,
+                onProgress: (p) {
+                  if (!mounted) return;
+                  if ((p - _progress).abs() > 0.01) {
+                    setState(() => _progress = p);
+                  }
+                },
+              );
+          ref.read(profilePictureUrlProvider.notifier).setUrl(defaultAvatarUrl);
         } catch (e, st) {
           // Don't block registration for asset/upload failures.
           debugPrint('Default avatar upload failed: $e\n$st');

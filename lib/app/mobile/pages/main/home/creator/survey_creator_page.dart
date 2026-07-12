@@ -183,9 +183,6 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 
   void _reorderQuestions(int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final item = _questions.removeAt(oldIndex);
       _questions.insert(newIndex, item);
     });
@@ -215,9 +212,6 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 
   void _reorderOptions(_QuestionDraft question, int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final item = question.optionControllers.removeAt(oldIndex);
       question.optionControllers.insert(newIndex, item);
     });
@@ -503,7 +497,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _questions.length,
-          onReorder: _reorderQuestions,
+          onReorderItem: _reorderQuestions,
           buildDefaultDragHandles: false,
           itemBuilder: (context, index) => _buildQuestionCard(index),
         ),

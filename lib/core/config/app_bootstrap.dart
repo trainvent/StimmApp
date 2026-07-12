@@ -3,52 +3,48 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
-import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
+import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 
 class AppBootstrap {
   StreamSubscription<User?>? _authSub;
-  AppStateNotifier? _appStateNotifier;
 
-  Future<void> init() async {
-    // load persisted theme first
-    await _initThemeMode();
-    await _initThemeScheme();
-    // load persisted locale (if any) before creating composite notifier
-    await _initLocale();
-    // load persisted petition reason setting
-    await _initPetitionReasonSetting();
-    await _initAnalyticsCollectionSetting();
-    // only create the composite notifier after persisted state is loaded
-    _appStateNotifier = AppStateNotifier(
-      themeModeNotifier.value,
-      appLocale.value,
-    );
+  Future<void> init(WidgetRef ref) async {
+    ref.read(themeModeProvider.notifier).initialize(await _loadThemeMode());
+    ref.read(themeSchemeProvider.notifier).initialize(await _loadThemeScheme());
+    ref.read(appLocaleProvider.notifier).initialize(await _loadLocale());
+    ref
+        .read(showPetitionReasonProvider.notifier)
+        .initialize(await _loadPetitionReasonSetting());
+    ref
+        .read(analyticsCollectionEnabledProvider.notifier)
+        .initialize(await _loadAnalyticsCollectionSetting());
+    ref
+        .read(crashLogsEnabledProvider.notifier)
+        .initialize(await _loadCrashLogsSetting());
 
-    // Persist runtime locale changes
-    appLocale.addListener(_onLocaleChanged);
-    showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
-    analyticsCollectionEnabledNotifier.addListener(_onAnalyticsChanged);
-    themeModeNotifier.addListener(_onThemeChanged);
-    themeSchemeNotifier.addListener(_onThemeSchemeChanged);
-
-    // Load profile URL when user signs in and clear on sign-out
     _authSub = authService.authStateChanges.listen((user) async {
       if (user != null) {
-        ProfilePictureService.instance.loadProfileUrl(user.uid).catchError((e) {
-          debugPrint('[AppBootstrap] Error loading profile URL: $e');
-          return null;
-        });
+        ProfilePictureService.instance
+            .loadProfileUrl(user.uid)
+            .then((url) {
+              ref.read(profilePictureUrlProvider.notifier).setUrl(url);
+            })
+            .catchError((e) {
+              debugPrint('[AppBootstrap] Error loading profile URL: $e');
+              return null;
+            });
 
-        // Sync settings from Firestore
         try {
           final userRepo = UserRepository.create();
           final profile = await userRepo.getById(user.uid);
@@ -57,7 +53,6 @@ class AppBootstrap {
             final hasState =
                 profile.state != null && profile.state!.trim().isNotEmpty;
             if (countryCode != null && countryCode != 'DE' && hasState) {
-              // Self-heal stale profile data: outside Germany, state must be null.
               unawaited(
                 userRepo.update(user.uid, {'state': null}).catchError((e) {
                   debugPrint('[AppBootstrap] Error clearing stale state: $e');
@@ -65,222 +60,126 @@ class AppBootstrap {
               );
             }
             if (profile.showPetitionReason != null) {
-              showPetitionReasonNotifier.value = profile.showPetitionReason!;
+              ref
+                  .read(showPetitionReasonProvider.notifier)
+                  .setEnabled(profile.showPetitionReason!);
             }
             if (profile.analyticsCollectionEnabled != null) {
-              analyticsCollectionEnabledNotifier.value =
-                  profile.analyticsCollectionEnabled!;
+              ref
+                  .read(analyticsCollectionEnabledProvider.notifier)
+                  .setEnabled(profile.analyticsCollectionEnabled!);
+            }
+            if (profile.sendCrashLogs != null) {
+              ref
+                  .read(crashLogsEnabledProvider.notifier)
+                  .setEnabled(profile.sendCrashLogs!);
             }
             if (profile.themeMode != null) {
-              themeModeNotifier.value = _themeModeFromString(
-                profile.themeMode!,
-              );
-              // Sync legacy notifier for backward compatibility if needed
-              isDarkModeNotifier.value =
-                  themeModeNotifier.value == ThemeMode.dark;
+              ref
+                  .read(themeModeProvider.notifier)
+                  .setThemeMode(_themeModeFromString(profile.themeMode!));
             }
             if (profile.themeScheme != null) {
-              themeSchemeNotifier.value = AppColorThemeX.fromId(
-                profile.themeScheme,
-              );
+              final theme = AppColorThemeX.fromId(profile.themeScheme);
+              ref.read(themeSchemeProvider.notifier).setThemeScheme(theme);
             }
             if (profile.locale != null && profile.locale!.isNotEmpty) {
-              appLocale.value = _localeFromString(profile.locale!);
+              ref
+                  .read(appLocaleProvider.notifier)
+                  .setLocale(_localeFromString(profile.locale!));
             }
           }
         } catch (e) {
           debugPrint('[AppBootstrap] Error syncing settings: $e');
         }
       } else {
-        ProfilePictureService.instance.profileUrlNotifier.value = null;
+        ref.read(profilePictureUrlProvider.notifier).clear();
       }
     });
   }
 
   void dispose() {
     _authSub?.cancel();
-    appLocale.removeListener(_onLocaleChanged);
-    showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
-    analyticsCollectionEnabledNotifier.removeListener(_onAnalyticsChanged);
-    themeModeNotifier.removeListener(_onThemeChanged);
-    themeSchemeNotifier.removeListener(_onThemeSchemeChanged);
-    _appStateNotifier?.dispose();
   }
 
-  void _onLocaleChanged() async {
-    final Locale? loc = appLocale.value;
-    Environment.applyBrandForLocale(
-      locale: loc,
-      webHost: kIsWeb ? Uri.base.host : null,
-    );
+  Future<ThemeMode> _loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final String toSave = (loc == null)
-        ? ''
-        : (loc.countryCode == null || loc.countryCode!.isEmpty)
-        ? loc.languageCode
-        : '${loc.languageCode}_${loc.countryCode}';
-    await prefs.setString(IConst.localeKey, toSave);
-    debugPrint('[AppBootstrap] persisted locale: $toSave');
-
-    // Sync to Firestore if logged in
-    final user = authService.currentUser;
-    if (user != null) {
-      try {
-        final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {'locale': toSave});
-      } catch (e) {
-        debugPrint('[AppBootstrap] Error syncing locale to Firestore: $e');
-      }
-    }
-  }
-
-  void _onPetitionReasonChanged() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('showPetitionReason', showPetitionReasonNotifier.value);
-
-    // Sync to Firestore if logged in
-    final user = authService.currentUser;
-    if (user != null) {
-      try {
-        final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {
-          'showPetitionReason': showPetitionReasonNotifier.value,
-        });
-      } catch (e) {
-        debugPrint(
-          '[AppBootstrap] Error syncing petition reason setting to Firestore: $e',
-        );
-      }
-    }
-  }
-
-  void _onAnalyticsChanged() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(
-      IConst.analyticsCollectionEnabledKey,
-      analyticsCollectionEnabledNotifier.value,
-    );
-    await AnalyticsService.instance.setCollectionEnabled(
-      analyticsCollectionEnabledNotifier.value,
-    );
-
-    final user = authService.currentUser;
-    if (user != null) {
-      try {
-        final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {
-          'analyticsCollectionEnabled':
-              analyticsCollectionEnabledNotifier.value,
-        });
-      } catch (e) {
-        debugPrint('[AppBootstrap] Error syncing analytics setting: $e');
-      }
-    }
-  }
-
-  void _onThemeChanged() async {
-    final prefs = await SharedPreferences.getInstance();
-    final modeStr = _themeModeToString(themeModeNotifier.value);
-    await prefs.setString(IConst.themeModeKey, modeStr);
-
-    // Sync legacy notifier
-    isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
-
-    // Sync to Firestore if logged in
-    final user = authService.currentUser;
-    if (user != null) {
-      try {
-        final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {'themeMode': modeStr});
-      } catch (e) {
-        debugPrint('[AppBootstrap] Error syncing theme to Firestore: $e');
-      }
-    }
-  }
-
-  void _onThemeSchemeChanged() async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentTheme = themeSchemeNotifier.value ?? AppColorTheme.trainvent;
-    await prefs.setString(IConst.themeSchemeKey, currentTheme.data.id);
-
-    final user = authService.currentUser;
-    if (user != null) {
-      try {
-        final userRepo = UserRepository.create();
-        await userRepo.update(user.uid, {'themeScheme': currentTheme.data.id});
-      } catch (e) {
-        debugPrint('[AppBootstrap] Error syncing theme scheme: $e');
-      }
-    }
-  }
-
-  Future<void> _initThemeMode() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Check for new string-based key first
-    final String? modeStr = prefs.getString(IConst.themeModeKey);
+    final modeStr = prefs.getString(IConst.themeModeKey);
     if (modeStr != null) {
-      themeModeNotifier.value = _themeModeFromString(modeStr);
-    } else {
-      // Fallback to old boolean key migration
-      try {
-        // Try reading as bool (legacy)
-        final bool? isDarkLegacy = prefs.getBool(IConst.themeModeKey);
-        if (isDarkLegacy != null) {
-          themeModeNotifier.value = isDarkLegacy
-              ? ThemeMode.dark
-              : ThemeMode.light;
-          // Migrate to string immediately
-          await prefs.setString(
-            IConst.themeModeKey,
-            _themeModeToString(themeModeNotifier.value),
-          );
-        } else {
-          themeModeNotifier.value = ThemeMode.system;
-        }
-      } catch (e) {
-        // If it fails, it might be because it's already a string
-        final String? modeStr = prefs.getString(IConst.themeModeKey);
-        themeModeNotifier.value = _themeModeFromString(modeStr ?? 'system');
-      }
+      return _themeModeFromString(modeStr);
     }
-    isDarkModeNotifier.value = themeModeNotifier.value == ThemeMode.dark;
+
+    try {
+      final isDarkLegacy = prefs.getBool(IConst.themeModeKey);
+      if (isDarkLegacy != null) {
+        final mode = isDarkLegacy ? ThemeMode.dark : ThemeMode.light;
+        await prefs.setString(IConst.themeModeKey, _themeModeToString(mode));
+        return mode;
+      }
+    } catch (_) {
+      return _themeModeFromString(prefs.getString(IConst.themeModeKey));
+    }
+    return ThemeMode.system;
   }
 
-  Future<void> _initThemeScheme() async {
+  Future<AppColorTheme?> _loadThemeScheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeScheme = prefs.getString(IConst.themeSchemeKey);
-    themeSchemeNotifier.value = AppColorThemeX.fromId(themeScheme);
+    return AppColorThemeX.fromId(prefs.getString(IConst.themeSchemeKey));
   }
 
-  Future<void> _initAnalyticsCollectionSetting() async {
+  Future<bool> _loadAnalyticsCollectionSetting() async {
     final prefs = await SharedPreferences.getInstance();
     final enabled =
         prefs.getBool(IConst.analyticsCollectionEnabledKey) ?? false;
-    analyticsCollectionEnabledNotifier.value = enabled;
     await AnalyticsService.instance.setCollectionEnabled(enabled);
+    return enabled;
   }
 
-  Future<void> _initLocale() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? localeStr = prefs.getString(IConst.localeKey);
+  Future<bool> _loadCrashLogsSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? true;
+    await CrashReportingService.instance.setCollectionEnabled(enabled);
+    return enabled;
+  }
+
+  Future<Locale?> _loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final localeStr = prefs.getString(IConst.localeKey);
     if (localeStr != null && localeStr.isNotEmpty) {
-      appLocale.value = _localeFromString(localeStr);
-    } else {
-      final defaultLocale = kIsWeb
-          ? _defaultWebLocaleByHost()
-          : _defaultMobileLocaleByDevice();
-      appLocale.value = defaultLocale;
-      if (kIsWeb) {
-        debugPrint(
-          '[AppBootstrap] no stored locale, defaulting web locale to '
-          '${defaultLocale.languageCode} for host ${Uri.base.host}',
-        );
-      }
+      final locale = _localeFromString(localeStr);
+      Environment.applyBrandForLocale(
+        locale: locale,
+        webHost: kIsWeb ? Uri.base.host : null,
+      );
+      return locale;
     }
+
+    final defaultLocale = kIsWeb
+        ? _defaultWebLocaleByHost()
+        : _defaultMobileLocaleByDevice();
     Environment.applyBrandForLocale(
-      locale: appLocale.value,
+      locale: defaultLocale,
       webHost: kIsWeb ? Uri.base.host : null,
     );
+    if (kIsWeb) {
+      debugPrint(
+        '[AppBootstrap] no stored locale, defaulting web locale to '
+        '${defaultLocale.languageCode} for host ${Uri.base.host}',
+      );
+    }
+    return defaultLocale;
+  }
+
+  Future<bool> _loadPetitionReasonSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('showPetitionReason') ?? false;
+  }
+
+  Locale? _localeFromString(String? s) {
+    if (s == null || s.isEmpty) return null;
+    final parts = s.split('_');
+    if (parts.length == 1) return Locale(parts[0]);
+    return Locale(parts[0], parts[1]);
   }
 
   Locale _defaultWebLocaleByHost() {
@@ -310,19 +209,6 @@ class AppBootstrap {
         : const Locale('de');
   }
 
-  Future<void> _initPetitionReasonSetting() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    showPetitionReasonNotifier.value =
-        prefs.getBool('showPetitionReason') ?? false;
-  }
-
-  Locale? _localeFromString(String s) {
-    if (s.isEmpty) return null;
-    final parts = s.split('_');
-    if (parts.length == 1) return Locale(parts[0]);
-    return Locale(parts[0], parts[1]);
-  }
-
   String _themeModeToString(ThemeMode mode) {
     switch (mode) {
       case ThemeMode.dark:
@@ -334,7 +220,7 @@ class AppBootstrap {
     }
   }
 
-  ThemeMode _themeModeFromString(String s) {
+  ThemeMode _themeModeFromString(String? s) {
     switch (s) {
       case 'dark':
         return ThemeMode.dark;

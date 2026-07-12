@@ -3086,6 +3086,30 @@ abstract class AppLocalizations {
   /// **'Group: {group}'**
   String groupLabelWithValue(String group);
 
+  /// No description provided for @eligibleForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible for you'**
+  String get eligibleForYou;
+
+  /// No description provided for @alreadyParticipated.
+  ///
+  /// In en, this message translates to:
+  /// **'Already participated'**
+  String get alreadyParticipated;
+
+  /// No description provided for @groupOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Group-only'**
+  String get groupOnly;
+
+  /// No description provided for @groupOnlyUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This form is only visible to members of its group.'**
+  String get groupOnlyUnavailable;
+
   /// No description provided for @globalScopeLabel.
   ///
   /// In en, this message translates to:
@@ -3937,6 +3961,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan QR code'**
   String get scanQrCodeTooltip;
+
+  /// No description provided for @exportAccountData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export account data'**
+  String get exportAccountData;
+
+  /// No description provided for @exportAccountDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile, publications, groups, and your own participation records as JSON.'**
+  String get exportAccountDataDescription;
+
+  /// No description provided for @accountDataExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account data export created.'**
+  String get accountDataExportSuccess;
+
+  /// No description provided for @accountDataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export account data.'**
+  String get accountDataExportFailed;
 }
 
 class _AppLocalizationsDelegate

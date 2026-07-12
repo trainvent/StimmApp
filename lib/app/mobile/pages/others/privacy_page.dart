@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
-import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PrivacyPage extends StatefulWidget {
+class PrivacyPage extends ConsumerStatefulWidget {
   const PrivacyPage({super.key});
 
   @override
-  State<PrivacyPage> createState() => _PrivacyPageState();
+  ConsumerState<PrivacyPage> createState() => _PrivacyPageState();
 }
 
-class _PrivacyPageState extends State<PrivacyPage> {
+class _PrivacyPageState extends ConsumerState<PrivacyPage> {
   final _userRepo = UserRepository.create();
-  final _currentUser = authService.currentUser;
 
   Future<void> _openPolicyUrl(String url) async {
     final ok = await launchUrl(
@@ -34,7 +34,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
     try {
       final updatedProfile = profile.copyWith(sendCrashLogs: value);
       await _userRepo.upsert(updatedProfile);
-      // TODO: Initialize/Deinitialize crash reporting SDK here if possible
+      ref.read(crashLogsEnabledProvider.notifier).setEnabled(value);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -53,7 +53,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
         analyticsCollectionEnabled: value,
       );
       await _userRepo.upsert(updatedProfile);
-      analyticsCollectionEnabledNotifier.value = value;
+      ref.read(analyticsCollectionEnabledProvider.notifier).setEnabled(value);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -102,34 +102,23 @@ class _PrivacyPageState extends State<PrivacyPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentUser == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(context.l10n.privacySettings)),
-        body: Center(child: Text(context.l10n.pleaseSignInFirst)),
-      );
-    }
+    final profileState = ref.watch(userProfileProvider);
+    final sendCrashLogs = ref.watch(crashLogsEnabledProvider);
+    final analyticsCollectionEnabled = ref.watch(
+      analyticsCollectionEnabledProvider,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.privacySettings)),
-      body: StreamBuilder<UserProfile?>(
-        stream: _userRepo.watchById(_currentUser.uid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: TriangleLoadingIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('${context.l10n.error}: ${snapshot.error}'),
-            );
-          }
-          final profile = snapshot.data;
+      body: profileState.when(
+        loading: () => const Center(child: TriangleLoadingIndicator()),
+        error: (error, _) =>
+            Center(child: Text('${context.l10n.error}: $error')),
+        data: (profile) {
           if (profile == null) {
-            return Center(child: Text(context.l10n.userNotFound));
+            return Center(child: Text(context.l10n.pleaseSignInFirst));
           }
 
-          final sendCrashLogs = profile.sendCrashLogs ?? true;
-          final analyticsCollectionEnabled =
-              profile.analyticsCollectionEnabled ?? false;
           return ListView(
             children: [
               _buildPolicyTile(

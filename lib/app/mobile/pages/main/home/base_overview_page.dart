@@ -22,6 +22,8 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     super.key,
     required this.streamProvider,
     required this.itemBuilder,
+    this.participatedIdsStreamProvider,
+    this.participationKeyProvider,
     this.extraFilter,
     this.extraFilterCount = 0,
     this.designFilterSectionBuilder,
@@ -30,7 +32,14 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   });
 
   final Stream<List<T>> Function(String query, String status) streamProvider;
-  final Widget Function(BuildContext context, T item) itemBuilder;
+  final Widget Function(
+    BuildContext context,
+    T item,
+    DiscoveryStatus discoveryStatus,
+  )
+  itemBuilder;
+  final Stream<Set<String>> Function(String uid)? participatedIdsStreamProvider;
+  final String Function(T item)? participationKeyProvider;
   final bool Function(T item)? extraFilter;
   final int extraFilterCount;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
@@ -41,6 +50,105 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
 
   @override
   State<BaseOverviewPage<T>> createState() => _BaseOverviewPageState<T>();
+}
+
+class DiscoveryStatus {
+  const DiscoveryStatus({
+    required this.isEligible,
+    required this.hasParticipated,
+    required this.isFinished,
+    required this.isGroupOnly,
+  });
+
+  final bool isEligible;
+  final bool hasParticipated;
+  final bool isFinished;
+  final bool isGroupOnly;
+}
+
+class DiscoveryStatusChips extends StatelessWidget {
+  const DiscoveryStatusChips({super.key, required this.status});
+
+  final DiscoveryStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final chips = <Widget>[];
+    if (!status.isFinished && status.hasParticipated) {
+      chips.add(
+        _DiscoveryChip(
+          icon: Icons.check_circle_outline,
+          label: context.l10n.alreadyParticipated,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    } else if (!status.isFinished && status.isEligible) {
+      chips.add(
+        _DiscoveryChip(
+          icon: Icons.person_pin_circle_outlined,
+          label: context.l10n.eligibleForYou,
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
+      );
+    }
+
+    if (status.isGroupOnly) {
+      chips.add(
+        _DiscoveryChip(
+          icon: Icons.groups_2_outlined,
+          label: context.l10n.groupOnly,
+          color: Theme.of(context).colorScheme.outline,
+        ),
+      );
+    }
+
+    if (chips.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Wrap(spacing: 6, runSpacing: 4, children: chips),
+    );
+  }
+}
+
+class _DiscoveryChip extends StatelessWidget {
+  const _DiscoveryChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _BaseOverviewPageState<T extends HomeItem>
@@ -322,6 +430,14 @@ class _BaseOverviewPageState<T extends HomeItem>
         acceptedInviteGroupIds.contains(groupId);
   }
 
+  bool _isGroupOnly(T item) {
+    return switch (item) {
+      Poll(:final visibility) => visibility == 'group',
+      Survey(:final visibility) => visibility == 'group',
+      _ => false,
+    };
+  }
+
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
@@ -499,6 +615,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                         .map((notification) => notification.groupId)
                         .toSet(),
                   );
+        final participatedIdsStream =
+            currentUid == null || widget.participatedIdsStreamProvider == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : widget.participatedIdsStreamProvider!(currentUid);
         return StreamBuilder<Set<String>>(
           stream: blockedIdsStream,
           builder: (context, blockedSnap) {
@@ -512,70 +632,101 @@ class _BaseOverviewPageState<T extends HomeItem>
                   builder: (context, acceptedInviteSnap) {
                     final acceptedInviteGroupIds =
                         acceptedInviteSnap.data ?? const <String>{};
-                    return StreamBuilder<List<T>>(
-                      stream: widget.streamProvider(_query, status),
-                      builder: (context, snap) {
-                        if (snap.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: TriangleLoadingIndicator(),
-                          );
-                        }
-                        var items = snap.data ?? const [];
-                        items = items
-                            .where(
-                              (item) => _isVisibleForUser(
-                                item: item,
-                                userProfile: userProfile,
-                              ),
-                            )
-                            .where(
-                              (item) => _isAccessibleForCurrentUser(
-                                item: item,
-                                currentUid: currentUid,
-                                memberGroupIds: memberGroupIds,
-                                acceptedInviteGroupIds: acceptedInviteGroupIds,
-                              ),
-                            )
-                            .toList();
+                    return StreamBuilder<Set<String>>(
+                      stream: participatedIdsStream,
+                      builder: (context, participatedSnap) {
+                        final participatedIds =
+                            participatedSnap.data ?? const <String>{};
+                        return StreamBuilder<List<T>>(
+                          stream: widget.streamProvider(_query, status),
+                          builder: (context, snap) {
+                            if (snap.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: TriangleLoadingIndicator(),
+                              );
+                            }
+                            var items = snap.data ?? const [];
+                            items = items
+                                .where(
+                                  (item) => _isVisibleForUser(
+                                    item: item,
+                                    userProfile: userProfile,
+                                  ),
+                                )
+                                .where(
+                                  (item) => _isAccessibleForCurrentUser(
+                                    item: item,
+                                    currentUid: currentUid,
+                                    memberGroupIds: memberGroupIds,
+                                    acceptedInviteGroupIds:
+                                        acceptedInviteGroupIds,
+                                  ),
+                                )
+                                .toList();
 
-                        if (blockedIds.isNotEmpty) {
-                          items = items
-                              .where(
-                                (item) => !blockedIds.contains(item.createdBy),
-                              )
-                              .toList();
-                        }
+                            if (blockedIds.isNotEmpty) {
+                              items = items
+                                  .where(
+                                    (item) =>
+                                        !blockedIds.contains(item.createdBy),
+                                  )
+                                  .toList();
+                            }
 
-                        if (_onlyMyPublications && currentUid != null) {
-                          items = items
-                              .where((item) => item.createdBy == currentUid)
-                              .toList();
-                        }
+                            if (_onlyMyPublications && currentUid != null) {
+                              items = items
+                                  .where((item) => item.createdBy == currentUid)
+                                  .toList();
+                            }
 
-                        if (_selectedTags.isNotEmpty) {
-                          items = items.where((item) {
-                            return item.tags.any(
-                              (tag) => _selectedTags.contains(tag),
-                            );
-                          }).toList();
-                        }
+                            if (_selectedTags.isNotEmpty) {
+                              items = items.where((item) {
+                                return item.tags.any(
+                                  (tag) => _selectedTags.contains(tag),
+                                );
+                              }).toList();
+                            }
 
-                        items = items.where(_matchesSelectedScopes).toList();
-                        if (widget.extraFilter != null) {
-                          items = items.where(widget.extraFilter!).toList();
-                        }
+                            items = items
+                                .where(_matchesSelectedScopes)
+                                .toList();
+                            if (widget.extraFilter != null) {
+                              items = items.where(widget.extraFilter!).toList();
+                            }
 
-                        if (items.isEmpty) {
-                          return Center(child: Text(context.l10n.noData));
-                        }
-                        return ListView.builder(
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                widget.itemBuilder(context, items[index]),
-                                const Divider(height: 1),
-                              ],
+                            if (items.isEmpty) {
+                              return Center(child: Text(context.l10n.noData));
+                            }
+                            return ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                final item = items[index];
+                                final discoveryStatus = DiscoveryStatus(
+                                  isEligible: true,
+                                  hasParticipated: participatedIds.contains(
+                                    widget.participationKeyProvider?.call(
+                                          item,
+                                        ) ??
+                                        item.id,
+                                  ),
+                                  isFinished:
+                                      status == IConst.closed ||
+                                      item.status == IConst.closed ||
+                                      !item.expiresAt.isAfter(DateTime.now()),
+                                  isGroupOnly: _isGroupOnly(item),
+                                );
+                                return Column(
+                                  children: [
+                                    widget.itemBuilder(
+                                      context,
+                                      item,
+                                      discoveryStatus,
+                                    ),
+                                    const Divider(height: 1),
+                                  ],
+                                );
+                              },
                             );
                           },
                         );

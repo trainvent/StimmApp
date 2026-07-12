@@ -1616,6 +1616,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eligibleForYou => 'Eligible for you';
+
+  @override
+  String get alreadyParticipated => 'Already participated';
+
+  @override
+  String get groupOnly => 'Group-only';
+
+  @override
+  String get groupOnlyUnavailable =>
+      'This form is only visible to members of its group.';
+
+  @override
   String get globalScopeLabel => 'Global';
 
   @override
@@ -2098,4 +2111,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanQrCodeTooltip => 'Scan QR code';
+
+  @override
+  String get exportAccountData => 'Export account data';
+
+  @override
+  String get exportAccountDataDescription =>
+      'Profile, publications, groups, and your own participation records as JSON.';
+
+  @override
+  String get accountDataExportSuccess => 'Account data export created.';
+
+  @override
+  String get accountDataExportFailed => 'Could not export account data.';
 }

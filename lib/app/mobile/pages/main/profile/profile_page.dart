@@ -1,17 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/blocked_users_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/inbox_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/publications_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/publications_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/profile/profile_settings/update_username_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/user_history_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/user_history_page.dart';
 import 'package:stimmapp/app/mobile/pages/others/privacy_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/hero_widget.dart';
@@ -21,24 +23,29 @@ import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
-import 'delete_account_page.dart';
+import 'list/delete_account_page.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends ConsumerWidget {
+  const ProfilePage({
+    super.key,
+    this.settingsPageBuilder,
+    this.settingsRouteIsBelow = false,
+  });
+
+  final WidgetBuilder? settingsPageBuilder;
+  final bool settingsRouteIsBelow;
 
   Future<void> _openManageSubscriptions(BuildContext context) async {
     final managementUri = await PurchasesService.instance.getManagementUri();
@@ -96,9 +103,6 @@ class ProfilePage extends StatelessWidget {
       await authService.signOut();
       if (!context.mounted) return;
       showSuccessSnackBar(S.of(context).loggedOutSuccessfully);
-      AppData.isAuthConnected.value = false;
-      AppData.navBarCurrentIndexNotifier.value = 0;
-      AppData.onboardingCurrentIndexNotifier.value = 0;
       if (context.mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
@@ -109,13 +113,34 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
+  void _openSettings(BuildContext context) {
+    if (settingsRouteIsBelow && Navigator.canPop(context)) {
+      Navigator.pop(context);
+      return;
+    }
+
+    final pageBuilder = settingsPageBuilder;
+    if (pageBuilder == null) {
+      return;
+    }
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: pageBuilder));
+  }
+
   @override
-  Widget build(BuildContext context) {
-    final currentUser = authService.currentUser;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    final profileState = ref.watch(userProfileProvider);
 
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
+        if (settingsRouteIsBelow || settingsPageBuilder != null)
+          IconButton(
+            onPressed: () => _openSettings(context),
+            icon: const Icon(Icons.settings),
+            tooltip: context.l10n.settings,
+          ),
         StreamBuilder<List<PollGroupAccessNotification>>(
           stream: currentUser == null
               ? null
@@ -153,28 +178,19 @@ class ProfilePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 10.0),
-            StreamBuilder<UserProfile?>(
-              stream: currentUser != null
-                  ? UserRepository.create().watchById(currentUser.uid)
-                  : null,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: TriangleLoadingIndicator());
-                }
-                if (snapshot.hasError) {
-                  debugPrint(
-                    'ProfilePage: failed to load user profile: ${snapshot.error}',
-                  );
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showInternalDifficultiesSnackBar(snapshot.error);
-                  });
-                  return Text(context.l10n.error);
-                }
-                if (!snapshot.hasData || snapshot.data == null) {
+            profileState.when(
+              loading: () => const Center(child: TriangleLoadingIndicator()),
+              error: (error, _) {
+                debugPrint('ProfilePage: failed to load user profile: $error');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showInternalDifficultiesSnackBar(error);
+                });
+                return Text(context.l10n.error);
+              },
+              data: (userProfile) {
+                if (userProfile == null) {
                   return Text(context.l10n.userNotFound);
                 }
-
-                final userProfile = snapshot.data!;
                 final dateFormat = DateFormat('yyyy-MM-dd');
 
                 return Column(
@@ -450,7 +466,17 @@ class ProfilePage extends StatelessWidget {
                   //       throw Exception('Test Crash');
                   //     },
                   //   ),
-
+                  PointingListTile(
+                    title: Text(context.l10n.exportAccountData),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExportProfilePage(),
+                        ),
+                      );
+                    },
+                  ),
                   // Logout
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,

@@ -136,6 +136,27 @@ void main() {
       expect(saved!.responseCount, 1);
       expect(saved.questionVotes['q1']?['q1-opt1'], 1);
       expect(saved.questionVotes['q1']?['q1-opt2'], 0);
+      expect(saved.questionVotes['q2']?['q2-opt1'], 0);
+      expect(saved.questionVotes['q2']?['q2-opt2'], 1);
+
+      final response = await fakeFirebaseFirestore
+          .collection('surveys')
+          .doc(surveyId)
+          .collection('responses')
+          .doc('user1')
+          .get();
+      expect(response.data()?['answers'], {'q1': 'q1-opt1', 'q2': 'q2-opt2'});
+
+      final completedSurvey = await fakeFirebaseFirestore
+          .collection('users')
+          .doc('user1')
+          .collection('completedSurveys')
+          .doc(surveyId)
+          .get();
+      expect(completedSurvey.data()?['answers'], {
+        'q1': 'q1-opt1',
+        'q2': 'q2-opt2',
+      });
     });
 
     test('submitResponse rejects incomplete answers', () async {

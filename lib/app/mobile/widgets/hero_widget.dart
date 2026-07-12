@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/core/data/services/profile_picture_service.dart';
+import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 
-class HeroWidget extends StatelessWidget {
+class HeroWidget extends ConsumerWidget {
   const HeroWidget({super.key, this.title, this.nextPage});
 
   final String? title;
   final Widget? nextPage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileUrl = ref.watch(profilePictureUrlProvider);
+    final currentUrl = profileUrl ?? authService.currentUser?.photoURL;
+
     return GestureDetector(
       onTap: nextPage != null
           ? () {
@@ -38,38 +42,30 @@ class HeroWidget extends StatelessWidget {
                 children: [
                   Hero(
                     tag: 'profile_picture',
-                    child: ValueListenableBuilder<String?>(
-                      valueListenable:
-                          ProfilePictureService.instance.profileUrlNotifier,
-                      builder: (context, profileUrl, _) {
-                        final currentUrl =
-                            profileUrl ?? authService.currentUser?.photoURL;
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20.0),
-                          child: (currentUrl != null && currentUrl.isNotEmpty)
-                              ? Image.network(
-                                  currentUrl,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  gaplessPlayback: true,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image.asset(
-                                      AppAssets.defaultAvatar,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    );
-                                  },
-                                )
-                              : Image.asset(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: (currentUrl != null && currentUrl.isNotEmpty)
+                          ? Image.network(
+                              currentUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              gaplessPlayback: true,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
                                   AppAssets.defaultAvatar,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: double.infinity,
-                                ),
-                        );
-                      },
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              AppAssets.defaultAvatar,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
                     ),
                   ),
                   if (title != null)

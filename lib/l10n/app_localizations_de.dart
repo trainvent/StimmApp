@@ -225,7 +225,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createNewPollDescription => 'Erstelle eine neue Umfrage';
 
   @override
-  String get createNewSurveyDescription => 'Erstelle eine neue Befragung';
+  String get createNewSurveyDescription => 'Erstelle einen neuen Fragebogen';
 
   @override
   String get createPetition => 'Petitition erstellen';
@@ -234,7 +234,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createPoll => 'Umfrage erstellen';
 
   @override
-  String get createSurvey => 'Befragung erstellen';
+  String get createSurvey => 'Fragebogen erstellen';
 
   @override
   String get createdPetition => 'Petition erstellt';
@@ -243,10 +243,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createdPoll => 'Umfrage erstellt';
 
   @override
-  String get createdSurvey => 'Befragung erstellt';
+  String get createdSurvey => 'Fragebogen erstellt';
 
   @override
-  String get surveys => 'Befragungen';
+  String get surveys => 'Fragebögen';
 
   @override
   String get creator => 'Ersteller';
@@ -260,7 +260,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dailyCreateLimitReached =>
-      'Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
+      'Kostenlose Mitglieder können pro Tag eine Petition und eine Umfrage oder einen Fragebogen veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
 
   @override
   String get dailyCreatePetitionLimitReached =>
@@ -268,7 +268,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dailyCreatePollLimitReached =>
-      'Kostenlose Mitglieder können pro Tag eine Umfrage oder Befragung veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
+      'Kostenlose Mitglieder können pro Tag eine Umfrage oder einen Fragebogen veröffentlichen. Pro-Mitglieder können unbegrenzt Formulare veröffentlichen.';
 
   @override
   String get dailyHabit => 'Tägliche Gewohnheit';
@@ -432,7 +432,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get failedToCreatePoll => 'Fehler beim Erstellen der Umfrage';
 
   @override
-  String get failedToCreateSurvey => 'Fehler beim Erstellen der Befragung';
+  String get failedToCreateSurvey => 'Fehler beim Erstellen des Fragebogens';
 
   @override
   String get failedToUploadImage => 'Bild konnte nicht hochgeladen werden';
@@ -1015,7 +1015,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get addQuestion => 'Frage hinzufügen';
 
   @override
-  String get surveyQuestion => 'Befragungsfrage';
+  String get surveyQuestion => 'Frage im Fragebogen';
 
   @override
   String maximumSurveyQuestionsAllowed(int count) {
@@ -1109,24 +1109,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get voted => 'Abgestimmt';
 
   @override
-  String get showSurveys => 'Befragungen anzeigen';
+  String get showSurveys => 'Fragebögen anzeigen';
 
   @override
   String get showSurveysInfo =>
-      'Wenn dies aktiviert ist, erscheinen Befragungen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.';
+      'Wenn dies aktiviert ist, erscheinen Fragebögen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.';
 
   @override
-  String get surveyDetails => 'Befragungsdetails';
+  String get surveyDetails => 'Fragebogen-Details';
 
   @override
-  String get submitSurvey => 'Befragung absenden';
+  String get submitSurvey => 'Fragebogen absenden';
 
   @override
-  String get surveySubmitted => 'Befragung abgesendet';
+  String get surveySubmitted => 'Fragebogen abgesendet';
 
   @override
   String get answerAllSurveyQuestions =>
-      'Bitte beantworte alle Befragungsfragen.';
+      'Bitte beantworte alle Fragen im Fragebogen.';
 
   @override
   String get requestLoginCode => 'Login Code anfordern';
@@ -1523,10 +1523,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cannotDeleteSurveyHasResponses =>
-      'Kann nicht gelöscht werden: Befragung hat Antworten.';
+      'Kann nicht gelöscht werden: Fragebogen hat Antworten.';
 
   @override
-  String get surveyDeleted => 'Befragung gelöscht';
+  String get surveyDeleted => 'Fragebogen gelöscht';
 
   @override
   String get deleteForm => 'Formular löschen';
@@ -1542,7 +1542,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noRunningPollsFound => 'Keine laufenden Umfragen gefunden.';
 
   @override
-  String get noRunningSurveysFound => 'Keine laufenden Befragungen gefunden.';
+  String get noRunningSurveysFound => 'Keine laufenden Fragebögen gefunden.';
 
   @override
   String get selectPaymentProvider => 'Zahlungsanbieter auswählen';
@@ -1634,6 +1634,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String groupLabelWithValue(String group) {
     return 'Gruppe: $group';
   }
+
+  @override
+  String get eligibleForYou => 'Für dich geeignet';
+
+  @override
+  String get alreadyParticipated => 'Bereits teilgenommen';
+
+  @override
+  String get groupOnly => 'Nur Gruppe';
+
+  @override
+  String get groupOnlyUnavailable =>
+      'Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.';
 
   @override
   String get globalScopeLabel => 'Global';
@@ -2122,4 +2135,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scanQrCodeTooltip => 'QR-Code scannen';
+
+  @override
+  String get exportAccountData => 'Kontodaten exportieren';
+
+  @override
+  String get exportAccountDataDescription =>
+      'Profil, Veröffentlichungen, Gruppen und deine eigenen Teilnahmedaten als JSON.';
+
+  @override
+  String get accountDataExportSuccess => 'Kontodaten-Export erstellt.';
+
+  @override
+  String get accountDataExportFailed =>
+      'Kontodaten konnten nicht exportiert werden.';
 }

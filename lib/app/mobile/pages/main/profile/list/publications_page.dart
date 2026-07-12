@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/form_export_page.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/running_forms_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/finished_forms/form_export_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/profile/list/running_forms_page.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/mobile/widgets/pointing_list_tile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -24,9 +24,7 @@ class PublicationsPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const RunningFormsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => RunningFormsPage()),
                 );
               },
             ),

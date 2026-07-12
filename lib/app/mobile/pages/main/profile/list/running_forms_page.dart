@@ -15,7 +15,9 @@ import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
 class RunningFormsPage extends StatefulWidget {
-  const RunningFormsPage({super.key});
+  RunningFormsPage({super.key, AuthService? auth}) : auth = auth ?? authService;
+
+  final AuthService auth;
 
   @override
   State<RunningFormsPage> createState() => _RunningFormsPageState();
@@ -26,7 +28,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
     return PetitionRepository.create()
         .list(query: null, status: IConst.active)
         .map((items) {
-          final uid = authService.currentUser?.uid;
+          final uid = widget.auth.currentUser?.uid;
           final now = DateTime.now();
           return items
               .where((p) => p.createdBy == uid && p.expiresAt.isAfter(now))
@@ -37,7 +39,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
   Stream<List<Poll>> _runningPollsByMe() {
     return PollRepository.create().list(query: null, status: IConst.active).map(
       (items) {
-        final uid = authService.currentUser?.uid;
+        final uid = widget.auth.currentUser?.uid;
         final now = DateTime.now();
         return items
             .where((p) => p.createdBy == uid && p.expiresAt.isAfter(now))
@@ -50,7 +52,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
     return SurveyRepository.create()
         .list(query: null, status: IConst.active)
         .map((items) {
-          final uid = authService.currentUser?.uid;
+          final uid = widget.auth.currentUser?.uid;
           final now = DateTime.now();
           return items
               .where((s) => s.createdBy == uid && s.expiresAt.isAfter(now))

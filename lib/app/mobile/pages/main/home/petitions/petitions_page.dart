@@ -12,7 +12,8 @@ class PetitionsPage extends StatelessWidget {
     return BaseOverviewPage<Petition>(
       streamProvider: (query, status) =>
           repo.list(query: query, status: status),
-      itemBuilder: (context, p) {
+      participatedIdsStreamProvider: repo.watchSignedPetitionIds,
+      itemBuilder: (context, p, discoveryStatus) {
         return ListTile(
           leading: p.imageUrl != null
               ? ClipRRect(
@@ -28,10 +29,12 @@ class PetitionsPage extends StatelessWidget {
                 )
               : null,
           title: Text(p.title),
-          subtitle: Text(
-            p.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(p.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+              DiscoveryStatusChips(status: discoveryStatus),
+            ],
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
