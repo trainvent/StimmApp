@@ -3086,6 +3086,30 @@ abstract class AppLocalizations {
   /// **'Group: {group}'**
   String groupLabelWithValue(String group);
 
+  /// No description provided for @eligibleForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible for you'**
+  String get eligibleForYou;
+
+  /// No description provided for @alreadyParticipated.
+  ///
+  /// In en, this message translates to:
+  /// **'Already participated'**
+  String get alreadyParticipated;
+
+  /// No description provided for @groupOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Group-only'**
+  String get groupOnly;
+
+  /// No description provided for @groupOnlyUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This form is only visible to members of its group.'**
+  String get groupOnlyUnavailable;
+
   /// No description provided for @globalScopeLabel.
   ///
   /// In en, this message translates to:

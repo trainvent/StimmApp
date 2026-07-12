@@ -140,6 +140,15 @@ class PollRepository {
         });
   }
 
+  Stream<Set<String>> watchVotedPollIds(String uid) {
+    return _fs.instance
+        .collection('users')
+        .doc(uid)
+        .collection('votedPolls')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+  }
+
   // Fetch participants once (used by CSV export)
   Future<List<UserProfile>> getParticipantsOnce(String pollId) async {
     final snap = await _fs.instance

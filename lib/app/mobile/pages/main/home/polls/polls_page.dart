@@ -80,6 +80,45 @@ class _PollsPageState extends State<PollsPage> {
     return controller.stream;
   }
 
+  Stream<Set<String>> _combineLatestSets(
+    Stream<Set<String>> pollIdStream,
+    Stream<Set<String>> surveyIdStream,
+  ) {
+    late StreamSubscription<Set<String>> pollSubscription;
+    late StreamSubscription<Set<String>> surveySubscription;
+    Set<String>? latestPollIds;
+    Set<String>? latestSurveyIds;
+
+    final controller = StreamController<Set<String>>();
+    void emitIfReady() {
+      final pollIds = latestPollIds;
+      final surveyIds = latestSurveyIds;
+      if (pollIds == null || surveyIds == null || controller.isClosed) {
+        return;
+      }
+      controller.add({
+        ...pollIds.map((id) => 'poll:$id'),
+        ...surveyIds.map((id) => 'survey:$id'),
+      });
+    }
+
+    controller.onListen = () {
+      pollSubscription = pollIdStream.listen((items) {
+        latestPollIds = items;
+        emitIfReady();
+      }, onError: controller.addError);
+      surveySubscription = surveyIdStream.listen((items) {
+        latestSurveyIds = items;
+        emitIfReady();
+      }, onError: controller.addError);
+    };
+    controller.onCancel = () async {
+      await pollSubscription.cancel();
+      await surveySubscription.cancel();
+    };
+    return controller.stream;
+  }
+
   DateTime _createdAt(HomeItem item) {
     if (item is Poll) {
       return item.createdAt;
@@ -106,6 +145,12 @@ class _PollsPageState extends State<PollsPage> {
     return BaseOverviewPage<HomeItem>(
       streamProvider: (query, status) =>
           _listPollsAndSurveys(query: query, status: status),
+      participatedIdsStreamProvider: (uid) => _combineLatestSets(
+        PollRepository.create().watchVotedPollIds(uid),
+        SurveyRepository.create().watchCompletedSurveyIds(uid),
+      ),
+      participationKeyProvider: (item) =>
+          item is Survey ? 'survey:${item.id}' : 'poll:${item.id}',
       extraFilter: (item) {
         final selectedGroupId = _selectedGroupId;
         if (selectedGroupId == null || selectedGroupId.isEmpty) {
@@ -229,15 +274,17 @@ class _PollsPageState extends State<PollsPage> {
                 },
               );
             },
-      itemBuilder: (context, p) {
+      itemBuilder: (context, p, discoveryStatus) {
         final isSurvey = p is Survey;
         final total = p.participantCount;
         return ListTile(
           title: Text(p.title),
-          subtitle: Text(
-            p.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(p.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+              DiscoveryStatusChips(status: discoveryStatus),
+            ],
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,

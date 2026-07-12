@@ -50,6 +50,85 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   State<BaseDetailPage<T>> createState() => _BaseDetailPageState<T>();
 }
 
+class _DiscoveryStatusBanner extends StatelessWidget {
+  const _DiscoveryStatusBanner({
+    required this.label,
+    required this.icon,
+    required this.isMuted,
+    this.trailing,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool isMuted;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = isMuted ? colorScheme.secondary : colorScheme.primary;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
+      ),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: color),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          ?trailing,
+        ],
+      ),
+    );
+  }
+}
+
+class _DiscoveryStatusPill extends StatelessWidget {
+  const _DiscoveryStatusPill({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.outline;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.24)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _BaseDetailPageState<T extends HomeItem>
     extends State<BaseDetailPage<T>> {
   late Stream<T?> _itemStream;
@@ -173,6 +252,61 @@ class _BaseDetailPageState<T extends HomeItem>
     }
 
     return chips;
+  }
+
+  bool _isGroupOnly(T item) {
+    return switch (item) {
+      Poll(:final visibility) => visibility == 'group',
+      Survey(:final visibility) => visibility == 'group',
+      _ => false,
+    };
+  }
+
+  Widget _buildDiscoveryStatusBanner({
+    required BuildContext context,
+    required T item,
+    required bool isExpired,
+  }) {
+    if (isExpired) {
+      return const SizedBox.shrink();
+    }
+
+    final participantsStream = widget.participantsStream;
+    if (participantsStream == null) {
+      return _DiscoveryStatusBanner(
+        label: context.l10n.eligibleForYou,
+        icon: Icons.person_pin_circle_outlined,
+        isMuted: false,
+      );
+    }
+
+    return StreamBuilder<List<UserProfile>>(
+      stream: participantsStream,
+      builder: (context, snapshot) {
+        final currentUid = _safeCurrentUid();
+        final participants = snapshot.data ?? const <UserProfile>[];
+        final hasParticipated =
+            currentUid != null &&
+            participants.any((profile) => profile.uid == currentUid);
+        final label = hasParticipated
+            ? context.l10n.alreadyParticipated
+            : context.l10n.eligibleForYou;
+        final icon = hasParticipated
+            ? Icons.check_circle_outline
+            : Icons.person_pin_circle_outlined;
+        return _DiscoveryStatusBanner(
+          label: label,
+          icon: icon,
+          isMuted: hasParticipated,
+          trailing: _isGroupOnly(item)
+              ? _DiscoveryStatusPill(
+                  icon: Icons.groups_2_outlined,
+                  label: context.l10n.groupOnly,
+                )
+              : null,
+        );
+      },
+    );
   }
 
   Widget _buildHeaderCard(BuildContext context, T item) {
@@ -379,7 +513,7 @@ class _BaseDetailPageState<T extends HomeItem>
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
-                              context.l10n.notFound,
+                              context.l10n.groupOnlyUnavailable,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -419,6 +553,12 @@ class _BaseDetailPageState<T extends HomeItem>
                               const SizedBox(height: 12),
                             ],
                             Text(item.description),
+                            const SizedBox(height: 12),
+                            _buildDiscoveryStatusBanner(
+                              context: context,
+                              item: item,
+                              isExpired: isExpired,
+                            ),
                             const SizedBox(height: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

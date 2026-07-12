@@ -224,6 +224,15 @@ class PetitionRepository {
         .snapshots();
   }
 
+  Stream<Set<String>> watchSignedPetitionIds(String uid) {
+    return _fs.instance
+        .collection('users')
+        .doc(uid)
+        .collection('signedPetitions')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+  }
+
   Future<void> delete(String id) async {
     await _col().doc(id).delete();
   }

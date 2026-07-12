@@ -143,6 +143,15 @@ class SurveyRepository {
         });
   }
 
+  Stream<Set<String>> watchCompletedSurveyIds(String uid) {
+    return _fs.instance
+        .collection(DatabaseCollections.users)
+        .doc(uid)
+        .collection('completedSurveys')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+  }
+
   Future<void> removeResponsesByUser(String uid) async {
     final db = _fs.instance;
     final completedSurveysSnap = await db

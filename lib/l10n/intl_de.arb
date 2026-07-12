@@ -622,6 +622,10 @@
 			}
 		}
 	},
+	"eligibleForYou": "Für dich geeignet",
+	"alreadyParticipated": "Bereits teilgenommen",
+	"groupOnly": "Nur Gruppe",
+	"groupOnlyUnavailable": "Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.",
 	"filterBy": "Filtern nach",
 	"filterByGroup": "Filtern nach Gruppe",
 	"globalScopeLabel": "Global",

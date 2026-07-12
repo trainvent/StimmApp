@@ -620,6 +620,10 @@
 			}
 		}
 	},
+	"eligibleForYou": "Eligible for you",
+	"alreadyParticipated": "Already participated",
+	"groupOnly": "Group-only",
+	"groupOnlyUnavailable": "This form is only visible to members of its group.",
 	"globalScopeLabel": "Global",
 	"europeScopeLabel": "Europe",
 	"countryScopeFallback": "Country",

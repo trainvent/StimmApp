@@ -1616,6 +1616,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eligibleForYou => 'Eligible for you';
+
+  @override
+  String get alreadyParticipated => 'Already participated';
+
+  @override
+  String get groupOnly => 'Group-only';
+
+  @override
+  String get groupOnlyUnavailable =>
+      'This form is only visible to members of its group.';
+
+  @override
   String get globalScopeLabel => 'Global';
 
   @override

@@ -1636,6 +1636,19 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get eligibleForYou => 'Für dich geeignet';
+
+  @override
+  String get alreadyParticipated => 'Bereits teilgenommen';
+
+  @override
+  String get groupOnly => 'Nur Gruppe';
+
+  @override
+  String get groupOnlyUnavailable =>
+      'Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.';
+
+  @override
   String get globalScopeLabel => 'Global';
 
   @override
