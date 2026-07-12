@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show LengthLimitingTextInputFormatter, rootBundle;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bottom_bar_buttons.dart';
@@ -23,18 +24,19 @@ import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SetUserDetailsPage extends StatefulWidget {
+class SetUserDetailsPage extends ConsumerStatefulWidget {
   const SetUserDetailsPage({super.key});
 
   @override
-  State<SetUserDetailsPage> createState() => _SetUserDetailsPageState();
+  ConsumerState<SetUserDetailsPage> createState() => _SetUserDetailsPageState();
 }
 
-class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
+class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   final _formKey = GlobalKey<FormState>();
   final _addressFieldKey = GlobalKey<TomTomAddressWidgetState>();
   final TextEditingController controllerSurname = TextEditingController();
@@ -121,8 +123,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
 
       await UserRepository.create().upsertWithUniqueUsername(profile);
       await authService.updateUsername(username: displayName);
-      crashLogsEnabledNotifier.value = true;
-      analyticsCollectionEnabledNotifier.value = true;
+      ref.read(crashLogsEnabledProvider.notifier).setEnabled(true);
+      ref.read(analyticsCollectionEnabledProvider.notifier).setEnabled(true);
       await AnalyticsService.instance.logProfileCompleted(
         countryCode: profile.countryCode,
         supportsStateScope: profile.supportsStateScope,

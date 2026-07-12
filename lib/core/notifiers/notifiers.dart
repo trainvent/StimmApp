@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/theme/app_color_scheme.dart';
 
 class AppData {
   //Onboarding
@@ -15,20 +14,4 @@ class AppData {
   //App
   static final ValueNotifier<bool> isAuthConnected = ValueNotifier(false);
   static final ValueNotifier<bool> isConnectedNotifier = ValueNotifier(false);
-  static final ValueNotifier<bool> isAppOutdatedNotifier = ValueNotifier(false);
 }
-
-// ThemeMode: system, light, dark
-ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.system);
-ValueNotifier<AppColorTheme?> themeSchemeNotifier = ValueNotifier(
-  AppColorTheme.trainvent,
-);
-// Deprecated: kept for backward compatibility if needed, but should be removed eventually
-ValueNotifier<bool> isDarkModeNotifier = ValueNotifier(true);
-
-final ValueNotifier<Locale?> appLocale = ValueNotifier<Locale?>(null);
-final ValueNotifier<bool> showPetitionReasonNotifier = ValueNotifier(false);
-final ValueNotifier<bool> analyticsCollectionEnabledNotifier = ValueNotifier(
-  false,
-);
-final ValueNotifier<bool> crashLogsEnabledNotifier = ValueNotifier(true);

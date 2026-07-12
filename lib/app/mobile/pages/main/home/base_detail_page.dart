@@ -192,55 +192,61 @@ class _BaseDetailPageState<T extends HomeItem>
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          title: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.info_outline,
-                size: 20,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ],
-          ),
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _detailMetaChips(context, item),
-              ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 6,
             ),
-            if (hasTags) ...[
-              const SizedBox(height: 12),
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.info_outline,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+            children: [
               Align(
                 alignment: Alignment.centerLeft,
                 child: Wrap(
-                  spacing: 8.0,
-                  runSpacing: 4.0,
-                  children: item.tags.map((tagKey) {
-                    return Chip(
-                      label: Text(
-                        AppTagsHelper.getLocalizedTag(context, tagKey),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                    );
-                  }).toList(),
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _detailMetaChips(context, item),
                 ),
               ),
+              if (hasTags) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: item.tags.map((tagKey) {
+                      return Chip(
+                        label: Text(
+                          AppTagsHelper.getLocalizedTag(context, tagKey),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

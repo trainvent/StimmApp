@@ -25,7 +25,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
@@ -137,14 +137,14 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final AppBootstrap _bootstrap = AppBootstrap();
   bool _initialized = false;
 
@@ -195,7 +195,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _bootstrap.init().then((_) {
+    _bootstrap.init(ref).then((_) {
       if (mounted) setState(() => _initialized = true);
     });
   }
@@ -209,92 +209,74 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final initialUri = _initialUri();
+    final themeMode = ref.watch(themeModeProvider);
+    final themeScheme = ref.watch(themeSchemeProvider);
+    final locale = ref.watch(appLocaleProvider);
+    final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
 
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeModeNotifier,
-      builder: (context, themeMode, child) {
-        return ValueListenableBuilder<AppColorTheme?>(
-          valueListenable: themeSchemeNotifier,
-          builder: (context, themeScheme, child) {
-            final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
-            return ValueListenableBuilder<Locale?>(
-              valueListenable: appLocale,
-              builder: (context, locale, child) {
-                final app = MaterialApp(
-                  navigatorKey: navigatorKey,
-                  title: (locale?.languageCode.toLowerCase() == 'en')
-                      ? 'Vivot'
-                      : 'StimmApp',
-                  theme: AppTheme.lightFor(selectedTheme),
-                  darkTheme: AppTheme.darkFor(selectedTheme),
-                  themeMode: themeMode,
-                  locale: locale,
-                  builder: (context, child) {
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        final maxAllowedWidth = constraints.maxHeight * (5 / 6);
-                        if (constraints.maxWidth > maxAllowedWidth) {
-                          return ColoredBox(
-                            color: Colors.black,
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: maxAllowedWidth,
-                                ),
-                                child: ClipRect(child: child),
-                              ),
-                            ),
-                          );
-                        }
-                        return child ?? const SizedBox.shrink();
-                      },
-                    );
-                  },
-                  onGenerateRoute: (settings) {
-                    final page = _pageForUri(
-                      settings.name == null
-                          ? null
-                          : Uri.tryParse(settings.name!),
-                    );
-                    if (page != null) {
-                      return MaterialPageRoute(
-                        builder: (context) => page,
-                        settings: settings,
-                      );
-                    }
-                    return null;
-                  },
-                  routes: {
-                    '/delete_account': (context) => const DeleteAccountPage(),
-                  },
-                  localizationsDelegates: const [
-                    S.delegate,
-                    ...AppLocalizations.localizationsDelegates,
-                  ],
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  debugShowCheckedModeBanner: false,
-                  home: !_initialized
-                      ? const AppLoadingPage()
-                      : _pageForUri(initialUri) ?? const InitAppLayout(),
-                );
-
-                if (Environment.isDev) {
-                  return Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Banner(
-                      message: 'TEST',
-                      location: BannerLocation.topStart,
-                      color: Colors.red,
-                      child: app,
-                    ),
-                  );
-                }
-                return app;
-              },
-            );
+    final app = MaterialApp(
+      navigatorKey: navigatorKey,
+      title: (locale?.languageCode.toLowerCase() == 'en')
+          ? 'Vivot'
+          : 'StimmApp',
+      theme: AppTheme.lightFor(selectedTheme),
+      darkTheme: AppTheme.darkFor(selectedTheme),
+      themeMode: themeMode,
+      locale: locale,
+      builder: (context, child) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final maxAllowedWidth = constraints.maxHeight * (5 / 6);
+            if (constraints.maxWidth > maxAllowedWidth) {
+              return ColoredBox(
+                color: Colors.black,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxAllowedWidth),
+                    child: ClipRect(child: child),
+                  ),
+                ),
+              );
+            }
+            return child ?? const SizedBox.shrink();
           },
         );
       },
+      onGenerateRoute: (settings) {
+        final page = _pageForUri(
+          settings.name == null ? null : Uri.tryParse(settings.name!),
+        );
+        if (page != null) {
+          return MaterialPageRoute(
+            builder: (context) => page,
+            settings: settings,
+          );
+        }
+        return null;
+      },
+      routes: {'/delete_account': (context) => const DeleteAccountPage()},
+      localizationsDelegates: const [
+        S.delegate,
+        ...AppLocalizations.localizationsDelegates,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
+      home: !_initialized
+          ? const AppLoadingPage()
+          : _pageForUri(initialUri) ?? const InitAppLayout(),
     );
+
+    if (Environment.isDev) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Banner(
+          message: 'TEST',
+          location: BannerLocation.topStart,
+          color: Colors.red,
+          child: app,
+        ),
+      );
+    }
+    return app;
   }
 }

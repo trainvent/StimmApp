@@ -23,7 +23,7 @@ class ListTileWidget extends StatelessWidget {
           Flexible(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [title, if (widgets != null) ...widgets!],
+              children: [title, ...?widgets],
             ),
           ),
           ?action,

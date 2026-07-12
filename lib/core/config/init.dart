@@ -5,7 +5,6 @@ import '../errors/error_message.dart';
 
 Future<void> initApp() async {
   await initInternetChecker();
-  await initAppVersionNotifier();
 }
 
 Future<void> initInternetChecker() async {
@@ -19,11 +18,14 @@ Future<void> initInternetChecker() async {
   }
 }
 
-Future<void> initAppVersionNotifier() async {
-  try {} catch (e) {
+Future<bool> checkIsAppVersionOutdated() async {
+  try {
+    return false;
+  } catch (e) {
     errorLogTool(
       exception: e,
       errorCustomMessage: ErrorMessage.thisIsNotWorking,
     );
+    return false;
   }
 }

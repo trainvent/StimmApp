@@ -26,7 +26,7 @@ class ChoiceOptionListEditor extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: controllers.length,
-      onReorder: onReorder,
+      onReorderItem: onReorder,
       buildDefaultDragHandles: false,
       itemBuilder: (context, index) {
         final controller = controllers[index];

@@ -17,12 +17,8 @@ import 'package:stimmapp/core/data/firebase/firebase_options_dev.dart' as dev;
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
-import 'package:stimmapp/core/notifiers/notifiers.dart';
 
 Future<void> _forceGermanLocale() async {
-  const locale = Locale('de');
-
-  appLocale.value = locale;
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(IConst.localeKey, 'de');
 
