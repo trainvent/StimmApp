@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
+import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../../test_helper.dart';
 
@@ -51,6 +54,25 @@ class _TestHomeItem implements HomeItem {
   });
 }
 
+class _FakeUser implements User {
+  const _FakeUser(this.uid);
+
+  @override
+  final String uid;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeAuthService extends AuthService {
+  _FakeAuthService(this._user);
+
+  final User? _user;
+
+  @override
+  User? get currentUser => _user;
+}
+
 void main() {
   Future<void> pumpPage(
     WidgetTester tester, {
@@ -76,6 +98,26 @@ void main() {
           topRightActionBuilder: topRightAction == null
               ? null
               : (context, item) => topRightAction,
+        ),
+      ),
+    );
+    await tester.pump();
+  }
+
+  Future<void> pumpPollPage(
+    WidgetTester tester, {
+    required Poll item,
+    required AuthService auth,
+  }) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        BaseDetailPage<Poll>(
+          id: item.id,
+          appBarTitle: 'Test',
+          sharePathSegment: 'poll',
+          auth: auth,
+          streamProvider: (_) => Stream<Poll?>.value(item),
+          contentBuilder: (_, _) => const Text('group_content'),
         ),
       ),
     );
@@ -199,5 +241,71 @@ void main() {
 
     expect(find.byKey(const Key('overflow_action')), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
+  });
+
+  testWidgets('hides group-only content from non-members', (tester) async {
+    final poll = Poll(
+      id: 'group-poll',
+      title: 'Group Poll',
+      description: 'Private group content',
+      tags: const [],
+      options: const [
+        PollOption(id: 'yes', label: 'Yes'),
+        PollOption(id: 'no', label: 'No'),
+      ],
+      votes: const {},
+      createdBy: 'creator',
+      createdAt: DateTime(2026),
+      expiresAt: DateTime.now().add(const Duration(days: 1)),
+      visibility: 'group',
+      groupId: 'group-1',
+      groupName: 'Members',
+    );
+
+    await pumpPollPage(
+      tester,
+      item: poll,
+      auth: _FakeAuthService(const _FakeUser('outsider')),
+    );
+
+    expect(
+      find.text('This form is only visible to members of its group.'),
+      findsOneWidget,
+    );
+    expect(find.text('group_content'), findsNothing);
+  });
+
+  testWidgets('keeps group-only content visible for the creator', (
+    tester,
+  ) async {
+    final poll = Poll(
+      id: 'creator-poll',
+      title: 'Group Poll',
+      description: 'Private group content',
+      tags: const [],
+      options: const [
+        PollOption(id: 'yes', label: 'Yes'),
+        PollOption(id: 'no', label: 'No'),
+      ],
+      votes: const {},
+      createdBy: 'creator',
+      createdAt: DateTime(2026),
+      expiresAt: DateTime.now().add(const Duration(days: 1)),
+      visibility: 'group',
+      groupId: 'group-1',
+      groupName: 'Members',
+    );
+
+    await pumpPollPage(
+      tester,
+      item: poll,
+      auth: _FakeAuthService(const _FakeUser('creator')),
+    );
+
+    expect(find.text('group_content'), findsOneWidget);
+    expect(
+      find.text('This form is only visible to members of its group.'),
+      findsNothing,
+    );
   });
 }

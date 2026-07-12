@@ -21,7 +21,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
-  const BaseDetailPage({
+  BaseDetailPage({
     super.key,
     required this.id,
     required this.appBarTitle,
@@ -33,7 +33,10 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
     this.signaturesStream,
     this.actions,
     this.topRightActionBuilder,
-  });
+    AuthService? auth,
+  }) : auth = auth ?? authService;
+
+  final AuthService auth;
 
   final String id;
   final String appBarTitle;
@@ -157,7 +160,7 @@ class _BaseDetailPageState<T extends HomeItem>
 
   String? _safeCurrentUid() {
     try {
-      return authService.currentUser?.uid;
+      return widget.auth.currentUser?.uid;
     } catch (_) {
       return null;
     }

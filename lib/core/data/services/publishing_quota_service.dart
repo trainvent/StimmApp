@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 
@@ -14,11 +15,21 @@ class DailyPublishingStatus {
 }
 
 class PublishingQuotaService {
-  PublishingQuotaService._();
+  PublishingQuotaService._({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
+
+  @visibleForTesting
+  PublishingQuotaService.forTest({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth auth,
+  }) : _firestore = firestore,
+       _auth = auth;
+
   static final PublishingQuotaService instance = PublishingQuotaService._();
 
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
   String _todayKeyUtc() {
     final now = DateTime.now().toUtc();

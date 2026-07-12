@@ -24,9 +24,7 @@ class PublicationsPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const RunningFormsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => RunningFormsPage()),
                 );
               },
             ),
