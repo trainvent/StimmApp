@@ -24,7 +24,6 @@ class _InitAppLayoutState extends ConsumerState<InitAppLayout> {
   }
 
   Future<void> _initApp() async {
-    await initApp();
     final isOutdated = await checkIsAppVersionOutdated();
     ref.read(appOutdatedProvider.notifier).setOutdated(isOutdated);
   }

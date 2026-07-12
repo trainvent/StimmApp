@@ -13,5 +13,4 @@ class AppData {
 
   //App
   static final ValueNotifier<bool> isAuthConnected = ValueNotifier(false);
-  static final ValueNotifier<bool> isConnectedNotifier = ValueNotifier(false);
 }
