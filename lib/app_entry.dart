@@ -1,14 +1,17 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
+    show
+        PlatformDispatcher,
+        TargetPlatform,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/polls/poll_detail_page.dart';
@@ -23,6 +26,7 @@ import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 import 'package:stimmapp/core/theme/app_theme.dart';
@@ -83,36 +87,11 @@ Future<void> _configureFirestore() async {
 }
 
 Future<void> _configureCrashReporting() async {
-  if (kIsWeb) {
-    return;
-  }
-
-  try {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-
-    FlutterError.onError = (details) {
-      FlutterError.presentError(details);
-      errorLogTool(
-        exception: details.exception,
-        errorCustomMessage: 'Flutter framework error',
-      );
-      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-    };
-
-    PlatformDispatcher.instance.onError = (error, stack) {
-      errorLogTool(
-        exception: error,
-        errorCustomMessage: 'Uncaught async error',
-      );
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
-  } catch (error) {
-    errorLogTool(
-      exception: error,
-      errorCustomMessage: 'Crashlytics configuration failed',
-    );
-  }
+  final prefs = await SharedPreferences.getInstance();
+  final collectionEnabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? true;
+  await CrashReportingService.instance.configure(
+    collectionEnabled: collectionEnabled,
+  );
 }
 
 Future<void> startApp({required FirebaseOptions firebaseOptions}) async {

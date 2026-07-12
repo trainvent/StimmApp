@@ -116,10 +116,14 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         dateOfBirth: _selectedDateOfBirth,
         address: controllerAddress.text.trim(),
         town: _selectedTown,
+        sendCrashLogs: true,
+        analyticsCollectionEnabled: true,
         acceptedCommunityRulesAt: DateTime.now(),
       );
 
       await UserRepository.create().upsert(profile);
+      crashLogsEnabledNotifier.value = true;
+      analyticsCollectionEnabledNotifier.value = true;
       await AnalyticsService.instance.logProfileCompleted(
         countryCode: profile.countryCode,
         supportsStateScope: profile.supportsStateScope,

@@ -12,6 +12,7 @@ import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/notifiers/app_state_notifier.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
+import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
 
 class AppBootstrap {
@@ -27,6 +28,7 @@ class AppBootstrap {
     // load persisted petition reason setting
     await _initPetitionReasonSetting();
     await _initAnalyticsCollectionSetting();
+    await _initCrashLogsSetting();
     // only create the composite notifier after persisted state is loaded
     _appStateNotifier = AppStateNotifier(
       themeModeNotifier.value,
@@ -37,6 +39,7 @@ class AppBootstrap {
     appLocale.addListener(_onLocaleChanged);
     showPetitionReasonNotifier.addListener(_onPetitionReasonChanged);
     analyticsCollectionEnabledNotifier.addListener(_onAnalyticsChanged);
+    crashLogsEnabledNotifier.addListener(_onCrashLogsChanged);
     themeModeNotifier.addListener(_onThemeChanged);
     themeSchemeNotifier.addListener(_onThemeSchemeChanged);
 
@@ -71,6 +74,9 @@ class AppBootstrap {
               analyticsCollectionEnabledNotifier.value =
                   profile.analyticsCollectionEnabled!;
             }
+            if (profile.sendCrashLogs != null) {
+              crashLogsEnabledNotifier.value = profile.sendCrashLogs!;
+            }
             if (profile.themeMode != null) {
               themeModeNotifier.value = _themeModeFromString(
                 profile.themeMode!,
@@ -102,6 +108,7 @@ class AppBootstrap {
     appLocale.removeListener(_onLocaleChanged);
     showPetitionReasonNotifier.removeListener(_onPetitionReasonChanged);
     analyticsCollectionEnabledNotifier.removeListener(_onAnalyticsChanged);
+    crashLogsEnabledNotifier.removeListener(_onCrashLogsChanged);
     themeModeNotifier.removeListener(_onThemeChanged);
     themeSchemeNotifier.removeListener(_onThemeSchemeChanged);
     _appStateNotifier?.dispose();
@@ -174,6 +181,29 @@ class AppBootstrap {
         });
       } catch (e) {
         debugPrint('[AppBootstrap] Error syncing analytics setting: $e');
+      }
+    }
+  }
+
+  void _onCrashLogsChanged() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(
+      IConst.crashLogsEnabledKey,
+      crashLogsEnabledNotifier.value,
+    );
+    await CrashReportingService.instance.setCollectionEnabled(
+      crashLogsEnabledNotifier.value,
+    );
+
+    final user = authService.currentUser;
+    if (user != null) {
+      try {
+        final userRepo = UserRepository.create();
+        await userRepo.update(user.uid, {
+          'sendCrashLogs': crashLogsEnabledNotifier.value,
+        });
+      } catch (e) {
+        debugPrint('[AppBootstrap] Error syncing crash logs setting: $e');
       }
     }
   }
@@ -258,6 +288,13 @@ class AppBootstrap {
         prefs.getBool(IConst.analyticsCollectionEnabledKey) ?? false;
     analyticsCollectionEnabledNotifier.value = enabled;
     await AnalyticsService.instance.setCollectionEnabled(enabled);
+  }
+
+  Future<void> _initCrashLogsSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? true;
+    crashLogsEnabledNotifier.value = enabled;
+    await CrashReportingService.instance.setCollectionEnabled(enabled);
   }
 
   Future<void> _initLocale() async {

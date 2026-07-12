@@ -6,6 +6,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
+import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPage extends StatefulWidget {
@@ -34,7 +35,8 @@ class _PrivacyPageState extends State<PrivacyPage> {
     try {
       final updatedProfile = profile.copyWith(sendCrashLogs: value);
       await _userRepo.upsert(updatedProfile);
-      // TODO: Initialize/Deinitialize crash reporting SDK here if possible
+      crashLogsEnabledNotifier.value = value;
+      await CrashReportingService.instance.setCollectionEnabled(value);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

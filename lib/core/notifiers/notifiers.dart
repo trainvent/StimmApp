@@ -34,3 +34,4 @@ final ValueNotifier<bool> showPetitionReasonNotifier = ValueNotifier(false);
 final ValueNotifier<bool> analyticsCollectionEnabledNotifier = ValueNotifier(
   false,
 );
+final ValueNotifier<bool> crashLogsEnabledNotifier = ValueNotifier(true);
