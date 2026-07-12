@@ -16,11 +16,8 @@ class AppData {
   static final ValueNotifier<bool> isAuthConnected = ValueNotifier(false);
   static final ValueNotifier<bool> isConnectedNotifier = ValueNotifier(false);
   static final ValueNotifier<bool> isAppOutdatedNotifier = ValueNotifier(false);
-  static final ValueNotifier<int> navBarCurrentIndexNotifier = ValueNotifier(0);
 }
 
-//leon
-ValueNotifier<int> selectedPageNotifier = ValueNotifier(0);
 // ThemeMode: system, light, dark
 ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.system);
 ValueNotifier<AppColorTheme?> themeSchemeNotifier = ValueNotifier(

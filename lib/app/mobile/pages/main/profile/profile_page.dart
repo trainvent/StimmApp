@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/mobile/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
@@ -22,12 +23,11 @@ import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
@@ -38,7 +38,7 @@ import '../../../../../../core/notifiers/notifiers.dart';
 import '../../../scaffolds/app_bar_scaffold.dart';
 import 'list/delete_account_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({
     super.key,
     this.settingsPageBuilder,
@@ -105,7 +105,6 @@ class ProfilePage extends StatelessWidget {
       if (!context.mounted) return;
       showSuccessSnackBar(S.of(context).loggedOutSuccessfully);
       AppData.isAuthConnected.value = false;
-      AppData.navBarCurrentIndexNotifier.value = 0;
       AppData.onboardingCurrentIndexNotifier.value = 0;
       if (context.mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
@@ -132,8 +131,9 @@ class ProfilePage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final currentUser = authService.currentUser;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    final profileState = ref.watch(userProfileProvider);
 
     return AppBarScaffold(
       title: context.l10n.myProfile,
@@ -181,28 +181,19 @@ class ProfilePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 10.0),
-            StreamBuilder<UserProfile?>(
-              stream: currentUser != null
-                  ? UserRepository.create().watchById(currentUser.uid)
-                  : null,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: TriangleLoadingIndicator());
-                }
-                if (snapshot.hasError) {
-                  debugPrint(
-                    'ProfilePage: failed to load user profile: ${snapshot.error}',
-                  );
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showInternalDifficultiesSnackBar(snapshot.error);
-                  });
-                  return Text(context.l10n.error);
-                }
-                if (!snapshot.hasData || snapshot.data == null) {
+            profileState.when(
+              loading: () => const Center(child: TriangleLoadingIndicator()),
+              error: (error, _) {
+                debugPrint('ProfilePage: failed to load user profile: $error');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showInternalDifficultiesSnackBar(error);
+                });
+                return Text(context.l10n.error);
+              },
+              data: (userProfile) {
+                if (userProfile == null) {
                   return Text(context.l10n.userNotFound);
                 }
-
-                final userProfile = snapshot.data!;
                 final dateFormat = DateFormat('yyyy-MM-dd');
 
                 return Column(

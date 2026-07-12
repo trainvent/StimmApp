@@ -47,26 +47,28 @@ class NeonPaddingWidget extends StatelessWidget {
           ),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.all(DConst.kMargin3),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(color: tertiaryGlow, blurRadius: 20, spreadRadius: 0),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.all(DConst.kMargin3),
+        child: Material(
           color: Theme.of(context).cardColor,
+          shadowColor: tertiaryGlow,
+          elevation: 8,
           borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
-        ),
-        child: Column(
-          crossAxisAlignment: isCentered
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (title != null) Text(title!),
-            if (label1 != null) Text(label1!),
-            ?child,
-          ],
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: isCentered
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null) Text(title!),
+                if (label1 != null) Text(label1!),
+                ?child,
+              ],
+            ),
+          ),
         ),
       ),
     );
