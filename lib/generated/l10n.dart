@@ -64,10 +64,10 @@ class S {
     );
   }
 
-  /// `displayed name`
+  /// `Displayed Name`
   String get displayName {
     return Intl.message(
-      'displayed name',
+      'Displayed Name',
       name: 'displayName',
       desc: '',
       args: [],
@@ -434,6 +434,46 @@ class S {
     );
   }
 
+  /// `Change email`
+  String get changeEmail {
+    return Intl.message(
+      'Change email',
+      name: 'changeEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We sent a verification code to your new email address.`
+  String get changeEmailCodeSent {
+    return Intl.message(
+      'We sent a verification code to your new email address.',
+      name: 'changeEmailCodeSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email change failed`
+  String get changeEmailFailed {
+    return Intl.message(
+      'Email change failed',
+      name: 'changeEmailFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your new email address and current password. We will send a verification code to the new address.`
+  String get changeEmailInstructions {
+    return Intl.message(
+      'Enter your new email address and current password. We will send a verification code to the new address.',
+      name: 'changeEmailInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Change Language`
   String get changeLanguage {
     return Intl.message(
@@ -579,6 +619,16 @@ class S {
     );
   }
 
+  /// `Create a new survey`
+  String get createNewSurveyDescription {
+    return Intl.message(
+      'Create a new survey',
+      name: 'createNewSurveyDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Create Petition`
   String get createPetition {
     return Intl.message(
@@ -592,6 +642,16 @@ class S {
   /// `Create Poll`
   String get createPoll {
     return Intl.message('Create Poll', name: 'createPoll', desc: '', args: []);
+  }
+
+  /// `Create Survey`
+  String get createSurvey {
+    return Intl.message(
+      'Create Survey',
+      name: 'createSurvey',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Petition created`
@@ -612,6 +672,21 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Survey created`
+  String get createdSurvey {
+    return Intl.message(
+      'Survey created',
+      name: 'createdSurvey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Surveys`
+  String get surveys {
+    return Intl.message('Surveys', name: 'surveys', desc: '', args: []);
   }
 
   /// `Creator`
@@ -679,6 +754,11 @@ class S {
     return Intl.message('Dark Mode', name: 'darkMode', desc: '', args: []);
   }
 
+  /// `Design`
+  String get design {
+    return Intl.message('Design', name: 'design', desc: '', args: []);
+  }
+
   /// `Date of Birth`
   String get dateOfBirth {
     return Intl.message(
@@ -694,10 +774,10 @@ class S {
     return Intl.message('Days Left', name: 'daysLeft', desc: '', args: []);
   }
 
-  /// `delete Account`
+  /// `Delete Account`
   String get deleteAccount {
     return Intl.message(
-      'delete Account',
+      'Delete Account',
       name: 'deleteAccount',
       desc: '',
       args: [],
@@ -844,9 +924,10 @@ class S {
     );
   }
 
+  /// `This app is developed by Trainvent`
   String get devContactInformation {
     return Intl.message(
-      'This app is developed by Trainvent with help of yannic',
+      'This app is developed by Trainvent',
       name: 'devContactInformation',
       desc: '',
       args: [],
@@ -893,9 +974,9 @@ class S {
     return Intl.message('Energy', name: 'energy', desc: '', args: []);
   }
 
-  /// `english`
+  /// `English`
   String get english {
-    return Intl.message('english', name: 'english', desc: '', args: []);
+    return Intl.message('English', name: 'english', desc: '', args: []);
   }
 
   /// `Enter Code`
@@ -928,10 +1009,10 @@ class S {
     return Intl.message('Enter title', name: 'enterTitle', desc: '', args: []);
   }
 
-  /// `enter Your Address`
+  /// `Enter your address`
   String get enterYourAddress {
     return Intl.message(
-      'enter Your Address',
+      'Enter your address',
       name: 'enterYourAddress',
       desc: '',
       args: [],
@@ -1083,6 +1164,16 @@ class S {
     );
   }
 
+  /// `Failed to create survey`
+  String get failedToCreateSurvey {
+    return Intl.message(
+      'Failed to create survey',
+      name: 'failedToCreateSurvey',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Failed to upload image: `
   String get failedToUploadImage {
     return Intl.message(
@@ -1133,9 +1224,9 @@ class S {
     return Intl.message('Free Member', name: 'freeMember', desc: '', args: []);
   }
 
-  /// `french`
+  /// `French`
   String get french {
-    return Intl.message('french', name: 'french', desc: '', args: []);
+    return Intl.message('French', name: 'french', desc: '', args: []);
   }
 
   /// `Front Side`
@@ -1143,9 +1234,9 @@ class S {
     return Intl.message('Front Side', name: 'frontSide', desc: '', args: []);
   }
 
-  /// `german`
+  /// `German`
   String get german {
-    return Intl.message('german', name: 'german', desc: '', args: []);
+    return Intl.message('German', name: 'german', desc: '', args: []);
   }
 
   /// `Get started`
@@ -1223,56 +1314,121 @@ class S {
     return Intl.message('Filter', name: 'filter', desc: '', args: []);
   }
 
-  /// `filter by`
+  /// `Filter by`
   String get filterBy {
-    return Intl.message('filter by', name: 'filterBy', desc: '', args: []);
+    return Intl.message('Filter by', name: 'filterBy', desc: '', args: []);
   }
 
-  /// `filter by group`
+  /// `Filter by group`
   String get filterByGroup {
     return Intl.message(
-      'filter by group',
+      'Filter by group',
       name: 'filterByGroup',
       desc: '',
       args: [],
     );
   }
 
-  /// `publish to`
+  /// `Publish to`
   String get publishTo {
-    return Intl.message('publish to', name: 'publishTo', desc: '', args: []);
+    return Intl.message('Publish to', name: 'publishTo', desc: '', args: []);
   }
 
-  /// `public`
+  /// `Public`
   String get public {
-    return Intl.message('public', name: 'public', desc: '', args: []);
+    return Intl.message('Public', name: 'public', desc: '', args: []);
   }
 
-  /// `create or manage groups`
+  /// `Create or manage groups`
   String get createOrManageGroups {
     return Intl.message(
-      'create or manage groups',
+      'Create or manage groups',
       name: 'createOrManageGroups',
       desc: '',
       args: [],
     );
   }
 
-  /// `display qr-code`
+  /// `Display QR code`
   String get displayQrCode {
     return Intl.message(
-      'display qr-code',
+      'Display QR code',
       name: 'displayQrCode',
       desc: '',
       args: [],
     );
   }
 
-  /// `accent pallette`
+  /// `Accent Palette`
   String get accentPallette {
     return Intl.message(
-      'accent pallette',
+      'Accent Palette',
       name: 'accentPallette',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forest`
+  String get themePaletteForest {
+    return Intl.message(
+      'Forest',
+      name: 'themePaletteForest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ocean`
+  String get themePaletteOcean {
+    return Intl.message('Ocean', name: 'themePaletteOcean', desc: '', args: []);
+  }
+
+  /// `Sunset`
+  String get themePaletteSunset {
+    return Intl.message(
+      'Sunset',
+      name: 'themePaletteSunset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rose`
+  String get themePaletteRose {
+    return Intl.message('Rose', name: 'themePaletteRose', desc: '', args: []);
+  }
+
+  /// `Amber`
+  String get themePaletteAmber {
+    return Intl.message('Amber', name: 'themePaletteAmber', desc: '', args: []);
+  }
+
+  /// `Plum`
+  String get themePalettePlum {
+    return Intl.message('Plum', name: 'themePalettePlum', desc: '', args: []);
+  }
+
+  /// `Slate`
+  String get themePaletteSlate {
+    return Intl.message('Slate', name: 'themePaletteSlate', desc: '', args: []);
+  }
+
+  /// `Mint`
+  String get themePaletteMint {
+    return Intl.message('Mint', name: 'themePaletteMint', desc: '', args: []);
+  }
+
+  /// `Sky`
+  String get themePaletteSky {
+    return Intl.message('Sky', name: 'themePaletteSky', desc: '', args: []);
+  }
+
+  /// `Trainvent`
+  String get themePaletteTrainvent {
+    return Intl.message(
+      'Trainvent',
+      name: 'themePaletteTrainvent',
       desc: '',
       args: [],
     );
@@ -1313,9 +1469,9 @@ class S {
     );
   }
 
-  /// `language`
+  /// `Language`
   String get language {
-    return Intl.message('language', name: 'language', desc: '', args: []);
+    return Intl.message('Language', name: 'language', desc: '', args: []);
   }
 
   /// `Last step!`
@@ -1343,10 +1499,10 @@ class S {
     return Intl.message('Login', name: 'login', desc: '', args: []);
   }
 
-  /// `login code sent`
+  /// `Login code sent`
   String get loginCodeSent {
     return Intl.message(
-      'login code sent',
+      'Login code sent',
       name: 'loginCodeSent',
       desc: '',
       args: [],
@@ -1423,14 +1579,19 @@ class S {
     return Intl.message('Nationality', name: 'nationality', desc: '', args: []);
   }
 
-  /// `You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new Messages} other {{newMessages} new messages}}`
+  /// `You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new messages} other {{newMessages} new messages}}`
   String newMessages(int newMessages) {
     return Intl.message(
-      'You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new Messages', other: '$newMessages new messages')}',
+      'You have ${Intl.plural(newMessages, zero: 'No new messages', one: 'One new message', two: 'Two new messages', other: '$newMessages new messages')}',
       name: 'newMessages',
       desc: 'Number of new messages in inbox.',
       args: [newMessages],
     );
+  }
+
+  /// `New email`
+  String get newEmail {
+    return Intl.message('New email', name: 'newEmail', desc: '', args: []);
   }
 
   /// `New password`
@@ -1498,9 +1659,9 @@ class S {
     );
   }
 
-  /// `no options`
+  /// `No options`
   String get noOptions {
-    return Intl.message('no options', name: 'noOptions', desc: '', args: []);
+    return Intl.message('No options', name: 'noOptions', desc: '', args: []);
   }
 
   /// `No fitting options`
@@ -1528,10 +1689,10 @@ class S {
     return Intl.message('No Title', name: 'noTitle', desc: '', args: []);
   }
 
-  /// `no username found`
+  /// `No username found`
   String get noUsernameFound {
     return Intl.message(
-      'no username found',
+      'No username found',
       name: 'noUsernameFound',
       desc: '',
       args: [],
@@ -1613,9 +1774,9 @@ class S {
     return Intl.message('Options', name: 'options', desc: '', args: []);
   }
 
-  /// `other`
+  /// `Other`
   String get other {
-    return Intl.message('other', name: 'other', desc: '', args: []);
+    return Intl.message('Other', name: 'other', desc: '', args: []);
   }
 
   /// `Participants`
@@ -2348,9 +2509,9 @@ class S {
     );
   }
 
-  /// `stimmapp`
+  /// `StimmApp`
   String get stimmapp {
-    return Intl.message('stimmapp', name: 'stimmapp', desc: '', args: []);
+    return Intl.message('StimmApp', name: 'stimmapp', desc: '', args: []);
   }
 
   /// `Subscription cancelled — access will remain until expiry`
@@ -2405,6 +2566,61 @@ class S {
       name: 'tagsHint',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Question {number}`
+  String questionNumber(int number) {
+    return Intl.message(
+      'Question $number',
+      name: 'questionNumber',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `Question is required`
+  String get questionRequired {
+    return Intl.message(
+      'Question is required',
+      name: 'questionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Questions`
+  String get questions {
+    return Intl.message('Questions', name: 'questions', desc: '', args: []);
+  }
+
+  /// `Add question`
+  String get addQuestion {
+    return Intl.message(
+      'Add question',
+      name: 'addQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Survey question`
+  String get surveyQuestion {
+    return Intl.message(
+      'Survey question',
+      name: 'surveyQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum {count} questions allowed`
+  String maximumSurveyQuestionsAllowed(int count) {
+    return Intl.message(
+      'Maximum $count questions allowed',
+      name: 'maximumSurveyQuestionsAllowed',
+      desc: '',
+      args: [count],
     );
   }
 
@@ -2563,6 +2779,16 @@ class S {
     );
   }
 
+  /// `Email changed successfully`
+  String get emailChangedSuccessfully {
+    return Intl.message(
+      'Email changed successfully',
+      name: 'emailChangedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Users`
   String get users {
     return Intl.message('Users', name: 'users', desc: '', args: []);
@@ -2633,6 +2859,66 @@ class S {
     return Intl.message('Voted', name: 'voted', desc: '', args: []);
   }
 
+  /// `Show surveys`
+  String get showSurveys {
+    return Intl.message(
+      'Show surveys',
+      name: 'showSurveys',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When this is on, surveys appear in the polls list alongside regular polls. Turn it off if you only want to browse single-question polls.`
+  String get showSurveysInfo {
+    return Intl.message(
+      'When this is on, surveys appear in the polls list alongside regular polls. Turn it off if you only want to browse single-question polls.',
+      name: 'showSurveysInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Survey Details`
+  String get surveyDetails {
+    return Intl.message(
+      'Survey Details',
+      name: 'surveyDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submit survey`
+  String get submitSurvey {
+    return Intl.message(
+      'Submit survey',
+      name: 'submitSurvey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Survey submitted`
+  String get surveySubmitted {
+    return Intl.message(
+      'Survey submitted',
+      name: 'surveySubmitted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please answer all survey questions.`
+  String get answerAllSurveyQuestions {
+    return Intl.message(
+      'Please answer all survey questions.',
+      name: 'answerAllSurveyQuestions',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Request login code`
   String get requestLoginCode {
     return Intl.message(
@@ -2688,10 +2974,10 @@ class S {
     );
   }
 
-  /// `please enter your Email`
+  /// `Please enter your email`
   String get pleaseEnterYourEmail {
     return Intl.message(
-      'please enter your Email',
+      'Please enter your email',
       name: 'pleaseEnterYourEmail',
       desc: '',
       args: [],
@@ -2848,10 +3134,10 @@ class S {
     );
   }
 
-  /// `petition title in use already`
+  /// `Petition title already in use`
   String get petitionTitleInUseAlready {
     return Intl.message(
-      'petition title in use already',
+      'Petition title already in use',
       name: 'petitionTitleInUseAlready',
       desc: '',
       args: [],
@@ -2948,9 +3234,9 @@ class S {
     );
   }
 
-  /// `hello`
+  /// `Hello`
   String get hello {
-    return Intl.message('hello', name: 'hello', desc: '', args: []);
+    return Intl.message('Hello', name: 'hello', desc: '', args: []);
   }
 
   /// `Faulty input`
@@ -2963,70 +3249,70 @@ class S {
     );
   }
 
-  /// `we failed to get your state, please proofread your living-address`
+  /// `We failed to get your state, please proofread your living address.`
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress {
     return Intl.message(
-      'we failed to get your state, please proofread your living-address',
+      'We failed to get your state, please proofread your living address.',
       name: 'weFailedToGetYourStatePleaseProofreadYourLivingaddress',
       desc: '',
       args: [],
     );
   }
 
-  /// `petition guidelines`
+  /// `Petition Guidelines`
   String get petitionGuidelines {
     return Intl.message(
-      'petition guidelines',
+      'Petition Guidelines',
       name: 'petitionGuidelines',
       desc: '',
       args: [],
     );
   }
 
-  /// `petition guideline description`
+  /// `Petition guideline description`
   String get petitionGuidelineDescription {
     return Intl.message(
-      'petition guideline description',
+      'Petition guideline description',
       name: 'petitionGuidelineDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `poll guidelines`
+  /// `Poll Guidelines`
   String get pollGuidelines {
     return Intl.message(
-      'poll guidelines',
+      'Poll Guidelines',
       name: 'pollGuidelines',
       desc: '',
       args: [],
     );
   }
 
-  /// `poll guideline description`
+  /// `Poll guideline description`
   String get pollGuidelineDescription {
     return Intl.message(
-      'poll guideline description',
+      'Poll guideline description',
       name: 'pollGuidelineDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `please enter your details.`
+  /// `Please enter your details.`
   String get pleaseEnterYourDetails {
     return Intl.message(
-      'please enter your details.',
+      'Please enter your details.',
       name: 'pleaseEnterYourDetails',
       desc: '',
       args: [],
     );
   }
 
-  /// `this app was developed by`
+  /// `This app was developed by`
   String get thisAppWasDevelopedBy {
     return Intl.message(
-      'this app was developed by',
+      'This app was developed by',
       name: 'thisAppWasDevelopedBy',
       desc: '',
       args: [],
@@ -3038,10 +3324,10 @@ class S {
     return Intl.message('Licenses', name: 'licenses', desc: '', args: []);
   }
 
-  /// `published under the GNU General Public License v3.0`
+  /// `Published under the GNU General Public License v3.0`
   String get publishedUnderTheGnuGeneralPublicLicenseV30 {
     return Intl.message(
-      'published under the GNU General Public License v3.0',
+      'Published under the GNU General Public License v3.0',
       name: 'publishedUnderTheGnuGeneralPublicLicenseV30',
       desc: '',
       args: [],
@@ -3368,30 +3654,30 @@ class S {
     );
   }
 
-  /// `Please enter your Credentials`
+  /// `Please enter your credentials`
   String get pleaseEnterYourCredentials {
     return Intl.message(
-      'Please enter your Credentials',
+      'Please enter your credentials',
       name: 'pleaseEnterYourCredentials',
       desc: '',
       args: [],
     );
   }
 
-  /// `Please enter the Credentials you desire.`
+  /// `Please enter the credentials you desire.`
   String get pleaseEnterYourDesiredCredentials {
     return Intl.message(
-      'Please enter the Credentials you desire.',
+      'Please enter the credentials you desire.',
       name: 'pleaseEnterYourDesiredCredentials',
       desc: '',
       args: [],
     );
   }
 
-  /// `Send confirmation Email.`
+  /// `Send confirmation email.`
   String get sendConfirmationEmail {
     return Intl.message(
-      'Send confirmation Email.',
+      'Send confirmation email.',
       name: 'sendConfirmationEmail',
       desc: '',
       args: [],
@@ -3428,9 +3714,9 @@ class S {
     );
   }
 
-  /// `delete`
+  /// `Delete`
   String get delete {
-    return Intl.message('delete', name: 'delete', desc: '', args: []);
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
   /// `Are you sure you want to clear this draft?`
@@ -3473,6 +3759,66 @@ class S {
     );
   }
 
+  /// `Privacy policy`
+  String get privacyPolicyEssentialTitle {
+    return Intl.message(
+      'Privacy policy',
+      name: 'privacyPolicyEssentialTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Essential information about how the app processes personal data.`
+  String get privacyPolicyEssentialDescription {
+    return Intl.message(
+      'Essential information about how the app processes personal data.',
+      name: 'privacyPolicyEssentialDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow`
+  String get allow {
+    return Intl.message('Allow', name: 'allow', desc: '', args: []);
+  }
+
+  /// `Decline`
+  String get decline {
+    return Intl.message('Decline', name: 'decline', desc: '', args: []);
+  }
+
+  /// `Continue to app`
+  String get continueToApp {
+    return Intl.message(
+      'Continue to app',
+      name: 'continueToApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analytics data`
+  String get analyticsData {
+    return Intl.message(
+      'Analytics data',
+      name: 'analyticsData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow anonymous usage analytics so we can understand app usage and improve features over time.`
+  String get analyticsDataDescription {
+    return Intl.message(
+      'Allow anonymous usage analytics so we can understand app usage and improve features over time.',
+      name: 'analyticsDataDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Send Crash Logs`
   String get sendCrashLogs {
     return Intl.message(
@@ -3503,10 +3849,10 @@ class S {
     );
   }
 
-  /// `signature reasoning`
+  /// `Signature reasoning`
   String get signatureReasoning {
     return Intl.message(
-      'signature reasoning',
+      'Signature reasoning',
       name: 'signatureReasoning',
       desc: '',
       args: [],
@@ -3603,6 +3949,26 @@ class S {
     );
   }
 
+  /// `Cannot delete: Survey has responses.`
+  String get cannotDeleteSurveyHasResponses {
+    return Intl.message(
+      'Cannot delete: Survey has responses.',
+      name: 'cannotDeleteSurveyHasResponses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Survey deleted`
+  String get surveyDeleted {
+    return Intl.message(
+      'Survey deleted',
+      name: 'surveyDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Delete Form`
   String get deleteForm {
     return Intl.message('Delete Form', name: 'deleteForm', desc: '', args: []);
@@ -3633,6 +3999,16 @@ class S {
     return Intl.message(
       'No running polls found.',
       name: 'noRunningPollsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No running surveys found.`
+  String get noRunningSurveysFound {
+    return Intl.message(
+      'No running surveys found.',
+      name: 'noRunningSurveysFound',
       desc: '',
       args: [],
     );
@@ -3865,6 +4241,41 @@ class S {
       name: 'groupLabelWithValue',
       desc: '',
       args: [group],
+    );
+  }
+
+  /// `Eligible for you`
+  String get eligibleForYou {
+    return Intl.message(
+      'Eligible for you',
+      name: 'eligibleForYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Already participated`
+  String get alreadyParticipated {
+    return Intl.message(
+      'Already participated',
+      name: 'alreadyParticipated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group-only`
+  String get groupOnly {
+    return Intl.message('Group-only', name: 'groupOnly', desc: '', args: []);
+  }
+
+  /// `This form is only visible to members of its group.`
+  String get groupOnlyUnavailable {
+    return Intl.message(
+      'This form is only visible to members of its group.',
+      name: 'groupOnlyUnavailable',
+      desc: '',
+      args: [],
     );
   }
 
@@ -5143,6 +5554,46 @@ class S {
     return Intl.message(
       'Scan QR code',
       name: 'scanQrCodeTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Export account data`
+  String get exportAccountData {
+    return Intl.message(
+      'Export account data',
+      name: 'exportAccountData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile, publications, groups, and your own participation records as JSON.`
+  String get exportAccountDataDescription {
+    return Intl.message(
+      'Profile, publications, groups, and your own participation records as JSON.',
+      name: 'exportAccountDataDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account data export created.`
+  String get accountDataExportSuccess {
+    return Intl.message(
+      'Account data export created.',
+      name: 'accountDataExportSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not export account data.`
+  String get accountDataExportFailed {
+    return Intl.message(
+      'Could not export account data.',
+      name: 'accountDataExportFailed',
       desc: '',
       args: [],
     );

@@ -59,31 +59,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m16(count) => "Maximal ${count} Optionen erlaubt";
 
-  static String m17(newMessages) =>
+  static String m17(count) => "Maximal ${count} Fragen erlaubt";
+
+  static String m18(newMessages) =>
       "Sie haben ${Intl.plural(newMessages, zero: 'Keine neuen Nachrichten', one: 'Eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
-  static String m18(number) => "Option ${number}";
+  static String m19(number) => "Option ${number}";
 
-  static String m19(type) =>
+  static String m20(type) =>
       "Das Passwort muss mindestens ein ${Intl.select(type, {'uppercase': 'Großbuchstabe', 'lowercase': 'Kleinbuchstabe', 'number': 'Zahl', 'special': 'Sonderzeichen', 'other': 'gültiges Zeichen'})} enthalten";
 
-  static String m20(state) => "Bezogen auf ${state}";
+  static String m21(number) => "Frage ${number}";
 
-  static String m21(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
+  static String m22(state) => "Bezogen auf ${state}";
 
-  static String m22(scope) => "Geltungsbereich: ${scope}";
+  static String m23(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
 
-  static String m23(admin, manager, user) =>
+  static String m24(scope) => "Geltungsbereich: ${scope}";
+
+  static String m25(admin, manager, user) =>
       "Unterstützte Rollen: ${admin}, ${manager}, ${user}.";
 
-  static String m24(groupName) =>
+  static String m26(groupName) =>
       "Gib „${groupName}“ ein, um das Löschen zu bestätigen. Dies kann nicht rückgängig gemacht werden.";
 
-  static String m25(error) => "Unerwarteter Fehler: ${error}";
+  static String m27(error) => "Unerwarteter Fehler: ${error}";
 
-  static String m26(date) => "Gültig bis";
+  static String m28(date) => "Gültig bis";
 
-  static String m27(email) =>
+  static String m29(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -103,6 +107,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessRequestSent": MessageLookupByLibrary.simpleMessage(
       "Zugriffsanfrage gesendet.",
     ),
+    "accountDataExportFailed": MessageLookupByLibrary.simpleMessage(
+      "Kontodaten konnten nicht exportiert werden.",
+    ),
+    "accountDataExportSuccess": MessageLookupByLibrary.simpleMessage(
+      "Kontodaten-Export erstellt.",
+    ),
     "actionNoLongerAvailable": MessageLookupByLibrary.simpleMessage(
       "Diese Aktion ist nicht mehr verfügbar.",
     ),
@@ -117,6 +127,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "addImage": MessageLookupByLibrary.simpleMessage("Bild hinzufügen"),
     "addMember": MessageLookupByLibrary.simpleMessage("Mitglied hinzufügen"),
     "addOption": MessageLookupByLibrary.simpleMessage("Option hinzufügen"),
+    "addQuestion": MessageLookupByLibrary.simpleMessage("Frage hinzufügen"),
     "additionalDetailsOptional": MessageLookupByLibrary.simpleMessage(
       "Zusätzliche Details (optional)",
     ),
@@ -129,6 +140,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "adminRoleLabel": MessageLookupByLibrary.simpleMessage("Admin"),
     "alert": MessageLookupByLibrary.simpleMessage("Warnung"),
     "allGroups": MessageLookupByLibrary.simpleMessage("Alle Gruppen"),
+    "allow": MessageLookupByLibrary.simpleMessage("Erlauben"),
     "allowedMailDomains": MessageLookupByLibrary.simpleMessage(
       "Erlaubte Mail-Domains",
     ),
@@ -138,10 +150,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "alreadyMemberOfGroup": MessageLookupByLibrary.simpleMessage(
       "Du bist bereits Mitglied dieser Gruppe.",
     ),
+    "alreadyParticipated": MessageLookupByLibrary.simpleMessage(
+      "Bereits teilgenommen",
+    ),
     "anUnexpectedErrorOccurred": MessageLookupByLibrary.simpleMessage(
       "Ein unerwarteter Fehler ist aufgetreten.",
     ),
+    "analyticsData": MessageLookupByLibrary.simpleMessage("Analysedaten"),
+    "analyticsDataDescription": MessageLookupByLibrary.simpleMessage(
+      "Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern koennen.",
+    ),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonym"),
+    "answerAllSurveyQuestions": MessageLookupByLibrary.simpleMessage(
+      "Bitte beantworte alle Fragen im Fragebogen.",
+    ),
     "approveRequest": MessageLookupByLibrary.simpleMessage(
       "Anfrage genehmigen",
     ),
@@ -150,7 +172,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Möchtest du dein Pro-Abo wirklich kündigen?",
         ),
     "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
-      "Sind sie sicher das sie das Formular löschen wollen?",
+      "Sind Sie sicher, dass Sie das Formular löschen wollen?",
     ),
     "areYouSureYouWantToDeleteThisForm": MessageLookupByLibrary.simpleMessage(
       "Sind Sie sicher, dass Sie dieses Formular löschen möchten?",
@@ -206,6 +228,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "cannotDeletePollHasVotes": MessageLookupByLibrary.simpleMessage(
       "Kann nicht gelöscht werden: Umfrage hat Stimmen.",
     ),
+    "cannotDeleteSurveyHasResponses": MessageLookupByLibrary.simpleMessage(
+      "Kann nicht gelöscht werden: Fragebogen hat Antworten.",
+    ),
+    "changeEmail": MessageLookupByLibrary.simpleMessage("E-Mail ändern"),
+    "changeEmailCodeSent": MessageLookupByLibrary.simpleMessage(
+      "Wir haben einen Bestätigungscode an deine neue E-Mail-Adresse gesendet.",
+    ),
+    "changeEmailFailed": MessageLookupByLibrary.simpleMessage(
+      "E-Mail-Änderung fehlgeschlagen",
+    ),
+    "changeEmailInstructions": MessageLookupByLibrary.simpleMessage(
+      "Gib deine neue E-Mail-Adresse und dein aktuelles Passwort ein. Wir senden einen Bestätigungscode an die neue Adresse.",
+    ),
     "changeLanguage": MessageLookupByLibrary.simpleMessage("Sprache ändern"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Passwort ändern"),
     "cityScopeFallback": MessageLookupByLibrary.simpleMessage("Stadt"),
@@ -246,6 +281,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "consumption": MessageLookupByLibrary.simpleMessage("Verbrauch"),
     "continueNext": MessageLookupByLibrary.simpleMessage("Weiter"),
     "continueText": MessageLookupByLibrary.simpleMessage("Weiter"),
+    "continueToApp": MessageLookupByLibrary.simpleMessage("Zur App"),
     "copyInviteLinkTooltip": MessageLookupByLibrary.simpleMessage(
       "Einladungslink kopieren",
     ),
@@ -276,17 +312,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "createNewPollDescription": MessageLookupByLibrary.simpleMessage(
       "Erstelle eine neue Umfrage",
     ),
+    "createNewSurveyDescription": MessageLookupByLibrary.simpleMessage(
+      "Erstelle einen neuen Fragebogen",
+    ),
     "createOrManageGroups": MessageLookupByLibrary.simpleMessage(
-      "erstelle oder verwalte Gruppen",
+      "Erstelle oder verwalte Gruppen",
     ),
     "createPetition": MessageLookupByLibrary.simpleMessage(
       "Petitition erstellen",
     ),
     "createPoll": MessageLookupByLibrary.simpleMessage("Umfrage erstellen"),
+    "createSurvey": MessageLookupByLibrary.simpleMessage(
+      "Fragebogen erstellen",
+    ),
     "createdPetition": MessageLookupByLibrary.simpleMessage(
       "Petition erstellt",
     ),
     "createdPoll": MessageLookupByLibrary.simpleMessage("Umfrage erstellt"),
+    "createdSurvey": MessageLookupByLibrary.simpleMessage(
+      "Fragebogen erstellt",
+    ),
     "creatingGroup": MessageLookupByLibrary.simpleMessage("Erstelle..."),
     "creator": MessageLookupByLibrary.simpleMessage("Ersteller"),
     "creatorRoleLabel": MessageLookupByLibrary.simpleMessage("Ersteller"),
@@ -313,7 +358,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "databaseError": m2,
     "dateOfBirth": MessageLookupByLibrary.simpleMessage("Geburtsdatum"),
     "daysLeft": MessageLookupByLibrary.simpleMessage("Verbleibende Tage"),
-    "delete": MessageLookupByLibrary.simpleMessage("löschen"),
+    "decline": MessageLookupByLibrary.simpleMessage("Ablehnen"),
+    "delete": MessageLookupByLibrary.simpleMessage("Löschen"),
     "deleteAccount": MessageLookupByLibrary.simpleMessage("Konto löschen"),
     "deleteAccountButton": MessageLookupByLibrary.simpleMessage(
       "KONTO ENDGÜLTIG LÖSCHEN",
@@ -355,14 +401,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "descriptionTooShort": MessageLookupByLibrary.simpleMessage(
       "Beschreibung ist zu kurz",
     ),
+    "design": MessageLookupByLibrary.simpleMessage("Design"),
     "detectedStateLabel": m3,
     "devContactInformation": MessageLookupByLibrary.simpleMessage(
-      "Diese App wurde von Team LeEd mit Hilfe von Yannic entwickelt",
+      "Diese App wurde von Trainvent entwickelt",
     ),
     "developerSandbox": MessageLookupByLibrary.simpleMessage(
       "Entwickler-Sandbox",
     ),
-    "displayName": MessageLookupByLibrary.simpleMessage("angezeigter Name"),
+    "displayName": MessageLookupByLibrary.simpleMessage("Angezeigter Name"),
     "displayQrCode": MessageLookupByLibrary.simpleMessage("QR Code anzeigen"),
     "doYouWantToLeaveGroup": m4,
     "domainHint": MessageLookupByLibrary.simpleMessage("company.com"),
@@ -374,7 +421,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "editGroupTitle": MessageLookupByLibrary.simpleMessage("Gruppe bearbeiten"),
     "editLabel": MessageLookupByLibrary.simpleMessage("Bearbeiten"),
     "editPetition": MessageLookupByLibrary.simpleMessage("Petition bearbeiten"),
+    "eligibleForYou": MessageLookupByLibrary.simpleMessage("Für dich geeignet"),
     "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
+    "emailChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "E-Mail erfolgreich geändert",
+    ),
     "emailCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "E-Mail in die Zwischenablage kopiert",
     ),
@@ -398,7 +449,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bestätigungscode eingeben",
     ),
     "enterYourAddress": MessageLookupByLibrary.simpleMessage(
-      "gib deine Wohnanschrift ein",
+      "Gib deine Wohnanschrift ein",
     ),
     "enterYourEmail": MessageLookupByLibrary.simpleMessage(
       "Geben Sie Ihre E-Mail-Adresse ein",
@@ -445,6 +496,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "expiresOnShort": m6,
     "expiryDate": MessageLookupByLibrary.simpleMessage("Ablaufdatum"),
     "explore": MessageLookupByLibrary.simpleMessage("Entdecken"),
+    "exportAccountData": MessageLookupByLibrary.simpleMessage(
+      "Kontodaten exportieren",
+    ),
+    "exportAccountDataDescription": MessageLookupByLibrary.simpleMessage(
+      "Profil, Veröffentlichungen, Gruppen und deine eigenen Teilnahmedaten als JSON.",
+    ),
     "exportCsv": MessageLookupByLibrary.simpleMessage("CSV exportieren"),
     "exportFailed": MessageLookupByLibrary.simpleMessage(
       "Export fehlgeschlagen",
@@ -452,6 +509,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "exportSuccess": MessageLookupByLibrary.simpleMessage("Export erstellt"),
     "failedToCreatePoll": MessageLookupByLibrary.simpleMessage(
       "Fehler beim Erstellen der Umfrage",
+    ),
+    "failedToCreateSurvey": MessageLookupByLibrary.simpleMessage(
+      "Fehler beim Erstellen des Fragebogens",
     ),
     "failedToLoadYourGroups": MessageLookupByLibrary.simpleMessage(
       "Deine Gruppen konnten nicht geladen werden.",
@@ -464,9 +524,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "faultyInput": MessageLookupByLibrary.simpleMessage("Fehlerhafte Eingabe"),
     "filter": MessageLookupByLibrary.simpleMessage("Filter"),
-    "filterBy": MessageLookupByLibrary.simpleMessage("filtern nach"),
+    "filterBy": MessageLookupByLibrary.simpleMessage("Filtern nach"),
     "filterByGroup": MessageLookupByLibrary.simpleMessage(
-      "filtern nach Gruppe",
+      "Filtern nach Gruppe",
     ),
     "finalNotice": MessageLookupByLibrary.simpleMessage("Letzter Hinweis"),
     "finishedForms": MessageLookupByLibrary.simpleMessage(
@@ -518,6 +578,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Der Gruppenname stimmt nicht überein.",
     ),
     "groupNameLabel": MessageLookupByLibrary.simpleMessage("Gruppenname"),
+    "groupOnly": MessageLookupByLibrary.simpleMessage("Nur Gruppe"),
+    "groupOnlyUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.",
+    ),
     "groupUpdated": MessageLookupByLibrary.simpleMessage(
       "Gruppe aktualisiert.",
     ),
@@ -533,7 +597,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hello": MessageLookupByLibrary.simpleMessage("Hallo"),
     "helloAndWelcome": m9,
     "hintTextTags": MessageLookupByLibrary.simpleMessage(
-      "z.B. umwelt, verkehr",
+      "Z. B. Umwelt, Verkehr",
     ),
     "idNumber": MessageLookupByLibrary.simpleMessage("Ausweisnummer"),
     "idScan": MessageLookupByLibrary.simpleMessage("Ausweisscan"),
@@ -598,6 +662,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginCodeSent": MessageLookupByLibrary.simpleMessage(
       "Login Code gesendet",
     ),
+    "loginLegalNoticeAnd": MessageLookupByLibrary.simpleMessage(
+      " und unserer ",
+    ),
+    "loginLegalNoticePrefix": MessageLookupByLibrary.simpleMessage(
+      "Indem du fortfährst, stimmst du unseren ",
+    ),
+    "loginLegalNoticePrivacy": MessageLookupByLibrary.simpleMessage(
+      "Datenschutzerklärung",
+    ),
+    "loginLegalNoticeSuffix": MessageLookupByLibrary.simpleMessage(" zu."),
+    "loginLegalNoticeTerms": MessageLookupByLibrary.simpleMessage(
+      "Nutzungsbedingungen",
+    ),
     "loginLinkSent": MessageLookupByLibrary.simpleMessage("Code gesendet!"),
     "logout": MessageLookupByLibrary.simpleMessage("Abmelden"),
     "manageGroupsTitle": MessageLookupByLibrary.simpleMessage(
@@ -608,6 +685,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Manager können Zugangslisten vorbereiten",
     ),
     "maximumPollOptionsAllowed": m16,
+    "maximumSurveyQuestionsAllowed": m17,
     "memberRoleLabel": MessageLookupByLibrary.simpleMessage("Mitglied"),
     "membersCanChooseTheirOwnNickname": MessageLookupByLibrary.simpleMessage(
       "Mitglieder können ihren Spitznamen selbst wählen",
@@ -629,7 +707,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Namensänderung fehlgeschlagen",
     ),
     "nationality": MessageLookupByLibrary.simpleMessage("Staatsangehörigkeit"),
-    "newMessages": m17,
+    "newEmail": MessageLookupByLibrary.simpleMessage("Neue E-Mail"),
+    "newMessages": m18,
     "newPassword": MessageLookupByLibrary.simpleMessage("Neues Passwort"),
     "newUser": MessageLookupByLibrary.simpleMessage("Neuer Benutzer"),
     "newUsername": MessageLookupByLibrary.simpleMessage("Neuer Benutzername"),
@@ -677,6 +756,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noRunningPollsFound": MessageLookupByLibrary.simpleMessage(
       "Keine laufenden Umfragen gefunden.",
     ),
+    "noRunningSurveysFound": MessageLookupByLibrary.simpleMessage(
+      "Keine laufenden Fragebögen gefunden.",
+    ),
     "noTitle": MessageLookupByLibrary.simpleMessage("Kein Titel"),
     "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
       "Kein dieser Email zugehöriger Nutzer gefunden.",
@@ -720,19 +802,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "openGroupsCanBeJoinedImmediately": MessageLookupByLibrary.simpleMessage(
       "Offene Gruppen können sofort beigetreten werden.",
     ),
-    "loginLegalNoticeAnd": MessageLookupByLibrary.simpleMessage(
-      " und unserer ",
-    ),
-    "loginLegalNoticePrefix": MessageLookupByLibrary.simpleMessage(
-      "Indem du fortfährst, stimmst du unseren ",
-    ),
-    "loginLegalNoticePrivacy": MessageLookupByLibrary.simpleMessage(
-      "Datenschutzerklärung",
-    ),
-    "loginLegalNoticeSuffix": MessageLookupByLibrary.simpleMessage(" zu."),
-    "loginLegalNoticeTerms": MessageLookupByLibrary.simpleMessage(
-      "Nutzungsbedingungen",
-    ),
     "openPrivacyPolicy": MessageLookupByLibrary.simpleMessage(
       "Datenschutzerklärung öffnen",
     ),
@@ -740,7 +809,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nutzungsbedingungen öffnen",
     ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
-    "optionNumber": m18,
+    "optionNumber": m19,
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option ist erforderlich",
     ),
@@ -759,7 +828,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Passwort muss mindestens 8 Character lang sein",
         ),
-    "passwordValidation": m19,
+    "passwordValidation": m20,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
     ),
@@ -851,10 +920,10 @@ class MessageLookup extends MessageLookupByLibrary {
           "Bitte gib für jedes eingeladene Mitglied eine gültige E-Mail-Adresse ein.",
         ),
     "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie ihre Zugangsdaten ein.",
+      "Bitte geben Sie Ihre Zugangsdaten ein.",
     ),
     "pleaseEnterYourDesiredCredentials": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben sie ihre gewünschten Zugangsdaten ein.",
+      "Bitte geben Sie Ihre gewünschten Zugangsdaten ein.",
     ),
     "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
       "Bitte geben Sie Ihre Daten ein.",
@@ -954,6 +1023,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Prioritätssupport",
     ),
     "privacy": MessageLookupByLibrary.simpleMessage("Datenschutz"),
+    "privacyPolicyEssentialDescription": MessageLookupByLibrary.simpleMessage(
+      "Wesentliche Informationen darüber, wie die App personenbezogene Daten verarbeitet.",
+    ),
+    "privacyPolicyEssentialTitle": MessageLookupByLibrary.simpleMessage(
+      "Datenschutzerklärung",
+    ),
     "privacySettings": MessageLookupByLibrary.simpleMessage(
       "Datenschutzeinstellungen",
     ),
@@ -977,12 +1052,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "protectedGroupsRequireInviteLink": MessageLookupByLibrary.simpleMessage(
       "Geschützte Gruppen benötigen einen gültigen Einladungslink und eine Zugriffsanfrage.",
     ),
-    "public": MessageLookupByLibrary.simpleMessage("öffentlich"),
+    "public": MessageLookupByLibrary.simpleMessage("Öffentlich"),
     "publications": MessageLookupByLibrary.simpleMessage("Veröffentlichungen"),
-    "publishTo": MessageLookupByLibrary.simpleMessage("zeigen in"),
+    "publishTo": MessageLookupByLibrary.simpleMessage("Zeigen in"),
     "publishedUnderTheGnuGeneralPublicLicenseV30":
         MessageLookupByLibrary.simpleMessage(
-          "veröffentlicht unter der GNU General Public License v3.0",
+          "Veröffentlicht unter der GNU General Public License v3.0",
         ),
     "purchaseCancelled": MessageLookupByLibrary.simpleMessage(
       "Kauf abgebrochen.",
@@ -993,6 +1068,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
       "Kauf erfolgreich!",
     ),
+    "questionNumber": m21,
+    "questionRequired": MessageLookupByLibrary.simpleMessage(
+      "Frage ist erforderlich",
+    ),
+    "questions": MessageLookupByLibrary.simpleMessage("Fragen"),
     "reasonYourSignature": MessageLookupByLibrary.simpleMessage(
       "Begründen Sie Ihre Unterschrift",
     ),
@@ -1007,7 +1087,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto registrieren",
     ),
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
-    "relatedToState": m20,
+    "relatedToState": m22,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
     "removeAbusiveLanguageBeforePublishing": MessageLookupByLibrary.simpleMessage(
       "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
@@ -1029,7 +1109,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Login Code anfordern",
     ),
-    "requestedAccessToThisGroup": m21,
+    "requestedAccessToThisGroup": m23,
     "resendEmail": MessageLookupByLibrary.simpleMessage("E-Mail erneut senden"),
     "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
       "Bitte warte, bevor du erneut sendest",
@@ -1078,7 +1158,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
     "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
-    "scopeLabelWithValue": m22,
+    "scopeLabelWithValue": m24,
     "scopeStateRegion": MessageLookupByLibrary.simpleMessage(
       "Bundesland / Region",
     ),
@@ -1130,6 +1210,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
       "Teilen wird auf dieser Plattform nicht unterstützt.",
     ),
+    "showSurveys": MessageLookupByLibrary.simpleMessage("Fragebögen anzeigen"),
+    "showSurveysInfo": MessageLookupByLibrary.simpleMessage(
+      "Wenn dies aktiviert ist, erscheinen Fragebögen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.",
+    ),
     "sign": MessageLookupByLibrary.simpleMessage("Unterzeichen"),
     "signIn": MessageLookupByLibrary.simpleMessage("Anmelden"),
     "signInToJoinGroup": MessageLookupByLibrary.simpleMessage(
@@ -1168,8 +1252,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "stateUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Bundesland erfolgreich aktualisiert",
     ),
-    "stimmapp": MessageLookupByLibrary.simpleMessage("stimmapp"),
+    "stimmapp": MessageLookupByLibrary.simpleMessage("StimmApp"),
     "submit": MessageLookupByLibrary.simpleMessage("Senden"),
+    "submitSurvey": MessageLookupByLibrary.simpleMessage("Fragebogen absenden"),
     "subscriptionCancelledAccessWillRemainUntilExpiry":
         MessageLookupByLibrary.simpleMessage(
           "Abo gekündigt. Zugriff bleibt bis zum Ablauf erhalten.",
@@ -1177,9 +1262,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyLoggedIn": MessageLookupByLibrary.simpleMessage(
       "Erfolgreich angemeldet",
     ),
-    "supportedRoles": m23,
+    "supportedRoles": m25,
     "supporters": MessageLookupByLibrary.simpleMessage("Unterstützer"),
     "surname": MessageLookupByLibrary.simpleMessage("Nachname"),
+    "surveyDeleted": MessageLookupByLibrary.simpleMessage(
+      "Fragebogen gelöscht",
+    ),
+    "surveyDetails": MessageLookupByLibrary.simpleMessage("Fragebogen-Details"),
+    "surveyQuestion": MessageLookupByLibrary.simpleMessage(
+      "Frage im Fragebogen",
+    ),
+    "surveySubmitted": MessageLookupByLibrary.simpleMessage(
+      "Fragebogen abgesendet",
+    ),
+    "surveys": MessageLookupByLibrary.simpleMessage("Fragebögen"),
     "swipeForDelete": MessageLookupByLibrary.simpleMessage(
       "Wische zum Löschen.",
     ),
@@ -1217,6 +1313,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "theWelcomePhrase": MessageLookupByLibrary.simpleMessage(
       "Der ultimative Weg deine Meinung zu äußern",
     ),
+    "themePaletteAmber": MessageLookupByLibrary.simpleMessage("Amber"),
+    "themePaletteForest": MessageLookupByLibrary.simpleMessage("Wald"),
+    "themePaletteMint": MessageLookupByLibrary.simpleMessage("Minze"),
+    "themePaletteOcean": MessageLookupByLibrary.simpleMessage("Ozean"),
+    "themePalettePlum": MessageLookupByLibrary.simpleMessage("Pflaume"),
+    "themePaletteRose": MessageLookupByLibrary.simpleMessage("Rose"),
+    "themePaletteSky": MessageLookupByLibrary.simpleMessage("Himmel"),
+    "themePaletteSlate": MessageLookupByLibrary.simpleMessage("Schiefer"),
+    "themePaletteSunset": MessageLookupByLibrary.simpleMessage(
+      "Sonnenuntergang",
+    ),
+    "themePaletteTrainvent": MessageLookupByLibrary.simpleMessage("Trainvent"),
     "thisActionWillPermanentlyDeleteYourAccountAndAllAssociated":
         MessageLookupByLibrary.simpleMessage(
           "Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.",
@@ -1231,12 +1339,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "titleTooShort": MessageLookupByLibrary.simpleMessage("Titel ist zu kurz"),
     "town": MessageLookupByLibrary.simpleMessage("Ort"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
-    "typeGroupNameToConfirmDeletion": m24,
+    "typeGroupNameToConfirmDeletion": m26,
     "unblock": MessageLookupByLibrary.simpleMessage("Blockierung aufheben"),
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Nutzer erfolgreich entsperrt.",
     ),
-    "unexpectedErrorWithDetails": m25,
+    "unexpectedErrorWithDetails": m27,
     "unknownError": MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
     "unknownUser": MessageLookupByLibrary.simpleMessage("Unbekannter Nutzer"),
     "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
@@ -1272,14 +1380,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzername erfolgreich geändert",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m26,
+    "validUntil": m28,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m27,
+    "verificationEmailSentTo": m29,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),
@@ -1312,7 +1420,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Willkommen zurück! Bitte geben Sie Ihre Daten ein.",
     ),
     "welcomePleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Willkommen! Bitte geben sie ihre Daten ein.",
+      "Willkommen! Bitte geben Sie Ihre Daten ein.",
     ),
     "welcomeTo": MessageLookupByLibrary.simpleMessage("Willkommen bei "),
     "welcomeToPro": MessageLookupByLibrary.simpleMessage(
