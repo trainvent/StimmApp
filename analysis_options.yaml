@@ -12,8 +12,11 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-      - "lib/generated/intl/**" # this hides the bug of missing type in generated files
-      - "tmp/**" # not important anyways
+    - "lib/generated/intl/**" # this hides the bug of missing type in generated files
+    - "tmp/**" # not important anyways
+    # Patrol is intentionally not part of the production app's dependency graph.
+    - "integration_test/**"
+    - "test_bundle.dart"
 
 linter:
   # The lint rules applied to this project can be customized in the
