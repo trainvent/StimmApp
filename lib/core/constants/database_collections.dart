@@ -1,5 +1,6 @@
 class DatabaseCollections {
   static const users = 'users';
+  static const usernames = 'usernames';
   static const petitions = 'petitions';
   static const polls = 'polls';
   static const surveys = 'surveys';

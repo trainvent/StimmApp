@@ -1,5 +1,6 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -39,6 +40,42 @@ void main() {
       expect(result, isNotNull);
       expect(result!.uid, tUserProfile.uid);
       expect(result.displayName, tUserProfile.displayName);
+    });
+
+    test('upsertWithUniqueUsername claims normalized username', () async {
+      await userRepository.upsertWithUniqueUsername(
+        tUserProfile.copyWith(displayName: 'Test User'),
+      );
+
+      final profile = await userRepository.getById('1');
+      final usernameClaim = await fakeFirebaseFirestore
+          .collection(DatabaseCollections.usernames)
+          .doc('test user')
+          .get();
+
+      expect(profile?.displayName, 'Test User');
+      expect(profile?.usernameKey, 'test user');
+      expect(usernameClaim.data()?['uid'], '1');
+      expect(usernameClaim.data()?['displayName'], 'Test User');
+    });
+
+    test('upsertWithUniqueUsername rejects duplicate username', () async {
+      await userRepository.upsertWithUniqueUsername(
+        tUserProfile.copyWith(uid: '1', displayName: 'Test User'),
+      );
+
+      expect(
+        () => userRepository.upsertWithUniqueUsername(
+          tUserProfile.copyWith(uid: '2', displayName: 'test user'),
+        ),
+        throwsA(
+          isA<DatabaseException>().having(
+            (error) => error.code,
+            'code',
+            'already-exists',
+          ),
+        ),
+      );
     });
 
     test('delete removes the user', () async {

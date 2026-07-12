@@ -4,6 +4,7 @@ import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+import 'package:stimmapp/core/functions/normalize_username.dart';
 
 import 'petition_repository.dart';
 import 'poll_repository.dart';
@@ -48,6 +49,61 @@ class UserRepository {
     );
   }
 
+  Future<void> upsertWithUniqueUsername(UserProfile profile) async {
+    final displayName = normalizeUsername(profile.displayName ?? '');
+    if (displayName.isEmpty) {
+      await upsert(profile);
+      return;
+    }
+
+    final usernameKey = usernameKeyFor(displayName);
+    final profileRef = _doc(profile.uid);
+    final usernameRef = _fs.instance
+        .collection(DatabaseCollections.usernames)
+        .doc(usernameKey);
+
+    try {
+      await _fs.instance.runTransaction((transaction) async {
+        final usernameSnap = await transaction.get(usernameRef);
+        final usernameOwner = usernameSnap.data()?['uid'] as String?;
+        if (usernameSnap.exists && usernameOwner != profile.uid) {
+          throw FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'already-exists',
+            message: 'Username is already taken.',
+          );
+        }
+
+        final existingProfileSnap = await transaction.get(profileRef);
+        final existingProfile = existingProfileSnap.data();
+        final previousUsernameKey = existingProfile?.usernameKey;
+        if (previousUsernameKey != null &&
+            previousUsernameKey.isNotEmpty &&
+            previousUsernameKey != usernameKey) {
+          transaction.delete(
+            _fs.instance
+                .collection(DatabaseCollections.usernames)
+                .doc(previousUsernameKey),
+          );
+        }
+
+        final updatedProfile = profile.copyWith(
+          displayName: displayName,
+          usernameKey: usernameKey,
+          updatedAt: DateTime.now(),
+        );
+        transaction.set(profileRef, updatedProfile, SetOptions(merge: true));
+        transaction.set(usernameRef, <String, Object?>{
+          'uid': profile.uid,
+          'displayName': displayName,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    } on FirebaseException catch (e) {
+      throw DatabaseException(e);
+    }
+  }
+
   Future<void> update(String uid, Map<String, dynamic> data) async {
     await _fs.instance
         .collection(DatabaseCollections.users)
@@ -56,6 +112,8 @@ class UserRepository {
   }
 
   Future<void> delete(String uid) async {
+    final profile = await getById(uid);
+
     // Use repository helpers to remove user activity and close created items.
     final pollRepo = PollRepository.create();
     final petitionRepo = PetitionRepository.create();
@@ -68,6 +126,13 @@ class UserRepository {
 
     // Delete the user profile document
     await _fs.delete(_doc(uid));
+    if (profile?.usernameKey != null && profile!.usernameKey!.isNotEmpty) {
+      await _fs.delete(
+        _fs.instance
+            .collection(DatabaseCollections.usernames)
+            .doc(profile.usernameKey!),
+      );
+    }
 
     // Delete profile picture from storage
     try {

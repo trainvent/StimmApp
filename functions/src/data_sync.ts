@@ -13,6 +13,7 @@ interface CollectionSyncConfig {
 // List of Firestore collections to sync from Prod to Dev
 const COLLECTIONS_TO_SYNC: CollectionSyncConfig[] = [
     { name: 'users' },
+    { name: 'usernames' },
     { name: 'petitions', subcollections: ['signatures'] },
     { name: 'polls', subcollections: ['votes'] },
     { name: 'surveys', subcollections: ['responses'] },

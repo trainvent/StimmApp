@@ -42,6 +42,7 @@ const prodServiceAccountKey = (0, params_1.defineSecret)("PROD_SERVICE_ACCOUNT_K
 // List of Firestore collections to sync from Prod to Dev
 const COLLECTIONS_TO_SYNC = [
     { name: 'users' },
+    { name: 'usernames' },
     { name: 'petitions', subcollections: ['signatures'] },
     { name: 'polls', subcollections: ['votes'] },
     { name: 'surveys', subcollections: ['responses'] },

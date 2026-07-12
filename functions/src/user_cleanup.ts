@@ -61,6 +61,12 @@ export async function cleanupUserData(uid: string) {
 	console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
 
 	try {
+		const profileSnap = await db.collection("users").doc(uid).get();
+		const usernameKey = profileSnap.data()?.usernameKey;
+		if (typeof usernameKey === "string" && usernameKey.trim().length > 0) {
+			await db.collection("usernames").doc(usernameKey).delete();
+		}
+
 		// 1. Delete User Profile Document
 		await db.collection("users").doc(uid).delete();
 

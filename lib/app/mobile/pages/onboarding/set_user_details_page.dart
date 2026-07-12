@@ -21,6 +21,7 @@ import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/notifiers/notifiers.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
@@ -99,15 +100,12 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         return;
       }
 
-      // Update username (display name) - using email part as default
-      await authService.updateUsername(
-        username: currentUser.email?.split('@')[0] ?? context.l10n.newUser,
-      );
+      final displayName = normalizeUsername(controllerDisplayName.text);
 
       final profile = UserProfile(
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: controllerDisplayName.text.trim(),
+        displayName: displayName,
         state: _requiresStateScope ? _selectedState : null,
         countryCode: _selectedCountryCode,
         createdAt: DateTime.now(),
@@ -121,7 +119,8 @@ class _SetUserDetailsPageState extends State<SetUserDetailsPage> {
         acceptedCommunityRulesAt: DateTime.now(),
       );
 
-      await UserRepository.create().upsert(profile);
+      await UserRepository.create().upsertWithUniqueUsername(profile);
+      await authService.updateUsername(username: displayName);
       crashLogsEnabledNotifier.value = true;
       analyticsCollectionEnabledNotifier.value = true;
       await AnalyticsService.instance.logProfileCompleted(

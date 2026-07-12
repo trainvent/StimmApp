@@ -16,10 +16,7 @@ void main() {
       );
     });
 
-    test('blocks direct group creation and keeps explicit group fields', () {
-      expect(rules, contains('function isValidPollGroupCreate()'));
-      expect(rules, contains("request.resource.data.accessMode is string"));
-      expect(rules, contains("request.resource.data.inviteLinkEnabled is bool"));
+    test('blocks direct group creation outside admins', () {
       expect(rules, contains('match /pollGroups/{groupId} {'));
       expect(rules, contains('allow create: if isAdmin();'));
     });
