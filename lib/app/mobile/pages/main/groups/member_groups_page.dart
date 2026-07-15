@@ -384,10 +384,11 @@ class MemberGroupsPage extends StatelessWidget {
                               ),
                             ],
                     ),
-                    child: _ShakeHint(
-                      builder: (shake) => PollGroupSummaryCard(
+                    child: _SlidablePeekHint(
+                      showStartAction: canManage,
+                      builder: (showActions) => PollGroupSummaryCard(
                         group: group,
-                        onTap: shake,
+                        onTap: showActions,
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -432,58 +433,71 @@ class MemberGroupsPage extends StatelessWidget {
   }
 }
 
-class _ShakeHint extends StatefulWidget {
-  const _ShakeHint({required this.builder});
+class _SlidablePeekHint extends StatefulWidget {
+  const _SlidablePeekHint({
+    required this.showStartAction,
+    required this.builder,
+  });
 
-  final Widget Function(VoidCallback shake) builder;
+  final bool showStartAction;
+  final Widget Function(VoidCallback showActions) builder;
 
   @override
-  State<_ShakeHint> createState() => _ShakeHintState();
+  State<_SlidablePeekHint> createState() => _SlidablePeekHintState();
 }
 
-class _ShakeHintState extends State<_ShakeHint>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _horizontalOffset;
+class _SlidablePeekHintState extends State<_SlidablePeekHint> {
+  bool _isShowingActions = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 360),
-    );
-    _horizontalOffset = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: -7), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -7, end: 7), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 7, end: -5), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -5, end: 5), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 5, end: 0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _shake() {
-    if (MediaQuery.disableAnimationsOf(context)) {
+  Future<void> _showActions() async {
+    if (_isShowingActions || MediaQuery.disableAnimationsOf(context)) {
       return;
     }
-    _controller.forward(from: 0);
+
+    final controller = Slidable.of(context);
+    if (controller == null) {
+      return;
+    }
+
+    _isShowingActions = true;
+    try {
+      if (widget.showStartAction) {
+        await controller.openStartActionPane(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 220));
+        if (!mounted) {
+          return;
+        }
+        await controller.close(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeIn,
+        );
+      }
+
+      if (!mounted) {
+        return;
+      }
+      await controller.openEndActionPane(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 220));
+      if (!mounted) {
+        return;
+      }
+      await controller.close(
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeIn,
+      );
+    } finally {
+      _isShowingActions = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _horizontalOffset,
-      child: widget.builder(_shake),
-      builder: (context, child) => Transform.translate(
-        offset: Offset(_horizontalOffset.value, 0),
-        child: child,
-      ),
-    );
+    return widget.builder(_showActions);
   }
 }
