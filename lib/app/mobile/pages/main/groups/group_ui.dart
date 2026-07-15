@@ -53,6 +53,7 @@ class PollGroupSummaryCard extends StatelessWidget {
     this.trailing,
     this.footer,
     this.onTap,
+    this.embedded = false,
   });
 
   final PollGroup group;
@@ -60,6 +61,7 @@ class PollGroupSummaryCard extends StatelessWidget {
   final Widget? trailing;
   final Widget? footer;
   final VoidCallback? onTap;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -72,35 +74,35 @@ class PollGroupSummaryCard extends StatelessWidget {
       null => const <Widget>[],
     };
 
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.groups_2_outlined),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      group.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+    final content = InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.groups_2_outlined),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    group.name,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  ...trailingChildren,
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(summary),
-              ...footerChildren,
-            ],
-          ),
+                ),
+                ...trailingChildren,
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(summary),
+            ...footerChildren,
+          ],
         ),
       ),
     );
+
+    return embedded ? content : Card(child: content);
   }
 }

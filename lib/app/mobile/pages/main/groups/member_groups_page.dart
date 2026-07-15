@@ -334,91 +334,118 @@ class MemberGroupsPage extends StatelessWidget {
                           formatPollGroupDate(expiresAt),
                         );
 
-                  return Slidable(
-                    key: ValueKey('member_group_${group.id}'),
-                    startActionPane: canManage
-                        ? ActionPane(
-                            motion: const StretchMotion(),
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: Slidable(
+                      key: ValueKey('member_group_${group.id}'),
+                      startActionPane: canManage
+                          ? ActionPane(
+                              motion: const StretchMotion(),
+                              dismissible: DismissiblePane(
+                                dismissThreshold: 0.3,
+                                confirmDismiss: () async {
+                                  await _openEditor(context, group);
+                                  return false;
+                                },
+                                closeOnCancel: true,
+                                onDismissed: () {},
+                              ),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (_) => _openEditor(context, group),
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                                  icon: Icons.edit_outlined,
+                                  label: context.l10n.editLabel,
+                                ),
+                              ],
+                            )
+                          : null,
+                      endActionPane: ActionPane(
+                        motion: const StretchMotion(),
+                        dismissible: DismissiblePane(
+                          dismissThreshold: 0.3,
+                          confirmDismiss: () async {
+                            if (canManage) {
+                              await _deleteGroup(context, group);
+                            } else {
+                              await _leaveGroup(context, group);
+                            }
+                            return false;
+                          },
+                          closeOnCancel: true,
+                          onDismissed: () {},
+                        ),
+                        children: canManage
+                            ? [
+                                SlidableAction(
+                                  onPressed: (_) =>
+                                      _deleteGroup(context, group),
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.errorContainer,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onErrorContainer,
+                                  icon: Icons.delete_outline,
+                                  label: context.l10n.deleteGroup,
+                                ),
+                              ]
+                            : [
+                                SlidableAction(
+                                  onPressed: (_) => _leaveGroup(context, group),
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.secondaryContainer,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer,
+                                  icon: Icons.logout,
+                                  label: context.l10n.leaveGroup,
+                                ),
+                              ],
+                      ),
+                      child: _SlidablePeekHint(
+                        showStartAction: canManage,
+                        builder: (showActions) => PollGroupSummaryCard(
+                          group: group,
+                          embedded: true,
+                          onTap: showActions,
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              SlidableAction(
-                                onPressed: (_) => _openEditor(context, group),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.primaryContainer,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                                icon: Icons.edit_outlined,
-                                label: context.l10n.editLabel,
-                              ),
+                              if (inviteLink != null) ...[
+                                IconButton(
+                                  tooltip: context.l10n.copyInviteLinkTooltip,
+                                  onPressed: () =>
+                                      _copyGroupInviteLink(context, group),
+                                  icon: const Icon(Icons.link),
+                                ),
+                                IconButton(
+                                  tooltip: context.l10n.scanQrCode,
+                                  onPressed: () =>
+                                      _showGroupQrCode(context, group),
+                                  icon: const Icon(Icons.qr_code),
+                                ),
+                              ],
+                              Chip(label: Text(roleLabel)),
                             ],
-                          )
-                        : null,
-                    endActionPane: ActionPane(
-                      motion: const StretchMotion(),
-                      children: canManage
-                          ? [
-                              SlidableAction(
-                                onPressed: (_) => _deleteGroup(context, group),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer,
-                                icon: Icons.delete_outline,
-                                label: context.l10n.deleteGroup,
-                              ),
-                            ]
-                          : [
-                              SlidableAction(
-                                onPressed: (_) => _leaveGroup(context, group),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.secondaryContainer,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
-                                icon: Icons.logout,
-                                label: context.l10n.leaveGroup,
-                              ),
-                            ],
-                    ),
-                    child: _SlidablePeekHint(
-                      showStartAction: canManage,
-                      builder: (showActions) => PollGroupSummaryCard(
-                        group: group,
-                        onTap: showActions,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (inviteLink != null) ...[
-                              IconButton(
-                                tooltip: context.l10n.copyInviteLinkTooltip,
-                                onPressed: () =>
-                                    _copyGroupInviteLink(context, group),
-                                icon: const Icon(Icons.link),
-                              ),
-                              IconButton(
-                                tooltip: context.l10n.scanQrCode,
-                                onPressed: () =>
-                                    _showGroupQrCode(context, group),
-                                icon: const Icon(Icons.qr_code),
-                              ),
-                            ],
-                            Chip(label: Text(roleLabel)),
-                          ],
-                        ),
-                        summary: context.l10n.groupAccessSummary(
-                          group.accessMode.localizedTitle(context),
-                          group.memberIds.length,
-                          expiresLabel,
-                        ),
-                        footer: Text(
-                          canManage
-                              ? context.l10n.swipeForDelete
-                              : context.l10n.swipeToLeaveGroup,
-                          style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          summary: context.l10n.groupAccessSummary(
+                            group.accessMode.localizedTitle(context),
+                            group.memberIds.length,
+                            expiresLabel,
+                          ),
+                          footer: Text(
+                            canManage
+                                ? context.l10n.swipeForDelete
+                                : context.l10n.swipeToLeaveGroup,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
                         ),
                       ),
                     ),
@@ -462,7 +489,8 @@ class _SlidablePeekHintState extends State<_SlidablePeekHint> {
     _isShowingActions = true;
     try {
       if (widget.showStartAction) {
-        await controller.openStartActionPane(
+        await controller.openTo(
+          controller.startActionPaneExtentRatio * 0.5,
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
         );
@@ -479,7 +507,8 @@ class _SlidablePeekHintState extends State<_SlidablePeekHint> {
       if (!mounted) {
         return;
       }
-      await controller.openEndActionPane(
+      await controller.openTo(
+        -controller.endActionPaneExtentRatio * 0.5,
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
       );
