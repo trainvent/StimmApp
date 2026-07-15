@@ -476,6 +476,23 @@ class _SlidablePeekHint extends StatefulWidget {
 class _SlidablePeekHintState extends State<_SlidablePeekHint> {
   bool _isShowingActions = false;
 
+  Future<bool> _peek(SlidableController controller, double ratio) async {
+    await controller.openTo(
+      ratio,
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 220));
+    if (!mounted) {
+      return false;
+    }
+    await controller.close(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeIn,
+    );
+    return mounted;
+  }
+
   Future<void> _showActions() async {
     if (_isShowingActions || MediaQuery.disableAnimationsOf(context)) {
       return;
@@ -488,38 +505,21 @@ class _SlidablePeekHintState extends State<_SlidablePeekHint> {
 
     _isShowingActions = true;
     try {
-      if (widget.showStartAction) {
-        await controller.openTo(
-          controller.startActionPaneExtentRatio * 0.5,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-        );
-        await Future<void>.delayed(const Duration(milliseconds: 220));
-        if (!mounted) {
-          return;
-        }
-        await controller.close(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeIn,
-        );
+      final readingDirection = controller.isLeftToRight ? 1.0 : -1.0;
+      final showedEnd = await _peek(
+        controller,
+        -readingDirection * controller.endActionPaneExtentRatio * 0.5,
+      );
+      if (!showedEnd) {
+        return;
       }
 
-      if (!mounted) {
-        return;
+      if (widget.showStartAction) {
+        await _peek(
+          controller,
+          readingDirection * controller.startActionPaneExtentRatio * 0.5,
+        );
       }
-      await controller.openTo(
-        -controller.endActionPaneExtentRatio * 0.5,
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 220));
-      if (!mounted) {
-        return;
-      }
-      await controller.close(
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeIn,
-      );
     } finally {
       _isShowingActions = false;
     }
