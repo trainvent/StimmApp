@@ -6,7 +6,8 @@
         "appID": "MCVTMBQY74.de.lemarq.stimmapp",
         "paths": [
           "/petition/*",
-          "/poll/*"
+          "/poll/*",
+          "/group-invite"
         ]
       }
     ]

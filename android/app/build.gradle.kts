@@ -76,6 +76,7 @@ android {
             dimension = "app"
             applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
+            manifestPlaceholders["secondaryDeepLinkHost"] = "vivot-dev.web.app"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
             resValue("string", "app_name", "StimmApp Dev")
         }
@@ -83,6 +84,7 @@ android {
             dimension = "app"
             applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.net"
+            manifestPlaceholders["secondaryDeepLinkHost"] = "vivot.net"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.net"
             resValue("string", "app_name", "StimmApp")
         }
