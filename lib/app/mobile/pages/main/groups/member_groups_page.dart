@@ -336,6 +336,24 @@ class MemberGroupsPage extends StatelessWidget {
 
                   return Slidable(
                     key: ValueKey('member_group_${group.id}'),
+                    startActionPane: canManage
+                        ? ActionPane(
+                            motion: const StretchMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (_) => _openEditor(context, group),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.primaryContainer,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
+                                icon: Icons.edit_outlined,
+                                label: context.l10n.editLabel,
+                              ),
+                            ],
+                          )
+                        : null,
                     endActionPane: ActionPane(
                       motion: const StretchMotion(),
                       children: canManage
@@ -366,40 +384,41 @@ class MemberGroupsPage extends StatelessWidget {
                               ),
                             ],
                     ),
-                    child: PollGroupSummaryCard(
-                      group: group,
-                      onTap: canManage
-                          ? () => _openEditor(context, group)
-                          : null,
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (inviteLink != null) ...[
-                            IconButton(
-                              tooltip: context.l10n.copyInviteLinkTooltip,
-                              onPressed: () =>
-                                  _copyGroupInviteLink(context, group),
-                              icon: const Icon(Icons.link),
-                            ),
-                            IconButton(
-                              tooltip: context.l10n.scanQrCode,
-                              onPressed: () => _showGroupQrCode(context, group),
-                              icon: const Icon(Icons.qr_code),
-                            ),
+                    child: _ShakeHint(
+                      builder: (shake) => PollGroupSummaryCard(
+                        group: group,
+                        onTap: shake,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (inviteLink != null) ...[
+                              IconButton(
+                                tooltip: context.l10n.copyInviteLinkTooltip,
+                                onPressed: () =>
+                                    _copyGroupInviteLink(context, group),
+                                icon: const Icon(Icons.link),
+                              ),
+                              IconButton(
+                                tooltip: context.l10n.scanQrCode,
+                                onPressed: () =>
+                                    _showGroupQrCode(context, group),
+                                icon: const Icon(Icons.qr_code),
+                              ),
+                            ],
+                            Chip(label: Text(roleLabel)),
                           ],
-                          Chip(label: Text(roleLabel)),
-                        ],
-                      ),
-                      summary: context.l10n.groupAccessSummary(
-                        group.accessMode.localizedTitle(context),
-                        group.memberIds.length,
-                        expiresLabel,
-                      ),
-                      footer: Text(
-                        canManage
-                            ? context.l10n.swipeForDelete
-                            : context.l10n.swipeToLeaveGroup,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        summary: context.l10n.groupAccessSummary(
+                          group.accessMode.localizedTitle(context),
+                          group.memberIds.length,
+                          expiresLabel,
+                        ),
+                        footer: Text(
+                          canManage
+                              ? context.l10n.swipeForDelete
+                              : context.l10n.swipeToLeaveGroup,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ),
                     ),
                   );
@@ -408,6 +427,62 @@ class MemberGroupsPage extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _ShakeHint extends StatefulWidget {
+  const _ShakeHint({required this.builder});
+
+  final Widget Function(VoidCallback shake) builder;
+
+  @override
+  State<_ShakeHint> createState() => _ShakeHintState();
+}
+
+class _ShakeHintState extends State<_ShakeHint>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _horizontalOffset;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 360),
+    );
+    _horizontalOffset = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: -7), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -7, end: 7), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 7, end: -5), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: -5, end: 5), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 5, end: 0), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _shake() {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return;
+    }
+    _controller.forward(from: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _horizontalOffset,
+      child: widget.builder(_shake),
+      builder: (context, child) => Transform.translate(
+        offset: Offset(_horizontalOffset.value, 0),
+        child: child,
       ),
     );
   }
