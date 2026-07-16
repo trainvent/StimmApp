@@ -778,7 +778,7 @@
 	"notificationStatusDenied": "Denied",
 	"notificationActionInvitedYou": "invited you",
 	"notificationActionRequestedAccess": "requested access",
-	"openApp": "Open app",
+	"goToGroupOverview": "Go to group overview",
 	"signInToJoinGroup": "Sign in to join",
 	"signInToRequestGroupAccess": "Sign in to request access",
 	"protectedGroupsRequireApprovalRequest": "Protected groups require an approval request before you can join.",

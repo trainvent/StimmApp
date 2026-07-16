@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app_entry.dart';
@@ -5,17 +7,27 @@ import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+void _showAutoClosingSnackBar(
+  ScaffoldMessengerState messenger,
+  SnackBar snackBar,
+) {
+  final controller = messenger.showSnackBar(snackBar);
+  final timer = Timer(snackBar.duration, controller.close);
+  unawaited(controller.closed.whenComplete(timer.cancel));
+}
+
 /// Show a floating success snackbar. [message] is optional.
 void showSuccessSnackBar([String? message]) {
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
   final messenger = ScaffoldMessenger.of(ctx);
   messenger.clearSnackBars();
-  messenger.showSnackBar(
+  _showAutoClosingSnackBar(
+    messenger,
     SnackBar(
       backgroundColor: Colors.green,
       behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       content: Text(message ?? '', style: AppTextStyles.m),
       showCloseIcon: true,
     ),
@@ -29,11 +41,12 @@ void showErrorSnackBar([String? message]) {
   final resolvedMessage = message ?? '';
   final messenger = ScaffoldMessenger.of(ctx);
   messenger.clearSnackBars();
-  messenger.showSnackBar(
+  _showAutoClosingSnackBar(
+    messenger,
     SnackBar(
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       content: SelectableText(resolvedMessage, style: AppTextStyles.m),
       action: SnackBarAction(
         label: 'Copy',

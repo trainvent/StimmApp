@@ -3614,11 +3614,11 @@ abstract class AppLocalizations {
   /// **'requested access'**
   String get notificationActionRequestedAccess;
 
-  /// No description provided for @openApp.
+  /// No description provided for @goToGroupOverview.
   ///
   /// In en, this message translates to:
-  /// **'Open app'**
-  String get openApp;
+  /// **'Go to group overview'**
+  String get goToGroupOverview;
 
   /// No description provided for @signInToJoinGroup.
   ///

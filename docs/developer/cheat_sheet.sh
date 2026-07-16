@@ -137,3 +137,9 @@ rm prod-key.json
 
 ## run the sync
 gcloud scheduler jobs run firebase-schedule-checkSubscriptions-us-central1 --location=us-central1
+
+## to test qr code connection to the app first run this to make it detectable without production signature
+adb shell pm set-app-links-user-selection \
+  --user 0 \
+  --package de.lemarq.stimmapp \
+  true vivot.net stimmapp.net

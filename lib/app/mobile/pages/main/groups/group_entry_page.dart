@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/layout/init_app_layout.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/login_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -146,18 +146,17 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   }
 
   Future<void> _openLogin() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const LoginPage()));
     if (mounted) {
       setState(() {});
     }
   }
 
-  void _openAppHome() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const InitAppLayout()),
-      (_) => false,
+  void _openMemberGroups() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const MemberGroupsPage()),
     );
   }
 
@@ -228,8 +227,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
           Text(context.l10n.alreadyMemberOfGroup),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed: _openAppHome,
-            child: Text(context.l10n.openApp),
+            onPressed: _openMemberGroups,
+            child: Text(context.l10n.goToGroupOverview),
           ),
         ],
       );
@@ -264,7 +263,9 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       stream: authService.firebaseAuth.authStateChanges(),
       builder: (context, _) {
         final currentUid = authService.currentUser?.uid;
-        return FutureBuilder<(PollGroup?, PollGroupAccessNotification?, UserProfile?)>(
+        return FutureBuilder<
+          (PollGroup?, PollGroupAccessNotification?, UserProfile?)
+        >(
           future: () async {
             final group = await _loadGroup();
             final notification = await _loadNotification();
@@ -303,7 +304,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                   const SizedBox(height: 12),
                   if (notification != null)
                     Text(
-                      notification.type == PollGroupAccessNotificationType.invite
+                      notification.type ==
+                              PollGroupAccessNotificationType.invite
                           ? context.l10n.invitedYouToThisGroup(
                               notification.actorDisplayName,
                             )
@@ -329,7 +331,9 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                       ),
                   ] else if (notification != null) ...[
                     const SizedBox(height: 8),
-                    Text(context.l10n.groupDetailsTemporarilyUnavailableRespond),
+                    Text(
+                      context.l10n.groupDetailsTemporarilyUnavailableRespond,
+                    ),
                   ] else if (currentUid == null) ...[
                     const SizedBox(height: 8),
                     Text(context.l10n.privateGroupOrSignInRequired),

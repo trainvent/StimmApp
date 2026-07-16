@@ -1938,7 +1938,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notificationActionRequestedAccess => 'hat Zugriff angefragt';
 
   @override
-  String get openApp => 'App öffnen';
+  String get goToGroupOverview => 'Zur Gruppenübersicht';
 
   @override
   String get signInToJoinGroup => 'Anmelden zum Beitreten';

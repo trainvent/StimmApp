@@ -254,44 +254,36 @@ class PollGroupRepository {
     }
     final normalizedMembers = normalizeAllowedMembers(allowedMembers);
     final normalizedDomains = normalizeAllowedDomains(allowedDomains);
-    final existingMemberDocs = await _allowedMembers(group.id).get();
-    final existingDomainDocs = await _allowedDomains(group.id).get();
-    final batch = _fs.instance.batch();
-
-    batch.set(
-      _groups().doc(group.id),
-      group.copyWith(name: normalizedName),
-      SetOptions(merge: true),
-    );
-
-    final nextMemberIds = normalizedMembers
-        .map((member) => member.email)
-        .toSet();
-    for (final doc in existingMemberDocs.docs) {
-      if (!nextMemberIds.contains(doc.id)) {
-        batch.delete(doc.reference);
-      }
+    try {
+      await FirebaseFunctions.instance.httpsCallable('updatePollGroup').call({
+        'groupId': group.id,
+        'name': normalizedName,
+        'nicknameMode': pollGroupNicknameModeToFirestore(group.nicknameMode),
+        'managersCanInvite': group.managersCanInvite,
+        'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+        'inviteLinkEnabled': group.inviteLinkEnabled,
+        'expiresAtMillis': group.expiresAt?.millisecondsSinceEpoch,
+        'allowedMembers': normalizedMembers
+            .map(
+              (member) => <String, Object?>{
+                'email': member.email,
+                'nickname': member.nickname,
+                'role': pollGroupRoleToFirestore(member.role),
+              },
+            )
+            .toList(),
+        'allowedDomains': normalizedDomains
+            .map(
+              (domain) => <String, Object?>{
+                'domain': domain.domain,
+                'role': pollGroupRoleToFirestore(domain.role),
+              },
+            )
+            .toList(),
+      });
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? e.code);
     }
-    for (final member in normalizedMembers) {
-      batch.set(
-        _allowedMembers(group.id).doc(member.email.toLowerCase()),
-        member,
-      );
-    }
-
-    final nextDomainIds = normalizedDomains
-        .map((domain) => domain.domain)
-        .toSet();
-    for (final doc in existingDomainDocs.docs) {
-      if (!nextDomainIds.contains(doc.id)) {
-        batch.delete(doc.reference);
-      }
-    }
-    for (final domain in normalizedDomains) {
-      batch.set(_allowedDomains(group.id).doc(domain.domain), domain);
-    }
-
-    await batch.commit();
   }
 
   Stream<List<PollGroupAccessNotification>> watchNotifications(String uid) {

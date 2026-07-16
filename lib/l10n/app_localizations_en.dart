@@ -1914,7 +1914,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationActionRequestedAccess => 'requested access';
 
   @override
-  String get openApp => 'Open app';
+  String get goToGroupOverview => 'Go to group overview';
 
   @override
   String get signInToJoinGroup => 'Sign in to join';

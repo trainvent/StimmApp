@@ -13,6 +13,10 @@ type CreatePollGroupPayload = {
 	allowedDomains?: unknown;
 };
 
+type UpdatePollGroupPayload = CreatePollGroupPayload & {
+	groupId?: unknown;
+};
+
 type AllowedMemberInput = {
 	email?: unknown;
 	nickname?: unknown;
@@ -262,4 +266,192 @@ export const createPollGroup = onCall(async (request) => {
 	await batch.commit();
 
 	return { groupId: groupRef.id };
+});
+
+export const updatePollGroup = onCall(async (request) => {
+	const uid = requireAuth(request);
+	const data = (request.data ?? {}) as UpdatePollGroupPayload;
+	const db = admin.firestore();
+	const now = admin.firestore.Timestamp.now();
+
+	const groupId = asTrimmedString(data.groupId, "groupId", 256);
+	const name = asTrimmedString(data.name, "name", 120);
+	if (typeof data.nicknameMode !== "string" || !VALID_NICKNAME_MODES.has(data.nicknameMode)) {
+		throw new HttpsError("invalid-argument", "nicknameMode must be valid.");
+	}
+	if (typeof data.accessMode !== "string" || !VALID_ACCESS_MODES.has(data.accessMode)) {
+		throw new HttpsError("invalid-argument", "accessMode must be valid.");
+	}
+	if (typeof data.managersCanInvite !== "boolean") {
+		throw new HttpsError("invalid-argument", "managersCanInvite must be a boolean.");
+	}
+	if (typeof data.inviteLinkEnabled !== "boolean") {
+		throw new HttpsError("invalid-argument", "inviteLinkEnabled must be a boolean.");
+	}
+
+	const groupRef = db.collection("pollGroups").doc(groupId);
+	const [groupSnap, callerMemberSnap, callerProfileSnap] = await Promise.all([
+		groupRef.get(),
+		groupRef.collection("members").doc(uid).get(),
+		db.collection("users").doc(uid).get(),
+	]);
+	if (!groupSnap.exists) {
+		throw new HttpsError("not-found", "Group not found.");
+	}
+	const groupData = groupSnap.data() ?? {};
+	const callerRole = callerMemberSnap.data()?.role;
+	if (groupData.createdBy !== uid && callerRole !== "admin") {
+		throw new HttpsError("permission-denied", "Only group creators and admins can edit this group.");
+	}
+
+	const expiresAtMillis = data.expiresAtMillis;
+	const expiresAt = typeof expiresAtMillis === "number" && Number.isFinite(expiresAtMillis)
+		? admin.firestore.Timestamp.fromMillis(expiresAtMillis)
+		: null;
+	const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers as AllowedMemberInput[] : [];
+	const rawAllowedDomains = Array.isArray(data.allowedDomains) ? data.allowedDomains as AllowedDomainInput[] : [];
+
+	const allowedMembersByEmail = new Map<string, {
+		email: string;
+		emailLowercase: string;
+		nickname: string | null;
+		role: string;
+		createdAt: admin.firestore.Timestamp;
+		createdBy: string;
+	}>();
+	for (const member of rawAllowedMembers) {
+		const email = normalizeEmail(member.email);
+		allowedMembersByEmail.set(email, {
+			email,
+			emailLowercase: email,
+			nickname: normalizeOptionalString(member.nickname),
+			role: normalizeRole(member.role, "allowedMembers.role"),
+			createdAt: now,
+			createdBy: uid,
+		});
+	}
+
+	const allowedDomainsByDomain = new Map<string, {
+		domain: string;
+		role: string;
+		createdAt: admin.firestore.Timestamp;
+		createdBy: string;
+	}>();
+	for (const domain of rawAllowedDomains) {
+		const normalizedDomain = normalizeDomain(domain.domain);
+		allowedDomainsByDomain.set(normalizedDomain, {
+			domain: normalizedDomain,
+			role: normalizeRole(domain.role, "allowedDomains.role"),
+			createdAt: now,
+			createdBy: uid,
+		});
+	}
+
+	const [existingMemberDocs, existingDomainDocs] = await Promise.all([
+		groupRef.collection("allowedMembers").get(),
+		groupRef.collection("allowedDomains").get(),
+	]);
+	const existingEmails = new Set(existingMemberDocs.docs.map((doc) => doc.id.toLowerCase()));
+	const newlyAddedEmails = new Set(
+		[...allowedMembersByEmail.keys()].filter((email) => !existingEmails.has(email)),
+	);
+
+	const matchingProfiles: Array<{ uid: string; email: string }> = [];
+	for (const emailChunk of chunk([...allowedMembersByEmail.keys()], 10)) {
+		const snap = await db.collection("users").where("email", "in", emailChunk).get();
+		for (const doc of snap.docs) {
+			const email = typeof doc.data().email === "string" ? doc.data().email.trim().toLowerCase() : "";
+			if (email) {
+				matchingProfiles.push({ uid: doc.id, email });
+			}
+		}
+	}
+	const existingInvitesByUid = new Map<string, admin.firestore.DocumentData[]>();
+	await Promise.all(matchingProfiles.map(async (profile) => {
+		const snap = await db
+			.collection("users")
+			.doc(profile.uid)
+			.collection("groupAccessNotifications")
+			.where("groupId", "==", groupId)
+			.get();
+		existingInvitesByUid.set(
+			profile.uid,
+			snap.docs
+				.map((doc) => doc.data())
+				.filter((notification) => notification.type === "invite"),
+		);
+	}));
+
+	const callerData = callerProfileSnap.data();
+	const actorDisplayName =
+		typeof callerData?.displayName === "string" && callerData.displayName.trim()
+			? callerData.displayName.trim()
+			: (typeof callerData?.email === "string" && callerData.email.trim()
+				? callerData.email.trim()
+				: "Group admin");
+	const currentMemberIds = Array.isArray(groupData.memberIds) ? new Set(groupData.memberIds) : new Set();
+	const batch = db.batch();
+
+	batch.update(groupRef, {
+		name,
+		expiresAt,
+		nicknameMode: data.nicknameMode,
+		managersCanInvite: data.managersCanInvite,
+		importedMemberCount: allowedMembersByEmail.size,
+		accessMode: data.accessMode,
+		inviteLinkEnabled: data.inviteLinkEnabled,
+		nameLowercase: name.toLowerCase(),
+	});
+
+	for (const doc of existingMemberDocs.docs) {
+		if (!allowedMembersByEmail.has(doc.id.toLowerCase())) {
+			batch.delete(doc.ref);
+		}
+	}
+	for (const member of allowedMembersByEmail.values()) {
+		batch.set(groupRef.collection("allowedMembers").doc(member.email), member);
+	}
+	for (const doc of existingDomainDocs.docs) {
+		if (!allowedDomainsByDomain.has(doc.id.toLowerCase())) {
+			batch.delete(doc.ref);
+		}
+	}
+	for (const domain of allowedDomainsByDomain.values()) {
+		batch.set(groupRef.collection("allowedDomains").doc(domain.domain), domain);
+	}
+
+	for (const profile of matchingProfiles) {
+		const allowedMember = allowedMembersByEmail.get(profile.email);
+		if (!allowedMember || currentMemberIds.has(profile.uid)) {
+			continue;
+		}
+		const existingInvites = existingInvitesByUid.get(profile.uid) ?? [];
+		const canCreateInvite = existingInvites.length === 0 ||
+			(newlyAddedEmails.has(profile.email) &&
+				existingInvites.every((notification) => notification.status === "denied"));
+		if (!canCreateInvite) {
+			continue;
+		}
+		const notificationRef = db
+			.collection("users")
+			.doc(profile.uid)
+			.collection("groupAccessNotifications")
+			.doc();
+		batch.set(notificationRef, {
+			groupId,
+			groupName: name,
+			actorUid: uid,
+			actorDisplayName,
+			recipientUid: profile.uid,
+			role: allowedMember.role,
+			accessMode: data.accessMode,
+			type: "invite",
+			status: "pending",
+			createdAt: now,
+			resolvedAt: null,
+		});
+	}
+
+	await batch.commit();
+	return { groupId };
 });

@@ -782,7 +782,7 @@
 	"notificationStatusDenied": "Abgelehnt",
 	"notificationActionInvitedYou": "hat dich eingeladen",
 	"notificationActionRequestedAccess": "hat Zugriff angefragt",
-	"openApp": "App öffnen",
+	"goToGroupOverview": "Zur Gruppenübersicht",
 	"signInToJoinGroup": "Anmelden zum Beitreten",
 	"signInToRequestGroupAccess": "Anmelden, um Zugang anzufragen",
 	"protectedGroupsRequireApprovalRequest": "Geschützte Gruppen benötigen eine Genehmigungsanfrage, bevor du beitreten kannst.",
