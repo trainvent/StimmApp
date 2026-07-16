@@ -31,7 +31,10 @@ class _TestPollGroupRepository extends PollGroupRepository {
     );
     final now = DateTime(2024, 1, 1);
     final groupRef = firestore.collection('pollGroups').doc();
-    final creatorSnap = await firestore.collection('users').doc(creatorUid).get();
+    final creatorSnap = await firestore
+        .collection('users')
+        .doc(creatorUid)
+        .get();
     final creatorData = creatorSnap.data() ?? const <String, dynamic>{};
     final actorDisplayName =
         (creatorData['displayName'] as String?)?.trim().isNotEmpty == true
@@ -60,17 +63,20 @@ class _TestPollGroupRepository extends PollGroupRepository {
         null,
       ),
     );
-    await groupRef.collection('members').doc(creatorUid).set(
-      PollGroupMember.toFirestore(
-        PollGroupMember(
-          uid: creatorUid,
-          role: PollGroupRole.admin,
-          joinedAt: now,
-          joinedBy: creatorUid,
-        ),
-        null,
-      ),
-    );
+    await groupRef
+        .collection('members')
+        .doc(creatorUid)
+        .set(
+          PollGroupMember.toFirestore(
+            PollGroupMember(
+              uid: creatorUid,
+              role: PollGroupRole.admin,
+              joinedAt: now,
+              joinedBy: creatorUid,
+            ),
+            null,
+          ),
+        );
 
     for (final member in normalizedMembers) {
       await groupRef
@@ -88,7 +94,9 @@ class _TestPollGroupRepository extends PollGroupRepository {
     final users = await firestore.collection('users').get();
     for (final userDoc in users.docs) {
       final email = (userDoc.data()['email'] as String?)?.trim().toLowerCase();
-      final allowedMember = normalizedMembers.where((member) => member.email == email);
+      final allowedMember = normalizedMembers.where(
+        (member) => member.email == email,
+      );
       if (email == null || allowedMember.isEmpty) {
         continue;
       }
@@ -271,75 +279,106 @@ void main() {
       expect(groups.single.name, 'Operations');
     });
 
-    test('respondToNotification accepts invite and adds membership', () async {
-      await firestore
-          .collection('users')
-          .doc('owner')
-          .set(
-            const UserProfile(
-              uid: 'owner',
-              displayName: 'Owner',
-              email: 'owner@example.com',
-            ).toJson(),
-          );
-      await firestore
-          .collection('users')
-          .doc('invitee')
-          .set(
-            const UserProfile(
-              uid: 'invitee',
-              displayName: 'Invitee',
+    test(
+      'accepted member can be removed with prepared access revoked',
+      () async {
+        await firestore
+            .collection('users')
+            .doc('owner')
+            .set(
+              const UserProfile(
+                uid: 'owner',
+                displayName: 'Owner',
+                email: 'owner@example.com',
+              ).toJson(),
+            );
+        await firestore
+            .collection('users')
+            .doc('invitee')
+            .set(
+              const UserProfile(
+                uid: 'invitee',
+                displayName: 'Invitee',
+                email: 'anna@example.com',
+              ).toJson(),
+            );
+
+        final groupId = await repository.createGroup(
+          creatorUid: 'owner',
+          name: 'Operations',
+          joinCode: 'GRP-ABC123',
+          nicknameMode: PollGroupNicknameMode.selfNamed,
+          managersCanInvite: true,
+          accessMode: PollGroupAccessMode.private,
+          inviteLinkEnabled: false,
+          allowedMembers: [
+            PollGroupAllowedMember(
               email: 'anna@example.com',
-            ).toJson(),
-          );
+              nickname: 'Anna',
+              role: PollGroupRole.manager,
+              createdAt: DateTime(2024, 1, 1),
+              createdBy: 'owner',
+            ),
+          ],
+        );
 
-      final groupId = await repository.createGroup(
-        creatorUid: 'owner',
-        name: 'Operations',
-        joinCode: 'GRP-ABC123',
-        nicknameMode: PollGroupNicknameMode.selfNamed,
-        managersCanInvite: true,
-        accessMode: PollGroupAccessMode.private,
-        inviteLinkEnabled: false,
-        allowedMembers: [
-          PollGroupAllowedMember(
-            email: 'anna@example.com',
-            nickname: 'Anna',
-            role: PollGroupRole.manager,
-            createdAt: DateTime(2024, 1, 1),
-            createdBy: 'owner',
-          ),
-        ],
-      );
+        final notifications = await firestore
+            .collection('users')
+            .doc('invitee')
+            .collection('groupAccessNotifications')
+            .get();
+        final notificationId = notifications.docs.single.id;
 
-      final notifications = await firestore
-          .collection('users')
-          .doc('invitee')
-          .collection('groupAccessNotifications')
-          .get();
-      final notificationId = notifications.docs.single.id;
+        await repository.respondToNotification(
+          currentUid: 'invitee',
+          notificationId: notificationId,
+          accept: true,
+        );
 
-      await repository.respondToNotification(
-        currentUid: 'invitee',
-        notificationId: notificationId,
-        accept: true,
-      );
+        final group = await repository.getGroup(groupId);
+        final memberSnap = await firestore
+            .collection('pollGroups')
+            .doc(groupId)
+            .collection('members')
+            .doc('invitee')
+            .get();
+        final notification = await repository.getNotification(
+          'invitee',
+          notificationId,
+        );
 
-      final group = await repository.getGroup(groupId);
-      final memberSnap = await firestore
-          .collection('pollGroups')
-          .doc(groupId)
-          .collection('members')
-          .doc('invitee')
-          .get();
-      final notification = await repository.getNotification(
-        'invitee',
-        notificationId,
-      );
+        expect(group?.memberIds, contains('invitee'));
+        expect(memberSnap.exists, isTrue);
+        expect(
+          notification?.status,
+          PollGroupAccessNotificationStatus.accepted,
+        );
 
-      expect(group?.memberIds, contains('invitee'));
-      expect(memberSnap.exists, isTrue);
-      expect(notification?.status, PollGroupAccessNotificationStatus.accepted);
-    });
+        await repository.removeMember(
+          group: group!,
+          uid: 'invitee',
+          email: 'anna@example.com',
+        );
+
+        final updatedGroup = await repository.getGroup(groupId);
+        final removedMember = await firestore
+            .collection('pollGroups')
+            .doc(groupId)
+            .collection('members')
+            .doc('invitee')
+            .get();
+        final removedPreparedAccess = await firestore
+            .collection('pollGroups')
+            .doc(groupId)
+            .collection('allowedMembers')
+            .doc('anna@example.com')
+            .get();
+
+        expect(updatedGroup?.memberIds, isNot(contains('invitee')));
+        expect(updatedGroup?.importedMemberCount, 0);
+        expect(removedMember.exists, isFalse);
+        expect(removedPreparedAccess.exists, isFalse);
+      },
+    );
   });
 }

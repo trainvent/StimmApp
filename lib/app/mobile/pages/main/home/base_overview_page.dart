@@ -58,12 +58,14 @@ class DiscoveryStatus {
     required this.hasParticipated,
     required this.isFinished,
     required this.isGroupOnly,
+    this.groupName,
   });
 
   final bool isEligible;
   final bool hasParticipated;
   final bool isFinished;
   final bool isGroupOnly;
+  final String? groupName;
 }
 
 class DiscoveryStatusChips extends StatelessWidget {
@@ -93,10 +95,13 @@ class DiscoveryStatusChips extends StatelessWidget {
     }
 
     if (status.isGroupOnly) {
+      final groupName = status.groupName?.trim();
       chips.add(
         _DiscoveryChip(
           icon: Icons.groups_2_outlined,
-          label: context.l10n.groupOnly,
+          label: groupName == null || groupName.isEmpty
+              ? context.l10n.groupOnly
+              : groupName,
           color: Theme.of(context).colorScheme.outline,
         ),
       );
@@ -438,6 +443,16 @@ class _BaseOverviewPageState<T extends HomeItem>
     };
   }
 
+  String? _groupName(T item) {
+    return switch (item) {
+      Poll(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      Survey(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      _ => null,
+    };
+  }
+
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
@@ -715,6 +730,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                                       item.status == IConst.closed ||
                                       !item.expiresAt.isAfter(DateTime.now()),
                                   isGroupOnly: _isGroupOnly(item),
+                                  groupName: _groupName(item),
                                 );
                                 return Column(
                                   children: [

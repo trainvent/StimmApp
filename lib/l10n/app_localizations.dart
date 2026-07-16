@@ -3797,8 +3797,38 @@ abstract class AppLocalizations {
   /// No description provided for @inviteMembersDescription.
   ///
   /// In en, this message translates to:
-  /// **'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.'**
+  /// **'Add people one by one or import CSV rows below.'**
   String get inviteMembersDescription;
+
+  /// No description provided for @inviteMembersPageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite new people to this group. Successfully submitted entries are cleared from this page.'**
+  String get inviteMembersPageDescription;
+
+  /// No description provided for @sendInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitations'**
+  String get sendInvitations;
+
+  /// No description provided for @sendingInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending invitations...'**
+  String get sendingInvitations;
+
+  /// No description provided for @pleaseAddMemberToInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one member to invite.'**
+  String get pleaseAddMemberToInvite;
+
+  /// No description provided for @memberInvitationsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {count} invitations.'**
+  String memberInvitationsSent(Object count);
 
   /// No description provided for @pasteCsvLabel.
   ///
@@ -3887,7 +3917,7 @@ abstract class AppLocalizations {
   /// No description provided for @editGroupDescription.
   ///
   /// In en, this message translates to:
-  /// **'Adjust the access rules, invites, and settings for this group.'**
+  /// **'Adjust the access rules and settings for this group.'**
   String get editGroupDescription;
 
   /// No description provided for @createGroupDescription.
@@ -3895,6 +3925,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create a members-only polling space for teams, events, and companies.'**
   String get createGroupDescription;
+
+  /// No description provided for @manageGroupMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage members'**
+  String get manageGroupMembersTitle;
+
+  /// No description provided for @manageGroupMembersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'View everyone in this group and remove members when needed.'**
+  String get manageGroupMembersDescription;
+
+  /// No description provided for @noGroupMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'This group has no members.'**
+  String get noGroupMembers;
+
+  /// No description provided for @removeGroupMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove member?'**
+  String get removeGroupMemberTitle;
+
+  /// No description provided for @removeGroupMemberConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from this group?'**
+  String removeGroupMemberConfirmation(Object name);
+
+  /// No description provided for @groupMemberRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Member removed from the group.'**
+  String get groupMemberRemoved;
+
+  /// No description provided for @cannotRemoveGroupCreator.
+  ///
+  /// In en, this message translates to:
+  /// **'The group creator cannot be removed.'**
+  String get cannotRemoveGroupCreator;
+
+  /// No description provided for @youCannotRemoveYourselfHere.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot remove yourself from this page.'**
+  String get youCannotRemoveYourselfHere;
+
+  /// No description provided for @unknownGroupMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown member'**
+  String get unknownGroupMember;
 
   /// No description provided for @membersCanChooseTheirOwnNickname.
   ///

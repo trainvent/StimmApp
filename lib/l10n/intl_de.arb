@@ -823,7 +823,17 @@
 	"removeMemberTooltip": "Mitglied entfernen",
 	"inviteMembersTitle": "Mitglieder einladen",
 	"addMember": "Mitglied hinzufügen",
-	"inviteMembersDescription": "Plan A: Personen einzeln hinzufügen. Plan B: CSV-Zeilen importieren oder eine CSV-Datei unten ablegen. Es werden nicht automatisch E-Mails versendet.",
+	"inviteMembersDescription": "Füge Personen einzeln hinzu oder importiere unten CSV-Zeilen.",
+	"inviteMembersPageDescription": "Lade neue Personen in diese Gruppe ein. Erfolgreich gesendete Einträge werden anschließend von dieser Seite entfernt.",
+	"sendInvitations": "Einladungen senden",
+	"sendingInvitations": "Einladungen werden gesendet...",
+	"pleaseAddMemberToInvite": "Füge mindestens ein Mitglied zum Einladen hinzu.",
+	"memberInvitationsSent": "{count} Einladungen gesendet.",
+	"@memberInvitationsSent": {
+		"placeholders": {
+			"count": {}
+		}
+	},
 	"pasteCsvLabel": "CSV einfügen",
 	"importCsvFileLabel": "CSV-Datei importieren",
 	"dropCsvHere": "CSV hier ablegen",
@@ -844,8 +854,22 @@
 	"removeDomainTooltip": "Domain entfernen",
 	"editGroupTitle": "Gruppe bearbeiten",
 	"createGroupTitle": "Gruppe erstellen",
-	"editGroupDescription": "Passe Zugriffsregeln, Einladungen und Einstellungen für diese Gruppe an.",
+	"editGroupDescription": "Passe Zugriffsregeln und Einstellungen für diese Gruppe an.",
 	"createGroupDescription": "Erstelle einen nur für Mitglieder zugänglichen Abstimmungsbereich für Teams, Events und Firmen.",
+	"manageGroupMembersTitle": "Mitglieder verwalten",
+	"manageGroupMembersDescription": "Sieh alle Mitglieder dieser Gruppe und entferne sie bei Bedarf.",
+	"noGroupMembers": "Diese Gruppe hat keine Mitglieder.",
+	"removeGroupMemberTitle": "Mitglied entfernen?",
+	"removeGroupMemberConfirmation": "{name} aus dieser Gruppe entfernen?",
+	"@removeGroupMemberConfirmation": {
+		"placeholders": {
+			"name": {}
+		}
+	},
+	"groupMemberRemoved": "Mitglied aus der Gruppe entfernt.",
+	"cannotRemoveGroupCreator": "Der Ersteller der Gruppe kann nicht entfernt werden.",
+	"youCannotRemoveYourselfHere": "Du kannst dich auf dieser Seite nicht selbst entfernen.",
+	"unknownGroupMember": "Unbekanntes Mitglied",
 	"membersCanChooseTheirOwnNickname": "Mitglieder können ihren Spitznamen selbst wählen",
 	"managersCanPrepareAccessLists": "Manager können Zugangslisten vorbereiten",
 	"expirationDateOptional": "Ablaufdatum (optional)",

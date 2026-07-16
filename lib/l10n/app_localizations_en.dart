@@ -2019,7 +2019,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteMembersDescription =>
-      'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.';
+      'Add people one by one or import CSV rows below.';
+
+  @override
+  String get inviteMembersPageDescription =>
+      'Invite new people to this group. Successfully submitted entries are cleared from this page.';
+
+  @override
+  String get sendInvitations => 'Send invitations';
+
+  @override
+  String get sendingInvitations => 'Sending invitations...';
+
+  @override
+  String get pleaseAddMemberToInvite => 'Add at least one member to invite.';
+
+  @override
+  String memberInvitationsSent(Object count) {
+    return 'Sent $count invitations.';
+  }
 
   @override
   String get pasteCsvLabel => 'Paste CSV';
@@ -2069,11 +2087,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editGroupDescription =>
-      'Adjust the access rules, invites, and settings for this group.';
+      'Adjust the access rules and settings for this group.';
 
   @override
   String get createGroupDescription =>
       'Create a members-only polling space for teams, events, and companies.';
+
+  @override
+  String get manageGroupMembersTitle => 'Manage members';
+
+  @override
+  String get manageGroupMembersDescription =>
+      'View everyone in this group and remove members when needed.';
+
+  @override
+  String get noGroupMembers => 'This group has no members.';
+
+  @override
+  String get removeGroupMemberTitle => 'Remove member?';
+
+  @override
+  String removeGroupMemberConfirmation(Object name) {
+    return 'Remove $name from this group?';
+  }
+
+  @override
+  String get groupMemberRemoved => 'Member removed from the group.';
+
+  @override
+  String get cannotRemoveGroupCreator => 'The group creator cannot be removed.';
+
+  @override
+  String get youCannotRemoveYourselfHere =>
+      'You cannot remove yourself from this page.';
+
+  @override
+  String get unknownGroupMember => 'Unknown member';
 
   @override
   String get membersCanChooseTheirOwnNickname =>

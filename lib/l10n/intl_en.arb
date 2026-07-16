@@ -819,7 +819,17 @@
 	"removeMemberTooltip": "Remove member",
 	"inviteMembersTitle": "Invite members",
 	"addMember": "Add member",
-	"inviteMembersDescription": "Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.",
+	"inviteMembersDescription": "Add people one by one or import CSV rows below.",
+	"inviteMembersPageDescription": "Invite new people to this group. Successfully submitted entries are cleared from this page.",
+	"sendInvitations": "Send invitations",
+	"sendingInvitations": "Sending invitations...",
+	"pleaseAddMemberToInvite": "Add at least one member to invite.",
+	"memberInvitationsSent": "Sent {count} invitations.",
+	"@memberInvitationsSent": {
+		"placeholders": {
+			"count": {}
+		}
+	},
 	"pasteCsvLabel": "Paste CSV",
 	"importCsvFileLabel": "Import CSV file",
 	"dropCsvHere": "Drop a CSV here",
@@ -840,8 +850,22 @@
 	"removeDomainTooltip": "Remove domain",
 	"editGroupTitle": "Edit group",
 	"createGroupTitle": "Create group",
-	"editGroupDescription": "Adjust the access rules, invites, and settings for this group.",
+	"editGroupDescription": "Adjust the access rules and settings for this group.",
 	"createGroupDescription": "Create a members-only polling space for teams, events, and companies.",
+	"manageGroupMembersTitle": "Manage members",
+	"manageGroupMembersDescription": "View everyone in this group and remove members when needed.",
+	"noGroupMembers": "This group has no members.",
+	"removeGroupMemberTitle": "Remove member?",
+	"removeGroupMemberConfirmation": "Remove {name} from this group?",
+	"@removeGroupMemberConfirmation": {
+		"placeholders": {
+			"name": {}
+		}
+	},
+	"groupMemberRemoved": "Member removed from the group.",
+	"cannotRemoveGroupCreator": "The group creator cannot be removed.",
+	"youCannotRemoveYourselfHere": "You cannot remove yourself from this page.",
+	"unknownGroupMember": "Unknown member",
 	"membersCanChooseTheirOwnNickname": "Members can choose their own nickname",
 	"managersCanPrepareAccessLists": "Managers can prepare access lists",
 	"expirationDateOptional": "Expiration date (optional)",

@@ -300,6 +300,10 @@ class PollGroupRepository {
     return _fs.watchDoc(_members(groupId).doc(uid));
   }
 
+  Stream<List<PollGroupMember>> watchMembers(String groupId) {
+    return _fs.watchCol(_members(groupId).orderBy('joinedAt'));
+  }
+
   Future<void> deleteGroup(String groupId) async {
     final membersSnap = await _members(groupId).get();
     final allowedMembersSnap = await _allowedMembers(groupId).get();
@@ -438,6 +442,37 @@ class PollGroupRepository {
       'memberIds': FieldValue.arrayRemove([uid]),
     });
     batch.delete(_members(group.id).doc(uid));
+    await batch.commit();
+  }
+
+  Future<void> removeMember({
+    required PollGroup group,
+    required String uid,
+    String? email,
+  }) async {
+    if (uid == group.createdBy) {
+      throw StateError('group_creator_cannot_be_removed');
+    }
+    if (!group.memberIds.contains(uid)) {
+      return;
+    }
+
+    final normalizedEmail = email?.trim().toLowerCase();
+    final allowedMemberRef = normalizedEmail == null || normalizedEmail.isEmpty
+        ? null
+        : _allowedMembers(group.id).doc(normalizedEmail);
+    final allowedMemberExists = allowedMemberRef == null
+        ? false
+        : (await allowedMemberRef.get()).exists;
+    final batch = _fs.instance.batch();
+    batch.update(_groups().doc(group.id), {
+      'memberIds': FieldValue.arrayRemove([uid]),
+      if (allowedMemberExists) 'importedMemberCount': FieldValue.increment(-1),
+    });
+    batch.delete(_members(group.id).doc(uid));
+    if (allowedMemberExists) {
+      batch.delete(allowedMemberRef);
+    }
     await batch.commit();
   }
 

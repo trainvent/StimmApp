@@ -5034,9 +5034,14 @@ class S {
     );
   }
 
-  /// `Open app`
-  String get openApp {
-    return Intl.message('Open app', name: 'openApp', desc: '', args: []);
+  /// `Go to group overview`
+  String get goToGroupOverview {
+    return Intl.message(
+      'Go to group overview',
+      name: 'goToGroupOverview',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sign in to join`
@@ -5304,13 +5309,63 @@ class S {
     return Intl.message('Add member', name: 'addMember', desc: '', args: []);
   }
 
-  /// `Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.`
+  /// `Add people one by one or import CSV rows below.`
   String get inviteMembersDescription {
     return Intl.message(
-      'Plan A: add people one by one. Plan B: import CSV rows or drop a CSV file below. No emails are sent automatically.',
+      'Add people one by one or import CSV rows below.',
       name: 'inviteMembersDescription',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Invite new people to this group. Successfully submitted entries are cleared from this page.`
+  String get inviteMembersPageDescription {
+    return Intl.message(
+      'Invite new people to this group. Successfully submitted entries are cleared from this page.',
+      name: 'inviteMembersPageDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send invitations`
+  String get sendInvitations {
+    return Intl.message(
+      'Send invitations',
+      name: 'sendInvitations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sending invitations...`
+  String get sendingInvitations {
+    return Intl.message(
+      'Sending invitations...',
+      name: 'sendingInvitations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add at least one member to invite.`
+  String get pleaseAddMemberToInvite {
+    return Intl.message(
+      'Add at least one member to invite.',
+      name: 'pleaseAddMemberToInvite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sent {count} invitations.`
+  String memberInvitationsSent(Object count) {
+    return Intl.message(
+      'Sent $count invitations.',
+      name: 'memberInvitationsSent',
+      desc: '',
+      args: [count],
     );
   }
 
@@ -5434,10 +5489,10 @@ class S {
     );
   }
 
-  /// `Adjust the access rules, invites, and settings for this group.`
+  /// `Adjust the access rules and settings for this group.`
   String get editGroupDescription {
     return Intl.message(
-      'Adjust the access rules, invites, and settings for this group.',
+      'Adjust the access rules and settings for this group.',
       name: 'editGroupDescription',
       desc: '',
       args: [],
@@ -5449,6 +5504,96 @@ class S {
     return Intl.message(
       'Create a members-only polling space for teams, events, and companies.',
       name: 'createGroupDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage members`
+  String get manageGroupMembersTitle {
+    return Intl.message(
+      'Manage members',
+      name: 'manageGroupMembersTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View everyone in this group and remove members when needed.`
+  String get manageGroupMembersDescription {
+    return Intl.message(
+      'View everyone in this group and remove members when needed.',
+      name: 'manageGroupMembersDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This group has no members.`
+  String get noGroupMembers {
+    return Intl.message(
+      'This group has no members.',
+      name: 'noGroupMembers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove member?`
+  String get removeGroupMemberTitle {
+    return Intl.message(
+      'Remove member?',
+      name: 'removeGroupMemberTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove {name} from this group?`
+  String removeGroupMemberConfirmation(Object name) {
+    return Intl.message(
+      'Remove $name from this group?',
+      name: 'removeGroupMemberConfirmation',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Member removed from the group.`
+  String get groupMemberRemoved {
+    return Intl.message(
+      'Member removed from the group.',
+      name: 'groupMemberRemoved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The group creator cannot be removed.`
+  String get cannotRemoveGroupCreator {
+    return Intl.message(
+      'The group creator cannot be removed.',
+      name: 'cannotRemoveGroupCreator',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You cannot remove yourself from this page.`
+  String get youCannotRemoveYourselfHere {
+    return Intl.message(
+      'You cannot remove yourself from this page.',
+      name: 'youCannotRemoveYourselfHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown member`
+  String get unknownGroupMember {
+    return Intl.message(
+      'Unknown member',
+      name: 'unknownGroupMember',
       desc: '',
       args: [],
     );

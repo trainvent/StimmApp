@@ -241,13 +241,7 @@ class _BaseDetailPageState<T extends HomeItem>
       ),
     ];
 
-    final groupName = switch (item) {
-      Poll(:final visibility, :final groupName) when visibility == 'group' =>
-        groupName,
-      Survey(:final visibility, :final groupName) when visibility == 'group' =>
-        groupName,
-      _ => null,
-    };
+    final groupName = _groupName(item);
     if ((groupName ?? '').trim().isNotEmpty) {
       chips.add(
         Chip(label: Text(context.l10n.groupLabelWithValue(groupName!.trim()))),
@@ -255,6 +249,16 @@ class _BaseDetailPageState<T extends HomeItem>
     }
 
     return chips;
+  }
+
+  String? _groupName(T item) {
+    return switch (item) {
+      Poll(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      Survey(:final visibility, :final groupName) when visibility == 'group' =>
+        groupName,
+      _ => null,
+    };
   }
 
   bool _isGroupOnly(T item) {
@@ -297,6 +301,7 @@ class _BaseDetailPageState<T extends HomeItem>
         final icon = hasParticipated
             ? Icons.check_circle_outline
             : Icons.person_pin_circle_outlined;
+        final groupName = _groupName(item)?.trim();
         return _DiscoveryStatusBanner(
           label: label,
           icon: icon,
@@ -304,7 +309,9 @@ class _BaseDetailPageState<T extends HomeItem>
           trailing: _isGroupOnly(item)
               ? _DiscoveryStatusPill(
                   icon: Icons.groups_2_outlined,
-                  label: context.l10n.groupOnly,
+                  label: groupName == null || groupName.isEmpty
+                      ? context.l10n.groupOnly
+                      : groupName,
                 )
               : null,
         );

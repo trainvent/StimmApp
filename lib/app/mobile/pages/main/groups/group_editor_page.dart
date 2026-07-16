@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_members_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -16,6 +17,32 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:universal_io/io.dart' as io;
 
+class GroupInviteMembersPage extends StatelessWidget {
+  const GroupInviteMembersPage({
+    super.key,
+    required this.group,
+    this.repository,
+    this.auth,
+    this.csvImporter,
+  });
+
+  final PollGroup group;
+  final PollGroupRepository? repository;
+  final AuthService? auth;
+  final PollGroupCsvImporter? csvImporter;
+
+  @override
+  Widget build(BuildContext context) {
+    return GroupEditorPage(
+      initialGroup: group,
+      repository: repository,
+      auth: auth,
+      csvImporter: csvImporter,
+      inviteOnly: true,
+    );
+  }
+}
+
 class GroupEditorPage extends StatefulWidget {
   const GroupEditorPage({
     super.key,
@@ -23,12 +50,14 @@ class GroupEditorPage extends StatefulWidget {
     this.repository,
     this.auth,
     this.csvImporter,
+    this.inviteOnly = false,
   });
 
   final PollGroup? initialGroup;
   final PollGroupRepository? repository;
   final AuthService? auth;
   final PollGroupCsvImporter? csvImporter;
+  final bool inviteOnly;
 
   @override
   State<GroupEditorPage> createState() => _GroupEditorPageState();
@@ -38,6 +67,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   final _nameController = TextEditingController();
   final List<_InviteMemberDraft> _memberDrafts = [];
   final List<_AllowedDomainDraft> _domainDrafts = [];
+  List<PollGroupAllowedMember> _existingAllowedMembers = const [];
   bool _allowSelfNamedNicknames = true;
   DateTime? _expiresAt;
   bool _isCreating = false;
@@ -131,22 +161,10 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       for (final draft in _domainDrafts) {
         draft.dispose();
       }
+      _existingAllowedMembers = allowedMembers;
       _memberDrafts
         ..clear()
-        ..addAll(
-          allowedMembers.isEmpty
-              ? <_InviteMemberDraft>[_InviteMemberDraft()]
-              : allowedMembers
-                    .map(
-                      (member) => _InviteMemberDraft(
-                        email: member.email,
-                        nickname: member.nickname ?? '',
-                        role: member.role,
-                        isCommitted: true,
-                      ),
-                    )
-                    .toList(),
-        );
+        ..add(_InviteMemberDraft());
       _domainDrafts
         ..clear()
         ..addAll(
@@ -567,10 +585,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       return;
     }
 
-    final allowedMembers = _buildAllowedMembers(user.uid);
-    if (allowedMembers == null) {
-      return;
-    }
     final allowedDomains = _buildAllowedDomains(user.uid);
     if (allowedDomains == null) {
       return;
@@ -588,13 +602,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
               ? PollGroupNicknameMode.selfNamed
               : PollGroupNicknameMode.adminAssigned,
           managersCanInvite: true,
-          importedMemberCount: allowedMembers.length,
+          importedMemberCount: _existingAllowedMembers.length,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
         );
         await _repository.updateGroup(
           group: group,
-          allowedMembers: allowedMembers,
+          allowedMembers: _existingAllowedMembers,
           allowedDomains: allowedDomains,
         );
       } else {
@@ -609,7 +623,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
           expiresAt: _expiresAt,
-          allowedMembers: allowedMembers,
           allowedDomains: allowedDomains,
         );
         group = await _repository
@@ -639,6 +652,64 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         return;
       }
       await showInternalDifficultiesSnackBar(error, StackTrace.current);
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
+    } finally {
+      if (mounted) {
+        setState(() => _isCreating = false);
+      }
+    }
+  }
+
+  Future<void> _sendInvitations() async {
+    final user = _auth.currentUser;
+    final group = widget.initialGroup;
+    if (user == null || group == null) {
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
+
+    final newMembers = _buildAllowedMembers(user.uid);
+    if (newMembers == null) {
+      return;
+    }
+    if (newMembers.isEmpty) {
+      showErrorSnackBar(context.l10n.pleaseAddMemberToInvite);
+      return;
+    }
+    final allowedDomains = _buildAllowedDomains(user.uid);
+    if (allowedDomains == null) {
+      return;
+    }
+    final mergedMembers = PollGroupRepository.normalizeAllowedMembers([
+      ..._existingAllowedMembers,
+      ...newMembers,
+    ]);
+
+    setState(() => _isCreating = true);
+    try {
+      await _repository.updateGroup(
+        group: group.copyWith(importedMemberCount: mergedMembers.length),
+        allowedMembers: mergedMembers,
+        allowedDomains: allowedDomains,
+      );
+      if (!mounted) {
+        return;
+      }
+      for (final draft in _memberDrafts) {
+        draft.dispose();
+      }
+      setState(() {
+        _existingAllowedMembers = mergedMembers;
+        _memberDrafts
+          ..clear()
+          ..add(_InviteMemberDraft());
+        _lastImportedCsvRows = 0;
+        _lastInvalidCsvRows = 0;
+      });
+      showSuccessSnackBar(
+        context.l10n.memberInvitationsSent(newMembers.length),
+      );
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
@@ -1044,9 +1115,85 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
+  Widget _buildManagementPagesSection(PollGroup group) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          ListTile(
+            key: const Key('open_group_invites'),
+            leading: const Icon(Icons.person_add_alt_1_outlined),
+            title: Text(context.l10n.inviteMembersTitle),
+            subtitle: Text(context.l10n.inviteMembersPageDescription),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => GroupInviteMembersPage(
+                  group: group,
+                  repository: widget.repository,
+                  auth: widget.auth,
+                  csvImporter: widget.csvImporter,
+                ),
+              ),
+            ),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            key: const Key('open_group_members'),
+            leading: const Icon(Icons.manage_accounts_outlined),
+            title: Text(context.l10n.manageGroupMembersTitle),
+            subtitle: Text(context.l10n.manageGroupMembersDescription),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => GroupMembersPage(
+                  group: group,
+                  repository: widget.repository,
+                  auth: widget.auth,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
+
+    if (widget.inviteOnly) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.inviteMembersTitle)),
+        body: user == null
+            ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
+            : _isLoadingExistingRules
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  Text(
+                    context.l10n.inviteMembersPageDescription,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildInviteMembersSection(),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    key: const Key('send_group_invitations'),
+                    onPressed: _isCreating ? null : _sendInvitations,
+                    icon: const Icon(Icons.send_outlined),
+                    label: Text(
+                      _isCreating
+                          ? context.l10n.sendingInvitations
+                          : context.l10n.sendInvitations,
+                    ),
+                  ),
+                ],
+              ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -1100,15 +1247,17 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 ),
                 const SizedBox(height: 8),
                 _buildExpirationDateSection(),
+                if (_isEditing) ...[
+                  const SizedBox(height: 16),
+                  _buildManagementPagesSection(widget.initialGroup!),
+                ],
                 if (_isLoadingExistingRules) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: Center(child: CircularProgressIndicator()),
                   ),
                 ] else ...[
-                  const SizedBox(height: 8),
-                  _buildInviteMembersSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildDomainSection(),
                   const SizedBox(height: 24),
                 ],

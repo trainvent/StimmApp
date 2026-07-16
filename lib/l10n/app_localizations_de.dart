@@ -2043,7 +2043,26 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inviteMembersDescription =>
-      'Plan A: Personen einzeln hinzufügen. Plan B: CSV-Zeilen importieren oder eine CSV-Datei unten ablegen. Es werden nicht automatisch E-Mails versendet.';
+      'Füge Personen einzeln hinzu oder importiere unten CSV-Zeilen.';
+
+  @override
+  String get inviteMembersPageDescription =>
+      'Lade neue Personen in diese Gruppe ein. Erfolgreich gesendete Einträge werden anschließend von dieser Seite entfernt.';
+
+  @override
+  String get sendInvitations => 'Einladungen senden';
+
+  @override
+  String get sendingInvitations => 'Einladungen werden gesendet...';
+
+  @override
+  String get pleaseAddMemberToInvite =>
+      'Füge mindestens ein Mitglied zum Einladen hinzu.';
+
+  @override
+  String memberInvitationsSent(Object count) {
+    return '$count Einladungen gesendet.';
+  }
 
   @override
   String get pasteCsvLabel => 'CSV einfügen';
@@ -2093,11 +2112,43 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get editGroupDescription =>
-      'Passe Zugriffsregeln, Einladungen und Einstellungen für diese Gruppe an.';
+      'Passe Zugriffsregeln und Einstellungen für diese Gruppe an.';
 
   @override
   String get createGroupDescription =>
       'Erstelle einen nur für Mitglieder zugänglichen Abstimmungsbereich für Teams, Events und Firmen.';
+
+  @override
+  String get manageGroupMembersTitle => 'Mitglieder verwalten';
+
+  @override
+  String get manageGroupMembersDescription =>
+      'Sieh alle Mitglieder dieser Gruppe und entferne sie bei Bedarf.';
+
+  @override
+  String get noGroupMembers => 'Diese Gruppe hat keine Mitglieder.';
+
+  @override
+  String get removeGroupMemberTitle => 'Mitglied entfernen?';
+
+  @override
+  String removeGroupMemberConfirmation(Object name) {
+    return '$name aus dieser Gruppe entfernen?';
+  }
+
+  @override
+  String get groupMemberRemoved => 'Mitglied aus der Gruppe entfernt.';
+
+  @override
+  String get cannotRemoveGroupCreator =>
+      'Der Ersteller der Gruppe kann nicht entfernt werden.';
+
+  @override
+  String get youCannotRemoveYourselfHere =>
+      'Du kannst dich auf dieser Seite nicht selbst entfernen.';
+
+  @override
+  String get unknownGroupMember => 'Unbekanntes Mitglied';
 
   @override
   String get membersCanChooseTheirOwnNickname =>

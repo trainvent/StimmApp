@@ -41,7 +41,31 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
     : super(DatabaseService(FakeFirebaseFirestore()));
 
   Map<String, Object?>? lastCreatePayload;
+  Map<String, Object?>? lastUpdatePayload;
   final List<PollGroup> createdGroups = [];
+
+  @override
+  Future<List<PollGroupAllowedMember>> getAllowedMembers(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<List<PollGroupAllowedDomain>> getAllowedDomains(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<void> updateGroup({
+    required PollGroup group,
+    List<PollGroupAllowedMember> allowedMembers = const [],
+    List<PollGroupAllowedDomain> allowedDomains = const [],
+  }) async {
+    lastUpdatePayload = {
+      'group': group,
+      'allowedMembers': allowedMembers,
+      'allowedDomains': allowedDomains,
+    };
+  }
 
   @override
   Future<String> createGroup({
@@ -101,6 +125,20 @@ void main() {
     repository = _RecordingPollGroupRepository();
   });
 
+  final existingGroup = PollGroup(
+    id: 'group-1',
+    name: 'Ops Team',
+    createdBy: 'user-1',
+    createdAt: DateTime(2024, 1, 1),
+    joinCode: 'OPS-1',
+    nicknameMode: PollGroupNicknameMode.selfNamed,
+    managersCanInvite: true,
+    memberIds: const ['user-1'],
+    importedMemberCount: 0,
+    accessMode: PollGroupAccessMode.protected,
+    inviteLinkEnabled: true,
+  );
+
   group('GroupEditorPage', () {
     testWidgets('defaults to protected access and shows access description', (
       tester,
@@ -116,10 +154,13 @@ void main() {
       expect(find.byKey(const Key('access_mode_description')), findsOneWidget);
     });
 
-    testWidgets('imports CSV rows and reports malformed ones', (tester) async {
+    testWidgets('invitation page imports CSV rows and reports malformed ones', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
-          GroupEditorPage(
+          GroupInviteMembersPage(
+            group: existingGroup,
             repository: repository,
             auth: _FakeAuthService(user),
             csvImporter: const _FakeCsvImporter(
@@ -154,10 +195,11 @@ void main() {
       );
     });
 
-    testWidgets('imports TSV rows', (tester) async {
+    testWidgets('invitation page imports TSV rows', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          GroupEditorPage(
+          GroupInviteMembersPage(
+            group: existingGroup,
             repository: repository,
             auth: _FakeAuthService(user),
             csvImporter: const _FakeCsvImporter(
@@ -190,7 +232,7 @@ void main() {
       );
     });
 
-    testWidgets('creates groups with manual members and domain rules', (
+    testWidgets('creates groups with domain rules but no invitation drafts', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -201,19 +243,6 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField).first, 'Ops Team');
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('member_email_0')),
-        150,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.enterText(
-        find.byKey(const Key('member_email_0')),
-        'anna@example.com',
-      );
-      await tester.enterText(
-        find.byKey(const Key('member_nickname_0')),
-        'Anna',
-      );
 
       await tester.scrollUntilVisible(
         find.byKey(const Key('add_domain_row')),
@@ -255,12 +284,45 @@ void main() {
           repository.lastCreatePayload?['allowedDomains']
               as List<PollGroupAllowedDomain>;
 
-      expect(allowedMembers, hasLength(1));
-      expect(allowedMembers.single.email, 'anna@example.com');
-      expect(allowedMembers.single.nickname, 'Anna');
+      expect(allowedMembers, isEmpty);
 
       expect(allowedDomains, hasLength(1));
       expect(allowedDomains.single.domain, 'example.com');
+    });
+
+    testWidgets('sends invitation drafts once and clears the page', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          GroupInviteMembersPage(
+            group: existingGroup,
+            repository: repository,
+            auth: _FakeAuthService(user),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('member_email_0')),
+        'anna@example.com',
+      );
+      await tester.tap(find.byKey(const Key('send_group_invitations')));
+      await tester.pumpAndSettle();
+
+      final allowedMembers =
+          repository.lastUpdatePayload?['allowedMembers']
+              as List<PollGroupAllowedMember>;
+      expect(allowedMembers, hasLength(1));
+      expect(allowedMembers.single.email, 'anna@example.com');
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const Key('member_email_0')))
+            .controller
+            ?.text,
+        isEmpty,
+      );
     });
   });
 }
