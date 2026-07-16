@@ -6,6 +6,7 @@ const basePath = process.env.PAGES_BASE_PATH || '';
 const nextConfig = {
   assetPrefix: basePath,
   basePath,
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
