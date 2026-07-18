@@ -7,7 +7,7 @@ import { getBrandRuntimeConfig } from "./brand";
 const db = admin.firestore();
 
 const KICKED_USERS_COLLECTION = 'kickedUsers';
-const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
+const smtpMail = process.env.SMTP_MAIL || "no-reply@trainvent.com";
 const smtpUser = process.env.SMTP_USER || smtpMail;
 const smtpPassword = defineSecret('SMTP_PASSWORD');
 const smtpHost = process.env.SMTP_SERVER || process.env.SMPT_SERVER || "smtp.strato.de";

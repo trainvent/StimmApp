@@ -42,7 +42,7 @@ const brand_1 = require("./brand");
 // Hardcoded admin email matching IConst.adminEmail in your Dart code
 const ADMIN_EMAIL = 'service@trainvent.com';
 const KICKED_USERS_COLLECTION = 'kickedUsers';
-const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
+const smtpMail = process.env.SMTP_MAIL || "no-reply@trainvent.com";
 const smtpUser = process.env.SMTP_USER || smtpMail;
 const smtpPassword = (0, params_1.defineSecret)('SMTP_PASSWORD');
 const smtpHost = process.env.SMTP_SERVER || process.env.SMPT_SERVER || "smtp.strato.de";
