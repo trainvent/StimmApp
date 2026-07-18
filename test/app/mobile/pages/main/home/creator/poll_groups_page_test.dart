@@ -55,16 +55,19 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
   }
 
   @override
-  Future<void> updateGroup({
+  Future<int> updateGroup({
     required PollGroup group,
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
+    List<String> inviteEmails = const [],
   }) async {
     lastUpdatePayload = {
       'group': group,
       'allowedMembers': allowedMembers,
       'allowedDomains': allowedDomains,
+      'inviteEmails': inviteEmails,
     };
+    return inviteEmails.length;
   }
 
   @override
@@ -316,6 +319,9 @@ void main() {
               as List<PollGroupAllowedMember>;
       expect(allowedMembers, hasLength(1));
       expect(allowedMembers.single.email, 'anna@example.com');
+      expect(repository.lastUpdatePayload?['inviteEmails'], const [
+        'anna@example.com',
+      ]);
       expect(
         tester
             .widget<TextField>(find.byKey(const Key('member_email_0')))

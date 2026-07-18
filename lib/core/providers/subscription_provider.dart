@@ -21,21 +21,24 @@ final subscriptionSyncProvider = Provider<void>((ref) {
   // Only proceed if user is logged in and we have entitlement data
   if (authState.value == null || !entitlementAsync.hasValue) return;
 
-  
   // We need to check the current profile to avoid infinite loops or unnecessary writes
   // But we can't easily "await" here inside a synchronous provider body.
   // Instead, we fire-and-forget an async update, but we should be careful.
-  
+
   // Better approach: Use a side-effect.
   // However, providers shouldn't have side effects during build.
   // The correct way is to use a listener in a widget or a dedicated "Manager" class.
-  
+
   // Let's just define the logic here and consume it in AuthLayout.
 });
 
 /// Logic to sync subscription status to Firestore.
 /// Call this from a top-level widget's build method (via ref.listen) or useEffect.
-Future<void> syncSubscriptionStatus(String uid, EntitlementTier tier) async {
+Future<void> syncSubscriptionStatus(
+  String uid,
+  EntitlementTier tier, {
+  String? authenticatedEmail,
+}) async {
   try {
     final repo = UserRepository.create();
     final profile = await repo.getById(uid);
@@ -47,21 +50,30 @@ Future<void> syncSubscriptionStatus(String uid, EntitlementTier tier) async {
       return;
     }
 
-    final isPro = tier == EntitlementTier.pro || UserProfile.shouldForcePro(profile.email);
+    final isPro =
+        tier == EntitlementTier.pro ||
+        UserProfile.shouldForcePro(profile.email) ||
+        UserProfile.shouldForcePro(authenticatedEmail);
+    final persistedIsPro = await repo.getPersistedProStatus(uid);
 
     if (kDebugMode) {
       debugPrint(
         'syncSubscriptionStatus: uid=$uid tier=$tier '
-        'email=${profile.email} currentIsPro=${profile.isPro} -> newIsPro=$isPro',
+        'profileEmail=${profile.email} authEmail=$authenticatedEmail '
+        'profileIsPro=${profile.isPro} persistedIsPro=$persistedIsPro '
+        '-> newIsPro=$isPro',
       );
     }
 
-    // Only update if changed
-    if (profile.isPro != isPro) {
-      await repo.upsert(profile.copyWith(
-        isPro: isPro,
-        wentProAt: isPro ? DateTime.now() : profile.wentProAt,
-      ));
+    // UserProfile applies forced-Pro emails in memory, so compare against the
+    // raw stored value that the backend group limit reads.
+    if (persistedIsPro != isPro) {
+      await repo.upsert(
+        profile.copyWith(
+          isPro: isPro,
+          wentProAt: isPro ? DateTime.now() : profile.wentProAt,
+        ),
+      );
       if (kDebugMode) {
         debugPrint('syncSubscriptionStatus: profile updated for uid=$uid');
       }

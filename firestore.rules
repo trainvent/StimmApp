@@ -311,6 +311,48 @@ service cloud.firestore {
         allow create: if isAdmin() || isPollGroupCreatorAfter(groupId) || isPollGroupAdmin(groupId);
         allow update, delete: if isAdmin() || isPollGroupCreator(groupId) || isPollGroupAdmin(groupId);
       }
+
+      match /invitations/{invitationId} {
+        allow read: if isAdmin() ||
+                    isPollGroupCreator(groupId) ||
+                    isPollGroupAdmin(groupId) ||
+                    (isAuthenticated() &&
+                     resource.data.recipientUid == request.auth.uid);
+        allow create: if isAdmin() ||
+                      isPollGroupCreatorAfter(groupId) ||
+                      isPollGroupAdmin(groupId);
+        allow update: if isAdmin() ||
+                      isPollGroupCreator(groupId) ||
+                      isPollGroupAdmin(groupId) ||
+                      (isAuthenticated() &&
+                       resource.data.recipientUid == request.auth.uid &&
+                       request.resource.data.recipientUid == request.auth.uid &&
+                       request.resource.data.diff(resource.data).changedKeys()
+                         .hasOnly(['status', 'resolvedAt']) &&
+                       request.resource.data.status in ['accepted', 'declined']);
+        allow delete: if isAdmin() ||
+                      isPollGroupCreator(groupId) ||
+                      isPollGroupAdmin(groupId);
+      }
+
+      match /adminElections/{electionId} {
+        allow read: if canReadPollGroup(groupId);
+        allow create: if isAdmin() ||
+                      isPollGroupCreatorAfter(groupId);
+        allow update: if false;
+        allow delete: if isAdmin() ||
+                      isPollGroupCreator(groupId) ||
+                      isPollGroupAdmin(groupId);
+
+        match /votes/{voterUid} {
+          allow read: if isAdmin() ||
+                      (isAuthenticated() && voterUid == request.auth.uid);
+          allow create, update: if false;
+          allow delete: if isAdmin() ||
+                        isPollGroupCreator(groupId) ||
+                        isPollGroupAdmin(groupId);
+        }
+      }
     }
 
     match /moderationReports/{reportId} {

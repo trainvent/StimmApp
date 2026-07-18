@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_access_qr_scanner_page.dart';
+import 'package:stimmapp/app/mobile/pages/main/groups/group_dashboard_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/subscription_provider.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
+
+bool groupCreationRequiresPro({
+  required int createdCount,
+  required UserProfile? profile,
+  required String? authenticatedEmail,
+}) {
+  final hasProAccess =
+      profile?.isPro == true ||
+      UserProfile.shouldForcePro(profile?.email) ||
+      UserProfile.shouldForcePro(authenticatedEmail);
+  return createdCount >= 1 && !hasProAccess;
+}
 
 class MemberGroupsPage extends StatelessWidget {
   const MemberGroupsPage({super.key});
@@ -47,17 +62,20 @@ class MemberGroupsPage extends StatelessWidget {
     }
 
     try {
-      await PollGroupRepository.create().leaveGroup(group: group, uid: uid);
+      final result = await PollGroupRepository.create().leaveGroup(
+        group: group,
+        uid: uid,
+      );
       if (!context.mounted) {
         return;
       }
-      showSuccessSnackBar(context.l10n.youLeftTheGroup);
+      showSuccessSnackBar(
+        result == PollGroupLeaveResult.groupDeleted
+            ? context.l10n.groupDeleted
+            : context.l10n.youLeftTheGroup,
+      );
     } on StateError catch (error) {
       if (!context.mounted) {
-        return;
-      }
-      if (error.message == 'group_creator_cannot_leave') {
-        showErrorSnackBar(context.l10n.groupCreatorsCannotLeaveOwnGroup);
         return;
       }
       showErrorSnackBar(error.message);
@@ -66,32 +84,53 @@ class MemberGroupsPage extends StatelessWidget {
     }
   }
 
-  Future<void> _openEditor(BuildContext context, PollGroup group) async {
-    await Navigator.of(context).push<PollGroup>(
-      MaterialPageRoute(
-        builder: (context) => GroupEditorPage(initialGroup: group),
-      ),
+  Future<void> _openDashboard(BuildContext context, PollGroup group) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(builder: (context) => GroupDashboardPage(group: group)),
     );
   }
 
   Future<void> _openCreateGroup(BuildContext context) async {
-    final uid = authService.currentUser?.uid;
-    if (uid == null) {
+    final authenticatedUser = authService.currentUser;
+    if (authenticatedUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
+    final uid = authenticatedUser.uid;
 
     await PurchasesService.instance.refreshCustomerInfo();
-    await syncSubscriptionStatus(uid, PurchasesService.instance.currentStatus);
+    await syncSubscriptionStatus(
+      uid,
+      PurchasesService.instance.currentStatus,
+      authenticatedEmail: authenticatedUser.email,
+    );
 
     final user = await UserRepository.create().getById(uid);
     final createdCount = await PollGroupRepository.create()
         .countGroupsCreatedByUser(uid);
-    final requiresPro = createdCount >= 1 && (user?.isPro ?? false) != true;
+    final requiresPro = groupCreationRequiresPro(
+      createdCount: createdCount,
+      profile: user,
+      authenticatedEmail: authenticatedUser.email,
+    );
+    if (kDebugMode) {
+      debugPrint(
+        'MemberGroupsPage._openCreateGroup: uid=$uid '
+        'createdCount=$createdCount profileIsPro=${user?.isPro} '
+        'profileForcedPro=${UserProfile.shouldForcePro(user?.email)} '
+        'authForcedPro=${UserProfile.shouldForcePro(authenticatedUser.email)} '
+        'requiresPro=$requiresPro',
+      );
+    }
     if (!context.mounted) {
       return;
     }
     if (requiresPro) {
+      if (kDebugMode) {
+        debugPrint(
+          'MemberGroupsPage._openCreateGroup: opening paywall source=member_groups',
+        );
+      }
       final opened = await PurchasesService.instance.presentPaywall(
         context: context,
         source: 'member_groups',
@@ -108,65 +147,6 @@ class MemberGroupsPage extends StatelessWidget {
     await Navigator.of(context).push<PollGroup>(
       MaterialPageRoute(builder: (context) => const GroupEditorPage()),
     );
-  }
-
-  Future<void> _deleteGroup(BuildContext context, PollGroup group) async {
-    final controller = TextEditingController();
-    try {
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.deleteGroup),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(context.l10n.typeGroupNameToConfirmDeletion(group.name)),
-              const SizedBox(height: 12),
-              TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  labelText: context.l10n.groupNameLabel,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(context.l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).pop(controller.text.trim() == group.name.trim());
-              },
-              child: Text(context.l10n.deleteGroup),
-            ),
-          ],
-        ),
-      );
-
-      if (confirmed != true) {
-        if (!context.mounted) {
-          return;
-        }
-        showErrorSnackBar(context.l10n.groupNameDidNotMatch);
-        return;
-      }
-
-      await PollGroupRepository.create().deleteGroup(group.id);
-      if (!context.mounted) {
-        return;
-      }
-      showSuccessSnackBar(context.l10n.groupDeleted);
-    } catch (error, stackTrace) {
-      await showInternalDifficultiesSnackBar(error, stackTrace);
-    } finally {
-      controller.dispose();
-    }
   }
 
   Future<void> _copyGroupInviteLink(
@@ -320,7 +300,6 @@ class MemberGroupsPage extends StatelessWidget {
                 builder: (context, memberSnapshot) {
                   final member = memberSnapshot.data;
                   final isAdmin = member?.role == PollGroupRole.admin;
-                  final canManage = isCreator || isAdmin;
                   final inviteLink = buildPollGroupInviteLink(group);
                   final roleLabel = isCreator
                       ? context.l10n.creatorRoleLabel
@@ -338,108 +317,84 @@ class MemberGroupsPage extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: Slidable(
                       key: ValueKey('member_group_${group.id}'),
-                      startActionPane: canManage
-                          ? ActionPane(
-                              motion: const StretchMotion(),
-                              dismissible: DismissiblePane(
-                                dismissThreshold: 0.3,
-                                confirmDismiss: () async {
-                                  await _openEditor(context, group);
-                                  return false;
-                                },
-                                closeOnCancel: true,
-                                onDismissed: () {},
-                              ),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (_) => _openEditor(context, group),
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.primaryContainer,
-                                  foregroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimaryContainer,
-                                  icon: Icons.edit_outlined,
-                                  label: context.l10n.editLabel,
-                                ),
-                              ],
-                            )
-                          : null,
-                      endActionPane: ActionPane(
+                      startActionPane: ActionPane(
                         motion: const StretchMotion(),
                         dismissible: DismissiblePane(
                           dismissThreshold: 0.3,
                           confirmDismiss: () async {
-                            if (canManage) {
-                              await _deleteGroup(context, group);
-                            } else {
-                              await _leaveGroup(context, group);
-                            }
+                            await _openDashboard(context, group);
                             return false;
                           },
                           closeOnCancel: true,
                           onDismissed: () {},
                         ),
-                        children: canManage
-                            ? [
-                                SlidableAction(
-                                  onPressed: (_) =>
-                                      _deleteGroup(context, group),
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.errorContainer,
-                                  foregroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                  icon: Icons.delete_outline,
-                                  label: context.l10n.deleteGroup,
-                                ),
-                              ]
-                            : [
-                                SlidableAction(
-                                  onPressed: (_) => _leaveGroup(context, group),
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.secondaryContainer,
-                                  foregroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondaryContainer,
-                                  icon: Icons.logout,
-                                  label: context.l10n.leaveGroup,
-                                ),
-                              ],
+                        children: [
+                          SlidableAction(
+                            onPressed: (_) => _openDashboard(context, group),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                            icon: Icons.dashboard_outlined,
+                            label: context.l10n.openGroupDashboard,
+                          ),
+                        ],
                       ),
-                      child: _SlidablePeekHint(
-                        showStartAction: canManage,
-                        builder: (showActions) => PollGroupSummaryCard(
-                          group: group,
-                          embedded: true,
-                          onTap: showActions,
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (inviteLink != null) ...[
-                                IconButton(
-                                  tooltip: context.l10n.copyInviteLinkTooltip,
-                                  onPressed: () =>
-                                      _copyGroupInviteLink(context, group),
-                                  icon: const Icon(Icons.link),
-                                ),
-                                IconButton(
-                                  tooltip: context.l10n.scanQrCode,
-                                  onPressed: () =>
-                                      _showGroupQrCode(context, group),
-                                  icon: const Icon(Icons.qr_code),
-                                ),
-                              ],
-                              Chip(label: Text(roleLabel)),
+                      endActionPane: ActionPane(
+                        motion: const StretchMotion(),
+                        dismissible: DismissiblePane(
+                          dismissThreshold: 0.3,
+                          confirmDismiss: () async {
+                            await _leaveGroup(context, group);
+                            return false;
+                          },
+                          closeOnCancel: true,
+                          onDismissed: () {},
+                        ),
+                        children: [
+                          SlidableAction(
+                            onPressed: (_) => _leaveGroup(context, group),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.secondaryContainer,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
+                            icon: Icons.logout,
+                            label: context.l10n.leaveGroup,
+                          ),
+                        ],
+                      ),
+                      child: PollGroupSummaryCard(
+                        group: group,
+                        embedded: true,
+                        onTap: () => _openDashboard(context, group),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Chip(label: Text(roleLabel)),
+                            if (inviteLink != null) ...[
+                              IconButton(
+                                tooltip: context.l10n.copyInviteLinkTooltip,
+                                onPressed: () =>
+                                    _copyGroupInviteLink(context, group),
+                                icon: const Icon(Icons.link),
+                              ),
+                              IconButton(
+                                tooltip: context.l10n.scanQrCode,
+                                onPressed: () =>
+                                    _showGroupQrCode(context, group),
+                                icon: const Icon(Icons.qr_code),
+                              ),
                             ],
-                          ),
-                          summary: context.l10n.groupAccessSummary(
-                            group.accessMode.localizedTitle(context),
-                            group.memberIds.length,
-                            expiresLabel,
-                          ),
+                          ],
+                        ),
+                        summary: context.l10n.groupAccessSummary(
+                          group.accessMode.localizedTitle(context),
+                          group.memberIds.length,
+                          expiresLabel,
                         ),
                       ),
                     ),
@@ -451,76 +406,5 @@ class MemberGroupsPage extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class _SlidablePeekHint extends StatefulWidget {
-  const _SlidablePeekHint({
-    required this.showStartAction,
-    required this.builder,
-  });
-
-  final bool showStartAction;
-  final Widget Function(VoidCallback showActions) builder;
-
-  @override
-  State<_SlidablePeekHint> createState() => _SlidablePeekHintState();
-}
-
-class _SlidablePeekHintState extends State<_SlidablePeekHint> {
-  bool _isShowingActions = false;
-
-  Future<bool> _peek(SlidableController controller, double ratio) async {
-    await controller.openTo(
-      ratio,
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 220));
-    if (!mounted) {
-      return false;
-    }
-    await controller.close(
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeIn,
-    );
-    return mounted;
-  }
-
-  Future<void> _showActions() async {
-    if (_isShowingActions || MediaQuery.disableAnimationsOf(context)) {
-      return;
-    }
-
-    final controller = Slidable.of(context);
-    if (controller == null) {
-      return;
-    }
-
-    _isShowingActions = true;
-    try {
-      final readingDirection = controller.isLeftToRight ? 1.0 : -1.0;
-      final showedEnd = await _peek(
-        controller,
-        -readingDirection * controller.endActionPaneExtentRatio * 0.5,
-      );
-      if (!showedEnd) {
-        return;
-      }
-
-      if (widget.showStartAction) {
-        await _peek(
-          controller,
-          readingDirection * controller.startActionPaneExtentRatio * 0.5,
-        );
-      }
-    } finally {
-      _isShowingActions = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.builder(_showActions);
   }
 }

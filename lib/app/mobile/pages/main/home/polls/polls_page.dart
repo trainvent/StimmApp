@@ -13,14 +13,16 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class PollsPage extends StatefulWidget {
-  const PollsPage({super.key});
+  const PollsPage({super.key, this.initialGroupId});
+
+  final String? initialGroupId;
 
   @override
   State<PollsPage> createState() => _PollsPageState();
 }
 
 class _PollsPageState extends State<PollsPage> {
-  String? _selectedGroupId;
+  late String? _selectedGroupId = widget.initialGroupId;
   bool _showSurveys = true;
 
   Stream<List<HomeItem>> _listPollsAndSurveys({

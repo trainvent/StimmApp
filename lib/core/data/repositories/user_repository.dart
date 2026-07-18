@@ -42,6 +42,14 @@ class UserRepository {
     return _fs.getDoc(_doc(uid));
   }
 
+  Future<bool?> getPersistedProStatus(String uid) async {
+    final snapshot = await _fs.instance
+        .collection(DatabaseCollections.users)
+        .doc(uid)
+        .get();
+    return snapshot.data()?['isPro'] as bool?;
+  }
+
   Future<void> upsert(UserProfile profile) async {
     await _fs.upsert(
       _doc(profile.uid),

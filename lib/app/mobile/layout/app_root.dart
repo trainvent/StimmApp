@@ -37,6 +37,7 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
         await syncSubscriptionStatus(
           nextUser.uid,
           PurchasesService.instance.currentStatus,
+          authenticatedEmail: nextUser.email,
         );
       });
     });
@@ -50,7 +51,11 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
         );
       }
       if (user != null && next.hasValue) {
-        syncSubscriptionStatus(user.uid, next.value!);
+        syncSubscriptionStatus(
+          user.uid,
+          next.value!,
+          authenticatedEmail: user.email,
+        );
       }
     });
 

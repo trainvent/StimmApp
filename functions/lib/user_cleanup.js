@@ -37,6 +37,7 @@ exports.cleanupOrphanedUsers = exports.onAccountDelete = void 0;
 exports.cleanupUserData = cleanupUserData;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
+const poll_group_elections_1 = require("./poll_group_elections");
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
@@ -90,6 +91,7 @@ async function cleanupUserData(uid) {
     const bucket = admin.storage().bucket();
     console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
     try {
+        await (0, poll_group_elections_1.handleUserPollGroupDepartures)(uid);
         const profileSnap = await db.collection("users").doc(uid).get();
         const usernameKey = (_a = profileSnap.data()) === null || _a === void 0 ? void 0 : _a.usernameKey;
         if (typeof usernameKey === "string" && usernameKey.trim().length > 0) {

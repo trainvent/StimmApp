@@ -8,6 +8,8 @@ import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
+enum PollGroupLeaveResult { left, groupDeleted }
+
 class PollGroupRepository {
   PollGroupRepository(this._fs);
 
@@ -35,6 +37,28 @@ class PollGroupRepository {
         fromFirestore: PollGroupAllowedMember.fromFirestore,
         toFirestore: PollGroupAllowedMember.toFirestore,
       );
+
+  CollectionReference<PollGroupInvitation> _invitations(String groupId) =>
+      _fs.colRef<PollGroupInvitation>(
+        '${DatabaseCollections.pollGroups}/$groupId/invitations',
+        fromFirestore: PollGroupInvitation.fromFirestore,
+        toFirestore: PollGroupInvitation.toFirestore,
+      );
+
+  CollectionReference<PollGroupAdminElection> _adminElections(String groupId) =>
+      _fs.colRef<PollGroupAdminElection>(
+        '${DatabaseCollections.pollGroups}/$groupId/adminElections',
+        fromFirestore: PollGroupAdminElection.fromFirestore,
+        toFirestore: PollGroupAdminElection.toFirestore,
+      );
+
+  CollectionReference<PollGroupAdminElectionVote> _adminElectionVotes(
+    String groupId,
+  ) => _fs.colRef<PollGroupAdminElectionVote>(
+    '${DatabaseCollections.pollGroups}/$groupId/adminElections/current/votes',
+    fromFirestore: PollGroupAdminElectionVote.fromFirestore,
+    toFirestore: PollGroupAdminElectionVote.toFirestore,
+  );
 
   CollectionReference<PollGroupAllowedDomain> _allowedDomains(String groupId) =>
       _fs.colRef<PollGroupAllowedDomain>(
@@ -147,10 +171,11 @@ class PollGroupRepository {
     return snap.docs.map((doc) => doc.data()).toList();
   }
 
-  Future<void> updateGroup({
+  Future<int> updateGroup({
     required PollGroup group,
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
+    List<String> inviteEmails = const [],
   }) async {
     final normalizedName = group.name.trim();
     if (normalizedName.isEmpty ||
@@ -160,32 +185,39 @@ class PollGroupRepository {
     final normalizedMembers = normalizeAllowedMembers(allowedMembers);
     final normalizedDomains = normalizeAllowedDomains(allowedDomains);
     try {
-      await FirebaseFunctions.instance.httpsCallable('updatePollGroup').call({
-        'groupId': group.id,
-        'name': normalizedName,
-        'nicknameMode': pollGroupNicknameModeToFirestore(group.nicknameMode),
-        'managersCanInvite': group.managersCanInvite,
-        'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
-        'inviteLinkEnabled': group.inviteLinkEnabled,
-        'expiresAtMillis': group.expiresAt?.millisecondsSinceEpoch,
-        'allowedMembers': normalizedMembers
-            .map(
-              (member) => <String, Object?>{
-                'email': member.email,
-                'nickname': member.nickname,
-                'role': pollGroupRoleToFirestore(member.role),
-              },
-            )
-            .toList(),
-        'allowedDomains': normalizedDomains
-            .map(
-              (domain) => <String, Object?>{
-                'domain': domain.domain,
-                'role': pollGroupRoleToFirestore(domain.role),
-              },
-            )
-            .toList(),
-      });
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('updatePollGroup')
+          .call({
+            'groupId': group.id,
+            'name': normalizedName,
+            'nicknameMode': pollGroupNicknameModeToFirestore(
+              group.nicknameMode,
+            ),
+            'managersCanInvite': group.managersCanInvite,
+            'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+            'inviteLinkEnabled': group.inviteLinkEnabled,
+            'expiresAtMillis': group.expiresAt?.millisecondsSinceEpoch,
+            'allowedMembers': normalizedMembers
+                .map(
+                  (member) => <String, Object?>{
+                    'email': member.email,
+                    'nickname': member.nickname,
+                    'role': pollGroupRoleToFirestore(member.role),
+                  },
+                )
+                .toList(),
+            'allowedDomains': normalizedDomains
+                .map(
+                  (domain) => <String, Object?>{
+                    'domain': domain.domain,
+                    'role': pollGroupRoleToFirestore(domain.role),
+                  },
+                )
+                .toList(),
+            'inviteEmails': inviteEmails,
+          });
+      final data = Map<String, dynamic>.from(result.data as Map);
+      return data['invitationCount'] as int? ?? 0;
     } on FirebaseFunctionsException catch (e) {
       throw StateError(e.message ?? e.code);
     }
@@ -201,6 +233,10 @@ class PollGroupRepository {
     return _fs.getDoc(_groups().doc(groupId));
   }
 
+  Stream<PollGroup?> watchGroup(String groupId) {
+    return _fs.watchDoc(_groups().doc(groupId));
+  }
+
   Stream<PollGroupMember?> watchMember(String groupId, String uid) {
     return _fs.watchDoc(_members(groupId).doc(uid));
   }
@@ -209,10 +245,43 @@ class PollGroupRepository {
     return _fs.watchCol(_members(groupId).orderBy('joinedAt'));
   }
 
+  Stream<List<PollGroupInvitation>> watchInvitations(String groupId) {
+    return _fs.watchCol(
+      _invitations(groupId).orderBy('invitedAt', descending: true),
+    );
+  }
+
+  Stream<PollGroupAdminElection?> watchAdminElection(String groupId) {
+    return _fs.watchDoc(_adminElections(groupId).doc('current'));
+  }
+
+  Stream<PollGroupAdminElectionVote?> watchAdminElectionVote(
+    String groupId,
+    String uid,
+  ) {
+    return _fs.watchDoc(_adminElectionVotes(groupId).doc(uid));
+  }
+
+  Future<void> castAdminElectionVote({
+    required String groupId,
+    required String candidateUid,
+  }) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('castPollGroupAdminVote')
+          .call({'groupId': groupId, 'candidateUid': candidateUid});
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? e.code);
+    }
+  }
+
   Future<void> deleteGroup(String groupId) async {
     final membersSnap = await _members(groupId).get();
     final allowedMembersSnap = await _allowedMembers(groupId).get();
     final allowedDomainsSnap = await _allowedDomains(groupId).get();
+    final invitationsSnap = await _invitations(groupId).get();
+    final electionVotesSnap = await _adminElectionVotes(groupId).get();
+    final electionSnap = await _adminElections(groupId).get();
     final batch = _fs.instance.batch();
 
     for (final doc in membersSnap.docs) {
@@ -222,6 +291,15 @@ class PollGroupRepository {
       batch.delete(doc.reference);
     }
     for (final doc in allowedDomainsSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in invitationsSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in electionVotesSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in electionSnap.docs) {
       batch.delete(doc.reference);
     }
     batch.delete(_groups().doc(groupId));
@@ -255,6 +333,11 @@ class PollGroupRepository {
         ? currentUid
         : notification.actorUid;
     final now = DateTime.now();
+    final invitationRef = _invitations(notification.groupId).doc(joiningUid);
+    final invitation =
+        notification.type == PollGroupAccessNotificationType.invite
+        ? await _fs.getDoc(invitationRef)
+        : null;
     final batch = _fs.instance.batch();
 
     if (accept) {
@@ -281,6 +364,17 @@ class PollGroupRepository {
         resolvedAt: now,
       ),
     );
+    if (invitation != null) {
+      batch.set(
+        invitationRef,
+        invitation.copyWith(
+          status: accept
+              ? PollGroupInvitationStatus.accepted
+              : PollGroupInvitationStatus.declined,
+          resolvedAt: now,
+        ),
+      );
+    }
 
     await batch.commit();
   }
@@ -331,23 +425,91 @@ class PollGroupRepository {
     await batch.commit();
   }
 
-  Future<void> leaveGroup({
+  Future<PollGroupLeaveResult> leaveGroup({
     required PollGroup group,
     required String uid,
   }) async {
-    if (!group.memberIds.contains(uid)) {
-      return;
+    final currentGroup = await getGroup(group.id);
+    if (currentGroup == null || !currentGroup.memberIds.contains(uid)) {
+      return PollGroupLeaveResult.left;
     }
-    if (group.createdBy == uid) {
-      throw StateError('group_creator_cannot_leave');
+
+    if (currentGroup.memberIds.length == 1) {
+      if (currentGroup.createdBy != uid) {
+        try {
+          final result = await FirebaseFunctions.instance
+              .httpsCallable('leavePollGroup')
+              .call({'groupId': currentGroup.id});
+          final data = Map<String, dynamic>.from(result.data as Map);
+          return data['result'] == 'groupDeleted'
+              ? PollGroupLeaveResult.groupDeleted
+              : PollGroupLeaveResult.left;
+        } on FirebaseFunctionsException catch (e) {
+          throw StateError(e.message ?? e.code);
+        }
+      }
+      await deleteGroup(currentGroup.id);
+      return PollGroupLeaveResult.groupDeleted;
+    }
+
+    String? successorUid;
+    if (currentGroup.createdBy == uid) {
+      final members = await _members(currentGroup.id).get();
+      final adminCandidates =
+          members.docs
+              .map((doc) => doc.data())
+              .where(
+                (member) =>
+                    member.uid != uid &&
+                    member.role == PollGroupRole.admin &&
+                    currentGroup.memberIds.contains(member.uid),
+              )
+              .toList()
+            ..sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
+      if (adminCandidates.isEmpty) {
+        final now = DateTime.now();
+        final endsAt = now.add(const Duration(days: 3));
+        final candidateUids = currentGroup.memberIds
+            .where((memberUid) => memberUid != uid)
+            .toList();
+        final previousVotes = await _adminElectionVotes(currentGroup.id).get();
+        final batch = _fs.instance.batch();
+        for (final vote in previousVotes.docs) {
+          batch.delete(vote.reference);
+        }
+        batch.update(_groups().doc(currentGroup.id), {
+          'memberIds': FieldValue.arrayRemove([uid]),
+          'adminElectionStatus': 'open',
+          'adminElectionEndsAt': Timestamp.fromDate(endsAt),
+        });
+        batch.delete(_members(currentGroup.id).doc(uid));
+        batch.set(
+          _adminElections(currentGroup.id).doc('current'),
+          PollGroupAdminElection(
+            id: 'current',
+            status: 'open',
+            startedAt: now,
+            endsAt: endsAt,
+            initiatedBy: uid,
+            candidateUids: candidateUids,
+          ),
+        );
+        await batch.commit();
+        return PollGroupLeaveResult.left;
+      }
+      successorUid = adminCandidates.first.uid;
     }
 
     final batch = _fs.instance.batch();
-    batch.update(_groups().doc(group.id), {
+    batch.update(_groups().doc(currentGroup.id), {
       'memberIds': FieldValue.arrayRemove([uid]),
+      'createdBy': ?successorUid,
+      if (successorUid != null) 'adminElectionStatus': null,
+      if (successorUid != null) 'adminElectionEndsAt': null,
     });
-    batch.delete(_members(group.id).doc(uid));
+    batch.delete(_members(currentGroup.id).doc(uid));
     await batch.commit();
+    return PollGroupLeaveResult.left;
   }
 
   Future<void> removeMember({
@@ -372,6 +534,8 @@ class PollGroupRepository {
     final allowedMemberExists = allowedMemberRef == null
         ? false
         : (await allowedMemberRef.get()).exists;
+    final invitationRef = _invitations(group.id).doc(uid);
+    final invitation = await _fs.getDoc(invitationRef);
     final now = DateTime.now();
     final notificationRef = _notifications(uid).doc();
     final batch = _fs.instance.batch();
@@ -382,6 +546,15 @@ class PollGroupRepository {
     batch.delete(_members(group.id).doc(uid));
     if (allowedMemberExists) {
       batch.delete(allowedMemberRef);
+    }
+    if (invitation != null) {
+      batch.set(
+        invitationRef,
+        invitation.copyWith(
+          status: PollGroupInvitationStatus.removed,
+          resolvedAt: now,
+        ),
+      );
     }
     batch.set(
       notificationRef,

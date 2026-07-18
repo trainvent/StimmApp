@@ -3248,6 +3248,90 @@ abstract class AppLocalizations {
   /// **'Delete group'**
   String get deleteGroup;
 
+  /// No description provided for @dangerZoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get dangerZoneTitle;
+
+  /// No description provided for @deleteGroupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete this group and its membership data.'**
+  String get deleteGroupDescription;
+
+  /// No description provided for @adminElectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin election'**
+  String get adminElectionTitle;
+
+  /// No description provided for @voteForNewGroupAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Vote for a new group admin'**
+  String get voteForNewGroupAdmin;
+
+  /// No description provided for @adminElectionDashboardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The former owner left. Choose who should lead this group next.'**
+  String get adminElectionDashboardDescription;
+
+  /// No description provided for @adminElectionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Every member has one vote for the group\'s next admin. You can change your vote until voting closes.'**
+  String get adminElectionDescription;
+
+  /// No description provided for @adminElectionDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting ends {deadline}'**
+  String adminElectionDeadline(String deadline);
+
+  /// No description provided for @castAdminElectionVote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast vote'**
+  String get castAdminElectionVote;
+
+  /// No description provided for @changeAdminElectionVote.
+  ///
+  /// In en, this message translates to:
+  /// **'Change vote'**
+  String get changeAdminElectionVote;
+
+  /// No description provided for @adminElectionVoteSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your vote was saved.'**
+  String get adminElectionVoteSaved;
+
+  /// No description provided for @adminElectionVoteCanChange.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change your vote until the three-day deadline.'**
+  String get adminElectionVoteCanChange;
+
+  /// No description provided for @adminElectionVotingClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting is closed. The result will be applied shortly.'**
+  String get adminElectionVotingClosed;
+
+  /// No description provided for @noActiveAdminElection.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no active admin election.'**
+  String get noActiveAdminElection;
+
+  /// No description provided for @noAdminElectionCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no eligible candidates.'**
+  String get noAdminElectionCandidates;
+
   /// No description provided for @doYouWantToLeaveGroup.
   ///
   /// In en, this message translates to:
@@ -3259,12 +3343,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You left the group.'**
   String get youLeftTheGroup;
-
-  /// No description provided for @groupCreatorsCannotLeaveOwnGroup.
-  ///
-  /// In en, this message translates to:
-  /// **'Group creators cannot leave their own group. Edit or delete it instead.'**
-  String get groupCreatorsCannotLeaveOwnGroup;
 
   /// No description provided for @typeGroupNameToConfirmDeletion.
   ///
@@ -3836,6 +3914,12 @@ abstract class AppLocalizations {
   /// **'Add at least one member to invite.'**
   String get pleaseAddMemberToInvite;
 
+  /// No description provided for @noNewInvitationsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'No new invitation was sent. The person may already be a member or already have a pending invitation.'**
+  String get noNewInvitationsSent;
+
   /// No description provided for @memberInvitationsSent.
   ///
   /// In en, this message translates to:
@@ -3949,6 +4033,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View everyone in this group and remove members when needed.'**
   String get manageGroupMembersDescription;
+
+  /// No description provided for @groupContentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group content'**
+  String get groupContentTitle;
+
+  /// No description provided for @groupManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage group'**
+  String get groupManagementTitle;
+
+  /// No description provided for @viewGroupPolls.
+  ///
+  /// In en, this message translates to:
+  /// **'Polls and surveys'**
+  String get viewGroupPolls;
+
+  /// No description provided for @viewGroupPollsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See everything published for this group.'**
+  String get viewGroupPollsDescription;
+
+  /// No description provided for @activeMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active members'**
+  String activeMembersCount(Object count);
+
+  /// No description provided for @copyInviteLinkDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the group invitation link.'**
+  String get copyInviteLinkDescription;
+
+  /// No description provided for @openGroupDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get openGroupDashboard;
+
+  /// No description provided for @swipeForGroupActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for dashboard or removal.'**
+  String get swipeForGroupActions;
+
+  /// No description provided for @groupInvitationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation status'**
+  String get groupInvitationsTitle;
+
+  /// No description provided for @groupInvitationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See whether registered app users have accepted, declined, or still need to answer.'**
+  String get groupInvitationsDescription;
+
+  /// No description provided for @noGroupInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No registered app user has been invited yet.'**
+  String get noGroupInvitations;
+
+  /// No description provided for @invitationStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get invitationStatusPending;
+
+  /// No description provided for @invitationStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get invitationStatusAccepted;
+
+  /// No description provided for @invitationStatusDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get invitationStatusDeclined;
+
+  /// No description provided for @invitationStatusRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed'**
+  String get invitationStatusRemoved;
 
   /// No description provided for @noGroupMembers.
   ///

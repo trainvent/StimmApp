@@ -10,6 +10,26 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
+bool shouldAutoJoinOpenGroup({
+  required PollGroup? group,
+  required PollGroupAccessNotification? notification,
+  required String? currentUid,
+  required bool isSaving,
+  required String? attemptedForUid,
+}) {
+  final hasPendingInvite =
+      notification?.type == PollGroupAccessNotificationType.invite &&
+      notification?.status == PollGroupAccessNotificationStatus.pending &&
+      notification?.recipientUid == currentUid;
+  return group != null &&
+      currentUid != null &&
+      !hasPendingInvite &&
+      group.accessMode == PollGroupAccessMode.open &&
+      !group.memberIds.contains(currentUid) &&
+      !isSaving &&
+      attemptedForUid != currentUid;
+}
+
 class GroupEntryPage extends StatefulWidget {
   const GroupEntryPage({
     super.key,
@@ -160,14 +180,21 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     );
   }
 
-  void _maybeAutoJoinOpenGroup(PollGroup? group, UserProfile? currentProfile) {
+  void _maybeAutoJoinOpenGroup(
+    PollGroup? group,
+    PollGroupAccessNotification? notification,
+    UserProfile? currentProfile,
+  ) {
     final currentUid = currentProfile?.uid;
-    if (group == null ||
-        currentUid == null ||
-        group.accessMode != PollGroupAccessMode.open ||
-        group.memberIds.contains(currentUid) ||
-        _isSaving ||
-        _autoJoinAttemptedForUid == currentUid) {
+    if (!shouldAutoJoinOpenGroup(
+          group: group,
+          notification: notification,
+          currentUid: currentUid,
+          isSaving: _isSaving,
+          attemptedForUid: _autoJoinAttemptedForUid,
+        ) ||
+        group == null ||
+        currentUid == null) {
       return;
     }
 
@@ -285,7 +312,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
             final notification = snapshot.data!.$2;
             final currentProfile = snapshot.data!.$3;
 
-            _maybeAutoJoinOpenGroup(group, currentProfile);
+            _maybeAutoJoinOpenGroup(group, notification, currentProfile);
 
             final isAnonymousPrivateView =
                 group == null && notification == null && currentUid == null;

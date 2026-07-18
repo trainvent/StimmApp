@@ -671,6 +671,21 @@
 	"swipeToLeaveGroup": "Wische, um die Gruppe zu verlassen.",
 	"leaveGroup": "Gruppe verlassen",
 	"deleteGroup": "Gruppe löschen",
+	"dangerZoneTitle": "Gefahrenbereich",
+	"deleteGroupDescription": "Lösche diese Gruppe und ihre Mitgliedsdaten dauerhaft.",
+	"adminElectionTitle": "Admin-Wahl",
+	"voteForNewGroupAdmin": "Neuen Gruppen-Admin wählen",
+	"adminElectionDashboardDescription": "Der bisherige Besitzer hat die Gruppe verlassen. Wählt, wer sie als Nächstes leiten soll.",
+	"adminElectionDescription": "Jedes Mitglied hat eine Stimme für den nächsten Gruppen-Admin. Du kannst deine Stimme bis zum Ende der Wahl ändern.",
+	"adminElectionDeadline": "Die Wahl endet am {deadline}",
+	"@adminElectionDeadline": { "placeholders": { "deadline": { "type": "String" } } },
+	"castAdminElectionVote": "Stimme abgeben",
+	"changeAdminElectionVote": "Stimme ändern",
+	"adminElectionVoteSaved": "Deine Stimme wurde gespeichert.",
+	"adminElectionVoteCanChange": "Du kannst deine Stimme bis zum Ablauf der drei Tage ändern.",
+	"adminElectionVotingClosed": "Die Wahl ist beendet. Das Ergebnis wird in Kürze übernommen.",
+	"noActiveAdminElection": "Es gibt keine aktive Admin-Wahl.",
+	"noAdminElectionCandidates": "Es gibt keine wählbaren Kandidaten.",
 	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ verlassen?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
@@ -680,7 +695,6 @@
 		}
 	},
 	"youLeftTheGroup": "Du hast die Gruppe verlassen.",
-	"groupCreatorsCannotLeaveOwnGroup": "Gruppenersteller können ihre eigene Gruppe nicht verlassen. Bearbeite oder lösche sie stattdessen.",
 	"typeGroupNameToConfirmDeletion": "Gib „{groupName}“ ein, um das Löschen zu bestätigen. Dies kann nicht rückgängig gemacht werden.",
 	"@typeGroupNameToConfirmDeletion": {
 		"placeholders": {
@@ -830,6 +844,7 @@
 	"sendInvitations": "Einladungen senden",
 	"sendingInvitations": "Einladungen werden gesendet...",
 	"pleaseAddMemberToInvite": "Füge mindestens ein Mitglied zum Einladen hinzu.",
+	"noNewInvitationsSent": "Es wurde keine neue Einladung gesendet. Die Person ist möglicherweise bereits Mitglied oder hat schon eine offene Einladung.",
 	"memberInvitationsSent": "{count} Einladungen gesendet.",
 	"@memberInvitationsSent": {
 		"placeholders": {
@@ -860,6 +875,26 @@
 	"createGroupDescription": "Erstelle einen nur für Mitglieder zugänglichen Abstimmungsbereich für Teams, Events und Firmen.",
 	"manageGroupMembersTitle": "Mitglieder verwalten",
 	"manageGroupMembersDescription": "Sieh alle Mitglieder dieser Gruppe und entferne sie bei Bedarf.",
+	"groupContentTitle": "Gruppeninhalte",
+	"groupManagementTitle": "Gruppe verwalten",
+	"viewGroupPolls": "Umfragen und Erhebungen",
+	"viewGroupPollsDescription": "Sieh alles, was für diese Gruppe veröffentlicht wurde.",
+	"activeMembersCount": "{count} aktive Mitglieder",
+	"@activeMembersCount": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"copyInviteLinkDescription": "Teile den Einladungslink der Gruppe.",
+	"openGroupDashboard": "Dashboard",
+	"swipeForGroupActions": "Wische für Dashboard oder Entfernen.",
+	"groupInvitationsTitle": "Einladungsstatus",
+	"groupInvitationsDescription": "Sieh, ob registrierte App-Nutzer zugesagt, abgelehnt oder noch nicht geantwortet haben.",
+	"noGroupInvitations": "Es wurde noch kein registrierter App-Nutzer eingeladen.",
+	"invitationStatusPending": "Offen",
+	"invitationStatusAccepted": "Angenommen",
+	"invitationStatusDeclined": "Abgelehnt",
+	"invitationStatusRemoved": "Entfernt",
 	"noGroupMembers": "Diese Gruppe hat keine Mitglieder.",
 	"removeGroupMemberTitle": "Mitglied entfernen?",
 	"removeGroupMemberConfirmation": "{name} aus dieser Gruppe entfernen?",

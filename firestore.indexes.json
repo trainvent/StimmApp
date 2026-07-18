@@ -35,6 +35,24 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "pollGroups",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "adminElectionStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "adminElectionEndsAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

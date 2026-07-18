@@ -1,5 +1,6 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
+import { handleUserPollGroupDepartures } from "./poll_group_elections";
 
 if (admin.apps.length === 0) {
 	admin.initializeApp();
@@ -61,6 +62,8 @@ export async function cleanupUserData(uid: string) {
 	console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
 
 	try {
+		await handleUserPollGroupDepartures(uid);
+
 		const profileSnap = await db.collection("users").doc(uid).get();
 		const usernameKey = profileSnap.data()?.usernameKey;
 		if (typeof usernameKey === "string" && usernameKey.trim().length > 0) {

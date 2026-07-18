@@ -4459,6 +4459,146 @@ class S {
     );
   }
 
+  /// `Danger zone`
+  String get dangerZoneTitle {
+    return Intl.message(
+      'Danger zone',
+      name: 'dangerZoneTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Permanently delete this group and its membership data.`
+  String get deleteGroupDescription {
+    return Intl.message(
+      'Permanently delete this group and its membership data.',
+      name: 'deleteGroupDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Admin election`
+  String get adminElectionTitle {
+    return Intl.message(
+      'Admin election',
+      name: 'adminElectionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vote for a new group admin`
+  String get voteForNewGroupAdmin {
+    return Intl.message(
+      'Vote for a new group admin',
+      name: 'voteForNewGroupAdmin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The former owner left. Choose who should lead this group next.`
+  String get adminElectionDashboardDescription {
+    return Intl.message(
+      'The former owner left. Choose who should lead this group next.',
+      name: 'adminElectionDashboardDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Every member has one vote for the group's next admin. You can change your vote until voting closes.`
+  String get adminElectionDescription {
+    return Intl.message(
+      'Every member has one vote for the group\'s next admin. You can change your vote until voting closes.',
+      name: 'adminElectionDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Voting ends {deadline}`
+  String adminElectionDeadline(String deadline) {
+    return Intl.message(
+      'Voting ends $deadline',
+      name: 'adminElectionDeadline',
+      desc: '',
+      args: [deadline],
+    );
+  }
+
+  /// `Cast vote`
+  String get castAdminElectionVote {
+    return Intl.message(
+      'Cast vote',
+      name: 'castAdminElectionVote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change vote`
+  String get changeAdminElectionVote {
+    return Intl.message(
+      'Change vote',
+      name: 'changeAdminElectionVote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your vote was saved.`
+  String get adminElectionVoteSaved {
+    return Intl.message(
+      'Your vote was saved.',
+      name: 'adminElectionVoteSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can change your vote until the three-day deadline.`
+  String get adminElectionVoteCanChange {
+    return Intl.message(
+      'You can change your vote until the three-day deadline.',
+      name: 'adminElectionVoteCanChange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Voting is closed. The result will be applied shortly.`
+  String get adminElectionVotingClosed {
+    return Intl.message(
+      'Voting is closed. The result will be applied shortly.',
+      name: 'adminElectionVotingClosed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is no active admin election.`
+  String get noActiveAdminElection {
+    return Intl.message(
+      'There is no active admin election.',
+      name: 'noActiveAdminElection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There are no eligible candidates.`
+  String get noAdminElectionCandidates {
+    return Intl.message(
+      'There are no eligible candidates.',
+      name: 'noAdminElectionCandidates',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Do you want to leave "{groupName}"?`
   String doYouWantToLeaveGroup(String groupName) {
     return Intl.message(
@@ -4474,16 +4614,6 @@ class S {
     return Intl.message(
       'You left the group.',
       name: 'youLeftTheGroup',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Group creators cannot leave their own group. Edit or delete it instead.`
-  String get groupCreatorsCannotLeaveOwnGroup {
-    return Intl.message(
-      'Group creators cannot leave their own group. Edit or delete it instead.',
-      name: 'groupCreatorsCannotLeaveOwnGroup',
       desc: '',
       args: [],
     );
@@ -5379,6 +5509,16 @@ class S {
     );
   }
 
+  /// `No new invitation was sent. The person may already be a member or already have a pending invitation.`
+  String get noNewInvitationsSent {
+    return Intl.message(
+      'No new invitation was sent. The person may already be a member or already have a pending invitation.',
+      name: 'noNewInvitationsSent',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Sent {count} invitations.`
   String memberInvitationsSent(Object count) {
     return Intl.message(
@@ -5544,6 +5684,156 @@ class S {
     return Intl.message(
       'View everyone in this group and remove members when needed.',
       name: 'manageGroupMembersDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group content`
+  String get groupContentTitle {
+    return Intl.message(
+      'Group content',
+      name: 'groupContentTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage group`
+  String get groupManagementTitle {
+    return Intl.message(
+      'Manage group',
+      name: 'groupManagementTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Polls and surveys`
+  String get viewGroupPolls {
+    return Intl.message(
+      'Polls and surveys',
+      name: 'viewGroupPolls',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See everything published for this group.`
+  String get viewGroupPollsDescription {
+    return Intl.message(
+      'See everything published for this group.',
+      name: 'viewGroupPollsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} active members`
+  String activeMembersCount(Object count) {
+    return Intl.message(
+      '$count active members',
+      name: 'activeMembersCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Share the group invitation link.`
+  String get copyInviteLinkDescription {
+    return Intl.message(
+      'Share the group invitation link.',
+      name: 'copyInviteLinkDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get openGroupDashboard {
+    return Intl.message(
+      'Dashboard',
+      name: 'openGroupDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Swipe for dashboard or removal.`
+  String get swipeForGroupActions {
+    return Intl.message(
+      'Swipe for dashboard or removal.',
+      name: 'swipeForGroupActions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invitation status`
+  String get groupInvitationsTitle {
+    return Intl.message(
+      'Invitation status',
+      name: 'groupInvitationsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See whether registered app users have accepted, declined, or still need to answer.`
+  String get groupInvitationsDescription {
+    return Intl.message(
+      'See whether registered app users have accepted, declined, or still need to answer.',
+      name: 'groupInvitationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No registered app user has been invited yet.`
+  String get noGroupInvitations {
+    return Intl.message(
+      'No registered app user has been invited yet.',
+      name: 'noGroupInvitations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pending`
+  String get invitationStatusPending {
+    return Intl.message(
+      'Pending',
+      name: 'invitationStatusPending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accepted`
+  String get invitationStatusAccepted {
+    return Intl.message(
+      'Accepted',
+      name: 'invitationStatusAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Declined`
+  String get invitationStatusDeclined {
+    return Intl.message(
+      'Declined',
+      name: 'invitationStatusDeclined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Removed`
+  String get invitationStatusRemoved {
+    return Intl.message(
+      'Removed',
+      name: 'invitationStatusRemoved',
       desc: '',
       args: [],
     );

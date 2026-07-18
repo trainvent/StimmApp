@@ -667,6 +667,21 @@
 	"swipeToLeaveGroup": "Swipe to leave the group.",
 	"leaveGroup": "Leave group",
 	"deleteGroup": "Delete group",
+	"dangerZoneTitle": "Danger zone",
+	"deleteGroupDescription": "Permanently delete this group and its membership data.",
+	"adminElectionTitle": "Admin election",
+	"voteForNewGroupAdmin": "Vote for a new group admin",
+	"adminElectionDashboardDescription": "The former owner left. Choose who should lead this group next.",
+	"adminElectionDescription": "Every member has one vote for the group's next admin. You can change your vote until voting closes.",
+	"adminElectionDeadline": "Voting ends {deadline}",
+	"@adminElectionDeadline": { "placeholders": { "deadline": { "type": "String" } } },
+	"castAdminElectionVote": "Cast vote",
+	"changeAdminElectionVote": "Change vote",
+	"adminElectionVoteSaved": "Your vote was saved.",
+	"adminElectionVoteCanChange": "You can change your vote until the three-day deadline.",
+	"adminElectionVotingClosed": "Voting is closed. The result will be applied shortly.",
+	"noActiveAdminElection": "There is no active admin election.",
+	"noAdminElectionCandidates": "There are no eligible candidates.",
 	"doYouWantToLeaveGroup": "Do you want to leave \"{groupName}\"?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
@@ -676,7 +691,6 @@
 		}
 	},
 	"youLeftTheGroup": "You left the group.",
-	"groupCreatorsCannotLeaveOwnGroup": "Group creators cannot leave their own group. Edit or delete it instead.",
 	"typeGroupNameToConfirmDeletion": "Type \"{groupName}\" to confirm deletion. This cannot be undone.",
 	"@typeGroupNameToConfirmDeletion": {
 		"placeholders": {
@@ -826,6 +840,7 @@
 	"sendInvitations": "Send invitations",
 	"sendingInvitations": "Sending invitations...",
 	"pleaseAddMemberToInvite": "Add at least one member to invite.",
+	"noNewInvitationsSent": "No new invitation was sent. The person may already be a member or already have a pending invitation.",
 	"memberInvitationsSent": "Sent {count} invitations.",
 	"@memberInvitationsSent": {
 		"placeholders": {
@@ -856,6 +871,26 @@
 	"createGroupDescription": "Create a members-only polling space for teams, events, and companies.",
 	"manageGroupMembersTitle": "Manage members",
 	"manageGroupMembersDescription": "View everyone in this group and remove members when needed.",
+	"groupContentTitle": "Group content",
+	"groupManagementTitle": "Manage group",
+	"viewGroupPolls": "Polls and surveys",
+	"viewGroupPollsDescription": "See everything published for this group.",
+	"activeMembersCount": "{count} active members",
+	"@activeMembersCount": {
+		"placeholders": {
+			"count": {}
+		}
+	},
+	"copyInviteLinkDescription": "Share the group invitation link.",
+	"openGroupDashboard": "Dashboard",
+	"swipeForGroupActions": "Swipe for dashboard or removal.",
+	"groupInvitationsTitle": "Invitation status",
+	"groupInvitationsDescription": "See whether registered app users have accepted, declined, or still need to answer.",
+	"noGroupInvitations": "No registered app user has been invited yet.",
+	"invitationStatusPending": "Pending",
+	"invitationStatusAccepted": "Accepted",
+	"invitationStatusDeclined": "Declined",
+	"invitationStatusRemoved": "Removed",
 	"noGroupMembers": "This group has no members.",
 	"removeGroupMemberTitle": "Remove member?",
 	"removeGroupMemberConfirmation": "Remove {name} from this group?",

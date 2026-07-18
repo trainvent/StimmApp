@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -123,6 +124,23 @@ class _TestPollGroupRepository extends PollGroupRepository {
           null,
         ),
       );
+      await groupRef
+          .collection('invitations')
+          .doc(userDoc.id)
+          .set(
+            PollGroupInvitation.toFirestore(
+              PollGroupInvitation(
+                recipientUid: userDoc.id,
+                email: email,
+                displayName: userDoc.data()['displayName'] as String?,
+                role: allowedMember.first.role,
+                status: PollGroupInvitationStatus.pending,
+                invitedAt: now,
+                invitedBy: creatorUid,
+              ),
+              null,
+            ),
+          );
     }
 
     return groupRef.id;
@@ -137,6 +155,33 @@ void main() {
     firestore = FakeFirebaseFirestore();
     repository = _TestPollGroupRepository(firestore);
   });
+
+  Future<void> addMember({
+    required String groupId,
+    required String uid,
+    required PollGroupRole role,
+    required DateTime joinedAt,
+  }) async {
+    await firestore
+        .collection('pollGroups')
+        .doc(groupId)
+        .collection('members')
+        .doc(uid)
+        .set(
+          PollGroupMember.toFirestore(
+            PollGroupMember(
+              uid: uid,
+              role: role,
+              joinedAt: joinedAt,
+              joinedBy: 'owner',
+            ),
+            null,
+          ),
+        );
+    await firestore.collection('pollGroups').doc(groupId).update({
+      'memberIds': FieldValue.arrayUnion([uid]),
+    });
+  }
 
   group('PollGroupRepository', () {
     test(
@@ -279,6 +324,114 @@ void main() {
       expect(groups.single.name, 'Operations');
     });
 
+    test('sole member leaving deletes the group', () async {
+      final groupId = await repository.createGroup(
+        creatorUid: 'owner',
+        name: 'Solo',
+        joinCode: 'GRP-SOLO',
+        nicknameMode: PollGroupNicknameMode.selfNamed,
+        managersCanInvite: true,
+        accessMode: PollGroupAccessMode.private,
+        inviteLinkEnabled: false,
+      );
+      final group = (await repository.getGroup(groupId))!;
+
+      final result = await repository.leaveGroup(group: group, uid: 'owner');
+
+      expect(result, PollGroupLeaveResult.groupDeleted);
+      expect(await repository.getGroup(groupId), isNull);
+      expect(
+        (await firestore
+                .collection('pollGroups')
+                .doc(groupId)
+                .collection('members')
+                .get())
+            .docs,
+        isEmpty,
+      );
+    });
+
+    test(
+      'creator leaving transfers ownership to longest-serving admin',
+      () async {
+        final groupId = await repository.createGroup(
+          creatorUid: 'owner',
+          name: 'Team',
+          joinCode: 'GRP-TEAM',
+          nicknameMode: PollGroupNicknameMode.selfNamed,
+          managersCanInvite: true,
+          accessMode: PollGroupAccessMode.private,
+          inviteLinkEnabled: false,
+        );
+        await addMember(
+          groupId: groupId,
+          uid: 'newer-admin',
+          role: PollGroupRole.admin,
+          joinedAt: DateTime(2024, 3),
+        );
+        await addMember(
+          groupId: groupId,
+          uid: 'older-admin',
+          role: PollGroupRole.admin,
+          joinedAt: DateTime(2024, 2),
+        );
+        final group = (await repository.getGroup(groupId))!;
+
+        final result = await repository.leaveGroup(group: group, uid: 'owner');
+        final updatedGroup = (await repository.getGroup(groupId))!;
+        final formerOwner = await firestore
+            .collection('pollGroups')
+            .doc(groupId)
+            .collection('members')
+            .doc('owner')
+            .get();
+
+        expect(result, PollGroupLeaveResult.left);
+        expect(updatedGroup.createdBy, 'older-admin');
+        expect(updatedGroup.memberIds, isNot(contains('owner')));
+        expect(formerOwner.exists, isFalse);
+      },
+    );
+
+    test(
+      'creator leaving members without an admin starts an election',
+      () async {
+        final groupId = await repository.createGroup(
+          creatorUid: 'owner',
+          name: 'Team',
+          joinCode: 'GRP-TEAM',
+          nicknameMode: PollGroupNicknameMode.selfNamed,
+          managersCanInvite: true,
+          accessMode: PollGroupAccessMode.private,
+          inviteLinkEnabled: false,
+        );
+        await addMember(
+          groupId: groupId,
+          uid: 'member',
+          role: PollGroupRole.user,
+          joinedAt: DateTime(2024, 2),
+        );
+        final group = (await repository.getGroup(groupId))!;
+
+        final before = DateTime.now();
+        final result = await repository.leaveGroup(group: group, uid: 'owner');
+        final updatedGroup = (await repository.getGroup(groupId))!;
+        final election = await repository.watchAdminElection(groupId).first;
+
+        expect(result, PollGroupLeaveResult.left);
+        expect(updatedGroup.createdBy, 'owner');
+        expect(updatedGroup.memberIds, isNot(contains('owner')));
+        expect(updatedGroup.adminElectionOpen, isTrue);
+        expect(updatedGroup.adminElectionEndsAt, isNotNull);
+        expect(
+          updatedGroup.adminElectionEndsAt!.difference(before).inHours,
+          inInclusiveRange(71, 72),
+        );
+        expect(election?.candidateUids, ['member']);
+        expect(election?.isOpen, isTrue);
+      },
+    );
+
     test(
       'accepted member can be removed with prepared access revoked',
       () async {
@@ -353,6 +506,10 @@ void main() {
           notification?.status,
           PollGroupAccessNotificationStatus.accepted,
         );
+        expect(
+          (await repository.watchInvitations(groupId).first).single.status,
+          PollGroupInvitationStatus.accepted,
+        );
 
         await repository.removeMember(
           group: group!,
@@ -385,8 +542,11 @@ void main() {
         final accessibleGroups = await repository.getAccessibleGroupsForUser(
           'invitee',
         );
+        final invitation =
+            (await repository.watchInvitations(groupId).first).single;
 
         expect(updatedGroup?.memberIds, isNot(contains('invitee')));
+        expect(invitation.status, PollGroupInvitationStatus.removed);
         expect(updatedGroup?.importedMemberCount, 0);
         expect(removedMember.exists, isFalse);
         expect(removedPreparedAccess.exists, isFalse);

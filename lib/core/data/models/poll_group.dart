@@ -10,6 +10,8 @@ enum PollGroupAccessNotificationType { invite, request, removed }
 
 enum PollGroupAccessNotificationStatus { pending, accepted, denied }
 
+enum PollGroupInvitationStatus { pending, accepted, declined, removed }
+
 String pollGroupRoleToFirestore(PollGroupRole role) {
   switch (role) {
     case PollGroupRole.admin:
@@ -129,6 +131,24 @@ PollGroupAccessNotificationStatus parsePollGroupAccessNotificationStatus(
   }
 }
 
+String pollGroupInvitationStatusToFirestore(PollGroupInvitationStatus status) {
+  return switch (status) {
+    PollGroupInvitationStatus.pending => 'pending',
+    PollGroupInvitationStatus.accepted => 'accepted',
+    PollGroupInvitationStatus.declined => 'declined',
+    PollGroupInvitationStatus.removed => 'removed',
+  };
+}
+
+PollGroupInvitationStatus parsePollGroupInvitationStatus(String? value) {
+  return switch (value) {
+    'accepted' => PollGroupInvitationStatus.accepted,
+    'declined' || 'denied' => PollGroupInvitationStatus.declined,
+    'removed' => PollGroupInvitationStatus.removed,
+    _ => PollGroupInvitationStatus.pending,
+  };
+}
+
 class PollGroup {
   final String id;
   final String name;
@@ -143,6 +163,8 @@ class PollGroup {
   final bool isActive;
   final PollGroupAccessMode accessMode;
   final bool inviteLinkEnabled;
+  final bool adminElectionOpen;
+  final DateTime? adminElectionEndsAt;
 
   const PollGroup({
     required this.id,
@@ -158,6 +180,8 @@ class PollGroup {
     this.isActive = true,
     this.accessMode = PollGroupAccessMode.private,
     this.inviteLinkEnabled = false,
+    this.adminElectionOpen = false,
+    this.adminElectionEndsAt,
   });
 
   PollGroup copyWith({
@@ -174,6 +198,8 @@ class PollGroup {
     bool? isActive,
     PollGroupAccessMode? accessMode,
     bool? inviteLinkEnabled,
+    bool? adminElectionOpen,
+    Object? adminElectionEndsAt = _unset,
   }) {
     return PollGroup(
       id: id ?? this.id,
@@ -191,6 +217,10 @@ class PollGroup {
       isActive: isActive ?? this.isActive,
       accessMode: accessMode ?? this.accessMode,
       inviteLinkEnabled: inviteLinkEnabled ?? this.inviteLinkEnabled,
+      adminElectionOpen: adminElectionOpen ?? this.adminElectionOpen,
+      adminElectionEndsAt: identical(adminElectionEndsAt, _unset)
+          ? this.adminElectionEndsAt
+          : adminElectionEndsAt as DateTime?,
     );
   }
 
@@ -216,6 +246,9 @@ class PollGroup {
             ((data['isPrivate'] as bool? ?? true) ? 'private' : 'open'),
       ),
       inviteLinkEnabled: data['inviteLinkEnabled'] as bool? ?? false,
+      adminElectionOpen: data['adminElectionStatus'] == 'open',
+      adminElectionEndsAt: (data['adminElectionEndsAt'] as Timestamp?)
+          ?.toDate(),
     );
   }
 
@@ -235,7 +268,99 @@ class PollGroup {
       'isActive': group.isActive,
       'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
       'inviteLinkEnabled': group.inviteLinkEnabled,
+      'adminElectionStatus': group.adminElectionOpen ? 'open' : null,
+      'adminElectionEndsAt': group.adminElectionEndsAt == null
+          ? null
+          : Timestamp.fromDate(group.adminElectionEndsAt!),
       'nameLowercase': group.name.toLowerCase(),
+    };
+  }
+}
+
+class PollGroupAdminElection {
+  final String id;
+  final String status;
+  final DateTime startedAt;
+  final DateTime endsAt;
+  final String initiatedBy;
+  final List<String> candidateUids;
+  final String? winnerUid;
+
+  const PollGroupAdminElection({
+    required this.id,
+    required this.status,
+    required this.startedAt,
+    required this.endsAt,
+    required this.initiatedBy,
+    required this.candidateUids,
+    this.winnerUid,
+  });
+
+  bool get isOpen => status == 'open';
+
+  static PollGroupAdminElection fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+    SnapshotOptions? _,
+  ) {
+    final data = snap.data() ?? <String, dynamic>{};
+    return PollGroupAdminElection(
+      id: snap.id,
+      status: data['status'] as String? ?? 'open',
+      startedAt: (data['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endsAt: (data['endsAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      initiatedBy: data['initiatedBy'] as String? ?? '',
+      candidateUids:
+          (data['candidateUids'] as List?)?.cast<String>() ?? const [],
+      winnerUid: data['winnerUid'] as String?,
+    );
+  }
+
+  static Map<String, Object?> toFirestore(
+    PollGroupAdminElection election,
+    SetOptions? _,
+  ) {
+    return {
+      'status': election.status,
+      'startedAt': Timestamp.fromDate(election.startedAt),
+      'endsAt': Timestamp.fromDate(election.endsAt),
+      'initiatedBy': election.initiatedBy,
+      'candidateUids': election.candidateUids,
+      'winnerUid': election.winnerUid,
+    };
+  }
+}
+
+class PollGroupAdminElectionVote {
+  final String voterUid;
+  final String candidateUid;
+  final DateTime castAt;
+
+  const PollGroupAdminElectionVote({
+    required this.voterUid,
+    required this.candidateUid,
+    required this.castAt,
+  });
+
+  static PollGroupAdminElectionVote fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+    SnapshotOptions? _,
+  ) {
+    final data = snap.data() ?? <String, dynamic>{};
+    return PollGroupAdminElectionVote(
+      voterUid: data['voterUid'] as String? ?? snap.id,
+      candidateUid: data['candidateUid'] as String? ?? '',
+      castAt: (data['castAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  static Map<String, Object?> toFirestore(
+    PollGroupAdminElectionVote vote,
+    SetOptions? _,
+  ) {
+    return {
+      'voterUid': vote.voterUid,
+      'candidateUid': vote.candidateUid,
+      'castAt': Timestamp.fromDate(vote.castAt),
     };
   }
 }
@@ -278,6 +403,81 @@ class PollGroupMember {
       'nickname': member.nickname,
       'joinedAt': Timestamp.fromDate(member.joinedAt),
       'joinedBy': member.joinedBy,
+    };
+  }
+}
+
+class PollGroupInvitation {
+  final String recipientUid;
+  final String email;
+  final String? displayName;
+  final PollGroupRole role;
+  final PollGroupInvitationStatus status;
+  final DateTime invitedAt;
+  final String invitedBy;
+  final DateTime? resolvedAt;
+
+  const PollGroupInvitation({
+    required this.recipientUid,
+    required this.email,
+    required this.role,
+    required this.status,
+    required this.invitedAt,
+    required this.invitedBy,
+    this.displayName,
+    this.resolvedAt,
+  });
+
+  PollGroupInvitation copyWith({
+    PollGroupInvitationStatus? status,
+    Object? resolvedAt = _unset,
+  }) {
+    return PollGroupInvitation(
+      recipientUid: recipientUid,
+      email: email,
+      displayName: displayName,
+      role: role,
+      status: status ?? this.status,
+      invitedAt: invitedAt,
+      invitedBy: invitedBy,
+      resolvedAt: identical(resolvedAt, _unset)
+          ? this.resolvedAt
+          : resolvedAt as DateTime?,
+    );
+  }
+
+  static PollGroupInvitation fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snap,
+    SnapshotOptions? _,
+  ) {
+    final data = snap.data() ?? <String, dynamic>{};
+    return PollGroupInvitation(
+      recipientUid: (data['recipientUid'] ?? snap.id) as String,
+      email: (data['email'] ?? '') as String,
+      displayName: data['displayName'] as String?,
+      role: parsePollGroupRole(data['role'] as String?),
+      status: parsePollGroupInvitationStatus(data['status'] as String?),
+      invitedAt: (data['invitedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      invitedBy: (data['invitedBy'] ?? '') as String,
+      resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
+    );
+  }
+
+  static Map<String, Object?> toFirestore(
+    PollGroupInvitation invitation,
+    SetOptions? _,
+  ) {
+    return {
+      'recipientUid': invitation.recipientUid,
+      'email': invitation.email,
+      'displayName': invitation.displayName,
+      'role': pollGroupRoleToFirestore(invitation.role),
+      'status': pollGroupInvitationStatusToFirestore(invitation.status),
+      'invitedAt': Timestamp.fromDate(invitation.invitedAt),
+      'invitedBy': invitation.invitedBy,
+      'resolvedAt': invitation.resolvedAt == null
+          ? null
+          : Timestamp.fromDate(invitation.resolvedAt!),
     };
   }
 }

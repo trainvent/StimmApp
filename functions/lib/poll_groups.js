@@ -203,11 +203,15 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
         }
         const snap = await db.collection("users").where("email", "in", emailChunk).get();
         for (const doc of snap.docs) {
-            const email = typeof doc.data().email === "string" ? doc.data().email.trim().toLowerCase() : "";
+            const profileData = doc.data();
+            const email = typeof profileData.email === "string" ? profileData.email.trim().toLowerCase() : "";
             if (!email) {
                 continue;
             }
-            matchingProfiles.push({ uid: doc.id, email });
+            const displayName = typeof profileData.displayName === "string" && profileData.displayName.trim()
+                ? profileData.displayName.trim()
+                : null;
+            matchingProfiles.push({ uid: doc.id, email, displayName });
         }
     }
     for (const profile of matchingProfiles) {
@@ -231,6 +235,16 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
             type: "invite",
             status: "pending",
             createdAt: now,
+            resolvedAt: null,
+        });
+        batch.set(groupRef.collection("invitations").doc(profile.uid), {
+            recipientUid: profile.uid,
+            email: profile.email,
+            displayName: profile.displayName,
+            role: allowedMember.role,
+            status: "pending",
+            invitedAt: now,
+            invitedBy: uid,
             resolvedAt: null,
         });
     }
@@ -277,6 +291,9 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
         : null;
     const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers : [];
     const rawAllowedDomains = Array.isArray(data.allowedDomains) ? data.allowedDomains : [];
+    const inviteEmails = Array.isArray(data.inviteEmails)
+        ? new Set(data.inviteEmails.map(normalizeEmail))
+        : null;
     const allowedMembersByEmail = new Map();
     for (const member of rawAllowedMembers) {
         const email = normalizeEmail(member.email);
@@ -304,14 +321,18 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
         groupRef.collection("allowedDomains").get(),
     ]);
     const existingEmails = new Set(existingMemberDocs.docs.map((doc) => doc.id.toLowerCase()));
-    const newlyAddedEmails = new Set([...allowedMembersByEmail.keys()].filter((email) => !existingEmails.has(email)));
+    const requestedInviteEmails = inviteEmails !== null && inviteEmails !== void 0 ? inviteEmails : new Set([...allowedMembersByEmail.keys()].filter((email) => !existingEmails.has(email)));
     const matchingProfiles = [];
     for (const emailChunk of chunk([...allowedMembersByEmail.keys()], 10)) {
         const snap = await db.collection("users").where("email", "in", emailChunk).get();
         for (const doc of snap.docs) {
-            const email = typeof doc.data().email === "string" ? doc.data().email.trim().toLowerCase() : "";
+            const profileData = doc.data();
+            const email = typeof profileData.email === "string" ? profileData.email.trim().toLowerCase() : "";
             if (email) {
-                matchingProfiles.push({ uid: doc.id, email });
+                const displayName = typeof profileData.displayName === "string" && profileData.displayName.trim()
+                    ? profileData.displayName.trim()
+                    : null;
+                matchingProfiles.push({ uid: doc.id, email, displayName });
             }
         }
     }
@@ -361,15 +382,14 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
     for (const domain of allowedDomainsByDomain.values()) {
         batch.set(groupRef.collection("allowedDomains").doc(domain.domain), domain);
     }
+    let invitationCount = 0;
     for (const profile of matchingProfiles) {
         const allowedMember = allowedMembersByEmail.get(profile.email);
-        if (!allowedMember || currentMemberIds.has(profile.uid)) {
+        if (!allowedMember || !requestedInviteEmails.has(profile.email) || currentMemberIds.has(profile.uid)) {
             continue;
         }
         const existingInvites = (_d = existingInvitesByUid.get(profile.uid)) !== null && _d !== void 0 ? _d : [];
-        const canCreateInvite = existingInvites.length === 0 ||
-            (newlyAddedEmails.has(profile.email) &&
-                existingInvites.every((notification) => notification.status === "denied"));
+        const canCreateInvite = existingInvites.every((notification) => notification.status !== "pending");
         if (!canCreateInvite) {
             continue;
         }
@@ -391,8 +411,19 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
             createdAt: now,
             resolvedAt: null,
         });
+        batch.set(groupRef.collection("invitations").doc(profile.uid), {
+            recipientUid: profile.uid,
+            email: profile.email,
+            displayName: profile.displayName,
+            role: allowedMember.role,
+            status: "pending",
+            invitedAt: now,
+            invitedBy: uid,
+            resolvedAt: null,
+        });
+        invitationCount += 1;
     }
     await batch.commit();
-    return { groupId };
+    return { groupId, invitationCount };
 });
 //# sourceMappingURL=poll_groups.js.map

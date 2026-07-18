@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:stimmapp/app/mobile/pages/main/groups/group_members_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -642,6 +641,12 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         if (!mounted) {
           return;
         }
+        if (kDebugMode) {
+          debugPrint(
+            'GroupEditorPage._save: backend rejected group creation; '
+            'opening paywall source=group_editor',
+          );
+        }
         final opened = await PurchasesService.instance.presentPaywall(
           context: context,
           source: 'group_editor',
@@ -688,10 +693,11 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
     setState(() => _isCreating = true);
     try {
-      await _repository.updateGroup(
+      final invitationCount = await _repository.updateGroup(
         group: group.copyWith(importedMemberCount: mergedMembers.length),
         allowedMembers: mergedMembers,
         allowedDomains: allowedDomains,
+        inviteEmails: newMembers.map((member) => member.email).toList(),
       );
       if (!mounted) {
         return;
@@ -707,9 +713,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         _lastImportedCsvRows = 0;
         _lastInvalidCsvRows = 0;
       });
-      showSuccessSnackBar(
-        context.l10n.memberInvitationsSent(newMembers.length),
-      );
+      if (invitationCount == 0) {
+        showErrorSnackBar(context.l10n.noNewInvitationsSent);
+      } else {
+        showSuccessSnackBar(
+          context.l10n.memberInvitationsSent(invitationCount),
+        );
+      }
     } catch (error, stackTrace) {
       await showInternalDifficultiesSnackBar(error, stackTrace);
     } finally {
@@ -1115,50 +1125,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
-  Widget _buildManagementPagesSection(PollGroup group) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          ListTile(
-            key: const Key('open_group_invites'),
-            leading: const Icon(Icons.person_add_alt_1_outlined),
-            title: Text(context.l10n.inviteMembersTitle),
-            subtitle: Text(context.l10n.inviteMembersPageDescription),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => GroupInviteMembersPage(
-                  group: group,
-                  repository: widget.repository,
-                  auth: widget.auth,
-                  csvImporter: widget.csvImporter,
-                ),
-              ),
-            ),
-          ),
-          const Divider(height: 1),
-          ListTile(
-            key: const Key('open_group_members'),
-            leading: const Icon(Icons.manage_accounts_outlined),
-            title: Text(context.l10n.manageGroupMembersTitle),
-            subtitle: Text(context.l10n.manageGroupMembersDescription),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => GroupMembersPage(
-                  group: group,
-                  repository: widget.repository,
-                  auth: widget.auth,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
@@ -1247,10 +1213,6 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 ),
                 const SizedBox(height: 8),
                 _buildExpirationDateSection(),
-                if (_isEditing) ...[
-                  const SizedBox(height: 16),
-                  _buildManagementPagesSection(widget.initialGroup!),
-                ],
                 if (_isLoadingExistingRules) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),

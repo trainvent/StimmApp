@@ -1704,16 +1704,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteGroup => 'Delete group';
 
   @override
+  String get dangerZoneTitle => 'Danger zone';
+
+  @override
+  String get deleteGroupDescription =>
+      'Permanently delete this group and its membership data.';
+
+  @override
+  String get adminElectionTitle => 'Admin election';
+
+  @override
+  String get voteForNewGroupAdmin => 'Vote for a new group admin';
+
+  @override
+  String get adminElectionDashboardDescription =>
+      'The former owner left. Choose who should lead this group next.';
+
+  @override
+  String get adminElectionDescription =>
+      'Every member has one vote for the group\'s next admin. You can change your vote until voting closes.';
+
+  @override
+  String adminElectionDeadline(String deadline) {
+    return 'Voting ends $deadline';
+  }
+
+  @override
+  String get castAdminElectionVote => 'Cast vote';
+
+  @override
+  String get changeAdminElectionVote => 'Change vote';
+
+  @override
+  String get adminElectionVoteSaved => 'Your vote was saved.';
+
+  @override
+  String get adminElectionVoteCanChange =>
+      'You can change your vote until the three-day deadline.';
+
+  @override
+  String get adminElectionVotingClosed =>
+      'Voting is closed. The result will be applied shortly.';
+
+  @override
+  String get noActiveAdminElection => 'There is no active admin election.';
+
+  @override
+  String get noAdminElectionCandidates => 'There are no eligible candidates.';
+
+  @override
   String doYouWantToLeaveGroup(String groupName) {
     return 'Do you want to leave \"$groupName\"?';
   }
 
   @override
   String get youLeftTheGroup => 'You left the group.';
-
-  @override
-  String get groupCreatorsCannotLeaveOwnGroup =>
-      'Group creators cannot leave their own group. Edit or delete it instead.';
 
   @override
   String typeGroupNameToConfirmDeletion(String groupName) {
@@ -2041,6 +2086,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseAddMemberToInvite => 'Add at least one member to invite.';
 
   @override
+  String get noNewInvitationsSent =>
+      'No new invitation was sent. The person may already be a member or already have a pending invitation.';
+
+  @override
   String memberInvitationsSent(Object count) {
     return 'Sent $count invitations.';
   }
@@ -2105,6 +2154,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get manageGroupMembersDescription =>
       'View everyone in this group and remove members when needed.';
+
+  @override
+  String get groupContentTitle => 'Group content';
+
+  @override
+  String get groupManagementTitle => 'Manage group';
+
+  @override
+  String get viewGroupPolls => 'Polls and surveys';
+
+  @override
+  String get viewGroupPollsDescription =>
+      'See everything published for this group.';
+
+  @override
+  String activeMembersCount(Object count) {
+    return '$count active members';
+  }
+
+  @override
+  String get copyInviteLinkDescription => 'Share the group invitation link.';
+
+  @override
+  String get openGroupDashboard => 'Dashboard';
+
+  @override
+  String get swipeForGroupActions => 'Swipe for dashboard or removal.';
+
+  @override
+  String get groupInvitationsTitle => 'Invitation status';
+
+  @override
+  String get groupInvitationsDescription =>
+      'See whether registered app users have accepted, declined, or still need to answer.';
+
+  @override
+  String get noGroupInvitations =>
+      'No registered app user has been invited yet.';
+
+  @override
+  String get invitationStatusPending => 'Pending';
+
+  @override
+  String get invitationStatusAccepted => 'Accepted';
+
+  @override
+  String get invitationStatusDeclined => 'Declined';
+
+  @override
+  String get invitationStatusRemoved => 'Removed';
 
   @override
   String get noGroupMembers => 'This group has no members.';

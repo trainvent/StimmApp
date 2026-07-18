@@ -1725,16 +1725,61 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteGroup => 'Gruppe löschen';
 
   @override
+  String get dangerZoneTitle => 'Gefahrenbereich';
+
+  @override
+  String get deleteGroupDescription =>
+      'Lösche diese Gruppe und ihre Mitgliedsdaten dauerhaft.';
+
+  @override
+  String get adminElectionTitle => 'Admin-Wahl';
+
+  @override
+  String get voteForNewGroupAdmin => 'Neuen Gruppen-Admin wählen';
+
+  @override
+  String get adminElectionDashboardDescription =>
+      'Der bisherige Besitzer hat die Gruppe verlassen. Wählt, wer sie als Nächstes leiten soll.';
+
+  @override
+  String get adminElectionDescription =>
+      'Jedes Mitglied hat eine Stimme für den nächsten Gruppen-Admin. Du kannst deine Stimme bis zum Ende der Wahl ändern.';
+
+  @override
+  String adminElectionDeadline(String deadline) {
+    return 'Die Wahl endet am $deadline';
+  }
+
+  @override
+  String get castAdminElectionVote => 'Stimme abgeben';
+
+  @override
+  String get changeAdminElectionVote => 'Stimme ändern';
+
+  @override
+  String get adminElectionVoteSaved => 'Deine Stimme wurde gespeichert.';
+
+  @override
+  String get adminElectionVoteCanChange =>
+      'Du kannst deine Stimme bis zum Ablauf der drei Tage ändern.';
+
+  @override
+  String get adminElectionVotingClosed =>
+      'Die Wahl ist beendet. Das Ergebnis wird in Kürze übernommen.';
+
+  @override
+  String get noActiveAdminElection => 'Es gibt keine aktive Admin-Wahl.';
+
+  @override
+  String get noAdminElectionCandidates => 'Es gibt keine wählbaren Kandidaten.';
+
+  @override
   String doYouWantToLeaveGroup(String groupName) {
     return 'Möchtest du „$groupName“ verlassen?';
   }
 
   @override
   String get youLeftTheGroup => 'Du hast die Gruppe verlassen.';
-
-  @override
-  String get groupCreatorsCannotLeaveOwnGroup =>
-      'Gruppenersteller können ihre eigene Gruppe nicht verlassen. Bearbeite oder lösche sie stattdessen.';
 
   @override
   String typeGroupNameToConfirmDeletion(String groupName) {
@@ -2067,6 +2112,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Füge mindestens ein Mitglied zum Einladen hinzu.';
 
   @override
+  String get noNewInvitationsSent =>
+      'Es wurde keine neue Einladung gesendet. Die Person ist möglicherweise bereits Mitglied oder hat schon eine offene Einladung.';
+
+  @override
   String memberInvitationsSent(Object count) {
     return '$count Einladungen gesendet.';
   }
@@ -2131,6 +2180,57 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get manageGroupMembersDescription =>
       'Sieh alle Mitglieder dieser Gruppe und entferne sie bei Bedarf.';
+
+  @override
+  String get groupContentTitle => 'Gruppeninhalte';
+
+  @override
+  String get groupManagementTitle => 'Gruppe verwalten';
+
+  @override
+  String get viewGroupPolls => 'Umfragen und Erhebungen';
+
+  @override
+  String get viewGroupPollsDescription =>
+      'Sieh alles, was für diese Gruppe veröffentlicht wurde.';
+
+  @override
+  String activeMembersCount(Object count) {
+    return '$count aktive Mitglieder';
+  }
+
+  @override
+  String get copyInviteLinkDescription =>
+      'Teile den Einladungslink der Gruppe.';
+
+  @override
+  String get openGroupDashboard => 'Dashboard';
+
+  @override
+  String get swipeForGroupActions => 'Wische für Dashboard oder Entfernen.';
+
+  @override
+  String get groupInvitationsTitle => 'Einladungsstatus';
+
+  @override
+  String get groupInvitationsDescription =>
+      'Sieh, ob registrierte App-Nutzer zugesagt, abgelehnt oder noch nicht geantwortet haben.';
+
+  @override
+  String get noGroupInvitations =>
+      'Es wurde noch kein registrierter App-Nutzer eingeladen.';
+
+  @override
+  String get invitationStatusPending => 'Offen';
+
+  @override
+  String get invitationStatusAccepted => 'Angenommen';
+
+  @override
+  String get invitationStatusDeclined => 'Abgelehnt';
+
+  @override
+  String get invitationStatusRemoved => 'Entfernt';
 
   @override
   String get noGroupMembers => 'Diese Gruppe hat keine Mitglieder.';

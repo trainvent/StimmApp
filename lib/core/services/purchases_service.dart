@@ -193,6 +193,9 @@ class PurchasesService {
     BuildContext? context,
     String source = 'unknown',
   }) async {
+    if (kDebugMode) {
+      debugPrint('PurchasesService.presentPaywall: source=$source');
+    }
     if (kIsWeb) {
       return _presentWebPaywall(context: context, source: source);
     }
