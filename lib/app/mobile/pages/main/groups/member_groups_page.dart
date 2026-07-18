@@ -440,12 +440,6 @@ class MemberGroupsPage extends StatelessWidget {
                             group.memberIds.length,
                             expiresLabel,
                           ),
-                          footer: Text(
-                            canManage
-                                ? context.l10n.swipeForDelete
-                                : context.l10n.swipeToLeaveGroup,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
                         ),
                       ),
                     ),
