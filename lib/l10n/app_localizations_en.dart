@@ -1989,6 +1989,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGroupTooltip => 'Create group';
 
   @override
+  String get additionalGroupsRequirePro =>
+      'Creating multiple groups is a Pro feature. Upgrade to Pro to create another group.';
+
+  @override
   String get groupHasNoActiveInviteLink =>
       'This group has no active invite link.';
 

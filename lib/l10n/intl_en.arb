@@ -801,6 +801,7 @@
 	"signInToJoinGroupAutomatically": "Sign in to join this group automatically.",
 	"privateGroupOrSignInRequired": "This group is private or requires sign-in before more details can be shown.",
 	"createGroupTooltip": "Create group",
+	"additionalGroupsRequirePro": "Creating multiple groups is a Pro feature. Upgrade to Pro to create another group.",
 	"groupHasNoActiveInviteLink": "This group has no active invite link.",
 	"copyLinkLabel": "Copy link",
 	"copyInviteLinkTooltip": "Copy invite link",

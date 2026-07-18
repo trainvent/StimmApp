@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_access_qr_scanner_page.dart';
@@ -14,6 +17,7 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/providers/subscription_provider.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 
@@ -31,6 +35,37 @@ bool groupCreationRequiresPro({
 
 class MemberGroupsPage extends StatelessWidget {
   const MemberGroupsPage({super.key});
+
+  Future<void> _showAdditionalGroupsProDialog(BuildContext context) async {
+    final openPaywall = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.paywallTitle),
+        content: Text(context.l10n.additionalGroupsRequirePro),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(context.l10n.signUpForPro),
+          ),
+        ],
+      ),
+    );
+    if (openPaywall != true || !context.mounted) {
+      return;
+    }
+
+    final opened = await PurchasesService.instance.presentPaywall(
+      context: context,
+      source: 'member_groups_pro_dialog',
+    );
+    if (!opened && context.mounted) {
+      showErrorSnackBar(context.l10n.couldNotOpenPaywall);
+    }
+  }
 
   Future<void> _leaveGroup(BuildContext context, PollGroup group) async {
     final uid = authService.currentUser?.uid;
@@ -128,16 +163,10 @@ class MemberGroupsPage extends StatelessWidget {
     if (requiresPro) {
       if (kDebugMode) {
         debugPrint(
-          'MemberGroupsPage._openCreateGroup: opening paywall source=member_groups',
+          'MemberGroupsPage._openCreateGroup: showing Pro explanation',
         );
       }
-      final opened = await PurchasesService.instance.presentPaywall(
-        context: context,
-        source: 'member_groups',
-      );
-      if (!opened && context.mounted) {
-        showErrorSnackBar(context.l10n.couldNotOpenPaywall);
-      }
+      await _showAdditionalGroupsProDialog(context);
       return;
     }
 
@@ -233,10 +262,9 @@ class MemberGroupsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.l10n.myGroups),
         actions: [
-          IconButton(
-            tooltip: context.l10n.createGroupTooltip,
-            onPressed: () => _openCreateGroup(context),
-            icon: const Icon(Icons.add),
+          _GroupCreateAction(
+            onCreate: () => _openCreateGroup(context),
+            onLocked: () => _showAdditionalGroupsProDialog(context),
           ),
           IconButton(
             tooltip: context.l10n.scanQrCodeTooltip,
@@ -396,6 +424,75 @@ class MemberGroupsPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _GroupCreateAction extends ConsumerWidget {
+  const _GroupCreateAction({required this.onCreate, required this.onLocked});
+
+  final VoidCallback onCreate;
+  final VoidCallback onLocked;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final profileState = ref.watch(userProfileProvider);
+    if (user == null) {
+      return IconButton(
+        key: const Key('group_create_action'),
+        tooltip: context.l10n.createGroupTooltip,
+        onPressed: null,
+        icon: const Icon(Icons.add),
+      );
+    }
+
+    return StreamBuilder<List<PollGroup>>(
+      stream: PollGroupRepository.create().watchGroupsForUser(user.uid),
+      builder: (context, snapshot) {
+        if (!profileState.hasValue || !snapshot.hasData) {
+          return const SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
+        final createdCount = snapshot.data!
+            .where((group) => group.createdBy == user.uid)
+            .length;
+        final requiresPro = groupCreationRequiresPro(
+          createdCount: createdCount,
+          profile: profileState.value,
+          authenticatedEmail: user.email,
+        );
+        return IconButton(
+          key: const Key('group_create_action'),
+          tooltip: requiresPro
+              ? context.l10n.additionalGroupsRequirePro
+              : context.l10n.createGroupTooltip,
+          onPressed: requiresPro ? onLocked : onCreate,
+          icon: ImageFiltered(
+            key: requiresPro ? const Key('group_create_action_blurred') : null,
+            imageFilter: ImageFilter.blur(
+              sigmaX: requiresPro ? 1.4 : 0,
+              sigmaY: requiresPro ? 1.4 : 0,
+            ),
+            child: Icon(
+              Icons.add,
+              color: requiresPro
+                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                  : null,
+            ),
+          ),
+        );
+      },
     );
   }
 }

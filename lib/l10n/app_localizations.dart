@@ -3746,6 +3746,12 @@ abstract class AppLocalizations {
   /// **'Create group'**
   String get createGroupTooltip;
 
+  /// No description provided for @additionalGroupsRequirePro.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating multiple groups is a Pro feature. Upgrade to Pro to create another group.'**
+  String get additionalGroupsRequirePro;
+
   /// No description provided for @groupHasNoActiveInviteLink.
   ///
   /// In en, this message translates to:

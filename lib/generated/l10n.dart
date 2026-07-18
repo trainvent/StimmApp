@@ -5254,6 +5254,16 @@ class S {
     );
   }
 
+  /// `Creating multiple groups is a Pro feature. Upgrade to Pro to create another group.`
+  String get additionalGroupsRequirePro {
+    return Intl.message(
+      'Creating multiple groups is a Pro feature. Upgrade to Pro to create another group.',
+      name: 'additionalGroupsRequirePro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `This group has no active invite link.`
   String get groupHasNoActiveInviteLink {
     return Intl.message(

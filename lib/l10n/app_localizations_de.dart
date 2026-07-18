@@ -2014,6 +2014,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createGroupTooltip => 'Gruppe erstellen';
 
   @override
+  String get additionalGroupsRequirePro =>
+      'Mehrere Gruppen zu erstellen ist eine Pro-Funktion. Wechsle zu Pro, um eine weitere Gruppe zu erstellen.';
+
+  @override
   String get groupHasNoActiveInviteLink =>
       'Diese Gruppe hat keinen aktiven Einladungslink.';
 

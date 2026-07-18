@@ -140,6 +140,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "additionalDetailsOptional": MessageLookupByLibrary.simpleMessage(
       "Zusätzliche Details (optional)",
     ),
+    "additionalGroupsRequirePro": MessageLookupByLibrary.simpleMessage(
+      "Mehrere Gruppen zu erstellen ist eine Pro-Funktion. Wechsle zu Pro, um eine weitere Gruppe zu erstellen.",
+    ),
     "address": MessageLookupByLibrary.simpleMessage("Anschrift"),
     "addressUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Anschrift erfolgreich aktualisiert",

@@ -805,6 +805,7 @@
 	"signInToJoinGroupAutomatically": "Melde dich an, um dieser Gruppe automatisch beizutreten.",
 	"privateGroupOrSignInRequired": "Diese Gruppe ist privat oder erfordert eine Anmeldung, bevor weitere Details angezeigt werden können.",
 	"createGroupTooltip": "Gruppe erstellen",
+	"additionalGroupsRequirePro": "Mehrere Gruppen zu erstellen ist eine Pro-Funktion. Wechsle zu Pro, um eine weitere Gruppe zu erstellen.",
 	"groupHasNoActiveInviteLink": "Diese Gruppe hat keinen aktiven Einladungslink.",
 	"copyLinkLabel": "Link kopieren",
 	"copyInviteLinkTooltip": "Einladungslink kopieren",
