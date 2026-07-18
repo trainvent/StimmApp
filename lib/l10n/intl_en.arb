@@ -778,6 +778,8 @@
 	"notificationStatusDenied": "Denied",
 	"notificationActionInvitedYou": "invited you",
 	"notificationActionRequestedAccess": "requested access",
+	"notificationActionRemovedYou": "removed you from this group",
+	"groupAdminFallback": "Group admin",
 	"goToGroupOverview": "Go to group overview",
 	"signInToJoinGroup": "Sign in to join",
 	"signInToRequestGroupAccess": "Sign in to request access",

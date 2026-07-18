@@ -5034,6 +5034,26 @@ class S {
     );
   }
 
+  /// `removed you from this group`
+  String get notificationActionRemovedYou {
+    return Intl.message(
+      'removed you from this group',
+      name: 'notificationActionRemovedYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group admin`
+  String get groupAdminFallback {
+    return Intl.message(
+      'Group admin',
+      name: 'groupAdminFallback',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Go to group overview`
   String get goToGroupOverview {
     return Intl.message(

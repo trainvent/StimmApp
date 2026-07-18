@@ -529,6 +529,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "groupAccessSummary": m7,
     "groupAccessTitle": MessageLookupByLibrary.simpleMessage("Group access"),
+    "groupAdminFallback": MessageLookupByLibrary.simpleMessage("Group admin"),
     "groupCreated": MessageLookupByLibrary.simpleMessage("Group created."),
     "groupCreatorsCannotLeaveOwnGroup": MessageLookupByLibrary.simpleMessage(
       "Group creators cannot leave their own group. Edit or delete it instead.",
@@ -754,6 +755,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "notificationActionInvitedYou": MessageLookupByLibrary.simpleMessage(
       "invited you",
+    ),
+    "notificationActionRemovedYou": MessageLookupByLibrary.simpleMessage(
+      "removed you from this group",
     ),
     "notificationActionRequestedAccess": MessageLookupByLibrary.simpleMessage(
       "requested access",

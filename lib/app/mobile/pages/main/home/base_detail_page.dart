@@ -12,7 +12,6 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
@@ -170,7 +169,6 @@ class _BaseDetailPageState<T extends HomeItem>
     required T item,
     required String? currentUid,
     required Set<String> memberGroupIds,
-    required Set<String> acceptedInviteGroupIds,
   }) {
     final visibility = switch (item) {
       Poll(:final visibility) => visibility,
@@ -198,8 +196,7 @@ class _BaseDetailPageState<T extends HomeItem>
       return false;
     }
 
-    return memberGroupIds.contains(groupId) ||
-        acceptedInviteGroupIds.contains(groupId);
+    return memberGroupIds.contains(groupId);
   }
 
   String _scopeLabel(BuildContext context, T item) {
@@ -483,23 +480,6 @@ class _BaseDetailPageState<T extends HomeItem>
               : PollGroupRepository.create()
                     .watchGroupsForUser(currentUid)
                     .map((groups) => groups.map((group) => group.id).toSet());
-          final acceptedInviteGroupIdsStream = currentUid == null
-              ? Stream<Set<String>>.value(const <String>{})
-              : PollGroupRepository.create()
-                    .watchNotifications(currentUid)
-                    .map(
-                      (notifications) => notifications
-                          .where(
-                            (notification) =>
-                                notification.type ==
-                                    PollGroupAccessNotificationType.invite &&
-                                notification.status ==
-                                    PollGroupAccessNotificationStatus.accepted,
-                          )
-                          .map((notification) => notification.groupId)
-                          .toSet(),
-                    );
-
           return StreamBuilder<Set<String>>(
             stream: blockedIdsStream,
             builder: (context, blockedSnap) {
@@ -508,126 +488,115 @@ class _BaseDetailPageState<T extends HomeItem>
                 stream: memberGroupIdsStream,
                 builder: (context, groupSnap) {
                   final memberGroupIds = groupSnap.data ?? const <String>{};
-                  return StreamBuilder<Set<String>>(
-                    stream: acceptedInviteGroupIdsStream,
-                    builder: (context, acceptedInviteSnap) {
-                      final acceptedInviteGroupIds =
-                          acceptedInviteSnap.data ?? const <String>{};
-                      if (!_isAccessibleForCurrentUser(
-                        item: item,
-                        currentUid: currentUid,
-                        memberGroupIds: memberGroupIds,
-                        acceptedInviteGroupIds: acceptedInviteGroupIds,
-                      )) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              context.l10n.groupOnlyUnavailable,
-                              textAlign: TextAlign.center,
+                  if (!_isAccessibleForCurrentUser(
+                    item: item,
+                    currentUid: currentUid,
+                    memberGroupIds: memberGroupIds,
+                  )) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          context.l10n.groupOnlyUnavailable,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (blockedIds.contains(item.createdBy)) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          context.l10n.blockedContentHidden,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final now = DateTime.now();
+                  final isExpiredByTime = !item.expiresAt.isAfter(now);
+                  final isClosedByStatus = item.status == IConst.closed;
+                  final isExpired = isClosedByStatus || isExpiredByTime;
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeaderCard(context, item),
+                        const SizedBox(height: 12),
+                        if (item.state != null && item.state!.isNotEmpty) ...[
+                          Chip(
+                            label: Text(
+                              context.l10n.relatedToState(item.state!),
                             ),
                           ),
-                        );
-                      }
-
-                      if (blockedIds.contains(item.createdBy)) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              context.l10n.blockedContentHidden,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      }
-
-                      final now = DateTime.now();
-                      final isExpiredByTime = !item.expiresAt.isAfter(now);
-                      final isClosedByStatus = item.status == IConst.closed;
-                      final isExpired = isClosedByStatus || isExpiredByTime;
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 12),
+                        ],
+                        Text(item.description),
+                        const SizedBox(height: 12),
+                        _buildDiscoveryStatusBanner(
+                          context: context,
+                          item: item,
+                          isExpired: isExpired,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildHeaderCard(context, item),
-                            const SizedBox(height: 12),
-                            if (item.state != null &&
-                                item.state!.isNotEmpty) ...[
-                              Chip(
-                                label: Text(
-                                  context.l10n.relatedToState(item.state!),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                            ],
-                            Text(item.description),
-                            const SizedBox(height: 12),
-                            _buildDiscoveryStatusBanner(
-                              context: context,
-                              item: item,
-                              isExpired: isExpired,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${context.l10n.participants}: ${item.participantCount}',
-                                ),
-                                if (widget.participantsStream != null)
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ParticipantsListPage(
-                                                participantsStream:
-                                                    widget.participantsStream!,
-                                                signaturesStream:
-                                                    widget.signaturesStream,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(context.l10n.viewParticipants),
-                                  ),
-                              ],
-                            ),
                             Text(
-                              '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
+                              '${context.l10n.participants}: ${item.participantCount}',
                             ),
-                            if (isExpired) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                context.l10n.closed,
-                                style: Theme.of(context).textTheme.labelLarge
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.error,
+                            if (widget.participantsStream != null)
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ParticipantsListPage(
+                                            participantsStream:
+                                                widget.participantsStream!,
+                                            signaturesStream:
+                                                widget.signaturesStream,
+                                          ),
                                     ),
+                                  );
+                                },
+                                child: Text(context.l10n.viewParticipants),
                               ),
-                            ],
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: AbsorbPointer(
-                                absorbing: isExpired,
-                                child: widget.contentBuilder(context, item),
-                              ),
-                            ),
-                            if (!isExpired && widget.bottomAction != null) ...[
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: widget.bottomAction!,
-                              ),
-                            ],
                           ],
                         ),
-                      );
-                    },
+                        Text(
+                          '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
+                        ),
+                        if (isExpired) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.closed,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: AbsorbPointer(
+                            absorbing: isExpired,
+                            child: widget.contentBuilder(context, item),
+                          ),
+                        ),
+                        if (!isExpired && widget.bottomAction != null) ...[
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: widget.bottomAction!,
+                          ),
+                        ],
+                      ],
+                    ),
                   );
                 },
               );

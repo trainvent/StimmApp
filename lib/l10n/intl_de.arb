@@ -782,6 +782,8 @@
 	"notificationStatusDenied": "Abgelehnt",
 	"notificationActionInvitedYou": "hat dich eingeladen",
 	"notificationActionRequestedAccess": "hat Zugriff angefragt",
+	"notificationActionRemovedYou": "hat dich aus dieser Gruppe entfernt",
+	"groupAdminFallback": "Gruppenadmin",
 	"goToGroupOverview": "Zur Gruppenübersicht",
 	"signInToJoinGroup": "Anmelden zum Beitreten",
 	"signInToRequestGroupAccess": "Anmelden, um Zugang anzufragen",

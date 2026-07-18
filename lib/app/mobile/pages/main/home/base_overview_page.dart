@@ -7,7 +7,6 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
@@ -403,7 +402,6 @@ class _BaseOverviewPageState<T extends HomeItem>
     required T item,
     required String? currentUid,
     required Set<String> memberGroupIds,
-    required Set<String> acceptedInviteGroupIds,
   }) {
     final visibility = switch (item) {
       Poll(:final visibility) => visibility,
@@ -431,8 +429,7 @@ class _BaseOverviewPageState<T extends HomeItem>
       return false;
     }
 
-    return memberGroupIds.contains(groupId) ||
-        acceptedInviteGroupIds.contains(groupId);
+    return memberGroupIds.contains(groupId);
   }
 
   bool _isGroupOnly(T item) {
@@ -614,22 +611,6 @@ class _BaseOverviewPageState<T extends HomeItem>
             : PollGroupRepository.create()
                   .watchGroupsForUser(currentUid)
                   .map((groups) => groups.map((group) => group.id).toSet());
-        final acceptedInviteGroupIdsStream = currentUid == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : PollGroupRepository.create()
-                  .watchNotifications(currentUid)
-                  .map(
-                    (notifications) => notifications
-                        .where(
-                          (notification) =>
-                              notification.type ==
-                                  PollGroupAccessNotificationType.invite &&
-                              notification.status ==
-                                  PollGroupAccessNotificationStatus.accepted,
-                        )
-                        .map((notification) => notification.groupId)
-                        .toSet(),
-                  );
         final participatedIdsStream =
             currentUid == null || widget.participatedIdsStreamProvider == null
             ? Stream<Set<String>>.value(const <String>{})
@@ -643,106 +624,91 @@ class _BaseOverviewPageState<T extends HomeItem>
               builder: (context, groupSnap) {
                 final memberGroupIds = groupSnap.data ?? const <String>{};
                 return StreamBuilder<Set<String>>(
-                  stream: acceptedInviteGroupIdsStream,
-                  builder: (context, acceptedInviteSnap) {
-                    final acceptedInviteGroupIds =
-                        acceptedInviteSnap.data ?? const <String>{};
-                    return StreamBuilder<Set<String>>(
-                      stream: participatedIdsStream,
-                      builder: (context, participatedSnap) {
-                        final participatedIds =
-                            participatedSnap.data ?? const <String>{};
-                        return StreamBuilder<List<T>>(
-                          stream: widget.streamProvider(_query, status),
-                          builder: (context, snap) {
-                            if (snap.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: TriangleLoadingIndicator(),
-                              );
-                            }
-                            var items = snap.data ?? const [];
-                            items = items
-                                .where(
-                                  (item) => _isVisibleForUser(
-                                    item: item,
-                                    userProfile: userProfile,
-                                  ),
-                                )
-                                .where(
-                                  (item) => _isAccessibleForCurrentUser(
-                                    item: item,
-                                    currentUid: currentUid,
-                                    memberGroupIds: memberGroupIds,
-                                    acceptedInviteGroupIds:
-                                        acceptedInviteGroupIds,
-                                  ),
-                                )
-                                .toList();
+                  stream: participatedIdsStream,
+                  builder: (context, participatedSnap) {
+                    final participatedIds =
+                        participatedSnap.data ?? const <String>{};
+                    return StreamBuilder<List<T>>(
+                      stream: widget.streamProvider(_query, status),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: TriangleLoadingIndicator(),
+                          );
+                        }
+                        var items = snap.data ?? const [];
+                        items = items
+                            .where(
+                              (item) => _isVisibleForUser(
+                                item: item,
+                                userProfile: userProfile,
+                              ),
+                            )
+                            .where(
+                              (item) => _isAccessibleForCurrentUser(
+                                item: item,
+                                currentUid: currentUid,
+                                memberGroupIds: memberGroupIds,
+                              ),
+                            )
+                            .toList();
 
-                            if (blockedIds.isNotEmpty) {
-                              items = items
-                                  .where(
-                                    (item) =>
-                                        !blockedIds.contains(item.createdBy),
-                                  )
-                                  .toList();
-                            }
+                        if (blockedIds.isNotEmpty) {
+                          items = items
+                              .where(
+                                (item) => !blockedIds.contains(item.createdBy),
+                              )
+                              .toList();
+                        }
 
-                            if (_onlyMyPublications && currentUid != null) {
-                              items = items
-                                  .where((item) => item.createdBy == currentUid)
-                                  .toList();
-                            }
+                        if (_onlyMyPublications && currentUid != null) {
+                          items = items
+                              .where((item) => item.createdBy == currentUid)
+                              .toList();
+                        }
 
-                            if (_selectedTags.isNotEmpty) {
-                              items = items.where((item) {
-                                return item.tags.any(
-                                  (tag) => _selectedTags.contains(tag),
-                                );
-                              }).toList();
-                            }
+                        if (_selectedTags.isNotEmpty) {
+                          items = items.where((item) {
+                            return item.tags.any(
+                              (tag) => _selectedTags.contains(tag),
+                            );
+                          }).toList();
+                        }
 
-                            items = items
-                                .where(_matchesSelectedScopes)
-                                .toList();
-                            if (widget.extraFilter != null) {
-                              items = items.where(widget.extraFilter!).toList();
-                            }
+                        items = items.where(_matchesSelectedScopes).toList();
+                        if (widget.extraFilter != null) {
+                          items = items.where(widget.extraFilter!).toList();
+                        }
 
-                            if (items.isEmpty) {
-                              return Center(child: Text(context.l10n.noData));
-                            }
-                            return ListView.builder(
-                              itemCount: items.length,
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                final discoveryStatus = DiscoveryStatus(
-                                  isEligible: true,
-                                  hasParticipated: participatedIds.contains(
-                                    widget.participationKeyProvider?.call(
-                                          item,
-                                        ) ??
-                                        item.id,
-                                  ),
-                                  isFinished:
-                                      status == IConst.closed ||
-                                      item.status == IConst.closed ||
-                                      !item.expiresAt.isAfter(DateTime.now()),
-                                  isGroupOnly: _isGroupOnly(item),
-                                  groupName: _groupName(item),
-                                );
-                                return Column(
-                                  children: [
-                                    widget.itemBuilder(
-                                      context,
-                                      item,
-                                      discoveryStatus,
-                                    ),
-                                    const Divider(height: 1),
-                                  ],
-                                );
-                              },
+                        if (items.isEmpty) {
+                          return Center(child: Text(context.l10n.noData));
+                        }
+                        return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            final discoveryStatus = DiscoveryStatus(
+                              isEligible: true,
+                              hasParticipated: participatedIds.contains(
+                                widget.participationKeyProvider?.call(item) ??
+                                    item.id,
+                              ),
+                              isFinished:
+                                  status == IConst.closed ||
+                                  item.status == IConst.closed ||
+                                  !item.expiresAt.isAfter(DateTime.now()),
+                              isGroupOnly: _isGroupOnly(item),
+                              groupName: _groupName(item),
+                            );
+                            return Column(
+                              children: [
+                                widget.itemBuilder(
+                                  context,
+                                  item,
+                                  discoveryStatus,
+                                ),
+                                const Divider(height: 1),
+                              ],
                             );
                           },
                         );

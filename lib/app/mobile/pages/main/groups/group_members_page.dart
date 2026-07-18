@@ -47,6 +47,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     UserProfile? profile,
   ) async {
     final currentUid = _auth.currentUser?.uid;
+    if (currentUid == null) {
+      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      return;
+    }
     if (member.uid == widget.group.createdBy) {
       showErrorSnackBar(context.l10n.cannotRemoveGroupCreator);
       return;
@@ -83,10 +87,21 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     }
 
     setState(() => _removingMemberIds.add(member.uid));
+    final actorNameFallback = context.l10n.groupAdminFallback;
     try {
+      final actorProfile = await _userRepository.getById(currentUid);
+      final actorDisplayName =
+          actorProfile?.displayName?.trim().isNotEmpty == true
+          ? actorProfile!.displayName!.trim()
+          : (actorProfile?.email?.trim().isNotEmpty == true
+                ? actorProfile!.email!.trim()
+                : actorNameFallback);
       await _repository.removeMember(
         group: widget.group,
         uid: member.uid,
+        actorUid: currentUid,
+        actorDisplayName: actorDisplayName,
+        role: member.role,
         email: profile?.email,
       );
       if (mounted) {

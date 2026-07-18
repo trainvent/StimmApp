@@ -357,6 +357,9 @@ void main() {
         await repository.removeMember(
           group: group!,
           uid: 'invitee',
+          actorUid: 'owner',
+          actorDisplayName: 'Owner',
+          role: PollGroupRole.manager,
           email: 'anna@example.com',
         );
 
@@ -373,11 +376,27 @@ void main() {
             .collection('allowedMembers')
             .doc('anna@example.com')
             .get();
+        final updatedNotifications = await firestore
+            .collection('users')
+            .doc('invitee')
+            .collection('groupAccessNotifications')
+            .orderBy('createdAt')
+            .get();
+        final accessibleGroups = await repository.getAccessibleGroupsForUser(
+          'invitee',
+        );
 
         expect(updatedGroup?.memberIds, isNot(contains('invitee')));
         expect(updatedGroup?.importedMemberCount, 0);
         expect(removedMember.exists, isFalse);
         expect(removedPreparedAccess.exists, isFalse);
+        expect(accessibleGroups, isEmpty);
+        expect(updatedNotifications.docs, hasLength(2));
+        expect(updatedNotifications.docs.last.data()['type'], 'removed');
+        expect(
+          updatedNotifications.docs.last.data()['actorDisplayName'],
+          'Owner',
+        );
       },
     );
   });

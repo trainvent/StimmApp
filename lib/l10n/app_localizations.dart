@@ -3614,6 +3614,18 @@ abstract class AppLocalizations {
   /// **'requested access'**
   String get notificationActionRequestedAccess;
 
+  /// No description provided for @notificationActionRemovedYou.
+  ///
+  /// In en, this message translates to:
+  /// **'removed you from this group'**
+  String get notificationActionRemovedYou;
+
+  /// No description provided for @groupAdminFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Group admin'**
+  String get groupAdminFallback;
+
   /// No description provided for @goToGroupOverview.
   ///
   /// In en, this message translates to:

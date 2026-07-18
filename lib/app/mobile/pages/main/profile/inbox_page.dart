@@ -68,32 +68,43 @@ class InboxPage extends StatelessWidget {
                   context.l10n.notificationActionInvitedYou,
                 PollGroupAccessNotificationType.request =>
                   context.l10n.notificationActionRequestedAccess,
+                PollGroupAccessNotificationType.removed =>
+                  context.l10n.notificationActionRemovedYou,
               };
+              final isRemoval =
+                  item.type == PollGroupAccessNotificationType.removed;
               return ListTile(
-                leading: Icon(
-                  item.type == PollGroupAccessNotificationType.invite
-                      ? Icons.group_add
-                      : Icons.mark_email_unread_outlined,
-                ),
+                leading: Icon(switch (item.type) {
+                  PollGroupAccessNotificationType.invite => Icons.group_add,
+                  PollGroupAccessNotificationType.request =>
+                    Icons.mark_email_unread_outlined,
+                  PollGroupAccessNotificationType.removed =>
+                    Icons.person_remove_outlined,
+                }),
                 title: Text(item.groupName),
                 subtitle: Text(
-                  '${item.actorDisplayName} $actionLabel • $statusLabel',
+                  isRemoval
+                      ? '${item.actorDisplayName} $actionLabel'
+                      : '${item.actorDisplayName} $actionLabel • $statusLabel',
                 ),
                 trailing:
-                    item.status == PollGroupAccessNotificationStatus.pending
+                    !isRemoval &&
+                        item.status == PollGroupAccessNotificationStatus.pending
                     ? const Icon(Icons.chevron_right)
                     : null,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => GroupEntryPage(
-                        groupId: item.groupId,
-                        notificationId: item.id,
-                        notificationOwnerUid: uid,
-                      ),
-                    ),
-                  );
-                },
+                onTap: isRemoval
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => GroupEntryPage(
+                              groupId: item.groupId,
+                              notificationId: item.id,
+                              notificationOwnerUid: uid,
+                            ),
+                          ),
+                        );
+                      },
               );
             },
           );

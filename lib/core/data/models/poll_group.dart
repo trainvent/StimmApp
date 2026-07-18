@@ -6,7 +6,7 @@ enum PollGroupNicknameMode { selfNamed, adminAssigned }
 
 enum PollGroupAccessMode { private, protected, open }
 
-enum PollGroupAccessNotificationType { invite, request }
+enum PollGroupAccessNotificationType { invite, request, removed }
 
 enum PollGroupAccessNotificationStatus { pending, accepted, denied }
 
@@ -83,6 +83,8 @@ String pollGroupAccessNotificationTypeToFirestore(
       return 'invite';
     case PollGroupAccessNotificationType.request:
       return 'request';
+    case PollGroupAccessNotificationType.removed:
+      return 'removed';
   }
 }
 
@@ -90,6 +92,8 @@ PollGroupAccessNotificationType parsePollGroupAccessNotificationType(
   String? value,
 ) {
   switch (value) {
+    case 'removed':
+      return PollGroupAccessNotificationType.removed;
     case 'request':
       return PollGroupAccessNotificationType.request;
     case 'invite':

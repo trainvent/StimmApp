@@ -1914,6 +1914,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationActionRequestedAccess => 'requested access';
 
   @override
+  String get notificationActionRemovedYou => 'removed you from this group';
+
+  @override
+  String get groupAdminFallback => 'Group admin';
+
+  @override
   String get goToGroupOverview => 'Go to group overview';
 
   @override

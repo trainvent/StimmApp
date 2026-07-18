@@ -62,106 +62,11 @@ class PollGroupRepository {
   }
 
   Stream<List<PollGroup>> watchAccessibleGroupsForUser(String uid) {
-    final controller = StreamController<List<PollGroup>>.broadcast();
-    List<PollGroup> memberGroups = const [];
-    List<PollGroupAccessNotification> notifications = const [];
-
-    Future<void> emitGroups() async {
-      final groupsById = <String, PollGroup>{
-        for (final group in memberGroups) group.id: group,
-      };
-      final acceptedInviteGroupIds = notifications
-          .where(
-            (notification) =>
-                notification.type == PollGroupAccessNotificationType.invite &&
-                notification.status ==
-                    PollGroupAccessNotificationStatus.accepted,
-          )
-          .map((notification) => notification.groupId)
-          .where((groupId) => groupId.isNotEmpty)
-          .toSet();
-
-      for (final groupId in acceptedInviteGroupIds) {
-        if (groupsById.containsKey(groupId)) {
-          continue;
-        }
-        try {
-          final group = await getGroup(groupId);
-          if (group != null) {
-            groupsById[group.id] = group;
-          }
-        } on DatabaseException catch (error) {
-          // Accepted notifications can outlive readable access, for example
-          // after membership changes or stale local state. Skip those groups
-          // instead of breaking the entire stream.
-          if (error.code != 'permission-denied') {
-            rethrow;
-          }
-        }
-      }
-
-      final groups = groupsById.values.toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      if (!controller.isClosed) {
-        controller.add(groups);
-      }
-    }
-
-    final groupsSub = watchGroupsForUser(uid).listen((groups) async {
-      memberGroups = groups;
-      await emitGroups();
-    }, onError: controller.addError);
-    final notificationsSub = watchNotifications(uid).listen((items) async {
-      notifications = items;
-      await emitGroups();
-    }, onError: controller.addError);
-
-    controller.onCancel = () async {
-      await groupsSub.cancel();
-      await notificationsSub.cancel();
-    };
-
-    return controller.stream;
+    return watchGroupsForUser(uid);
   }
 
   Future<List<PollGroup>> getAccessibleGroupsForUser(String uid) async {
-    final memberGroups = await _fs
-        .watchCol(_groups().where('memberIds', arrayContains: uid))
-        .first;
-    final notifications = await watchNotifications(uid).first;
-
-    final groupsById = <String, PollGroup>{
-      for (final group in memberGroups) group.id: group,
-    };
-    final acceptedInviteGroupIds = notifications
-        .where(
-          (notification) =>
-              notification.type == PollGroupAccessNotificationType.invite &&
-              notification.status == PollGroupAccessNotificationStatus.accepted,
-        )
-        .map((notification) => notification.groupId)
-        .where((groupId) => groupId.isNotEmpty)
-        .toSet();
-
-    for (final groupId in acceptedInviteGroupIds) {
-      if (groupsById.containsKey(groupId)) {
-        continue;
-      }
-      try {
-        final group = await getGroup(groupId);
-        if (group != null) {
-          groupsById[group.id] = group;
-        }
-      } on DatabaseException catch (error) {
-        if (error.code != 'permission-denied') {
-          rethrow;
-        }
-      }
-    }
-
-    final groups = groupsById.values.toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return groups;
+    return watchGroupsForUser(uid).first;
   }
 
   Future<String> createGroup({
@@ -448,6 +353,9 @@ class PollGroupRepository {
   Future<void> removeMember({
     required PollGroup group,
     required String uid,
+    required String actorUid,
+    required String actorDisplayName,
+    required PollGroupRole role,
     String? email,
   }) async {
     if (uid == group.createdBy) {
@@ -464,6 +372,8 @@ class PollGroupRepository {
     final allowedMemberExists = allowedMemberRef == null
         ? false
         : (await allowedMemberRef.get()).exists;
+    final now = DateTime.now();
+    final notificationRef = _notifications(uid).doc();
     final batch = _fs.instance.batch();
     batch.update(_groups().doc(group.id), {
       'memberIds': FieldValue.arrayRemove([uid]),
@@ -473,6 +383,23 @@ class PollGroupRepository {
     if (allowedMemberExists) {
       batch.delete(allowedMemberRef);
     }
+    batch.set(
+      notificationRef,
+      PollGroupAccessNotification(
+        id: notificationRef.id,
+        groupId: group.id,
+        groupName: group.name,
+        actorUid: actorUid,
+        actorDisplayName: actorDisplayName,
+        recipientUid: uid,
+        role: role,
+        accessMode: group.accessMode,
+        type: PollGroupAccessNotificationType.removed,
+        status: PollGroupAccessNotificationStatus.accepted,
+        createdAt: now,
+        resolvedAt: now,
+      ),
+    );
     await batch.commit();
   }
 

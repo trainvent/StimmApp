@@ -1938,6 +1938,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notificationActionRequestedAccess => 'hat Zugriff angefragt';
 
   @override
+  String get notificationActionRemovedYou =>
+      'hat dich aus dieser Gruppe entfernt';
+
+  @override
+  String get groupAdminFallback => 'Gruppenadmin';
+
+  @override
   String get goToGroupOverview => 'Zur Gruppenübersicht';
 
   @override
