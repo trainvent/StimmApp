@@ -285,7 +285,8 @@ service cloud.firestore {
                     isPollGroupAdmin(groupId);
 
       match /members/{memberId} {
-        allow read: if canReadPollGroup(groupId);
+        allow read: if canReadPollGroup(groupId) ||
+                    (isAuthenticated() && memberId == request.auth.uid);
         allow create: if isAdmin() ||
                       (isPollGroupCreatorAfter(groupId) &&
                        request.resource.data.joinedBy == request.auth.uid) ||
@@ -346,6 +347,8 @@ service cloud.firestore {
 
         match /votes/{voterUid} {
           allow read: if isAdmin() ||
+                      isPollGroupCreator(groupId) ||
+                      isPollGroupAdmin(groupId) ||
                       (isAuthenticated() && voterUid == request.auth.uid);
           allow create, update: if false;
           allow delete: if isAdmin() ||

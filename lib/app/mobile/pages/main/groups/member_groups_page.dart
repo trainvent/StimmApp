@@ -344,15 +344,6 @@ class MemberGroupsPage extends StatelessWidget {
                       ),
                       endActionPane: ActionPane(
                         motion: const StretchMotion(),
-                        dismissible: DismissiblePane(
-                          dismissThreshold: 0.3,
-                          confirmDismiss: () async {
-                            await _leaveGroup(context, group);
-                            return false;
-                          },
-                          closeOnCancel: true,
-                          onDismissed: () {},
-                        ),
                         children: [
                           SlidableAction(
                             onPressed: (_) => _leaveGroup(context, group),

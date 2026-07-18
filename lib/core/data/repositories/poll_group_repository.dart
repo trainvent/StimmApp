@@ -280,8 +280,10 @@ class PollGroupRepository {
     final allowedMembersSnap = await _allowedMembers(groupId).get();
     final allowedDomainsSnap = await _allowedDomains(groupId).get();
     final invitationsSnap = await _invitations(groupId).get();
-    final electionVotesSnap = await _adminElectionVotes(groupId).get();
     final electionSnap = await _adminElections(groupId).get();
+    final electionVotes = electionSnap.docs.isEmpty
+        ? const <QueryDocumentSnapshot<PollGroupAdminElectionVote>>[]
+        : (await _adminElectionVotes(groupId).get()).docs;
     final batch = _fs.instance.batch();
 
     for (final doc in membersSnap.docs) {
@@ -296,7 +298,7 @@ class PollGroupRepository {
     for (final doc in invitationsSnap.docs) {
       batch.delete(doc.reference);
     }
-    for (final doc in electionVotesSnap.docs) {
+    for (final doc in electionVotes) {
       batch.delete(doc.reference);
     }
     for (final doc in electionSnap.docs) {
