@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/app/mobile/pages/onboarding/login_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -304,7 +305,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
+                body: Center(child: TriangleLoadingIndicator(showFill: false)),
               );
             }
 

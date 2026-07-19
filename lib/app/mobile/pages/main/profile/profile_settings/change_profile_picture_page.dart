@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
@@ -180,7 +181,7 @@ class _ChangeProfilePicturePageState
                     const SizedBox(
                       width: 128,
                       height: 128,
-                      child: CircularProgressIndicator(),
+                      child: TriangleLoadingIndicator(showFill: false),
                     ),
                 ],
               ),

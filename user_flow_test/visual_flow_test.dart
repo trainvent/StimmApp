@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/firebase/firebase_options_prod.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -153,7 +154,11 @@ class _FlowTestVisualizerState extends State<FlowTestVisualizer> {
                           child: SizedBox(
                             width: 15,
                             height: 15,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: TriangleLoadingIndicator(
+                              size: 15,
+                              strokeWidth: 2,
+                              showFill: false,
+                            ),
                           ),
                         ),
                     ],

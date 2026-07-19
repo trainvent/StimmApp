@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_access_qr_scanner_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -45,7 +46,9 @@ class InboxPage extends StatelessWidget {
               snapshot.data ?? const <PollGroupAccessNotification>[];
           if (snapshot.connectionState == ConnectionState.waiting &&
               notifications.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: TriangleLoadingIndicator(showFill: false),
+            );
           }
           if (notifications.isEmpty) {
             return Center(child: Text(context.l10n.noGroupNotificationsYet));

@@ -11,6 +11,7 @@ import 'package:stimmapp/app/mobile/pages/main/groups/group_dashboard_page.dart'
 import 'package:stimmapp/app/mobile/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -297,7 +298,9 @@ class MemberGroupsPage extends StatelessWidget {
           final groups = snapshot.data ?? const <PollGroup>[];
           if (snapshot.connectionState == ConnectionState.waiting &&
               groups.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: TriangleLoadingIndicator(showFill: false),
+            );
           }
 
           if (groups.isEmpty) {
@@ -458,7 +461,11 @@ class _GroupCreateAction extends ConsumerWidget {
               child: SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: TriangleLoadingIndicator(
+                  size: 18,
+                  strokeWidth: 2,
+                  showFill: false,
+                ),
               ),
             ),
           );

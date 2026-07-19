@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -68,7 +69,9 @@ class GroupInvitationsPage extends StatelessWidget {
             return Center(child: Text(snapshot.error.toString()));
           }
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: TriangleLoadingIndicator(showFill: false),
+            );
           }
           final invitations = snapshot.data!;
           if (invitations.isEmpty) {

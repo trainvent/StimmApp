@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/mobile/scaffolds/app_padding_scaffold.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/services/account_data_export_service.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -65,7 +66,11 @@ class _ExportProfilePageState extends State<ExportProfilePage> {
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: TriangleLoadingIndicator(
+                        size: 18,
+                        strokeWidth: 2,
+                        showFill: false,
+                      ),
                     )
                   : const Icon(Icons.save_alt_outlined),
               label: Text(context.l10n.exportAccountData),

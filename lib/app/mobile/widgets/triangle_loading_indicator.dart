@@ -12,7 +12,7 @@ class TriangleLoadingIndicator extends StatefulWidget {
     this.keepHistoryCycles = 2,
     this.strokeWidth = 2.2,
     this.strokeColor = const Color(0xFF111111),
-    this.showFill = true,
+    this.showFill = false,
     this.baseColor,
     this.baseHue = 26,
     this.saturation = 0.73,

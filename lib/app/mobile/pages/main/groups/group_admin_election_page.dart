@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -106,7 +107,9 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
             return Center(child: Text(electionSnapshot.error.toString()));
           }
           if (!electionSnapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: TriangleLoadingIndicator(showFill: false),
+            );
           }
           final election = electionSnapshot.data;
           if (election == null) {
@@ -125,7 +128,9 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
                 stream: _repository.watchMembers(widget.group.id),
                 builder: (context, membersSnapshot) {
                   if (!membersSnapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: TriangleLoadingIndicator(showFill: false),
+                    );
                   }
                   final candidates = membersSnapshot.data!
                       .where(
@@ -179,8 +184,10 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
                         icon: _isSaving
                             ? const SizedBox.square(
                                 dimension: 18,
-                                child: CircularProgressIndicator(
+                                child: TriangleLoadingIndicator(
+                                  size: 18,
                                   strokeWidth: 2,
+                                  showFill: false,
                                 ),
                               )
                             : const Icon(Icons.how_to_vote_outlined),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -296,7 +297,11 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
                     child: SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: TriangleLoadingIndicator(
+                        size: 18,
+                        strokeWidth: 2,
+                        showFill: false,
+                      ),
                     ),
                   )
                 : const Icon(Icons.search),

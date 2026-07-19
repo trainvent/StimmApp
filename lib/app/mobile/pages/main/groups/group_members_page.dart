@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -127,7 +128,9 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
             return Center(child: Text(snapshot.error.toString()));
           }
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: TriangleLoadingIndicator(showFill: false),
+            );
           }
           final members = snapshot.data!;
           if (members.isEmpty) {
@@ -190,8 +193,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                             icon: isRemoving
                                 ? const SizedBox.square(
                                     dimension: 20,
-                                    child: CircularProgressIndicator(
+                                    child: TriangleLoadingIndicator(
+                                      size: 20,
                                       strokeWidth: 2,
+                                      showFill: false,
                                     ),
                                   )
                                 : const Icon(Icons.person_remove_outlined),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/base_overview_page.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -214,7 +215,11 @@ class _PollsPageState extends State<PollsPage> {
                         child: SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: TriangleLoadingIndicator(
+                            size: 20,
+                            strokeWidth: 2,
+                            showFill: false,
+                          ),
                         ),
                       ),
                     );

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app/mobile/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -1135,7 +1136,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         body: user == null
             ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
             : _isLoadingExistingRules
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: TriangleLoadingIndicator(showFill: false))
             : ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
@@ -1216,7 +1217,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 if (_isLoadingExistingRules) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                      child: TriangleLoadingIndicator(showFill: false),
+                    ),
                   ),
                 ] else ...[
                   const SizedBox(height: 16),
