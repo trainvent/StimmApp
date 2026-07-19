@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 /// A button wrapper that handles debouncing and loading states with a cool animation.
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/buttons/debounced_text_button_widget.dart';
-import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/app/mobile/widgets/verification_code_input.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';

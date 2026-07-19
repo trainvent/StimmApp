@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
-import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';

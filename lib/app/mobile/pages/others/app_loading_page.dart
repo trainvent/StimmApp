@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/mobile/widgets/triangle_loading_indicator.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 class AppLoadingPage extends StatelessWidget {
   const AppLoadingPage({super.key});
