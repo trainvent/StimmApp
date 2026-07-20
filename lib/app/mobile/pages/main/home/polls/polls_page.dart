@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/mobile/pages/main/home/base_overview_page.dart';
+import 'package:stimmapp/app/mobile/widgets/form_list_tile_widget.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
@@ -284,26 +285,12 @@ class _PollsPageState extends State<PollsPage> {
       itemBuilder: (context, p, discoveryStatus) {
         final isSurvey = p is Survey;
         final total = p.participantCount;
-        return ListTile(
-          title: Text(p.title),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(p.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-              DiscoveryStatusChips(status: discoveryStatus),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isSurvey ? Icons.assignment_outlined : Icons.how_to_vote,
-                size: 18,
-              ),
-              const SizedBox(width: 4),
-              Text(total.toString()),
-            ],
-          ),
+        return FormListTileWidget(
+          title: p.title,
+          description: p.description,
+          count: total,
+          countIcon: isSurvey ? Icons.assignment_outlined : Icons.how_to_vote,
+          status: DiscoveryStatusChips(status: discoveryStatus),
           onTap: () {
             Navigator.of(
               context,
