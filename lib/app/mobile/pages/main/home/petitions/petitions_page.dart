@@ -14,39 +14,77 @@ class PetitionsPage extends StatelessWidget {
           repo.list(query: query, status: status),
       participatedIdsStreamProvider: repo.watchSignedPetitionIds,
       itemBuilder: (context, p, discoveryStatus) {
-        return ListTile(
-          leading: p.imageUrl != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    p.imageUrl!,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image),
-                  ),
-                )
-              : null,
-          title: Text(p.title),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(p.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-              DiscoveryStatusChips(status: discoveryStatus),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.edit_note, size: 18),
-              const SizedBox(width: 4),
-              Text(p.signatureCount.toString()),
-            ],
-          ),
+        return InkWell(
           onTap: () {
             Navigator.of(context).pushNamed('/petition/${p.id}');
           },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 100),
+              child: Stack(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (p.imageUrl != null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            p.imageUrl!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const SizedBox.square(
+                                  dimension: 100,
+                                  child: Icon(Icons.broken_image),
+                                ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              p.title,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              p.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 52),
+                              child: DiscoveryStatusChips(
+                                status: discoveryStatus,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.edit_note, size: 18),
+                        const SizedBox(width: 4),
+                        Text(p.signatureCount.toString()),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
