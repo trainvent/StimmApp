@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Spline from '@splinetool/react-spline/next';
+import Spline from '@splinetool/react-spline';
 import de from '../public/i18n/de.json';
 import en from '../public/i18n/en.json';
 
@@ -22,6 +22,7 @@ function currentCopy() {
 
 export default function HomePage() {
   const [copy, setCopy] = useState(copyByHost.de);
+  const [canUseWebGL, setCanUseWebGL] = useState(null);
   const [isSplineLoaded, setIsSplineLoaded] = useState(false);
   const isEnglish = copy.lang === 'en';
   const playBadgeSrc = isEnglish
@@ -30,14 +31,6 @@ export default function HomePage() {
   const appStoreBadgeSrc = isEnglish
     ? '/store-badges/app-store-en.svg'
     : '/store-badges/app-store-de.svg';
-
-  const scrollToContact = (event) => {
-    event.preventDefault();
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   useEffect(() => {
     const nextCopy = currentCopy();
@@ -49,21 +42,37 @@ export default function HomePage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', nextCopy.description);
     }
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    setCanUseWebGL(Boolean(context));
+
+    context?.getExtension('WEBGL_lose_context')?.loseContext();
   }, []);
 
   return (
-    <>
+    <div className="page">
       <div className="page-background" aria-hidden="true">
         <img
-          className={`page-background-fallback${isSplineLoaded ? ' is-hidden' : ''}`}
+          className={`page-background-fallback${canUseWebGL === false ? ' is-visible' : ''}`}
           src="/3d_background.png"
           alt=""
         />
-        <Spline
-          className={`page-background-scene${isSplineLoaded ? ' is-loaded' : ''}`}
-          scene="https://prod.spline.design/wqR9pdHZ2Tj-IT5l/scene.splinecode"
-          onLoad={() => setIsSplineLoaded(true)}
-        />
+        {canUseWebGL && (
+          <Spline
+            className={`page-background-scene${isSplineLoaded ? ' is-loaded' : ''}`}
+            scene="https://prod.spline.design/wqR9pdHZ2Tj-IT5l/scene.splinecode"
+            onLoad={(spline) => {
+              const camera = spline.findObjectByName('Camera');
+
+              if (camera) {
+                camera.state = 'Top';
+              }
+
+              setIsSplineLoaded(true);
+            }}
+          />
+        )}
       </div>
 
       <div className="shell">
@@ -73,8 +82,6 @@ export default function HomePage() {
           <span>{copy.brand}</span>
         </a>
         <nav className="nav-links">
-          <a className="nav-link" href="#mission">{copy.navMission}</a>
-          <a className="nav-link" href="#contact" onClick={scrollToContact}>{copy.navContact}</a>
           <a className="button" href={copy.appUrl}>{copy.navOpenApp}</a>
         </nav>
       </header>
@@ -106,63 +113,15 @@ export default function HomePage() {
             </div>
 
             <div className="micro-list">
-              <a
-                className="micro-card"
-                href="#contact"
-                onClick={scrollToContact}
-                role="button"
-              >
+              <div className="micro-card">
                 <strong>{copy.microSupportTitle}</strong>
                 <span>{copy.microSupportText}</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section className="section" id="mission">
-          <div className="section-grid">
-            <article className="section-card">
-              <span className="kicker">{copy.missionCardOneKicker}</span>
-              <h2>{copy.missionCardOneTitle}</h2>
-              <p>{copy.missionCardOneText}</p>
-            </article>
-            <article className="section-card">
-              <span className="kicker">{copy.missionCardTwoKicker}</span>
-              <h2>{copy.missionCardTwoTitle}</h2>
-              <p>{copy.missionCardTwoText}</p>
-            </article>
-            <article className="section-card">
-              <span className="kicker">{copy.missionCardThreeKicker}</span>
-              <h2>{copy.missionCardThreeTitle}</h2>
-              <p>{copy.missionCardThreeText}</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="story">
-            <article className="section-card">
-              <span className="kicker">{copy.storyOneKicker}</span>
-              <h3>{copy.storyOneTitle}</h3>
-              <p>{copy.storyOneText}</p>
-              <ul>
-                <li>{copy.storyListOne}</li>
-                <li>{copy.storyListTwo}</li>
-                <li>{copy.storyListThree}</li>
-              </ul>
-            </article>
-            <article id="contact" className="section-card">
-              <span className="kicker">{copy.contactKicker}</span>
-              <h3>{copy.contactTitle}</h3>
-              <p>
-                <span>{copy.contactEmailLabel}</span>{' '}
-                <a href="mailto:info@trainvent.com">info@trainvent.com</a>
-              </p>
-              <p>{copy.contactText}</p>
-              <div className="cta-row contact-row">
-                <a className="button" href={copy.contactButtonHref}>{copy.contactButton}</a>
+                <div className="micro-card-actions">
+                  <a href="mailto:info@trainvent.com">info@trainvent.com</a>
+                  <a href={copy.contactButtonHref}>{copy.contactButton}</a>
+                </div>
               </div>
-            </article>
+            </div>
           </div>
         </section>
       </main>
@@ -184,6 +143,6 @@ export default function HomePage() {
         </div>
       </footer>
       </div>
-    </>
+    </div>
   );
 }

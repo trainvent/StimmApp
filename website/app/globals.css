@@ -18,11 +18,14 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
+  height: 100%;
   margin: 0;
+  overflow: hidden;
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   color: var(--ink);
   background: #000;
@@ -32,12 +35,27 @@ a {
   color: inherit;
 }
 
+.page {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  background: #c9c9c4;
+}
+
 .shell {
   position: relative;
   z-index: 1;
   width: min(calc(100% - 32px), var(--max));
+  height: 100%;
   margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   pointer-events: none;
+}
+
+.shell main {
+  min-height: 0;
+  display: flex;
 }
 
 .page-background {
@@ -46,25 +64,26 @@ a {
   inset: 0;
   overflow: hidden;
   background: #000;
+  pointer-events: none;
 }
 
 .page-background-fallback,
 .page-background-scene {
   position: absolute !important;
-  inset: 0;
+  inset: 88px 0 0;
   width: 100%;
-  height: 100%;
+  height: calc(100svh - 88px);
 }
 
 .page-background-fallback {
   object-fit: cover;
   object-position: center;
-  opacity: 1;
+  opacity: 0;
   transition: opacity 400ms ease;
 }
 
-.page-background-fallback.is-hidden {
-  opacity: 0;
+.page-background-fallback.is-visible {
+  opacity: 1;
 }
 
 .page-background-scene {
@@ -156,10 +175,12 @@ a {
 }
 
 .hero {
-  min-height: calc(100svh - 92px);
+  min-height: 0;
+  width: 100%;
   display: flex;
   align-items: center;
-  padding: 44px 0 54px;
+  padding: 20px 0;
+  overflow: hidden;
 }
 
 .hero-copy,
@@ -257,8 +278,9 @@ h1 {
   display: block;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(16, 32, 24, 0.07);
+  background: linear-gradient(90deg, #1570ef, #6ea9ff);
+  color: var(--ink);
+  border: 1px solid rgba(20, 70, 200, 0.12);
 }
 
 /* Highlighted clickable micro-card (anchor) */
@@ -303,8 +325,31 @@ a.micro-card span {
 .micro-card span {
   display: block;
   margin-top: 6px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.92rem;
+}
+
+.micro-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.micro-card-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.micro-card-actions a:hover {
+  background: #fff;
 }
 
 .hero-panel {
@@ -448,8 +493,8 @@ a.micro-card span {
 
 .footer {
   pointer-events: auto;
-  margin: 16px 0 30px;
-  padding: 20px 24px;
+  margin: 0 0 18px;
+  padding: 14px 20px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -521,8 +566,7 @@ a.micro-card span {
 
 @media (max-width: 620px) {
   .nav {
-    align-items: flex-start;
-    flex-direction: column;
+    gap: 8px;
   }
 
   .hero-copy,
@@ -537,9 +581,22 @@ a.micro-card span {
   }
 
   .hero {
-    min-height: calc(100svh - 150px);
-    align-items: flex-end;
-    padding: 32px 0;
+    min-height: 0;
+    align-items: center;
+    padding: 12px 0;
+  }
+
+  .page-background-fallback,
+  .page-background-scene {
+    inset-block-start: 152px;
+  }
+
+  .page-background-fallback {
+    height: calc(100svh - 152px);
+  }
+
+  .page-background-scene {
+    height: calc(100svh - 152px);
   }
 
   .hero-copy {
@@ -549,5 +606,75 @@ a.micro-card span {
   .micro-list {
     width: calc(100% - 32px);
     margin-left: 16px;
+  }
+}
+
+@media (max-height: 850px) {
+  .nav {
+    margin-top: 10px;
+    padding-block: 7px;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-link,
+  .button {
+    min-height: 40px;
+  }
+
+  .hero {
+    padding: 10px 0;
+  }
+
+  .hero-copy {
+    padding: 24px;
+  }
+
+  h1 {
+    margin-top: 8px;
+    font-size: clamp(2.5rem, 6vw, 4.4rem);
+  }
+
+  .lede {
+    margin-top: 12px;
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .cta-row {
+    margin-top: 16px;
+  }
+
+  .store-badge {
+    height: 44px;
+  }
+
+  .hero-stack {
+    gap: 10px;
+  }
+
+  .micro-card {
+    padding: 12px 14px;
+  }
+
+  .micro-card strong {
+    font-size: 1.08rem;
+  }
+
+  .micro-card span {
+    font-size: 0.82rem;
+  }
+
+  .micro-card-actions {
+    margin-top: 8px;
+  }
+
+  .footer {
+    margin-bottom: 10px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
   }
 }
