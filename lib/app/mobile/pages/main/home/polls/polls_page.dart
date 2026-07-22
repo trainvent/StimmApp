@@ -373,7 +373,7 @@ class _ShowSurveysInfoButtonState extends State<_ShowSurveysInfoButton> {
                         children: [
                           Image.asset(
                             'assets/images/Lemm_teaching.png',
-                            width: 42,
+                            width: MediaQuery.of(context).size.width / 4,
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(width: 10),

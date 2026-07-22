@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Spline from '@splinetool/react-spline/next';
 import de from '../public/i18n/de.json';
 import en from '../public/i18n/en.json';
 
@@ -21,6 +22,7 @@ function currentCopy() {
 
 export default function HomePage() {
   const [copy, setCopy] = useState(copyByHost.de);
+  const [isSplineLoaded, setIsSplineLoaded] = useState(false);
   const isEnglish = copy.lang === 'en';
   const playBadgeSrc = isEnglish
     ? '/store-badges/google-play-en.svg'
@@ -50,7 +52,21 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="shell">
+    <>
+      <div className="page-background" aria-hidden="true">
+        <img
+          className={`page-background-fallback${isSplineLoaded ? ' is-hidden' : ''}`}
+          src="/3d_background.png"
+          alt=""
+        />
+        <Spline
+          className={`page-background-scene${isSplineLoaded ? ' is-loaded' : ''}`}
+          scene="https://prod.spline.design/wqR9pdHZ2Tj-IT5l/scene.splinecode"
+          onLoad={() => setIsSplineLoaded(true)}
+        />
+      </div>
+
+      <div className="shell">
       <header className="nav">
         <a className="brand" href="./">
           <img className="brand-mark" src="icons/Icon-512.png" alt={copy.logoAlt} />
@@ -65,7 +81,7 @@ export default function HomePage() {
 
       <main>
         <section className="hero">
-          <div className="hero-grid">
+          <div className="hero-stack">
             <div className="hero-copy">
               <h1>{copy.heroTitle}</h1>
               <p className="lede">{copy.heroLede}</p>
@@ -87,72 +103,19 @@ export default function HomePage() {
                   <img className="store-badge" src={appStoreBadgeSrc} alt={copy.heroAppStore} />
                 </a>
               </div>
-              <div className="micro-list">
-                <a
-                  className="micro-card"
-                  href="#contact"
-                  onClick={scrollToContact}
-                  role="button"
-                >
-                  <strong>{copy.microSupportTitle}</strong>
-                  <span>{copy.microSupportText}</span>
-                </a>
-              </div>
             </div>
 
-            <aside className="hero-panel" aria-label="Product preview">
-              <div className="mock-card">
-                <div className="mock-head">
-                  <strong>{copy.panelOneTitle}</strong>
-                  <div className="dot-group">
-                    <span className="dot" style={{ background: '#164f2b' }} />
-                    <span className="dot" style={{ background: '#1570ef' }} />
-                    <span className="dot" style={{ background: '#f4b740' }} />
-                  </div>
-                </div>
-                <div className="mock-row">
-                  <span>{copy.panelOneRowOneLabel}</span>
-                  <strong>{copy.panelOneRowOneValue}</strong>
-                </div>
-                <div className="bar"><span style={{ width: '82%' }} /></div>
-                <div className="mock-row top-gap">
-                  <span>{copy.panelOneRowTwoLabel}</span>
-                  <strong>{copy.panelOneRowTwoValue}</strong>
-                </div>
-                <div className="bar">
-                  <span
-                    style={{
-                      width: '90%',
-                      background: 'linear-gradient(90deg, #1570ef, #6ea9ff)',
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="mock-card">
-                <div className="mock-head">
-                  <strong>{copy.panelTwoTitle}</strong>
-                  <span className="muted">{copy.panelTwoKicker}</span>
-                </div>
-                <div className="mock-row">
-                  <span>{copy.panelTwoRowOneLabel}</span>
-                  <strong>e-ID</strong>
-                </div>
-                <div className="bar"><span style={{ width: '72%' }} /></div>
-                <div className="mock-row top-gap">
-                  <span>{copy.panelTwoRowTwoLabel}</span>
-                  <strong>{copy.panelTwoRowTwoValue}</strong>
-                </div>
-                <div className="bar">
-                  <span
-                    style={{
-                      width: '78%',
-                      background: 'linear-gradient(90deg, #f4b740, #f7cf75)',
-                    }}
-                  />
-                </div>
-              </div>
-            </aside>
+            <div className="micro-list">
+              <a
+                className="micro-card"
+                href="#contact"
+                onClick={scrollToContact}
+                role="button"
+              >
+                <strong>{copy.microSupportTitle}</strong>
+                <span>{copy.microSupportText}</span>
+              </a>
+            </div>
           </div>
         </section>
 
@@ -220,6 +183,7 @@ export default function HomePage() {
           <a href="faq.html">FAQ</a>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
