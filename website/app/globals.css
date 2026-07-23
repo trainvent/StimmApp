@@ -11,6 +11,7 @@
   --shadow: 0 24px 80px rgba(14, 32, 22, 0.12);
   --radius-xl: 34px;
   --max: 1180px;
+  --normal-text-size: 1.06rem;
 }
 
 * {
@@ -242,7 +243,7 @@ h1 {
   margin: 20px 0 0;
   max-width: 56ch;
   color: var(--muted);
-  font-size: 1.06rem;
+  font-size: var(--normal-text-size);
   line-height: 1.7;
 }
 
@@ -268,10 +269,9 @@ h1 {
 .micro-list {
   pointer-events: auto;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  width: min(360px, calc(100% - 32px));
-  margin-left: 32px;
+  width: 100%;
 }
 
 .micro-card {
@@ -326,12 +326,17 @@ a.micro-card span {
   display: block;
   margin-top: 6px;
   color: var(--ink);
-  font-size: 0.92rem;
+  font-size: var(--normal-text-size);
+  line-height: 1.45;
+}
+
+.micro-card.micro-card-contact {
+  padding-inline: 9px;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .micro-card-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
   margin-top: 12px;
 }
@@ -340,12 +345,13 @@ a.micro-card span {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
-  padding: 0 12px;
+  padding: 0 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  font-size: 0.84rem;
+  background: rgba(21, 112, 239, 0.12);
+  font-size: var(--normal-text-size);
   font-weight: 700;
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .micro-card-actions a:hover {
@@ -556,7 +562,7 @@ a.micro-card span {
   }
 
   .micro-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .page-background-fallback {
@@ -604,12 +610,15 @@ a.micro-card span {
   }
 
   .micro-list {
-    width: calc(100% - 32px);
-    margin-left: 16px;
+    width: 100%;
   }
 }
 
 @media (max-height: 850px) {
+  :root {
+    --normal-text-size: 0.94rem;
+  }
+
   .nav {
     margin-top: 10px;
     padding-block: 7px;
@@ -640,7 +649,6 @@ a.micro-card span {
 
   .lede {
     margin-top: 12px;
-    font-size: 0.94rem;
     line-height: 1.45;
   }
 
@@ -662,10 +670,6 @@ a.micro-card span {
 
   .micro-card strong {
     font-size: 1.08rem;
-  }
-
-  .micro-card span {
-    font-size: 0.82rem;
   }
 
   .micro-card-actions {

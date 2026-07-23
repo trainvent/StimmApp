@@ -116,6 +116,9 @@ export default function HomePage() {
               <div className="micro-card">
                 <strong>{copy.microSupportTitle}</strong>
                 <span>{copy.microSupportText}</span>
+              </div>
+              <div className="micro-card micro-card-contact">
+                <strong>{copy.contactTitle}</strong>
                 <div className="micro-card-actions">
                   <a href="mailto:info@trainvent.com">info@trainvent.com</a>
                   <a href={copy.contactButtonHref}>{copy.contactButton}</a>
