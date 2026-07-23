@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/mobile/widgets/tag_selector.dart';
+import 'package:stimmapp/app/mobile/widgets/teaching_lemm_image.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/eu_country_codes.dart';
@@ -280,7 +281,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     showDialog(
       context: context,
       builder: (context) {
-        final screenWidth = MediaQuery.of(context).size.width;
         return Stack(
           children: [
             AlertDialog(
@@ -364,13 +364,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
             Positioned(
               bottom: 0,
               left: 0,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/images/Lemm_teaching.png',
-                  width: screenWidth / 4,
-                  fit: BoxFit.contain,
-                ),
-              ),
+              child: IgnorePointer(child: const TeachingLemmImage()),
             ),
           ],
         );
