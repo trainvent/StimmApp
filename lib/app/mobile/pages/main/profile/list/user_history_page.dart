@@ -8,14 +8,20 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 class UserHistoryPage extends StatefulWidget {
-  const UserHistoryPage({super.key});
+  const UserHistoryPage({super.key, this.uid, this.database});
+
+  @visibleForTesting
+  final String? uid;
+
+  @visibleForTesting
+  final FirebaseFirestore? database;
 
   @override
   State<UserHistoryPage> createState() => _UserHistoryPageState();
 }
 
 class _UserHistoryPageState extends State<UserHistoryPage> {
-  late Future<List<Map<String, dynamic>>> _historyFuture;
+  late Future<List<_HistoryItem>> _historyFuture;
 
   @override
   void initState() {
@@ -23,76 +29,124 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
     _historyFuture = _fetchUserHistory();
   }
 
-  Future<List<Map<String, dynamic>>> _fetchUserHistory() async {
-    final user = authService.currentUser;
-    if (user == null) {
-      // Handle case where user is not logged in
-      return [];
-    }
-    final db = locator.database;
-    final userDocRef = db.collection('users').doc(user.uid);
+  Future<List<_HistoryItem>> _fetchUserHistory() async {
+    final uid = widget.uid ?? authService.currentUser?.uid;
+    if (uid == null) return [];
 
-    // Fetch documents from subcollections to get the IDs.
-    final signedPetitionsFuture =
-        userDocRef.collection('signedPetitions').get();
+    final db = widget.database ?? locator.database;
+    final userDocRef = db.collection('users').doc(uid);
+
+    final signedPetitionsFuture = userDocRef
+        .collection('signedPetitions')
+        .get();
     final votedPollsFuture = userDocRef.collection('votedPolls').get();
+    final createdPetitionsFuture = db
+        .collection('petitions')
+        .where('createdBy', isEqualTo: uid)
+        .get();
+    final createdPollsFuture = db
+        .collection('polls')
+        .where('createdBy', isEqualTo: uid)
+        .get();
 
     final results = await Future.wait([
       signedPetitionsFuture,
       votedPollsFuture,
+      createdPetitionsFuture,
+      createdPollsFuture,
     ]);
 
-    final signedPetitionsSnapshot = results[0] as QuerySnapshot;
-    final votedPollsSnapshot = results[1] as QuerySnapshot;
+    final signedPetitionsSnapshot = results[0];
+    final votedPollsSnapshot = results[1];
+    final createdPetitionsSnapshot = results[2];
+    final createdPollsSnapshot = results[3];
 
-    final petitionIds =
-        signedPetitionsSnapshot.docs.map((doc) => doc.id).toList();
-    final pollIds = votedPollsSnapshot.docs.map((doc) => doc.id).toList();
     final List<Future<DocumentSnapshot>> petitionFutures =
-        petitionIds.map((id) => db.collection('petitions').doc(id).get()).toList();
+        signedPetitionsSnapshot.docs
+            .map((doc) => db.collection('petitions').doc(doc.id).get())
+            .toList();
 
-    final List<Future<DocumentSnapshot>> pollFutures =
-        pollIds.map((id) => db.collection('polls').doc(id).get()).toList();
+    final List<Future<DocumentSnapshot>> pollFutures = votedPollsSnapshot.docs
+        .map((doc) => db.collection('polls').doc(doc.id).get())
+        .toList();
 
     final petitionSnapshots = await Future.wait(petitionFutures);
     final pollSnapshots = await Future.wait(pollFutures);
 
-    final List<Map<String, dynamic>> historyItems = [];
+    final historyItems = <_HistoryItem>[];
 
-    for (var doc in petitionSnapshots) {
+    for (var index = 0; index < petitionSnapshots.length; index++) {
+      final doc = petitionSnapshots[index];
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        historyItems.add({
-          'title': data['title'],
-          'type': 'Petition',
-          'timestamp': data['createdAt'], // Let's assume this exists for now
-        });
+        final activity = signedPetitionsSnapshot.docs[index].data();
+        historyItems.add(
+          _HistoryItem(
+            title: data['title'] as String?,
+            type: _HistoryType.petition,
+            action: _HistoryAction.participation,
+            timestamp: _toDateTime(activity['signedAt']),
+          ),
+        );
       }
     }
 
-    for (var doc in pollSnapshots) {
+    for (var index = 0; index < pollSnapshots.length; index++) {
+      final doc = pollSnapshots[index];
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        historyItems.add({
-          'title': data['title'],
-          'type': 'Poll',
-          'timestamp': data['createdAt'], // Assuming a timestamp field exists
-        });
+        final activity = votedPollsSnapshot.docs[index].data();
+        historyItems.add(
+          _HistoryItem(
+            title: data['title'] as String?,
+            type: _HistoryType.poll,
+            action: _HistoryAction.participation,
+            timestamp: _toDateTime(activity['votedAt']),
+          ),
+        );
       }
     }
-    // Sort items by timestamp (newest first), handling nulls gracefully.
+
+    for (final doc in createdPetitionsSnapshot.docs) {
+      final data = doc.data();
+      historyItems.add(
+        _HistoryItem(
+          title: data['title'] as String?,
+          type: _HistoryType.petition,
+          action: _HistoryAction.publication,
+          timestamp: _toDateTime(data['createdAt']),
+        ),
+      );
+    }
+
+    for (final doc in createdPollsSnapshot.docs) {
+      final data = doc.data();
+      historyItems.add(
+        _HistoryItem(
+          title: data['title'] as String?,
+          type: _HistoryType.poll,
+          action: _HistoryAction.publication,
+          timestamp: _toDateTime(data['createdAt']),
+        ),
+      );
+    }
+
     historyItems.sort((a, b) {
-      final aTimestamp = a['timestamp'] as Timestamp?;
-      final bTimestamp = b['timestamp'] as Timestamp?;
-
-      // Handle null timestamps gracefully by sorting them to the end.
+      final aTimestamp = a.timestamp;
+      final bTimestamp = b.timestamp;
       if (aTimestamp == null && bTimestamp == null) return 0;
-      if (aTimestamp == null) return 1; // a is null, push to end
-      if (bTimestamp == null) return -1; // b is null, push to end
+      if (aTimestamp == null) return 1;
+      if (bTimestamp == null) return -1;
 
       return bTimestamp.compareTo(aTimestamp);
     });
     return historyItems;
+  }
+
+  DateTime? _toDateTime(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    return null;
   }
 
   @override
@@ -101,7 +155,7 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
       appBar: AppBar(
         title: Text(context.l10n.activityHistory, style: AppTextStyles.lBold),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<_HistoryItem>>(
         future: _historyFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -127,9 +181,14 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
             itemCount: historyItems.length,
             itemBuilder: (context, index) {
               final item = historyItems[index];
-              final isPetition = item['type'] == 'Petition';
-              final title = item['title'] ?? context.l10n.noTitle;
-              final type = isPetition ? context.l10n.petition : context.l10n.poll;
+              final isPetition = item.type == _HistoryType.petition;
+              final isPublication = item.action == _HistoryAction.publication;
+              final title = item.title ?? context.l10n.noTitle;
+              final action = isPublication
+                  ? (isPetition
+                        ? context.l10n.createdPetition
+                        : context.l10n.createdPoll)
+                  : (isPetition ? context.l10n.signed : context.l10n.voted);
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -139,7 +198,16 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(title, style: AppTextStyles.mBold),
-                  subtitle: Text(type, style: AppTextStyles.s),
+                  subtitle: Text(action, style: AppTextStyles.s),
+                  trailing: Tooltip(
+                    message: isPublication ? context.l10n.publications : action,
+                    child: Icon(
+                      isPublication
+                          ? Icons.publish_outlined
+                          : Icons.how_to_vote_outlined,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
                 ),
               );
             },
@@ -149,4 +217,22 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
       buttons: const [], // No buttons needed for this page
     );
   }
+}
+
+enum _HistoryType { petition, poll }
+
+enum _HistoryAction { participation, publication }
+
+class _HistoryItem {
+  const _HistoryItem({
+    required this.title,
+    required this.type,
+    required this.action,
+    required this.timestamp,
+  });
+
+  final String? title;
+  final _HistoryType type;
+  final _HistoryAction action;
+  final DateTime? timestamp;
 }
