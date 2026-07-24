@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
-import 'package:stimmapp/app/mobile/widgets/selection_notifier_dialog.dart';
-import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/widgets/selection_notifier_dialog.dart';
+import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 

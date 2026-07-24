@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/widgets/form_list_tile_widget.dart';
+import 'package:stimmapp/app/widgets/form_list_tile_widget.dart';
 
 void main() {
   Widget buildTile({Widget? thumbnail}) {

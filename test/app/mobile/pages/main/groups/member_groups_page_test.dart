@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/pages/main/groups/member_groups_page.dart';
+import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 

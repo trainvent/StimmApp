@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
-import 'package:stimmapp/app/mobile/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 /// Perform a RevenueCat purchase. Returns true on success.

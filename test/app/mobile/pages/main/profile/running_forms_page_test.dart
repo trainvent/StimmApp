@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/pages/main/profile/list/running_forms_page.dart';
+import 'package:stimmapp/app/pages/main/profile/list/running_forms_page.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/petition.dart';

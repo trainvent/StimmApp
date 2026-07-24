@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/mobile/pages/main/groups/group_entry_page.dart';
+import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 
 void main() {

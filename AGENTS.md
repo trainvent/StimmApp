@@ -49,10 +49,10 @@ The app follows a clean architecture approach, separated into layers:
     *   Shows `AppLoadingPage` until initialized.
     *   **LayoutBuilder:** Enforces a max width/aspect ratio (2/3) for web/tablet compatibility.
     *   Routing is handled here.
-3.  `InitAppLayout` (`lib/app/mobile/layout/init_app_layout.dart`):
+3.  `InitAppLayout` (`lib/app/layout/init_app_layout.dart`):
     *   Checks for app updates/maintenance mode.
     *   Delegates to `AuthLayout`.
-4.  `AuthLayout` (`lib/app/mobile/layout/app_root.dart`):
+4.  `AuthLayout` (`lib/app/layout/app_root.dart`):
     *   **Riverpod Consumer:** Listens to `authStateProvider` and `userProfileProvider`.
     *   **Crucial Flow:**
         *   Not Logged In -> `WelcomePage`
@@ -108,7 +108,7 @@ patrol test -t integration_test/simple_flow_test.dart
 1.  Define Model in `lib/core/data/models`.
 2.  Create Repository in `lib/core/data/repositories`.
 3.  Create/Update Riverpod Provider in `lib/core/providers`.
-4.  Build UI in `lib/app/mobile/pages` using `ConsumerWidget`.
+4.  Build UI in `lib/app/pages` using `ConsumerWidget`.
 
 ## 5. Known Flaws & Areas for Improvement
 
