@@ -79,7 +79,7 @@ dependencies:
   flutter_slidable: ^4.0.3
   intl_utils: ^2.8.14
   firebase_crashlytics: ^5.2.4
-  trainvent_general: ^0.0.1
+  trainvent_general: ^0.0.3
 
 dev_dependencies:
   flutter_test:
