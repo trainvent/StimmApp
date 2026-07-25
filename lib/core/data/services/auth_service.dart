@@ -176,6 +176,30 @@ class AuthService {
     }
   }
 
+  /// Deletes an account while its authentication session is still recent.
+  ///
+  /// This is used when a newly verified user cancels profile setup, before
+  /// there is a completed profile that requires the normal reauthentication
+  /// flow.
+  Future<void> deleteCurrentUser() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+
+    try {
+      await user.delete();
+      await firebaseAuth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e);
+    }
+  }
+
   Future<void> resetPasswordfromCurrentPassword({
     required String currentPassword,
     required String newPassword,

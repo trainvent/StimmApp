@@ -45,6 +45,13 @@ class ProfilePageKeys {
 
 class SetUserDetailsPageKeys {
   final saveButton = const Key('saveButton');
+  final cancelRegistrationButton = const Key('cancelRegistrationButton');
+  final cancelRegistrationDialogButton = const Key(
+    'cancelRegistrationDialogButton',
+  );
+  final confirmCancelRegistrationButton = const Key(
+    'confirmCancelRegistrationButton',
+  );
   final surnameTextField = const Key('surnameTextField');
   final givenNameTextField = const Key('givenNameTextField');
   final displayNameTextField = const Key('displayNameTextField');

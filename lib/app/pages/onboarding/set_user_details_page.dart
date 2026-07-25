@@ -52,6 +52,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
   bool _acceptedCommunityRules = false;
+  bool _isCancellingRegistration = false;
   bool get _requiresStateScope => _selectedCountryCode == 'DE';
 
   @override
@@ -186,6 +187,60 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       });
       debugPrintStack(label: 'saveUserDetails error', stackTrace: st);
       showErrorSnackBar(errorMessage);
+    }
+  }
+
+  Future<void> _cancelRegistration() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.l10n.deleteAccount),
+        content: Text(
+          dialogContext
+              .l10n
+              .areYouSureYouWantToDeleteYourAccountThisActionIsIrreversible,
+        ),
+        actions: [
+          TextButton(
+            key: const Key('cancelRegistrationDialogButton'),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(dialogContext.l10n.cancel),
+          ),
+          FilledButton(
+            key: const Key('confirmCancelRegistrationButton'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+              foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(dialogContext.l10n.deleteAccount),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final navigator = Navigator.of(context);
+    setState(() => _isCancellingRegistration = true);
+
+    try {
+      await authService.deleteCurrentUser();
+      if (!mounted) return;
+      navigator.popUntil((route) => route.isFirst);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(
+        '${e.code}: ${e.message ?? context.l10n.deleteAccountUnexpectedError}',
+      );
+    } catch (e, st) {
+      debugPrintStack(label: 'cancel registration error: $e', stackTrace: st);
+      if (!mounted) return;
+      showErrorSnackBar(context.l10n.deleteAccountUnexpectedError);
+    } finally {
+      if (mounted) {
+        setState(() => _isCancellingRegistration = false);
+      }
     }
   }
 
@@ -395,31 +450,42 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
             ),
             buttons: [
               ButtonWidget(
+                key: const Key('cancelRegistrationButton'),
+                label: context.l10n.cancel,
+                callback: _isCancellingRegistration
+                    ? null
+                    : _cancelRegistration,
+              ),
+              const SizedBox(height: 12),
+              ButtonWidget(
                 key: const Key('saveButton'),
                 isFilled: true,
                 label: context.l10n.save,
-                callback: () async {
-                  final faultyInput = S.of(context).faultyInput;
-                  setState(() {
-                    _autoValidateMode = AutovalidateMode.onUserInteraction;
-                  });
+                callback: _isCancellingRegistration
+                    ? null
+                    : () async {
+                        final faultyInput = S.of(context).faultyInput;
+                        setState(() {
+                          _autoValidateMode =
+                              AutovalidateMode.onUserInteraction;
+                        });
 
-                  await _addressFieldKey.currentState
-                      ?.resolveCurrentTextIfNeeded();
+                        await _addressFieldKey.currentState
+                            ?.resolveCurrentTextIfNeeded();
 
-                  if (controllerAddress.text.trim().isEmpty) {
-                    showErrorSnackBar(faultyInput);
-                    // Force validation to show error on address field if it has a validator
-                    _formKey.currentState!.validate();
-                    return;
-                  }
+                        if (controllerAddress.text.trim().isEmpty) {
+                          showErrorSnackBar(faultyInput);
+                          // Force validation to show error on address field if it has a validator
+                          _formKey.currentState!.validate();
+                          return;
+                        }
 
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  } else {
-                    _saveUserDetails();
-                  }
-                },
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        } else {
+                          _saveUserDetails();
+                        }
+                      },
               ),
             ],
           );
