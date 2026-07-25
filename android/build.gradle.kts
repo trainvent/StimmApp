@@ -34,6 +34,18 @@ subprojects {
 subprojects {
     project.evaluationDependsOn(":app")
 
+    tasks.withType<JavaCompile>().configureEach {
+        if (project.name == "cloud_firestore" || project.name == "firebase_auth") {
+            // These current FlutterFire Android adapters intentionally contain
+            // method-channel casts and compatibility calls to deprecated APIs.
+            options.compilerArgs.addAll(
+                listOf("-Xlint:-unchecked", "-Xlint:-deprecation"),
+            )
+        } else {
+            options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
+        }
+    }
+
     if (name == "purchases_flutter" || name == "purchases_ui_flutter") {
         afterEvaluate {
             extensions.findByType(BaseExtension::class.java)?.compileOptions?.apply {
