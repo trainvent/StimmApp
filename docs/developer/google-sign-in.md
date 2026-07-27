@@ -22,10 +22,18 @@ Use `cd android && ./gradlew signingReport` to print Android fingerprints.
 
 ## iOS
 
-After enabling Google, download the updated `GoogleService-Info.plist` for each
-iOS app. Copy its `CLIENT_ID` into `GIDClientID` and add its
-`REVERSED_CLIENT_ID` as a URL scheme in `ios/Runner/Info.plist`. Flavor-specific
-values should be supplied through the existing Xcode build configurations.
+Google client values are configured per flavor in:
+
+- `ios/Flutter/Debug-dev.xcconfig`
+- `ios/Flutter/Debug-prod.xcconfig`
+- `ios/Flutter/Profile-prod.xcconfig`
+- `ios/Flutter/Release-prod.xcconfig`
+
+`ios/Runner/Info.plist` reads those values through `GOOGLE_CLIENT_ID` and
+`GOOGLE_REVERSED_CLIENT_ID`. When an OAuth client changes, download a new
+`GoogleService-Info.plist` and update those two settings from its `CLIENT_ID`
+and `REVERSED_CLIENT_ID`. The downloaded Firebase plist itself is not committed
+because Firebase is initialized from the flavor-specific Dart options.
 
 If the iOS app is distributed through the App Store, review Apple's login
 service requirements. Offering Google Sign-In can also require an equivalent

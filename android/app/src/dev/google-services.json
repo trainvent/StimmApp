@@ -12,7 +12,20 @@
           "package_name": "de.lemarq.stimmapp.dev"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "25072489020-v880ivijc1l258oo4igq6mmjnp9opffc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.lemarq.stimmapp.dev",
+            "certificate_hash": "e46e0d97a069801fc8bad02311dece4303059207"
+          }
+        },
+        {
+          "client_id": "25072489020-dnjofbma6dvc44ftmhe4fcuj2ti2o71h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDu6sjKqJJEfYtlsIZDD2IGu3DglvzIOLg"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "25072489020-dnjofbma6dvc44ftmhe4fcuj2ti2o71h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "25072489020-tuale5hku3au71pes4ube7n1c0m8ubbf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.lemarq.stimmapp.dev"
+              }
+            }
+          ]
         }
       }
     }

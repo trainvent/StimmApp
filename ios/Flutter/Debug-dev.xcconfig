@@ -6,3 +6,5 @@ DEEP_LINK_HOST=stimmapp-dev.web.app
 SECONDARY_DEEP_LINK_HOST=vivot-dev.web.app
 APP_DISPLAY_NAME=StimmApp Dev
 APP_BUNDLE_NAME=stimmapp
+GOOGLE_CLIENT_ID=25072489020-tuale5hku3au71pes4ube7n1c0m8ubbf.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.25072489020-tuale5hku3au71pes4ube7n1c0m8ubbf

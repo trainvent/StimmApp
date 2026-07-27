@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
@@ -28,15 +30,23 @@ class _WelcomePageState extends State<WelcomePage> {
     setState(() => _isGoogleSigningIn = true);
     try {
       await authService.signInWithGoogle();
-      await AnalyticsService.instance.logAuthResult(
-        action: 'google_sign_in',
-        success: true,
+      unawaited(
+        AnalyticsService.instance.logAuthResult(
+          action: 'google_sign_in',
+          success: true,
+        ),
       );
     } on AuthException catch (e) {
-      await AnalyticsService.instance.logAuthResult(
-        action: 'google_sign_in',
-        success: false,
-        errorCode: e.code,
+      debugPrint(
+        'Google sign-in Firebase failure '
+        '(code: ${e.code}, message: ${e.message})',
+      );
+      unawaited(
+        AnalyticsService.instance.logAuthResult(
+          action: 'google_sign_in',
+          success: false,
+          errorCode: e.code,
+        ),
       );
       if (!mounted || e.code == 'google-sign-in-cancelled') return;
       showErrorSnackBar(e.message ?? context.l10n.googleSignInFailed);

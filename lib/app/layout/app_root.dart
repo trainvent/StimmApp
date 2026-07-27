@@ -65,7 +65,7 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
           return widget.pageIfNotConnected ?? const WelcomePage();
         }
 
-        if (!user.emailVerified) {
+        if (requiresEmailVerification(user)) {
           return const EmailConfirmationPage();
         }
 

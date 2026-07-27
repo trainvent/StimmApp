@@ -7,12 +7,33 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:223242419578:android:05c6b7df0cf5ec3488aac3",
+        "mobilesdk_app_id": "1:223242419578:android:b8971b59a1a702cf88aac3",
         "android_client_info": {
           "package_name": "de.lemarq.stimmapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "223242419578-n4b3tgchf52u88n45v1lsb4h2h6r37rp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.lemarq.stimmapp",
+            "certificate_hash": "6cd7fa5d18c60764e3dfdeb1302b9ed8336f5476"
+          }
+        },
+        {
+          "client_id": "223242419578-plrb6ckdhdhfsl79k8f7j8hid0q4miv6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.lemarq.stimmapp",
+            "certificate_hash": "e46e0d97a069801fc8bad02311dece4303059207"
+          }
+        },
+        {
+          "client_id": "223242419578-7tqv3rb4da52t9bqj5hods9qrl8gjn55.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDb6UoJK2XZDSPvDIPssSHS9L5QQ4T-u8A"
@@ -20,7 +41,20 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223242419578-7tqv3rb4da52t9bqj5hods9qrl8gjn55.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "223242419578-mmgcc9o1srfb7vdijf3s5lrmaaif0th8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.lemarq.stimmapp",
+                "app_store_id": "6759249651"
+              }
+            }
+          ]
         }
       }
     }

@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDb6UoJK2XZDSPvDIPssSHS9L5QQ4T-u8A',
-    appId: '1:223242419578:android:05c6b7df0cf5ec3488aac3',
+    appId: '1:223242419578:android:b8971b59a1a702cf88aac3',
     messagingSenderId: '223242419578',
     projectId: 'stimmapp-f0141',
     storageBucket: 'stimmapp-f0141.firebasestorage.app',

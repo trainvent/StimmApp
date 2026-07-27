@@ -26,11 +26,20 @@ final currentUserProvider = Provider<User?>((ref) {
   return authState.value;
 });
 
+/// Password accounts must complete StimmApp's verification-code flow.
+/// Federated Google accounts have already verified control of their email.
+bool requiresEmailVerification(User user) {
+  if (user.emailVerified) return false;
+  return !user.providerData.any(
+    (provider) => provider.providerId == GoogleAuthProvider.PROVIDER_ID,
+  );
+}
+
 /// Stream provider for the current user's profile.
 /// It depends on the authStateProvider.
 final userProfileProvider = StreamProvider<UserProfile?>((ref) {
   final authState = ref.watch(authStateProvider);
-  
+
   return authState.when(
     data: (user) {
       if (user == null) return Stream.value(null);

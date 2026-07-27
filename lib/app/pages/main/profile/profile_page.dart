@@ -99,17 +99,20 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
+    // Keep stable handles before signing out. The auth-state listener can
+    // replace the authenticated widget tree while these futures are pending.
+    final navigator = Navigator.of(context);
+    final successMessage = S.of(context).loggedOutSuccessfully;
+    FocusManager.instance.primaryFocus?.unfocus();
+
     try {
       await authService.signOut();
-      if (!context.mounted) return;
-      showSuccessSnackBar(S.of(context).loggedOutSuccessfully);
-      if (context.mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
+      if (navigator.mounted) {
+        navigator.popUntil((route) => route.isFirst);
       }
+      showSuccessSnackBar(successMessage);
     } on AuthException catch (e) {
-      if (context.mounted) {
-        showErrorSnackBar(e.message);
-      }
+      showErrorSnackBar(e.message);
     }
   }
 

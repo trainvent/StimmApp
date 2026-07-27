@@ -2,3 +2,5 @@
 #include "Generated.xcconfig"
 APP_DISPLAY_NAME=StimmApp
 APP_BUNDLE_NAME=stimmapp
+GOOGLE_CLIENT_ID=223242419578-mmgcc9o1srfb7vdijf3s5lrmaaif0th8.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.223242419578-mmgcc9o1srfb7vdijf3s5lrmaaif0th8
