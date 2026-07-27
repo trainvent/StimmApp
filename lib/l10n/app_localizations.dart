@@ -608,6 +608,48 @@ abstract class AppLocalizations {
   /// **'Date of Birth'**
   String get dateOfBirth;
 
+  /// No description provided for @importBirthdayAndAddressFromGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import birthday and address from Google'**
+  String get importBirthdayAndAddressFromGoogle;
+
+  /// No description provided for @importingFromGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing from Google…'**
+  String get importingFromGoogle;
+
+  /// No description provided for @googleProfileImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Google profile details imported'**
+  String get googleProfileImported;
+
+  /// No description provided for @googleBirthdayImportedAddressUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday imported. Google did not provide an address; select an autofill suggestion or enter it'**
+  String get googleBirthdayImportedAddressUnavailable;
+
+  /// No description provided for @googleAddressImportedBirthdayUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Address imported. Google did not provide a complete birthday'**
+  String get googleAddressImportedBirthdayUnavailable;
+
+  /// No description provided for @googleProfileHasNoBirthdayOrAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'No birthday or address was found in your Google profile'**
+  String get googleProfileHasNoBirthdayOrAddress;
+
+  /// No description provided for @googleProfileImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google profile details could not be imported'**
+  String get googleProfileImportFailed;
+
   /// No description provided for @daysLeft.
   ///
   /// In en, this message translates to:

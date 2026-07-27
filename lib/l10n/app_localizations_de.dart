@@ -283,6 +283,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dateOfBirth => 'Geburtsdatum';
 
   @override
+  String get importBirthdayAndAddressFromGoogle =>
+      'Geburtsdatum und Anschrift von Google importieren';
+
+  @override
+  String get importingFromGoogle => 'Wird von Google importiert…';
+
+  @override
+  String get googleProfileImported => 'Google-Profildaten wurden importiert';
+
+  @override
+  String get googleBirthdayImportedAddressUnavailable =>
+      'Geburtsdatum importiert. Google hat keine Anschrift bereitgestellt; wähle einen Autofill-Vorschlag aus oder gib sie ein';
+
+  @override
+  String get googleAddressImportedBirthdayUnavailable =>
+      'Anschrift importiert. Google hat kein vollständiges Geburtsdatum bereitgestellt';
+
+  @override
+  String get googleProfileHasNoBirthdayOrAddress =>
+      'Im Google-Profil wurden weder Geburtsdatum noch Anschrift gefunden';
+
+  @override
+  String get googleProfileImportFailed =>
+      'Google-Profildaten konnten nicht importiert werden';
+
+  @override
   String get daysLeft => 'Verbleibende Tage';
 
   @override

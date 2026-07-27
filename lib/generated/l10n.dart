@@ -769,6 +769,76 @@ class S {
     );
   }
 
+  /// `Import birthday and address from Google`
+  String get importBirthdayAndAddressFromGoogle {
+    return Intl.message(
+      'Import birthday and address from Google',
+      name: 'importBirthdayAndAddressFromGoogle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Importing from Google…`
+  String get importingFromGoogle {
+    return Intl.message(
+      'Importing from Google…',
+      name: 'importingFromGoogle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google profile details imported`
+  String get googleProfileImported {
+    return Intl.message(
+      'Google profile details imported',
+      name: 'googleProfileImported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Birthday imported. Google did not provide an address; select an autofill suggestion or enter it`
+  String get googleBirthdayImportedAddressUnavailable {
+    return Intl.message(
+      'Birthday imported. Google did not provide an address; select an autofill suggestion or enter it',
+      name: 'googleBirthdayImportedAddressUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address imported. Google did not provide a complete birthday`
+  String get googleAddressImportedBirthdayUnavailable {
+    return Intl.message(
+      'Address imported. Google did not provide a complete birthday',
+      name: 'googleAddressImportedBirthdayUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No birthday or address was found in your Google profile`
+  String get googleProfileHasNoBirthdayOrAddress {
+    return Intl.message(
+      'No birthday or address was found in your Google profile',
+      name: 'googleProfileHasNoBirthdayOrAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google profile details could not be imported`
+  String get googleProfileImportFailed {
+    return Intl.message(
+      'Google profile details could not be imported',
+      name: 'googleProfileImportFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Days Left`
   String get daysLeft {
     return Intl.message('Days Left', name: 'daysLeft', desc: '', args: []);

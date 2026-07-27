@@ -40,6 +40,12 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
   int _requestId = 0;
   String? _lastResolvedAddress;
 
+  void requestFocus() {
+    if (mounted) {
+      _focusNode.requestFocus();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -284,6 +290,7 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
         child: TextFormField(
           controller: widget.controller,
           focusNode: _focusNode,
+          autofillHints: const [AutofillHints.fullStreetAddress],
           decoration: InputDecoration(
             hintText: context.l10n.enterYourAddress,
             labelText: context.l10n.address,

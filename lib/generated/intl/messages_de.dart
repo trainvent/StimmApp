@@ -600,6 +600,23 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "goToWelcome": MessageLookupByLibrary.simpleMessage("Zum Startbildschirm"),
     "goal": MessageLookupByLibrary.simpleMessage("Ziel"),
+    "googleAddressImportedBirthdayUnavailable":
+        MessageLookupByLibrary.simpleMessage(
+          "Anschrift importiert. Google hat kein vollständiges Geburtsdatum bereitgestellt",
+        ),
+    "googleBirthdayImportedAddressUnavailable":
+        MessageLookupByLibrary.simpleMessage(
+          "Geburtsdatum importiert. Google hat keine Anschrift bereitgestellt; wähle einen Autofill-Vorschlag aus oder gib sie ein",
+        ),
+    "googleProfileHasNoBirthdayOrAddress": MessageLookupByLibrary.simpleMessage(
+      "Im Google-Profil wurden weder Geburtsdatum noch Anschrift gefunden",
+    ),
+    "googleProfileImportFailed": MessageLookupByLibrary.simpleMessage(
+      "Google-Profildaten konnten nicht importiert werden",
+    ),
+    "googleProfileImported": MessageLookupByLibrary.simpleMessage(
+      "Google-Profildaten wurden importiert",
+    ),
     "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
       "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
     ),
@@ -669,6 +686,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "imagePreviewDescription": MessageLookupByLibrary.simpleMessage(
       "Bildvorschau",
     ),
+    "importBirthdayAndAddressFromGoogle": MessageLookupByLibrary.simpleMessage(
+      "Geburtsdatum und Anschrift von Google importieren",
+    ),
     "importCsvFileLabel": MessageLookupByLibrary.simpleMessage(
       "CSV-Datei importieren",
     ),
@@ -676,6 +696,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "importedCsvRows": m12,
     "importedMembersCount": m13,
     "importedRowsSkippedMalformed": m14,
+    "importingFromGoogle": MessageLookupByLibrary.simpleMessage(
+      "Wird von Google importiert…",
+    ),
     "inactive": MessageLookupByLibrary.simpleMessage("Inaktiv"),
     "info": MessageLookupByLibrary.simpleMessage("Info"),
     "invalidEmailEntered": MessageLookupByLibrary.simpleMessage(

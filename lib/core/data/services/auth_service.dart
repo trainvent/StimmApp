@@ -81,6 +81,10 @@ class AuthService {
         false;
   }
 
+  Future<GoogleProfileData> importGoogleProfileData() {
+    return googleAuthClient.importProfileData();
+  }
+
   Future<UserCredential> signIn({
     required String email,
     required String password,

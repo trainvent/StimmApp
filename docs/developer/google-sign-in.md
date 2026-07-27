@@ -45,10 +45,22 @@ Add every deployed site origin to the Firebase Authentication authorized
 domains for the matching project. The app uses Firebase's Google popup flow, so
 it does not require the `google_sign_in_web` meta tag.
 
-## Address import
+## Birthday and address import
 
 Basic Google sign-in supplies identity data such as email, name, and profile
-photo. Address import is intentionally not requested during authentication. It
-requires enabling the Google People API and a separate, explicit
-`user.addresses.read` consent flow. The profile form should remain usable when
-Google returns no address.
+photo. Birthday and address import is intentionally not requested during
+authentication.
+
+For both `stimmapp-dev` and `stimmapp-f0141`:
+
+1. Enable the **Google People API** in Google Cloud Console.
+2. Configure the OAuth consent screen for these scopes:
+   - `https://www.googleapis.com/auth/user.birthday.read`
+   - `https://www.googleapis.com/auth/user.addresses.read`
+3. Add developer accounts as test users while the consent screen is in testing.
+
+The optional import action requests consent interactively and calls
+`people/me?personFields=addresses,birthdays`. Google may return neither field,
+multiple addresses, or a birthday without a year. The app uses the primary
+address, ignores incomplete birthdays, and resolves imported address text
+through TomTom before profile submission.

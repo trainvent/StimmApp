@@ -2,5 +2,6 @@
 	"cmake.sourceDirectory": "/home/lmarquar/Downloads/stimmapp/linux",
 	"CodeGPT.apiKey": "Claude Code",
 	"codium.codeCompletion.enable": true,
-	"cmake.ignoreCMakeListsMissing": true
+	"cmake.ignoreCMakeListsMissing": true,
+	"debug.saveBeforeStart": "nonUntitledEditorsInActiveGroup"
 }

@@ -21,6 +21,7 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+import 'package:stimmapp/core/data/services/google_auth_client.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
@@ -55,7 +56,13 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   bool _acceptedCommunityRules = false;
   bool _isSaving = false;
   bool _isCancellingRegistration = false;
+  bool _isImportingGoogleProfile = false;
   bool get _requiresStateScope => _selectedCountryCode == 'DE';
+  bool get _isGoogleAccount =>
+      authService.currentUser?.providerData.any(
+        (provider) => provider.providerId == GoogleAuthProvider.PROVIDER_ID,
+      ) ??
+      false;
 
   @override
   void initState() {
@@ -80,6 +87,66 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     return value.length <= AppLimits.maxPersonNameLength
         ? value
         : value.substring(0, AppLimits.maxPersonNameLength);
+  }
+
+  Future<void> _importGoogleProfile() async {
+    if (_isImportingGoogleProfile) return;
+    setState(() => _isImportingGoogleProfile = true);
+
+    try {
+      final data = await authService.importGoogleProfileData();
+      if (!mounted) return;
+
+      var birthdayImported = false;
+      var addressImported = false;
+      final birthday = data.dateOfBirth;
+      if (birthday != null && birthday.year >= 1900) {
+        _selectedDateOfBirth = birthday;
+        controllerDateOfBirth.text = DateFormat('yyyy-MM-dd').format(birthday);
+        birthdayImported = true;
+      }
+
+      final address = data.address?.trim();
+      if (address != null && address.isNotEmpty) {
+        controllerAddress.text = address;
+        controllerAddress.selection = TextSelection.collapsed(
+          offset: address.length,
+        );
+        await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded();
+        if (!mounted) return;
+        addressImported = true;
+      }
+
+      setState(() {});
+      final message = switch ((birthdayImported, addressImported)) {
+        (true, true) => context.l10n.googleProfileImported,
+        (true, false) => context.l10n.googleBirthdayImportedAddressUnavailable,
+        (false, true) => context.l10n.googleAddressImportedBirthdayUnavailable,
+        (false, false) => context.l10n.googleProfileHasNoBirthdayOrAddress,
+      };
+      showSuccessSnackBar(message);
+      if (!addressImported) {
+        _addressFieldKey.currentState?.requestFocus();
+      }
+    } on GoogleProfileImportCancelledException {
+      return;
+    } on GoogleProfileImportException catch (e, st) {
+      debugPrint('Google profile import failed (${e.code}): ${e.message}');
+      debugPrintStack(stackTrace: st);
+      if (mounted) {
+        showErrorSnackBar(context.l10n.googleProfileImportFailed);
+      }
+    } catch (e, st) {
+      debugPrint('Google profile import failed: $e');
+      debugPrintStack(stackTrace: st);
+      if (mounted) {
+        showErrorSnackBar(context.l10n.googleProfileImportFailed);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isImportingGoogleProfile = false);
+      }
+    }
   }
 
   @override
@@ -409,6 +476,31 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                       },
                     ),
                     const SizedBox(height: 10),
+                    if (_isGoogleAccount) ...[
+                      OutlinedButton.icon(
+                        key: const Key('importGoogleProfileButton'),
+                        onPressed:
+                            _isImportingGoogleProfile ||
+                                _isSaving ||
+                                _isCancellingRegistration
+                            ? null
+                            : _importGoogleProfile,
+                        icon: _isImportingGoogleProfile
+                            ? const SizedBox.square(
+                                dimension: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.download),
+                        label: Text(
+                          _isImportingGoogleProfile
+                              ? context.l10n.importingFromGoogle
+                              : context.l10n.importBirthdayAndAddressFromGoogle,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                     TextFormField(
                       key: const Key('dateOfBirthTextField'),
                       controller: controllerDateOfBirth,
@@ -519,7 +611,10 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
               ButtonWidget(
                 key: const Key('cancelRegistrationButton'),
                 label: context.l10n.cancel,
-                callback: _isCancellingRegistration || _isSaving
+                callback:
+                    _isCancellingRegistration ||
+                        _isSaving ||
+                        _isImportingGoogleProfile
                     ? null
                     : _cancelRegistration,
               ),
@@ -528,7 +623,10 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                 key: const Key('saveButton'),
                 isFilled: true,
                 label: context.l10n.save,
-                callback: _isCancellingRegistration || _isSaving
+                callback:
+                    _isCancellingRegistration ||
+                        _isSaving ||
+                        _isImportingGoogleProfile
                     ? null
                     : () async {
                         final faultyInput = S.of(context).faultyInput;

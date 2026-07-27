@@ -564,6 +564,23 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "goToWelcome": MessageLookupByLibrary.simpleMessage("Go to Welcome"),
     "goal": MessageLookupByLibrary.simpleMessage("Goal"),
+    "googleAddressImportedBirthdayUnavailable":
+        MessageLookupByLibrary.simpleMessage(
+          "Address imported. Google did not provide a complete birthday",
+        ),
+    "googleBirthdayImportedAddressUnavailable":
+        MessageLookupByLibrary.simpleMessage(
+          "Birthday imported. Google did not provide an address; select an autofill suggestion or enter it",
+        ),
+    "googleProfileHasNoBirthdayOrAddress": MessageLookupByLibrary.simpleMessage(
+      "No birthday or address was found in your Google profile",
+    ),
+    "googleProfileImportFailed": MessageLookupByLibrary.simpleMessage(
+      "Google profile details could not be imported",
+    ),
+    "googleProfileImported": MessageLookupByLibrary.simpleMessage(
+      "Google profile details imported",
+    ),
     "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
       "Google sign-in failed. Please try again.",
     ),
@@ -631,6 +648,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "imagePreviewDescription": MessageLookupByLibrary.simpleMessage(
       "This is a preview of your new profile picture.",
     ),
+    "importBirthdayAndAddressFromGoogle": MessageLookupByLibrary.simpleMessage(
+      "Import birthday and address from Google",
+    ),
     "importCsvFileLabel": MessageLookupByLibrary.simpleMessage(
       "Import CSV file",
     ),
@@ -638,6 +658,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "importedCsvRows": m12,
     "importedMembersCount": m13,
     "importedRowsSkippedMalformed": m14,
+    "importingFromGoogle": MessageLookupByLibrary.simpleMessage(
+      "Importing from Google…",
+    ),
     "inactive": MessageLookupByLibrary.simpleMessage("Inactive"),
     "info": MessageLookupByLibrary.simpleMessage("Info"),
     "invalidEmailEntered": MessageLookupByLibrary.simpleMessage(

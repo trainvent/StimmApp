@@ -281,6 +281,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateOfBirth => 'Date of Birth';
 
   @override
+  String get importBirthdayAndAddressFromGoogle =>
+      'Import birthday and address from Google';
+
+  @override
+  String get importingFromGoogle => 'Importing from Google…';
+
+  @override
+  String get googleProfileImported => 'Google profile details imported';
+
+  @override
+  String get googleBirthdayImportedAddressUnavailable =>
+      'Birthday imported. Google did not provide an address; select an autofill suggestion or enter it';
+
+  @override
+  String get googleAddressImportedBirthdayUnavailable =>
+      'Address imported. Google did not provide a complete birthday';
+
+  @override
+  String get googleProfileHasNoBirthdayOrAddress =>
+      'No birthday or address was found in your Google profile';
+
+  @override
+  String get googleProfileImportFailed =>
+      'Google profile details could not be imported';
+
+  @override
   String get daysLeft => 'Days Left';
 
   @override
