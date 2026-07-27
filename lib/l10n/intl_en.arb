@@ -563,6 +563,8 @@
 	"loginLegalNoticeAnd": " and ",
 	"loginLegalNoticePrivacy": "Privacy Policy",
 	"loginLegalNoticeSuffix": ".",
+	"continueWithGoogle": "Continue with Google",
+	"googleSignInFailed": "Google sign-in failed. Please try again.",
 	"saving": "Saving...",
 	"removeAbusiveLanguageFromPublicName": "Please remove abusive or objectionable language from your public name.",
 	"newUser": "New User",

@@ -130,6 +130,7 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
+    final hasPasswordProvider = authService.hasPasswordProvider;
     final profileState = ref.watch(userProfileProvider);
 
     return AppBarScaffold(
@@ -278,14 +279,17 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.email,
                             userProfile.email,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ChangeEmailPage(),
-                                ),
-                              );
-                            },
+                            onTap: hasPasswordProvider
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChangeEmailPage(),
+                                      ),
+                                    );
+                                  }
+                                : null,
                           ),
                           _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
@@ -431,21 +435,21 @@ class ProfilePage extends ConsumerWidget {
                             );
                           },
                   ),
-                  //Change password
-                  PointingListTile(
-                    key: keys.profilePage.changePasswordListTile,
-                    title: Text(context.l10n.changePassword),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ChangePasswordPage();
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  if (hasPasswordProvider)
+                    PointingListTile(
+                      key: keys.profilePage.changePasswordListTile,
+                      title: Text(context.l10n.changePassword),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ChangePasswordPage();
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   // Privacy Settings
                   PointingListTile(
                     title: Text(context.l10n.privacy),

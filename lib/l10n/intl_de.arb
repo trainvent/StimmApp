@@ -565,6 +565,8 @@
 	"loginLegalNoticeAnd": " und unserer ",
 	"loginLegalNoticePrivacy": "Datenschutzerklärung",
 	"loginLegalNoticeSuffix": " zu.",
+	"continueWithGoogle": "Mit Google fortfahren",
+	"googleSignInFailed": "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
 	"saving": "Speichern...",
 	"removeAbusiveLanguageFromPublicName": "Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.",
 	"newUser": "Neuer Benutzer",

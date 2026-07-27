@@ -1585,6 +1585,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginLegalNoticeSuffix => ' zu.';
 
   @override
+  String get continueWithGoogle => 'Mit Google fortfahren';
+
+  @override
+  String get googleSignInFailed =>
+      'Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
   String get saving => 'Speichern...';
 
   @override

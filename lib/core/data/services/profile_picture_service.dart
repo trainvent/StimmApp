@@ -55,6 +55,7 @@ class ProfilePictureService {
     String uid,
     XFile file, {
     void Function(double progress)? onProgress,
+    bool persistUrl = true,
   }) async {
     final ref = _storage.ref('users/$uid/profile.jpg');
     final metadata = SettableMetadata(contentType: 'image/jpeg');
@@ -81,7 +82,9 @@ class ProfilePictureService {
       }
 
       final String url = await ref.getDownloadURL();
-      await setProfileUrl(uid, url);
+      if (persistUrl) {
+        await setProfileUrl(uid, url);
+      }
       return url;
     } finally {
       await sub.cancel();

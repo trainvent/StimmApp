@@ -5,16 +5,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
+import 'package:stimmapp/core/data/services/google_auth_client.dart';
 
 final AuthService authService = AuthService();
 
 class AuthService {
-  AuthService({FirebaseAuth? firebaseAuth, FirebaseFunctions? functions})
-    : _firebaseAuth = firebaseAuth,
-      _functions = functions;
+  AuthService({
+    FirebaseAuth? firebaseAuth,
+    FirebaseFunctions? functions,
+    GoogleAuthClient? googleAuthClient,
+  }) : _firebaseAuth = firebaseAuth,
+       _functions = functions,
+       _googleAuthClient = googleAuthClient ?? GoogleSignInClient();
 
   final FirebaseAuth? _firebaseAuth;
   final FirebaseFunctions? _functions;
+  final GoogleAuthClient _googleAuthClient;
+  GoogleAuthClient get googleAuthClient => _googleAuthClient;
 
   FirebaseAuth get firebaseAuth => _firebaseAuth ?? FirebaseAuth.instance;
   FirebaseFunctions get functions => _functions ?? FirebaseFunctions.instance;
@@ -67,6 +74,13 @@ class AuthService {
     }
   }
 
+  bool get hasPasswordProvider {
+    return currentUser?.providerData.any(
+          (provider) => provider.providerId == EmailAuthProvider.PROVIDER_ID,
+        ) ??
+        false;
+  }
+
   Future<UserCredential> signIn({
     required String email,
     required String password,
@@ -90,6 +104,55 @@ class AuthService {
       return await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e);
+    }
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      late final UserCredential result;
+
+      if (kIsWeb) {
+        result = await firebaseAuth.signInWithPopup(GoogleAuthProvider());
+      } else {
+        final googleIdentity = await googleAuthClient.authenticate();
+        final idToken = googleIdentity.idToken;
+        if (idToken == null || idToken.isEmpty) {
+          throw FirebaseAuthException(
+            code: 'invalid-credential',
+            message: 'Google did not return a valid identity token.',
+          );
+        }
+        final credential = GoogleAuthProvider.credential(idToken: idToken);
+        result = await firebaseAuth.signInWithCredential(credential);
+      }
+
+      if (result.additionalUserInfo?.isNewUser ?? false) {
+        try {
+          await assertSignupEligible(email: result.user?.email ?? '');
+        } on AuthException {
+          await result.user?.delete();
+          await firebaseAuth.signOut();
+          rethrow;
+        }
+      }
+
+      return result;
+    } on GoogleAuthCancelledException {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-cancelled',
+          message: 'Google sign-in was cancelled.',
+        ),
+      );
+    } on GoogleAuthClientException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-${e.code}',
+          message: e.message ?? 'Google sign-in failed.',
+        ),
       );
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
@@ -124,10 +187,15 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await firebaseAuth.signOut();
+      if (!kIsWeb) {
+        await googleAuthClient.signOut();
+      }
     } on FirebaseAuthException catch (e) {
       throw AuthException(
         FirebaseAuthException(code: e.code, message: e.message),
       );
+    } on GoogleAuthClientException catch (e) {
+      debugPrint('Google session sign-out failed: ${e.code}: ${e.message}');
     }
   }
 
@@ -171,6 +239,59 @@ class AuthService {
       }
       await currentUser!.delete();
       await firebaseAuth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e);
+    }
+  }
+
+  Future<void> deleteAccountWithGoogle() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+
+    try {
+      if (kIsWeb) {
+        await user.reauthenticateWithPopup(GoogleAuthProvider());
+      } else {
+        final googleIdentity = await googleAuthClient.authenticate();
+        final idToken = googleIdentity.idToken;
+        if (idToken == null || idToken.isEmpty) {
+          throw FirebaseAuthException(
+            code: 'invalid-credential',
+            message: 'Google did not return a valid identity token.',
+          );
+        }
+        await user.reauthenticateWithCredential(
+          GoogleAuthProvider.credential(idToken: idToken),
+        );
+      }
+
+      await UserRepository.create().delete(user.uid);
+      await user.delete();
+      await firebaseAuth.signOut();
+      if (!kIsWeb) {
+        await googleAuthClient.signOut();
+      }
+    } on GoogleAuthCancelledException {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-cancelled',
+          message: 'Google sign-in was cancelled.',
+        ),
+      );
+    } on GoogleAuthClientException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-${e.code}',
+          message: e.message ?? 'Google sign-in failed.',
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
     }

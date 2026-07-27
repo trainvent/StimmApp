@@ -312,6 +312,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "continueNext": MessageLookupByLibrary.simpleMessage("Continue"),
     "continueText": MessageLookupByLibrary.simpleMessage("Continue"),
     "continueToApp": MessageLookupByLibrary.simpleMessage("Continue to app"),
+    "continueWithGoogle": MessageLookupByLibrary.simpleMessage(
+      "Continue with Google",
+    ),
     "copyInviteLinkDescription": MessageLookupByLibrary.simpleMessage(
       "Share the group invitation link.",
     ),
@@ -561,6 +564,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "goToWelcome": MessageLookupByLibrary.simpleMessage("Go to Welcome"),
     "goal": MessageLookupByLibrary.simpleMessage("Goal"),
+    "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
+      "Google sign-in failed. Please try again.",
+    ),
     "groupAccess": MessageLookupByLibrary.simpleMessage("Group access"),
     "groupAccessAccepted": MessageLookupByLibrary.simpleMessage(
       "Saved. Group access accepted.",

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,8 +53,34 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
   bool _acceptedCommunityRules = false;
+  bool _isSaving = false;
   bool _isCancellingRegistration = false;
   bool get _requiresStateScope => _selectedCountryCode == 'DE';
+
+  @override
+  void initState() {
+    super.initState();
+    final googleName = authService.currentUser?.displayName?.trim();
+    if (googleName == null || googleName.isEmpty) return;
+
+    final nameParts = googleName
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (nameParts.isEmpty) return;
+
+    controllerGivenName.text = _limitName(nameParts.first);
+    if (nameParts.length > 1) {
+      controllerSurname.text = _limitName(nameParts.skip(1).join(' '));
+    }
+    controllerDisplayName.text = normalizeUsername(googleName);
+  }
+
+  String _limitName(String value) {
+    return value.length <= AppLimits.maxPersonNameLength
+        ? value
+        : value.substring(0, AppLimits.maxPersonNameLength);
+  }
 
   @override
   void dispose() {
@@ -66,6 +93,10 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   }
 
   Future<void> _saveUserDetails() async {
+    if (_isSaving) return;
+
+    setState(() => _isSaving = true);
+
     try {
       final User? currentUser = authService.currentUser;
 
@@ -104,6 +135,13 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
 
       final displayName = normalizeUsername(controllerDisplayName.text);
+      final crashLogsController = ref.read(crashLogsEnabledProvider.notifier);
+      final analyticsController = ref.read(
+        analyticsCollectionEnabledProvider.notifier,
+      );
+      final profilePictureController = ref.read(
+        profilePictureUrlProvider.notifier,
+      );
 
       final profile = UserProfile(
         uid: currentUser.uid,
@@ -122,17 +160,21 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
         acceptedCommunityRulesAt: DateTime.now(),
       );
 
-      await UserRepository.create().upsertWithUniqueUsername(profile);
       await authService.updateUsername(username: displayName);
-      ref.read(crashLogsEnabledProvider.notifier).setEnabled(true);
-      ref.read(analyticsCollectionEnabledProvider.notifier).setEnabled(true);
+      crashLogsController.setEnabled(true);
+      analyticsController.setEnabled(true);
       await AnalyticsService.instance.logProfileCompleted(
         countryCode: profile.countryCode,
         supportsStateScope: profile.supportsStateScope,
       );
 
+      final googlePhotoUrl = currentUser.photoURL?.trim();
+      String? profilePictureUrl = googlePhotoUrl?.isEmpty ?? true
+          ? null
+          : googlePhotoUrl;
+
       // In dev/sandbox we can run without Storage to keep costs minimal.
-      if (!Environment.isDev) {
+      if (profilePictureUrl == null && !Environment.isDev) {
         // Try to upload a default profile picture from assets.
         try {
           final bytes = await rootBundle.load(AppAssets.defaultAvatar);
@@ -144,10 +186,11 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
             mimeType: 'image/png',
           );
 
-          final defaultAvatarUrl = await ProfilePictureService.instance
+          profilePictureUrl = await ProfilePictureService.instance
               .uploadProfilePicture(
                 currentUser.uid,
                 xFile,
+                persistUrl: false,
                 onProgress: (p) {
                   if (!mounted) return;
                   if ((p - _progress).abs() > 0.01) {
@@ -155,7 +198,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                   }
                 },
               );
-          ref.read(profilePictureUrlProvider.notifier).setUrl(defaultAvatarUrl);
+          if (!mounted) return;
         } catch (e, st) {
           // Don't block registration for asset/upload failures.
           debugPrint('Default avatar upload failed: $e\n$st');
@@ -163,13 +206,29 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
 
       if (!mounted) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      profilePictureController.setUrl(profilePictureUrl);
+
+      // AuthLayout leaves this page as soon as the profile document exists, so
+      // this must be the final awaited operation that touches this State.
+      await UserRepository.create().upsertWithUniqueUsername(profile);
+
+      if (profilePictureUrl != null) {
+        unawaited(
+          ProfilePictureService.instance
+              .setProfileUrl(currentUser.uid, profilePictureUrl)
+              .catchError((Object e, StackTrace st) {
+                debugPrint('Failed to persist default avatar URL: $e\n$st');
+              }),
+        );
+      }
     } on AuthException catch (e) {
+      if (!mounted) return;
       setState(() {
         errorMessage = '${e.code}: ${e.message ?? S.of(context).unknownError}';
       });
       showErrorSnackBar(errorMessage);
     } on DatabaseException catch (e) {
+      if (!mounted) return;
       setState(() {
         errorMessage = context.l10n.databaseError(
           e.code,
@@ -182,11 +241,16 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       );
       showErrorSnackBar(errorMessage);
     } catch (e, st) {
+      if (!mounted) return;
       setState(() {
         errorMessage = context.l10n.unexpectedErrorWithDetails(e.toString());
       });
       debugPrintStack(label: 'saveUserDetails error', stackTrace: st);
       showErrorSnackBar(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -250,7 +314,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       Uri.parse(url),
       mode: LaunchMode.externalApplication,
     );
-    if (!ok) {
+    if (mounted && !ok) {
       showErrorSnackBar(couldNotOpenLink);
     }
   }
@@ -388,16 +452,19 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         key: _addressFieldKey,
                         controller: controllerAddress,
                         onStateChanged: (state) {
+                          if (!mounted) return;
                           setState(() {
                             _selectedState = state;
                           });
                         },
                         onTownChanged: (town) {
+                          if (!mounted) return;
                           setState(() {
                             _selectedTown = town;
                           });
                         },
                         onCountryCodeChanged: (countryCode) {
+                          if (!mounted) return;
                           setState(() {
                             _selectedCountryCode = countryCode?.toUpperCase();
                             if (_selectedCountryCode != 'DE') {
@@ -452,7 +519,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
               ButtonWidget(
                 key: const Key('cancelRegistrationButton'),
                 label: context.l10n.cancel,
-                callback: _isCancellingRegistration
+                callback: _isCancellingRegistration || _isSaving
                     ? null
                     : _cancelRegistration,
               ),
@@ -461,7 +528,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                 key: const Key('saveButton'),
                 isFilled: true,
                 label: context.l10n.save,
-                callback: _isCancellingRegistration
+                callback: _isCancellingRegistration || _isSaving
                     ? null
                     : () async {
                         final faultyInput = S.of(context).faultyInput;
@@ -470,8 +537,9 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                               AutovalidateMode.onUserInteraction;
                         });
 
-                        await _addressFieldKey.currentState
-                            ?.resolveCurrentTextIfNeeded();
+                        final addressField = _addressFieldKey.currentState;
+                        await addressField?.resolveCurrentTextIfNeeded();
+                        if (!mounted) return;
 
                         if (controllerAddress.text.trim().isEmpty) {
                           showErrorSnackBar(faultyInput);
@@ -483,7 +551,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         if (!_formKey.currentState!.validate()) {
                           return;
                         } else {
-                          _saveUserDetails();
+                          await _saveUserDetails();
                         }
                       },
               ),

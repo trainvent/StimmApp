@@ -3014,6 +3014,18 @@ abstract class AppLocalizations {
   /// **'.'**
   String get loginLegalNoticeSuffix;
 
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @googleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed. Please try again.'**
+  String get googleSignInFailed;
+
   /// No description provided for @saving.
   ///
   /// In en, this message translates to:

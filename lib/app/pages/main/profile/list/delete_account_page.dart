@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/password_textfield.dart';
-import 'package:trainvent_general/trainvent_general.dart';
+import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   const DeleteAccountPage({super.key});
@@ -27,7 +27,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   }
 
   Future<void> _deleteAccount() async {
-    if (!_formKey.currentState!.validate()) return;
+    final usesPassword = authService.hasPasswordProvider;
+    if (usesPassword && !_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -35,25 +36,16 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
     });
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        setState(() {
-          _statusMessage = context.l10n.deleteAccountUserNotFound;
-        });
-        return;
+      if (usesPassword) {
+        await authService.deleteAccount(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+      } else {
+        await authService.deleteAccountWithGoogle();
       }
 
-      // 1. Re-authenticate to ensure fresh credentials (required for deletion)
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-
-      await user.reauthenticateWithCredential(credential);
-
-      // 2. Delete the user
-      await user.delete();
-
+      if (!mounted) return;
       setState(() {
         _statusMessage = context.l10n.deleteAccountSuccess;
         _emailController.clear();
@@ -64,7 +56,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         // Pop all routes until the first one (which should be the AuthLayout/WelcomePage)
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
-    } on FirebaseAuthException catch (e) {
+    } on AuthException catch (e) {
+      if (!mounted || e.code == 'google-sign-in-cancelled') return;
       setState(() {
         if (e.code == 'user-not-found') {
           _statusMessage = context.l10n.deleteAccountUserNotFound;
@@ -75,6 +68,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         }
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _statusMessage = context.l10n.deleteAccountUnexpectedError;
       });
@@ -89,6 +83,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final usesPassword = authService.hasPasswordProvider;
+
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.deleteAccountTitle)),
       body: Center(
@@ -122,38 +118,41 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  AutofillGroup(
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          key: const Key('deleteAccountEmailField'),
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            labelText: context.l10n.email,
-                            border: const OutlineInputBorder(),
-                            prefixIcon: const Icon(Icons.email),
+                  if (usesPassword)
+                    AutofillGroup(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            key: const Key('deleteAccountEmailField'),
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              labelText: context.l10n.email,
+                              border: const OutlineInputBorder(),
+                              prefixIcon: const Icon(Icons.email),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.email],
+                            validator: (value) =>
+                                (value == null || value.isEmpty)
+                                ? context.l10n.enterYourEmail
+                                : null,
                           ),
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          autofillHints: const [AutofillHints.email],
-                          validator: (value) => (value == null || value.isEmpty)
-                              ? context.l10n.enterYourEmail
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        PasswordTextField(
-                          key: const Key('deleteAccountPasswordField'),
-                          controller: _passwordController,
-                          labelText: context.l10n.password,
-                          prefixIcon: const Icon(Icons.lock),
-                          textInputAction: TextInputAction.done,
-                          validator: (value) => (value == null || value.isEmpty)
-                              ? context.l10n.enterSomething
-                              : null,
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          PasswordTextField(
+                            key: const Key('deleteAccountPasswordField'),
+                            controller: _passwordController,
+                            labelText: context.l10n.password,
+                            prefixIcon: const Icon(Icons.lock),
+                            textInputAction: TextInputAction.done,
+                            validator: (value) =>
+                                (value == null || value.isEmpty)
+                                ? context.l10n.enterSomething
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 24),
                   if (_statusMessage != null)
                     Padding(

@@ -4134,6 +4134,26 @@ class S {
     );
   }
 
+  /// `Continue with Google`
+  String get continueWithGoogle {
+    return Intl.message(
+      'Continue with Google',
+      name: 'continueWithGoogle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google sign-in failed. Please try again.`
+  String get googleSignInFailed {
+    return Intl.message(
+      'Google sign-in failed. Please try again.',
+      name: 'googleSignInFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Saving...`
   String get saving {
     return Intl.message('Saving...', name: 'saving', desc: '', args: []);

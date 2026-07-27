@@ -93,6 +93,7 @@ class PetitionDetailPageKeys {
 
 class WelcomePageKeys {
   final registerButton = const Key('register_button');
+  final googleSignInButton = const Key('google_sign_in_button');
   final loginButton = const Key('login_button');
 }
 
