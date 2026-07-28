@@ -329,6 +329,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncGoogleDataNow => 'Google-Daten jetzt synchronisieren';
 
   @override
+  String get syncNow => 'Jetzt';
+
+  @override
+  String get syncRegularly => 'Regelmäßig synchronisieren';
+
+  @override
+  String get googleSyncManagedFields =>
+      'Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.';
+
+  @override
   String get googleSyncRequiresCompleteProfile =>
       'Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.';
 
@@ -2384,4 +2394,26 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get accountDataExportFailed =>
       'Kontodaten konnten nicht exportiert werden.';
+
+  @override
+  String get checkUsernameAvailability =>
+      'Verfügbarkeit des Benutzernamens prüfen';
+
+  @override
+  String get checkingUsernameAvailability => 'Verfügbarkeit wird geprüft…';
+
+  @override
+  String get usernameAvailable => 'Dieser Benutzername ist verfügbar.';
+
+  @override
+  String get usernameUnavailable =>
+      'Dieser Benutzername ist bereits vergeben. Probiere einen anderen.';
+
+  @override
+  String get usernameAvailabilityCheckFailed =>
+      'Die Verfügbarkeit konnte gerade nicht geprüft werden. Tippe, um es erneut zu versuchen.';
+
+  @override
+  String get profileSaveFailed =>
+      'Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.';
 }

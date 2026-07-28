@@ -139,6 +139,9 @@
 	"synchronization": "Synchronization",
 	"googleSyncLocksPersonalData": "While enabled, name, birthday, and address can only be changed in your Google Account.",
 	"syncGoogleDataNow": "Sync Google data now",
+	"syncNow": "Sync now",
+	"syncRegularly": "Sync regularly",
+	"googleSyncManagedFields": "While active, name, birthday, and address are managed by Google.",
 	"googleSyncRequiresCompleteProfile": "Google must provide your full name, birthday, and current location before synchronization can be enabled.",
 	"googleSyncEnabled": "Google synchronization enabled",
 	"googleSyncDisabled": "Google synchronization disabled",
@@ -946,5 +949,11 @@
 	"exportAccountData": "Export account data",
 	"exportAccountDataDescription": "Profile, publications, groups, and your own participation records as JSON.",
 	"accountDataExportSuccess": "Account data export created.",
-	"accountDataExportFailed": "Could not export account data."
+	"accountDataExportFailed": "Could not export account data.",
+	"checkUsernameAvailability": "Check username availability",
+	"checkingUsernameAvailability": "Checking availability…",
+	"usernameAvailable": "This username is available.",
+	"usernameUnavailable": "This username is already in use. Try another one.",
+	"usernameAvailabilityCheckFailed": "Couldn’t check availability right now. Tap to try again.",
+	"profileSaveFailed": "We couldn’t save your profile. Please try again."
 }

@@ -23,4 +23,16 @@ void main() {
     expect(google, findsOneWidget);
     expect(tester.getTopLeft(login).dy, lessThan(tester.getTopLeft(google).dy));
   });
+
+  testWidgets('localizes the Google button in German', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(430, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      createTestWidget(const WelcomePage(), locale: const Locale('de')),
+    );
+
+    expect(find.text('Mit Google fortfahren'), findsOneWidget);
+    expect(find.text('oder'), findsOneWidget);
+  });
 }

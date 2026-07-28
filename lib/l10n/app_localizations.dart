@@ -686,6 +686,24 @@ abstract class AppLocalizations {
   /// **'Sync Google data now'**
   String get syncGoogleDataNow;
 
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @syncRegularly.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync regularly'**
+  String get syncRegularly;
+
+  /// No description provided for @googleSyncManagedFields.
+  ///
+  /// In en, this message translates to:
+  /// **'While active, name, birthday, and address are managed by Google.'**
+  String get googleSyncManagedFields;
+
   /// No description provided for @googleSyncRequiresCompleteProfile.
   ///
   /// In en, this message translates to:
@@ -4387,6 +4405,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not export account data.'**
   String get accountDataExportFailed;
+
+  /// No description provided for @checkUsernameAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Check username availability'**
+  String get checkUsernameAvailability;
+
+  /// No description provided for @checkingUsernameAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking availability…'**
+  String get checkingUsernameAvailability;
+
+  /// No description provided for @usernameAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is available.'**
+  String get usernameAvailable;
+
+  /// No description provided for @usernameUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already in use. Try another one.'**
+  String get usernameUnavailable;
+
+  /// No description provided for @usernameAvailabilityCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t check availability right now. Tap to try again.'**
+  String get usernameAvailabilityCheckFailed;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t save your profile. Please try again.'**
+  String get profileSaveFailed;
 }
 
 class _AppLocalizationsDelegate

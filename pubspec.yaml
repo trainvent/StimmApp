@@ -117,6 +117,11 @@ flutter:
   - assets/lotties/
   - assets/fonts/
   - LICENSE
+  fonts:
+  - family: Google Sans
+    fonts:
+    - asset: assets/fonts/GoogleSans-Medium.ttf
+      weight: 500
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

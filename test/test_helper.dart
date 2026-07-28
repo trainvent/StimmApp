@@ -1,4 +1,3 @@
-
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,20 +10,18 @@ void initializeTestDependencies() {
   locator.setDatabaseForTest(FakeFirebaseFirestore());
 }
 
-Widget createTestWidget(Widget child) {
+Widget createTestWidget(Widget child, {Locale locale = const Locale('en')}) {
   initializeTestDependencies();
 
   return MaterialApp(
-    locale: const Locale('en', ''),
+    locale: locale,
     localizationsDelegates: const [
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
     ],
-    supportedLocales: const [
-      Locale('en', ''),
-    ],
+    supportedLocales: AppLocalizations.supportedLocales,
     home: child,
   );
 }

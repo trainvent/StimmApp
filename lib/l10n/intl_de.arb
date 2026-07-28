@@ -140,6 +140,9 @@
 	"synchronization": "Synchronisierung",
 	"googleSyncLocksPersonalData": "Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.",
 	"syncGoogleDataNow": "Google-Daten jetzt synchronisieren",
+	"syncNow": "Jetzt",
+	"syncRegularly": "Regelmäßig synchronisieren",
+	"googleSyncManagedFields": "Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.",
 	"googleSyncRequiresCompleteProfile": "Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.",
 	"googleSyncEnabled": "Google-Synchronisierung aktiviert",
 	"googleSyncDisabled": "Google-Synchronisierung deaktiviert",
@@ -950,5 +953,11 @@
 	"exportAccountData": "Kontodaten exportieren",
 	"exportAccountDataDescription": "Profil, Veröffentlichungen, Gruppen und deine eigenen Teilnahmedaten als JSON.",
 	"accountDataExportSuccess": "Kontodaten-Export erstellt.",
-	"accountDataExportFailed": "Kontodaten konnten nicht exportiert werden."
+	"accountDataExportFailed": "Kontodaten konnten nicht exportiert werden.",
+	"checkUsernameAvailability": "Verfügbarkeit des Benutzernamens prüfen",
+	"checkingUsernameAvailability": "Verfügbarkeit wird geprüft…",
+	"usernameAvailable": "Dieser Benutzername ist verfügbar.",
+	"usernameUnavailable": "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
+	"usernameAvailabilityCheckFailed": "Die Verfügbarkeit konnte gerade nicht geprüft werden. Tippe, um es erneut zu versuchen.",
+	"profileSaveFailed": "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut."
 }

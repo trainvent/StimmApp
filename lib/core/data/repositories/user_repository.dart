@@ -57,6 +57,23 @@ class UserRepository {
     );
   }
 
+  Future<bool> isUsernameAvailable(String username, {String? forUserId}) async {
+    final usernameKey = usernameKeyFor(username);
+    if (usernameKey.isEmpty) return false;
+
+    try {
+      final snapshot = await _fs.instance
+          .collection(DatabaseCollections.usernames)
+          .doc(usernameKey)
+          .get();
+      if (!snapshot.exists) return true;
+
+      return forUserId != null && snapshot.data()?['uid'] == forUserId;
+    } on FirebaseException catch (e) {
+      throw DatabaseException(e);
+    }
+  }
+
   Future<void> upsertWithUniqueUsername(UserProfile profile) async {
     final displayName = normalizeUsername(profile.displayName ?? '');
     if (displayName.isEmpty) {

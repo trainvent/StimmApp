@@ -33,6 +33,14 @@ import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum _UsernameAvailability {
+  unchecked,
+  checking,
+  available,
+  unavailable,
+  error,
+}
+
 class SetUserDetailsPage extends ConsumerStatefulWidget {
   const SetUserDetailsPage({super.key});
 
@@ -61,6 +69,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   bool _isCancellingRegistration = false;
   bool _isImportingGoogleProfile = false;
   bool _isGoogleSyncActive = false;
+  _UsernameAvailability _usernameAvailability = _UsernameAvailability.unchecked;
   bool get _requiresStateScope => _selectedCountryCode == 'DE';
   bool get _isGoogleAccount =>
       authService.currentUser?.providerData.any(
@@ -91,6 +100,60 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     return value.length <= AppLimits.maxPersonNameLength
         ? value
         : value.substring(0, AppLimits.maxPersonNameLength);
+  }
+
+  Future<void> _checkUsernameAvailability() async {
+    if (_usernameAvailability == _UsernameAvailability.checking) return;
+
+    final username = normalizeUsername(controllerDisplayName.text);
+    if (username.isEmpty) {
+      _formKey.currentState?.validate();
+      return;
+    }
+
+    setState(() => _usernameAvailability = _UsernameAvailability.checking);
+    try {
+      final available = await UserRepository.create().isUsernameAvailable(
+        username,
+        forUserId: authService.currentUser?.uid,
+      );
+      if (!mounted ||
+          username != normalizeUsername(controllerDisplayName.text)) {
+        return;
+      }
+      setState(() {
+        _usernameAvailability = available
+            ? _UsernameAvailability.available
+            : _UsernameAvailability.unavailable;
+      });
+    } on DatabaseException {
+      if (!mounted ||
+          username != normalizeUsername(controllerDisplayName.text)) {
+        return;
+      }
+      setState(() => _usernameAvailability = _UsernameAvailability.error);
+    }
+  }
+
+  String? _usernameAvailabilityText() {
+    return switch (_usernameAvailability) {
+      _UsernameAvailability.unchecked => null,
+      _UsernameAvailability.checking =>
+        context.l10n.checkingUsernameAvailability,
+      _UsernameAvailability.available => context.l10n.usernameAvailable,
+      _UsernameAvailability.unavailable => context.l10n.usernameUnavailable,
+      _UsernameAvailability.error =>
+        context.l10n.usernameAvailabilityCheckFailed,
+    };
+  }
+
+  Color? _usernameAvailabilityColor() {
+    return switch (_usernameAvailability) {
+      _UsernameAvailability.available => Colors.green.shade700,
+      _UsernameAvailability.unavailable => Theme.of(context).colorScheme.error,
+      _UsernameAvailability.error => Theme.of(context).colorScheme.error,
+      _ => Theme.of(context).colorScheme.onSurfaceVariant,
+    };
   }
 
   Future<bool> _importGoogleProfile({bool activateSync = false}) async {
@@ -248,6 +311,23 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
 
       final displayName = normalizeUsername(controllerDisplayName.text);
+      final userRepository = UserRepository.create();
+      setState(() => _usernameAvailability = _UsernameAvailability.checking);
+      final usernameAvailable = await userRepository.isUsernameAvailable(
+        displayName,
+        forUserId: currentUser.uid,
+      );
+      if (!mounted) return;
+      if (!usernameAvailable) {
+        setState(() {
+          _usernameAvailability = _UsernameAvailability.unavailable;
+          errorMessage = context.l10n.usernameUnavailable;
+        });
+        showErrorSnackBar(errorMessage);
+        return;
+      }
+      setState(() => _usernameAvailability = _UsernameAvailability.available);
+
       final crashLogsController = ref.read(crashLogsEnabledProvider.notifier);
       final analyticsController = ref.read(
         analyticsCollectionEnabledProvider.notifier,
@@ -325,7 +405,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
 
       // AuthLayout leaves this page as soon as the profile document exists, so
       // this must be the final awaited operation that touches this State.
-      await UserRepository.create().upsertWithUniqueUsername(profile);
+      await userRepository.upsertWithUniqueUsername(profile);
 
       if (profilePictureUrl != null) {
         unawaited(
@@ -344,11 +424,16 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       showErrorSnackBar(errorMessage);
     } on DatabaseException catch (e) {
       if (!mounted) return;
+      if (e.code == 'already-exists') {
+        setState(() {
+          _usernameAvailability = _UsernameAvailability.unavailable;
+          errorMessage = context.l10n.usernameUnavailable;
+        });
+        showErrorSnackBar(errorMessage);
+        return;
+      }
       setState(() {
-        errorMessage = context.l10n.databaseError(
-          e.code,
-          e.message ?? S.of(context).unknownError,
-        );
+        errorMessage = context.l10n.profileSaveFailed;
       });
       debugPrintStack(
         label: 'saveUserDetails database error',
@@ -504,6 +589,15 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('displayNameTextField'),
                       controller: controllerDisplayName,
+                      onChanged: (_) {
+                        if (_usernameAvailability !=
+                            _UsernameAvailability.unchecked) {
+                          setState(() {
+                            _usernameAvailability =
+                                _UsernameAvailability.unchecked;
+                          });
+                        }
+                      },
                       maxLength: AppLimits.maxDisplayNameLength,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(
@@ -513,6 +607,38 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                       decoration: InputDecoration(
                         labelText: context.l10n.displayName,
                         counterText: '',
+                        helperText: _usernameAvailabilityText(),
+                        helperMaxLines: 2,
+                        helperStyle: TextStyle(
+                          color: _usernameAvailabilityColor(),
+                        ),
+                        suffixIcon:
+                            _usernameAvailability ==
+                                _UsernameAvailability.checking
+                            ? const Padding(
+                                padding: EdgeInsets.all(14),
+                                child: SizedBox.square(
+                                  dimension: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                key: const Key(
+                                  'checkUsernameAvailabilityButton',
+                                ),
+                                tooltip: context.l10n.checkUsernameAvailability,
+                                onPressed: _checkUsernameAvailability,
+                                icon: Icon(switch (_usernameAvailability) {
+                                  _UsernameAvailability.available =>
+                                    Icons.check_circle,
+                                  _UsernameAvailability.unavailable =>
+                                    Icons.cancel,
+                                  _UsernameAvailability.error => Icons.refresh,
+                                  _ => Icons.check_circle_outline,
+                                }, color: _usernameAvailabilityColor()),
+                              ),
                       ),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
@@ -527,54 +653,84 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     if (_isGoogleAccount) ...[
-                      CheckboxListTile(
-                        key: const Key('googleProfileSyncCheckbox'),
-                        contentPadding: EdgeInsets.zero,
-                        value: _isGoogleSyncActive,
-                        onChanged:
-                            _isImportingGoogleProfile ||
-                                _isSaving ||
-                                _isCancellingRegistration
-                            ? null
-                            : (value) async {
-                                if (value != true) {
-                                  setState(() => _isGoogleSyncActive = false);
-                                  return;
-                                }
-                                await _importGoogleProfile(activateSync: true);
-                              },
-                        title: Text(
-                          context.l10n.synchronizeGoogleDataPeriodically,
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerLow,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        subtitle: Text(
-                          context.l10n.googleSyncLocksPersonalData,
-                        ),
-                      ),
-                      OutlinedButton.icon(
-                        key: const Key('importGoogleProfileButton'),
-                        onPressed:
-                            _isImportingGoogleProfile ||
-                                _isSaving ||
-                                _isCancellingRegistration
-                            ? null
-                            : () => _importGoogleProfile(
-                                activateSync: _isGoogleSyncActive,
-                              ),
-                        icon: _isImportingGoogleProfile
-                            ? const SizedBox.square(
-                                dimension: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    context.l10n.synchronization,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
                                 ),
-                              )
-                            : const Icon(Icons.download),
-                        label: Text(
-                          _isImportingGoogleProfile
-                              ? context.l10n.importingFromGoogle
-                              : context.l10n.syncGoogleDataNow,
+                                TextButton.icon(
+                                  key: const Key('importGoogleProfileButton'),
+                                  onPressed:
+                                      _isImportingGoogleProfile ||
+                                          _isSaving ||
+                                          _isCancellingRegistration
+                                      ? null
+                                      : () => _importGoogleProfile(
+                                          activateSync: _isGoogleSyncActive,
+                                        ),
+                                  icon: _isImportingGoogleProfile
+                                      ? const SizedBox.square(
+                                          dimension: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(Icons.sync, size: 19),
+                                  label: Text(context.l10n.syncNow),
+                                ),
+                              ],
+                            ),
+                            const Divider(height: 1),
+                            SwitchListTile(
+                              key: const Key('googleProfileSyncCheckbox'),
+                              contentPadding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              value: _isGoogleSyncActive,
+                              onChanged:
+                                  _isImportingGoogleProfile ||
+                                      _isSaving ||
+                                      _isCancellingRegistration
+                                  ? null
+                                  : (value) async {
+                                      if (!value) {
+                                        setState(
+                                          () => _isGoogleSyncActive = false,
+                                        );
+                                        return;
+                                      }
+                                      await _importGoogleProfile(
+                                        activateSync: true,
+                                      );
+                                    },
+                              title: Text(context.l10n.syncRegularly),
+                              subtitle: Text(
+                                context.l10n.googleSyncManagedFields,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 12),
                     ],
                     TextFormField(
                       key: const Key('dateOfBirthTextField'),

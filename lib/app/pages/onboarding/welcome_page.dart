@@ -35,6 +35,57 @@ class _WelcomePageState extends State<WelcomePage> {
       (false, false) => AppAssets.googleSignInAndroidWebLight,
     };
     final buttonSize = isIos ? const Size(214, 50) : const Size(225, 50);
+    if (Localizations.localeOf(context).languageCode == 'de') {
+      return SizedBox.fromSize(
+        size: buttonSize,
+        child: OutlinedButton(
+          key: keys.welcomePage.googleSignInButton,
+          onPressed: _isGoogleSigningIn ? null : _continueWithGoogle,
+          style: OutlinedButton.styleFrom(
+            backgroundColor: isDark
+                ? const Color(0xFF131314)
+                : const Color(0xFFFFFFFF),
+            foregroundColor: isDark
+                ? const Color(0xFFE3E3E3)
+                : const Color(0xFF1F1F1F),
+            disabledBackgroundColor: isDark
+                ? const Color(0xFF131314)
+                : const Color(0xFFFFFFFF),
+            disabledForegroundColor: isDark
+                ? const Color(0xFFE3E3E3)
+                : const Color(0xFF1F1F1F),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF8E918F) : const Color(0xFF747775),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: isIos ? 16 : 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            textStyle: const TextStyle(
+              fontFamily: 'Google Sans',
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 20 / 14,
+            ),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _isGoogleSigningIn
+                    ? const SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Image.asset(AppAssets.googleLogo, width: 20, height: 20),
+              ),
+              Text(context.l10n.continueWithGoogle),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Semantics(
       button: true,

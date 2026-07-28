@@ -78,6 +78,31 @@ void main() {
       );
     });
 
+    test(
+      'isUsernameAvailable returns true for an unclaimed username',
+      () async {
+        expect(await userRepository.isUsernameAvailable('New User'), isTrue);
+      },
+    );
+
+    test('isUsernameAvailable returns false for another user claim', () async {
+      await userRepository.upsertWithUniqueUsername(tUserProfile);
+
+      expect(
+        await userRepository.isUsernameAvailable(' test user ', forUserId: '2'),
+        isFalse,
+      );
+    });
+
+    test('isUsernameAvailable accepts the current user claim', () async {
+      await userRepository.upsertWithUniqueUsername(tUserProfile);
+
+      expect(
+        await userRepository.isUsernameAvailable('TEST USER', forUserId: '1'),
+        isTrue,
+      );
+    });
+
     test('delete removes the user', () async {
       await userRepository.upsert(tUserProfile);
       var result = await userRepository.getById('1');
