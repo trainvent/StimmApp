@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -23,6 +24,47 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   bool _isGoogleSigningIn = false;
+
+  Widget _buildGoogleSignInButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    final asset = switch ((isIos, isDark)) {
+      (true, true) => AppAssets.googleSignInIosDark,
+      (true, false) => AppAssets.googleSignInIosLight,
+      (false, true) => AppAssets.googleSignInAndroidWebDark,
+      (false, false) => AppAssets.googleSignInAndroidWebLight,
+    };
+    final buttonSize = isIos ? const Size(214, 50) : const Size(225, 50);
+
+    return Semantics(
+      button: true,
+      enabled: !_isGoogleSigningIn,
+      label: context.l10n.continueWithGoogle,
+      child: GestureDetector(
+        key: keys.welcomePage.googleSignInButton,
+        onTap: _isGoogleSigningIn ? null : _continueWithGoogle,
+        child: SizedBox.fromSize(
+          size: buttonSize,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Opacity(
+                opacity: _isGoogleSigningIn ? 0.55 : 1,
+                child: Image.asset(asset, fit: BoxFit.contain),
+              ),
+              if (_isGoogleSigningIn)
+                const Center(
+                  child: SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<void> _continueWithGoogle() async {
     if (_isGoogleSigningIn) return;
@@ -124,23 +166,6 @@ class _WelcomePageState extends State<WelcomePage> {
           },
         ),
         const SizedBox(height: 10.0),
-        OutlinedButton.icon(
-          key: keys.welcomePage.googleSignInButton,
-          onPressed: _isGoogleSigningIn ? null : _continueWithGoogle,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.onSurface,
-            side: BorderSide(color: Theme.of(context).colorScheme.outline),
-            minimumSize: const Size(double.infinity, 50),
-          ),
-          icon: _isGoogleSigningIn
-              ? const SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(FontAwesome5.google, size: 20),
-          label: Text(context.l10n.continueWithGoogle),
-        ),
-        const SizedBox(height: 10.0),
         ButtonWidget(
           key: const Key('login_button'),
           label: context.l10n.login,
@@ -156,6 +181,22 @@ class _WelcomePageState extends State<WelcomePage> {
             );
           },
         ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            const Expanded(child: Divider(thickness: 1)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                context.l10n.orSeparator,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            const Expanded(child: Divider(thickness: 1)),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildGoogleSignInButton(context),
       ],
     );
   }

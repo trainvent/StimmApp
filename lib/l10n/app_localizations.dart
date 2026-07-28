@@ -650,6 +650,18 @@ abstract class AppLocalizations {
   /// **'Google profile details could not be imported'**
   String get googleProfileImportFailed;
 
+  /// No description provided for @googleAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Account'**
+  String get googleAccount;
+
+  /// No description provided for @editGoogleProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Google profile'**
+  String get editGoogleProfile;
+
   /// No description provided for @synchronizeGoogleDataPeriodically.
   ///
   /// In en, this message translates to:
@@ -3115,6 +3127,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get continueWithGoogle;
+
+  /// No description provided for @orSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orSeparator;
 
   /// No description provided for @googleSignInFailed.
   ///

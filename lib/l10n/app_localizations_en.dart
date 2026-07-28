@@ -307,6 +307,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Google profile details could not be imported';
 
   @override
+  String get googleAccount => 'Google Account';
+
+  @override
+  String get editGoogleProfile => 'Edit Google profile';
+
+  @override
   String get synchronizeGoogleDataPeriodically =>
       'Synchronize Google data periodically';
 
@@ -1622,6 +1628,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get orSeparator => 'or';
 
   @override
   String get googleSignInFailed => 'Google sign-in failed. Please try again.';

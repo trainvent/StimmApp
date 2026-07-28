@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/google_profile_sync_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/google_account_links.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 
 class SynchronizationPage extends ConsumerStatefulWidget {
@@ -57,9 +59,17 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
     }
   }
 
+  Future<void> _openGoogleProfile(String? email) async {
+    final opened = await openGoogleProfile(email);
+    if (mounted && !opened) {
+      showErrorSnackBar(context.l10n.couldNotOpenLink);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.synchronization)),
@@ -75,6 +85,15 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
             }
             return ListView(
               children: [
+                ListTile(
+                  key: const Key('editGoogleProfileButton'),
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(FontAwesome5.google, size: 18),
+                  title: Text(context.l10n.editGoogleProfile),
+                  trailing: const Icon(Icons.open_in_new),
+                  onTap: () =>
+                      _openGoogleProfile(currentUser?.email ?? profile.email),
+                ),
                 SwitchListTile(
                   key: const Key('googleProfileSyncSwitch'),
                   contentPadding: EdgeInsets.zero,

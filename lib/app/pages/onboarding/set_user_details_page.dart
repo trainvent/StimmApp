@@ -52,6 +52,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   String? _selectedState;
   String? _selectedCountryCode;
   String? _selectedTown;
+  String? _googleEmail;
   String errorMessage = '';
   double _progress = 0.0;
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
@@ -70,6 +71,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _googleEmail = authService.currentUser?.email?.trim();
     final googleName = authService.currentUser?.displayName?.trim();
     if (googleName == null || googleName.isEmpty) return;
 
@@ -98,6 +100,10 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     try {
       final data = await authService.importGoogleProfileData();
       if (!mounted) return false;
+      final googleEmail = data.email?.trim();
+      if (googleEmail?.isNotEmpty == true) {
+        _googleEmail = googleEmail;
+      }
       if (activateSync) {
         GoogleProfileSyncValidator.validateGoogleData(data);
       }
@@ -252,7 +258,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
 
       final profile = UserProfile(
         uid: currentUser.uid,
-        email: currentUser.email,
+        email: currentUser.email ?? _googleEmail,
         displayName: displayName,
         state: _requiresStateScope ? _selectedState : null,
         countryCode: _selectedCountryCode,

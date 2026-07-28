@@ -13,4 +13,13 @@ class AppAssets {
   static const String lottieSnake = 'assets/lotties/snake.json';
   static const String lottieYeah = 'assets/lotties/yeah.json';
   static const String defaultAvatar = 'assets/images/default_avatar.png';
+  static const String googleLogo = 'assets/images/google_g_logo.png';
+  static const String googleSignInAndroidWebLight =
+      'assets/images/google_sign_in_android_web_light.png';
+  static const String googleSignInAndroidWebDark =
+      'assets/images/google_sign_in_android_web_dark.png';
+  static const String googleSignInIosLight =
+      'assets/images/google_sign_in_ios_light.png';
+  static const String googleSignInIosDark =
+      'assets/images/google_sign_in_ios_dark.png';
 }

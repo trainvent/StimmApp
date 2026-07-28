@@ -13,6 +13,13 @@ void main() {
             'displayName': 'Leon Marquardt',
           },
         ],
+        'emailAddresses': [
+          {'value': 'secondary@example.com'},
+          {
+            'metadata': {'primary': true},
+            'value': 'leon@gmail.com',
+          },
+        ],
         'birthdays': [
           {
             'date': {'month': 5, 'day': 8},
@@ -34,6 +41,7 @@ void main() {
       expect(data.givenName, 'Leon');
       expect(data.surname, 'Marquardt');
       expect(data.fullName, 'Leon Marquardt');
+      expect(data.email, 'leon@gmail.com');
       expect(data.dateOfBirth, DateTime(1992, 4, 3));
       expect(data.address, 'Ravensberger Straße 42, 33602 Bielefeld');
       expect(data.hasCompleteSyncData, isTrue);

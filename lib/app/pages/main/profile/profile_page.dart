@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
@@ -28,6 +29,7 @@ import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/google_account_links.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -47,6 +49,13 @@ class ProfilePage extends ConsumerWidget {
 
   final WidgetBuilder? settingsPageBuilder;
   final bool settingsRouteIsBelow;
+
+  Future<void> _openGoogleProfile(BuildContext context, String? email) async {
+    final opened = await openGoogleProfile(email);
+    if (context.mounted && !opened) {
+      showErrorSnackBar(context.l10n.couldNotOpenLink);
+    }
+  }
 
   Future<void> _openManageSubscriptions(BuildContext context) async {
     final managementUri = await PurchasesService.instance.getManagementUri();
@@ -133,7 +142,8 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
+    final currentUser =
+        ref.watch(currentUserProvider) ?? authService.currentUser;
     final hasPasswordProvider = authService.hasPasswordProvider;
     final isGoogleAccount =
         currentUser?.providerData.any(
@@ -291,8 +301,16 @@ class ProfilePage extends ConsumerWidget {
                             key: keys.profilePage.changeEmailListTile,
                             context,
                             context.l10n.email,
-                            userProfile.email,
-                            onTap: hasPasswordProvider
+                            isGoogleAccount
+                                ? currentUser?.email ?? userProfile.email
+                                : userProfile.email,
+                            hideWhenEmpty: false,
+                            onTap: isGoogleAccount
+                                ? () => _openGoogleProfile(
+                                    context,
+                                    currentUser?.email ?? userProfile.email,
+                                  )
+                                : hasPasswordProvider
                                 ? () {
                                     Navigator.push(
                                       context,
@@ -302,6 +320,15 @@ class ProfilePage extends ConsumerWidget {
                                       ),
                                     );
                                   }
+                                : null,
+                            trailing: isGoogleAccount
+                                ? Tooltip(
+                                    message: context.l10n.googleAccount,
+                                    child: const Icon(
+                                      FontAwesome5.google,
+                                      size: 18,
+                                    ),
+                                  )
                                 : null,
                           ),
                           _buildDetailTile(
@@ -610,14 +637,23 @@ Widget _buildDetailTile(
   String? value, {
   Key? key,
   VoidCallback? onTap,
+  Widget? trailing,
+  bool hideWhenEmpty = true,
 }) {
-  if (value == null || value.isEmpty) return const SizedBox.shrink();
+  final displayValue = value?.trim() ?? '';
+  if (hideWhenEmpty && displayValue.isEmpty) {
+    return const SizedBox.shrink();
+  }
   return ListTile(
     key: key,
     title: Text(label, style: AppTextStyles.descriptionText),
-    subtitle: Text(value, style: AppTextStyles.mBold),
+    subtitle: Text(
+      displayValue.isEmpty ? '—' : displayValue,
+      style: AppTextStyles.mBold,
+    ),
     dense: true,
     onTap: onTap,
-    trailing: onTap != null ? const Icon(Icons.chevron_right) : null,
+    trailing:
+        trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
   );
 }

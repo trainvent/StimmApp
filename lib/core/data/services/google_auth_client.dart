@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 const _googleProfileScopes = <String>[
+  'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/user.addresses.read',
   'https://www.googleapis.com/auth/user.birthday.read',
@@ -15,6 +16,7 @@ class GoogleProfileData {
     this.givenName,
     this.surname,
     this.fullName,
+    this.email,
     this.dateOfBirth,
     this.address,
   });
@@ -22,6 +24,7 @@ class GoogleProfileData {
   final String? givenName;
   final String? surname;
   final String? fullName;
+  final String? email;
   final DateTime? dateOfBirth;
   final String? address;
 
@@ -29,6 +32,7 @@ class GoogleProfileData {
       givenName == null &&
       surname == null &&
       fullName == null &&
+      email == null &&
       dateOfBirth == null &&
       address == null;
 
@@ -46,6 +50,7 @@ class GoogleProfileData {
       // People API calls this `displayName`, but it is the formatted full name,
       // not the app-specific public username.
       fullName: name?['displayName'],
+      email: _primaryEmail(json['emailAddresses']),
       dateOfBirth: _primaryBirthday(json['birthdays']),
       address: _primaryLocation(json['locations']),
     );
@@ -90,6 +95,14 @@ class GoogleProfileData {
       } on ArgumentError {
         continue;
       }
+    }
+    return null;
+  }
+
+  static String? _primaryEmail(Object? value) {
+    for (final entry in _orderedEntries(value)) {
+      final email = (entry['value'] as String?)?.trim();
+      if (email?.isNotEmpty == true) return email;
     }
     return null;
   }
@@ -201,7 +214,7 @@ class GoogleSignInClient implements GoogleAuthClient {
       }
       final response = await http.get(
         Uri.https('people.googleapis.com', '/v1/people/me', {
-          'personFields': 'names,locations,birthdays',
+          'personFields': 'names,emailAddresses,locations,birthdays',
         }),
         headers: {
           'Authorization': 'Bearer ${authorization.accessToken}',
