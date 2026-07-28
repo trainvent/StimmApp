@@ -113,7 +113,7 @@ export default function HomePage() {
             </div>
 
             <div className="micro-list">
-              <div className="micro-card">
+              <div className="micro-card micro-card-support">
                 <strong>{copy.microSupportTitle}</strong>
                 <span>{copy.microSupportText}</span>
               </div>

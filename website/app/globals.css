@@ -614,6 +614,16 @@ a.micro-card span {
   }
 }
 
+@media (max-width: 620px) and (orientation: portrait) {
+  .micro-list {
+    grid-template-columns: 1fr;
+  }
+
+  .micro-card-support {
+    display: none;
+  }
+}
+
 @media (max-height: 850px) {
   :root {
     --normal-text-size: 0.94rem;
