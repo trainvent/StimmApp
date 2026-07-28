@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/config/environment.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -49,6 +50,12 @@ class _ChangeProfilePicturePageState
   }
 
   Future<void> _uploadAndSave() async {
+    final profile = await UserRepository.currentUser();
+    if (!mounted) return;
+    if (profile?.isGoogleSyncActive == true) {
+      showErrorSnackBar(context.l10n.googleSyncLocksPersonalData);
+      return;
+    }
     if (Environment.isDev) {
       showErrorSnackBar('Profile pictures are disabled in dev mode');
       return;

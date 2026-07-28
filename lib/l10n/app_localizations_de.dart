@@ -309,6 +309,34 @@ class AppLocalizationsDe extends AppLocalizations {
       'Google-Profildaten konnten nicht importiert werden';
 
   @override
+  String get synchronizeGoogleDataPeriodically =>
+      'Google-Daten regelmäßig synchronisieren';
+
+  @override
+  String get googleSyncLocksPersonalData =>
+      'Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.';
+
+  @override
+  String get syncGoogleDataNow => 'Google-Daten jetzt synchronisieren';
+
+  @override
+  String get googleSyncRequiresCompleteProfile =>
+      'Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.';
+
+  @override
+  String get googleSyncEnabled => 'Google-Synchronisierung aktiviert';
+
+  @override
+  String get googleSyncDisabled => 'Google-Synchronisierung deaktiviert';
+
+  @override
+  String get googleSyncSucceeded => 'Google-Profil synchronisiert';
+
+  @override
+  String get googleSyncFailed =>
+      'Google-Profil konnte nicht synchronisiert werden';
+
+  @override
   String get daysLeft => 'Verbleibende Tage';
 
   @override

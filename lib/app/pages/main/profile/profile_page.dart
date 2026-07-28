@@ -205,7 +205,9 @@ class ProfilePage extends ConsumerWidget {
                         children: [
                           HeroWidget(
                             key: keys.profilePage.heroWidget,
-                            nextPage: const ChangeProfilePicturePage(),
+                            nextPage: userProfile.isGoogleSyncActive == true
+                                ? null
+                                : const ChangeProfilePicturePage(),
                           ),
                           const SizedBox(height: 10),
                           _buildDetailTile(
@@ -256,15 +258,17 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.address,
                             userProfile.address,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ChangeLivingAddressPage(),
-                                ),
-                              );
-                            },
+                            onTap: userProfile.isGoogleSyncActive == true
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChangeLivingAddressPage(),
+                                      ),
+                                    );
+                                  },
                           ),
                           if (userProfile.supportsStateScope)
                             _buildDetailTile(
@@ -299,14 +303,17 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.nickname,
                             userProfile.displayName,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UpdateUsernamePage(),
-                                ),
-                              );
-                            },
+                            onTap: userProfile.isGoogleSyncActive == true
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UpdateUsernamePage(),
+                                      ),
+                                    );
+                                  },
                           ),
 
                           _buildDetailTile(

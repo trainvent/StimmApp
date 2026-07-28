@@ -44,6 +44,8 @@ void main() {
       'sendCrashLogs': true,
       'analyticsCollectionEnabled': null,
       'acceptedCommunityRulesAt': null,
+      'isGoogleSyncActive': null,
+      'googleSyncLastAt': null,
       'showPetitionReason': null,
       'themeMode': null,
       'themeScheme': null,

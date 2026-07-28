@@ -57,6 +57,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   bool _isSaving = false;
   bool _isCancellingRegistration = false;
   bool _isImportingGoogleProfile = false;
+  bool _isGoogleSyncActive = false;
   bool get _requiresStateScope => _selectedCountryCode == 'DE';
   bool get _isGoogleAccount =>
       authService.currentUser?.providerData.any(
@@ -89,16 +90,32 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
         : value.substring(0, AppLimits.maxPersonNameLength);
   }
 
-  Future<void> _importGoogleProfile() async {
-    if (_isImportingGoogleProfile) return;
+  Future<bool> _importGoogleProfile({bool activateSync = false}) async {
+    if (_isImportingGoogleProfile) return false;
     setState(() => _isImportingGoogleProfile = true);
 
     try {
       final data = await authService.importGoogleProfileData();
-      if (!mounted) return;
+      if (!mounted) return false;
+      if (activateSync && !data.hasCompleteSyncData) {
+        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
+        return false;
+      }
 
       var birthdayImported = false;
       var addressImported = false;
+      final givenName = data.givenName?.trim();
+      if (givenName != null && givenName.isNotEmpty) {
+        controllerGivenName.text = _limitName(givenName);
+      }
+      final surname = data.surname?.trim();
+      if (surname != null && surname.isNotEmpty) {
+        controllerSurname.text = _limitName(surname);
+      }
+      final displayName = data.displayName?.trim();
+      if (displayName != null && displayName.isNotEmpty) {
+        controllerDisplayName.text = normalizeUsername(displayName);
+      }
       final birthday = data.dateOfBirth;
       if (birthday != null && birthday.year >= 1900) {
         _selectedDateOfBirth = birthday;
@@ -113,11 +130,24 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
           offset: address.length,
         );
         await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded();
-        if (!mounted) return;
+        if (!mounted) return false;
         addressImported = true;
       }
 
-      setState(() {});
+      if (activateSync &&
+          (!birthdayImported ||
+              !addressImported ||
+              _selectedTown?.isNotEmpty != true ||
+              _selectedCountryCode?.isNotEmpty != true ||
+              (_selectedCountryCode == 'DE' &&
+                  _selectedState?.isNotEmpty != true))) {
+        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
+        return false;
+      }
+
+      setState(() {
+        if (activateSync) _isGoogleSyncActive = true;
+      });
       final message = switch ((birthdayImported, addressImported)) {
         (true, true) => context.l10n.googleProfileImported,
         (true, false) => context.l10n.googleBirthdayImportedAddressUnavailable,
@@ -128,20 +158,23 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       if (!addressImported) {
         _addressFieldKey.currentState?.requestFocus();
       }
+      return true;
     } on GoogleProfileImportCancelledException {
-      return;
+      return false;
     } on GoogleProfileImportException catch (e, st) {
       debugPrint('Google profile import failed (${e.code}): ${e.message}');
       debugPrintStack(stackTrace: st);
       if (mounted) {
         showErrorSnackBar(context.l10n.googleProfileImportFailed);
       }
+      return false;
     } catch (e, st) {
       debugPrint('Google profile import failed: $e');
       debugPrintStack(stackTrace: st);
       if (mounted) {
         showErrorSnackBar(context.l10n.googleProfileImportFailed);
       }
+      return false;
     } finally {
       if (mounted) {
         setState(() => _isImportingGoogleProfile = false);
@@ -225,6 +258,8 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
         sendCrashLogs: true,
         analyticsCollectionEnabled: true,
         acceptedCommunityRulesAt: DateTime.now(),
+        isGoogleSyncActive: _isGoogleSyncActive,
+        googleSyncLastAt: _isGoogleSyncActive ? DateTime.now() : null,
       );
 
       await authService.updateUsername(username: displayName);
@@ -404,6 +439,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('surnameTextField'),
                       controller: controllerSurname,
+                      enabled: !_isGoogleSyncActive,
                       maxLength: AppLimits.maxPersonNameLength,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(
@@ -429,6 +465,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('givenNameTextField'),
                       controller: controllerGivenName,
+                      enabled: !_isGoogleSyncActive,
                       maxLength: AppLimits.maxPersonNameLength,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(
@@ -454,6 +491,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('displayNameTextField'),
                       controller: controllerDisplayName,
+                      enabled: !_isGoogleSyncActive,
                       maxLength: AppLimits.maxDisplayNameLength,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(
@@ -477,6 +515,29 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     if (_isGoogleAccount) ...[
+                      CheckboxListTile(
+                        key: const Key('googleProfileSyncCheckbox'),
+                        contentPadding: EdgeInsets.zero,
+                        value: _isGoogleSyncActive,
+                        onChanged:
+                            _isImportingGoogleProfile ||
+                                _isSaving ||
+                                _isCancellingRegistration
+                            ? null
+                            : (value) async {
+                                if (value != true) {
+                                  setState(() => _isGoogleSyncActive = false);
+                                  return;
+                                }
+                                await _importGoogleProfile(activateSync: true);
+                              },
+                        title: Text(
+                          context.l10n.synchronizeGoogleDataPeriodically,
+                        ),
+                        subtitle: Text(
+                          context.l10n.googleSyncLocksPersonalData,
+                        ),
+                      ),
                       OutlinedButton.icon(
                         key: const Key('importGoogleProfileButton'),
                         onPressed:
@@ -484,7 +545,9 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                                 _isSaving ||
                                 _isCancellingRegistration
                             ? null
-                            : _importGoogleProfile,
+                            : () => _importGoogleProfile(
+                                activateSync: _isGoogleSyncActive,
+                              ),
                         icon: _isImportingGoogleProfile
                             ? const SizedBox.square(
                                 dimension: 18,
@@ -496,7 +559,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         label: Text(
                           _isImportingGoogleProfile
                               ? context.l10n.importingFromGoogle
-                              : context.l10n.importBirthdayAndAddressFromGoogle,
+                              : context.l10n.syncGoogleDataNow,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -505,27 +568,30 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                       key: const Key('dateOfBirthTextField'),
                       controller: controllerDateOfBirth,
                       readOnly: true,
+                      enabled: !_isGoogleSyncActive,
                       decoration: InputDecoration(
                         labelText: context.l10n.dateOfBirth,
                         suffixIcon: const Icon(Icons.calendar_today),
                       ),
-                      onTap: () async {
-                        final date = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime(2000),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-                        if (!mounted) return;
-                        if (date != null) {
-                          setState(() {
-                            _selectedDateOfBirth = date;
-                            controllerDateOfBirth.text = DateFormat(
-                              'yyyy-MM-dd',
-                            ).format(date);
-                          });
-                        }
-                      },
+                      onTap: _isGoogleSyncActive
+                          ? null
+                          : () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime(2000),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime.now(),
+                              );
+                              if (!mounted) return;
+                              if (date != null) {
+                                setState(() {
+                                  _selectedDateOfBirth = date;
+                                  controllerDateOfBirth.text = DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(date);
+                                });
+                              }
+                            },
                       validator: (String? value) {
                         if (_selectedDateOfBirth == null) {
                           return S.of(context).faultyInput;
@@ -543,6 +609,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                       child: TomTomAddressWidget(
                         key: _addressFieldKey,
                         controller: controllerAddress,
+                        enabled: !_isGoogleSyncActive,
                         onStateChanged: (state) {
                           if (!mounted) return;
                           setState(() {

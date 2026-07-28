@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +10,8 @@ import 'package:stimmapp/app/pages/onboarding/set_user_details_page.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart'
     show WelcomePage;
 import 'package:stimmapp/app/pages/others/app_loading_page.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/services/google_profile_sync_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/providers/subscription_provider.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -21,7 +25,54 @@ class AuthLayout extends ConsumerStatefulWidget {
   ConsumerState<AuthLayout> createState() => _AuthLayoutState();
 }
 
-class _AuthLayoutState extends ConsumerState<AuthLayout> {
+class _AuthLayoutState extends ConsumerState<AuthLayout>
+    with WidgetsBindingObserver {
+  static const _automaticSyncInterval = Duration(hours: 6);
+  bool _isAutomaticallySyncing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    final profile = ref.read(userProfileProvider).value;
+    if (profile != null) {
+      unawaited(_synchronizeGoogleProfileIfDue(profile));
+    }
+  }
+
+  Future<void> _synchronizeGoogleProfileIfDue(UserProfile profile) async {
+    if (_isAutomaticallySyncing || profile.isGoogleSyncActive != true) return;
+    final lastSync = profile.googleSyncLastAt;
+    if (lastSync != null &&
+        DateTime.now().difference(lastSync) < _automaticSyncInterval) {
+      return;
+    }
+
+    _isAutomaticallySyncing = true;
+    try {
+      await GoogleProfileSyncService().synchronize(
+        profile: profile,
+        promptIfNecessary: false,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Automatic Google profile synchronization skipped: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isAutomaticallySyncing = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
@@ -56,6 +107,13 @@ class _AuthLayoutState extends ConsumerState<AuthLayout> {
           next.value!,
           authenticatedEmail: user.email,
         );
+      }
+    });
+
+    ref.listen(userProfileProvider, (previous, next) {
+      final profile = next.value;
+      if (profile != null) {
+        unawaited(_synchronizeGoogleProfileIfDue(profile));
       }
     });
 

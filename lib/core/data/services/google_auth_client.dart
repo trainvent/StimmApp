@@ -1,26 +1,72 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 const _googleProfileScopes = <String>[
+  'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/user.addresses.read',
   'https://www.googleapis.com/auth/user.birthday.read',
 ];
 
 class GoogleProfileData {
-  const GoogleProfileData({this.dateOfBirth, this.address});
+  const GoogleProfileData({
+    this.givenName,
+    this.surname,
+    this.displayName,
+    this.dateOfBirth,
+    this.address,
+  });
 
+  final String? givenName;
+  final String? surname;
+  final String? displayName;
   final DateTime? dateOfBirth;
   final String? address;
 
-  bool get isEmpty => dateOfBirth == null && address == null;
+  bool get isEmpty =>
+      givenName == null &&
+      surname == null &&
+      displayName == null &&
+      dateOfBirth == null &&
+      address == null;
+
+  bool get hasCompleteSyncData =>
+      givenName?.trim().isNotEmpty == true &&
+      surname?.trim().isNotEmpty == true &&
+      displayName?.trim().isNotEmpty == true &&
+      dateOfBirth != null &&
+      address?.trim().isNotEmpty == true;
 
   factory GoogleProfileData.fromPeopleApi(Map<String, dynamic> json) {
+    final name = _primaryName(json['names']);
     return GoogleProfileData(
+      givenName: name?['givenName'],
+      surname: name?['familyName'],
+      displayName: name?['displayName'],
       dateOfBirth: _primaryBirthday(json['birthdays']),
-      address: _primaryAddress(json['addresses']),
+      address: _primaryLocation(json['locations']),
     );
+  }
+
+  static Map<String, String?>? _primaryName(Object? value) {
+    final entries = _orderedEntries(value);
+    for (final entry in entries) {
+      final givenName = (entry['givenName'] as String?)?.trim();
+      final surname = (entry['familyName'] as String?)?.trim();
+      final displayName = (entry['displayName'] as String?)?.trim();
+      if (givenName?.isNotEmpty == true ||
+          surname?.isNotEmpty == true ||
+          displayName?.isNotEmpty == true) {
+        return <String, String?>{
+          'givenName': givenName,
+          'familyName': surname,
+          'displayName': displayName,
+        };
+      }
+    }
+    return null;
   }
 
   static DateTime? _primaryBirthday(Object? value) {
@@ -47,31 +93,27 @@ class GoogleProfileData {
     return null;
   }
 
-  static String? _primaryAddress(Object? value) {
+  static String? _primaryLocation(Object? value) {
     final entries = _orderedEntries(value);
-    for (final entry in entries) {
-      final formatted = (entry['formattedValue'] as String?)?.trim();
-      if (formatted != null && formatted.isNotEmpty) return formatted;
+    entries.sort((left, right) {
+      final leftCurrent = left['current'] == true ? 0 : 1;
+      final rightCurrent = right['current'] == true ? 0 : 1;
+      final currentComparison = leftCurrent.compareTo(rightCurrent);
+      if (currentComparison != 0) return currentComparison;
 
-      final parts =
-          <String?>[
-            entry['streetAddress'] as String?,
-            [entry['postalCode'] as String?, entry['city'] as String?]
-                .whereType<String>()
-                .where((part) => part.trim().isNotEmpty)
-                .join(' '),
-            entry['region'] as String?,
-            entry['country'] as String?,
-          ].whereType<String>().map((part) => part.trim()).where((part) {
-            return part.isNotEmpty;
-          }).toList();
-      if (parts.isNotEmpty) return parts.join(', ');
+      final leftPrimary = _isPrimary(left) ? 0 : 1;
+      final rightPrimary = _isPrimary(right) ? 0 : 1;
+      return leftPrimary.compareTo(rightPrimary);
+    });
+    for (final entry in entries) {
+      final location = (entry['value'] as String?)?.trim();
+      if (location != null && location.isNotEmpty) return location;
     }
     return null;
   }
 
   static List<Map<String, dynamic>> _orderedEntries(Object? value) {
-    if (value is! List) return const [];
+    if (value is! List) return <Map<String, dynamic>>[];
     final entries = value.whereType<Map<String, dynamic>>().toList();
     entries.sort((left, right) {
       final leftPrimary = _isPrimary(left) ? 0 : 1;
@@ -97,7 +139,7 @@ class GoogleAuthIdentity {
 abstract interface class GoogleAuthClient {
   Future<GoogleAuthIdentity> authenticate();
 
-  Future<GoogleProfileData> importProfileData();
+  Future<GoogleProfileData> importProfileData({bool promptIfNecessary = true});
 
   Future<void> signOut();
 }
@@ -133,7 +175,9 @@ class GoogleSignInClient implements GoogleAuthClient {
   }
 
   @override
-  Future<GoogleProfileData> importProfileData() async {
+  Future<GoogleProfileData> importProfileData({
+    bool promptIfNecessary = true,
+  }) async {
     await _initialize();
     try {
       _currentAccount ??= await _googleSignIn
@@ -141,18 +185,34 @@ class GoogleSignInClient implements GoogleAuthClient {
       final authorizationClient =
           _currentAccount?.authorizationClient ??
           _googleSignIn.authorizationClient;
-      final authorization = await authorizationClient.authorizeScopes(
-        _googleProfileScopes,
-      );
+      final authorization =
+          await authorizationClient.authorizationForScopes(
+            _googleProfileScopes,
+          ) ??
+          (promptIfNecessary
+              ? await authorizationClient.authorizeScopes(_googleProfileScopes)
+              : null);
+      if (authorization == null) {
+        throw const GoogleProfileImportException(
+          code: 'authorization-required',
+          message: 'Google profile authorization requires user interaction.',
+        );
+      }
       final response = await http.get(
         Uri.https('people.googleapis.com', '/v1/people/me', {
-          'personFields': 'addresses,birthdays',
+          'personFields': 'names,locations,birthdays',
         }),
         headers: {
           'Authorization': 'Bearer ${authorization.accessToken}',
           'Accept': 'application/json',
         },
       );
+      if (kDebugMode) {
+        debugPrint(
+          'Google People API import response (${response.statusCode}):',
+        );
+        debugPrint(_formatDebugResponseBody(response.body));
+      }
       if (response.statusCode != 200) {
         throw GoogleProfileImportException(
           code: 'people-api-${response.statusCode}',
@@ -202,6 +262,14 @@ class GoogleSignInClient implements GoogleAuthClient {
         message: e.description,
       );
     }
+  }
+}
+
+String _formatDebugResponseBody(String responseBody) {
+  try {
+    return const JsonEncoder.withIndent('  ').convert(jsonDecode(responseBody));
+  } on FormatException {
+    return responseBody;
   }
 }
 

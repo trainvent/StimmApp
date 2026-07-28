@@ -81,8 +81,12 @@ class AuthService {
         false;
   }
 
-  Future<GoogleProfileData> importGoogleProfileData() {
-    return googleAuthClient.importProfileData();
+  Future<GoogleProfileData> importGoogleProfileData({
+    bool promptIfNecessary = true,
+  }) {
+    return googleAuthClient.importProfileData(
+      promptIfNecessary: promptIfNecessary,
+    );
   }
 
   Future<UserCredential> signIn({

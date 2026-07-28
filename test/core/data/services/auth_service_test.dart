@@ -62,7 +62,9 @@ class _FakeGoogleAuthClient implements GoogleAuthClient {
   }
 
   @override
-  Future<GoogleProfileData> importProfileData() async {
+  Future<GoogleProfileData> importProfileData({
+    bool promptIfNecessary = true,
+  }) async {
     return const GoogleProfileData();
   }
 

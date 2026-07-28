@@ -650,6 +650,54 @@ abstract class AppLocalizations {
   /// **'Google profile details could not be imported'**
   String get googleProfileImportFailed;
 
+  /// No description provided for @synchronizeGoogleDataPeriodically.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronize Google data periodically'**
+  String get synchronizeGoogleDataPeriodically;
+
+  /// No description provided for @googleSyncLocksPersonalData.
+  ///
+  /// In en, this message translates to:
+  /// **'While enabled, name, birthday, and address can only be changed in your Google Account.'**
+  String get googleSyncLocksPersonalData;
+
+  /// No description provided for @syncGoogleDataNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Google data now'**
+  String get syncGoogleDataNow;
+
+  /// No description provided for @googleSyncRequiresCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Google must provide your full name, birthday, and current location before synchronization can be enabled.'**
+  String get googleSyncRequiresCompleteProfile;
+
+  /// No description provided for @googleSyncEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google synchronization enabled'**
+  String get googleSyncEnabled;
+
+  /// No description provided for @googleSyncDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google synchronization disabled'**
+  String get googleSyncDisabled;
+
+  /// No description provided for @googleSyncSucceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Google profile synchronized'**
+  String get googleSyncSucceeded;
+
+  /// No description provided for @googleSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google profile synchronization failed'**
+  String get googleSyncFailed;
+
   /// No description provided for @daysLeft.
   ///
   /// In en, this message translates to:

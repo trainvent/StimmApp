@@ -55,12 +55,18 @@ For both `stimmapp-dev` and `stimmapp-f0141`:
 
 1. Enable the **Google People API** in Google Cloud Console.
 2. Configure the OAuth consent screen for these scopes:
+   - `https://www.googleapis.com/auth/userinfo.profile`
    - `https://www.googleapis.com/auth/user.birthday.read`
    - `https://www.googleapis.com/auth/user.addresses.read`
 3. Add developer accounts as test users while the consent screen is in testing.
 
 The optional import action requests consent interactively and calls
-`people/me?personFields=addresses,birthdays`. Google may return neither field,
-multiple addresses, or a birthday without a year. The app uses the primary
-address, ignores incomplete birthdays, and resolves imported address text
-through TomTom before profile submission.
+`people/me?personFields=names,locations,birthdays`. Google may return incomplete
+names, multiple locations, or a birthday without a year. The app prefers the
+current location, ignores incomplete birthdays, and resolves imported location
+text through TomTom before profile submission.
+
+When periodic synchronization is enabled, Google-managed profile fields are
+locked in StimmApp. A silent synchronization runs when the app starts or
+resumes, at most once every six hours. The settings page also provides a
+user-triggered synchronization action that can request Google authorization.

@@ -123,6 +123,11 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
           label: context.l10n.confirm,
           callback: () async {
             final l10n = context.l10n;
+            final currentProfile = await UserRepository.currentUser();
+            if (currentProfile?.isGoogleSyncActive == true) {
+              showErrorSnackBar(l10n.googleSyncLocksPersonalData);
+              return;
+            }
             await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded();
 
             if (_controllerAddress.text.trim().isEmpty) {

@@ -20,6 +20,8 @@ class UserProfile {
   final bool? sendCrashLogs;
   final bool? analyticsCollectionEnabled;
   final DateTime? acceptedCommunityRulesAt;
+  final bool? isGoogleSyncActive;
+  final DateTime? googleSyncLastAt;
 
   // Settings
   final bool? showPetitionReason;
@@ -89,6 +91,8 @@ class UserProfile {
     this.sendCrashLogs,
     this.analyticsCollectionEnabled,
     this.acceptedCommunityRulesAt,
+    this.isGoogleSyncActive,
+    this.googleSyncLastAt,
     this.showPetitionReason,
     this.themeMode,
     this.themeScheme,
@@ -122,6 +126,8 @@ class UserProfile {
     bool? sendCrashLogs,
     bool? analyticsCollectionEnabled,
     DateTime? acceptedCommunityRulesAt,
+    bool? isGoogleSyncActive,
+    DateTime? googleSyncLastAt,
     bool? showPetitionReason,
     String? themeMode,
     String? themeScheme,
@@ -161,6 +167,8 @@ class UserProfile {
           analyticsCollectionEnabled ?? this.analyticsCollectionEnabled,
       acceptedCommunityRulesAt:
           acceptedCommunityRulesAt ?? this.acceptedCommunityRulesAt,
+      isGoogleSyncActive: isGoogleSyncActive ?? this.isGoogleSyncActive,
+      googleSyncLastAt: googleSyncLastAt ?? this.googleSyncLastAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
       themeMode: themeMode ?? this.themeMode,
       themeScheme: themeScheme ?? this.themeScheme,
@@ -200,6 +208,8 @@ class UserProfile {
       analyticsCollectionEnabled: json['analyticsCollectionEnabled'] as bool?,
       acceptedCommunityRulesAt: (json['acceptedCommunityRulesAt'] as Timestamp?)
           ?.toDate(),
+      isGoogleSyncActive: json['isGoogleSyncActive'] as bool?,
+      googleSyncLastAt: (json['googleSyncLastAt'] as Timestamp?)?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
       themeMode: json['themeMode'] as String?,
       themeScheme: json['themeScheme'] as String?,
@@ -237,6 +247,10 @@ class UserProfile {
       'analyticsCollectionEnabled': analyticsCollectionEnabled,
       'acceptedCommunityRulesAt': acceptedCommunityRulesAt != null
           ? Timestamp.fromDate(acceptedCommunityRulesAt!)
+          : null,
+      'isGoogleSyncActive': isGoogleSyncActive,
+      'googleSyncLastAt': googleSyncLastAt != null
+          ? Timestamp.fromDate(googleSyncLastAt!)
           : null,
       'showPetitionReason': showPetitionReason,
       'themeMode': themeMode,

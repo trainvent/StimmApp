@@ -15,6 +15,7 @@ class TomTomAddressWidget extends StatefulWidget {
     this.onCountryCodeChanged,
     this.countries,
     this.validator,
+    this.enabled = true,
   });
 
   final TextEditingController controller;
@@ -23,6 +24,7 @@ class TomTomAddressWidget extends StatefulWidget {
   final ValueChanged<String?>? onCountryCodeChanged;
   final List<String>? countries;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   @override
   State<TomTomAddressWidget> createState() => TomTomAddressWidgetState();
@@ -41,7 +43,7 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
   String? _lastResolvedAddress;
 
   void requestFocus() {
-    if (mounted) {
+    if (mounted && widget.enabled) {
       _focusNode.requestFocus();
     }
   }
@@ -73,7 +75,7 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
   }
 
   void _handleTextChanged() {
-    if (_isApplyingSuggestion) {
+    if (_isApplyingSuggestion || !widget.enabled) {
       return;
     }
     widget.onStateChanged(null);
@@ -111,7 +113,7 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
   }
 
   void _refreshOverlay() {
-    if (!_focusNode.hasFocus || _suggestions.isEmpty) {
+    if (!widget.enabled || !_focusNode.hasFocus || _suggestions.isEmpty) {
       _removeOverlay();
       return;
     }
@@ -290,6 +292,7 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
         child: TextFormField(
           controller: widget.controller,
           focusNode: _focusNode,
+          enabled: widget.enabled,
           autofillHints: const [AutofillHints.fullStreetAddress],
           decoration: InputDecoration(
             hintText: context.l10n.enterYourAddress,
