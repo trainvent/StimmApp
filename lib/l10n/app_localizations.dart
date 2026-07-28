@@ -4441,6 +4441,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn’t save your profile. Please try again.'**
   String get profileSaveFailed;
+
+  /// No description provided for @editGivenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit given name'**
+  String get editGivenName;
+
+  /// No description provided for @editSurname.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit surname'**
+  String get editSurname;
+
+  /// No description provided for @profileDetailsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile has been updated.'**
+  String get profileDetailsUpdated;
 }
 
 class _AppLocalizationsDelegate

@@ -77,7 +77,7 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
         leading: IconButton(
           tooltip: context.l10n.about,
           onPressed: () => _openPolicyUrl(url),
-          icon: const Icon(Icons.info_outline),
+          icon: const Icon(Icons.open_in_browser),
         ),
         title: Text(title),
         subtitle: Text(subtitle),

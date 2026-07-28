@@ -959,5 +959,8 @@
 	"usernameAvailable": "Dieser Benutzername ist verfügbar.",
 	"usernameUnavailable": "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
 	"usernameAvailabilityCheckFailed": "Die Verfügbarkeit konnte gerade nicht geprüft werden. Tippe, um es erneut zu versuchen.",
-	"profileSaveFailed": "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut."
+	"profileSaveFailed": "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.",
+	"editGivenName": "Vornamen bearbeiten",
+	"editSurname": "Nachnamen bearbeiten",
+	"profileDetailsUpdated": "Dein Profil wurde aktualisiert."
 }

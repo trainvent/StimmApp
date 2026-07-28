@@ -14,9 +14,9 @@ import 'package:stimmapp/app/pages/main/profile/profile_settings/change_email_pa
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_profile_picture_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/synchronization_page.dart';
-import 'package:stimmapp/app/pages/main/profile/profile_settings/update_username_page.dart';
+import 'package:stimmapp/app/pages/main/profile/profile_settings/update_profile_field_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/user_history_page.dart';
-import 'package:stimmapp/app/pages/others/privacy_page.dart';
+import 'package:stimmapp/app/pages/main/profile/list/privacy_page.dart';
 import 'package:stimmapp/app/scaffolds/app_padding_scaffold.dart';
 import 'package:stimmapp/app/widgets/hero_widget.dart';
 import 'package:stimmapp/app/widgets/neon_padding_widget.dart';
@@ -230,18 +230,44 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.surname,
                             userProfile.surname,
+                            hideWhenEmpty: false,
+                            onTap: userProfile.isGoogleSyncActive == true
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UpdateProfileFieldPage(
+                                              field:
+                                                  EditableProfileField.surname,
+                                              initialValue: userProfile.surname,
+                                            ),
+                                      ),
+                                    );
+                                  },
                           ),
                           _buildDetailTile(
                             context,
                             context.l10n.givenName,
                             userProfile.givenName,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.dateOfBirth,
-                            userProfile.dateOfBirth != null
-                                ? dateFormat.format(userProfile.dateOfBirth!)
-                                : null,
+                            hideWhenEmpty: false,
+                            onTap: userProfile.isGoogleSyncActive == true
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UpdateProfileFieldPage(
+                                              field: EditableProfileField
+                                                  .givenName,
+                                              initialValue:
+                                                  userProfile.givenName,
+                                            ),
+                                      ),
+                                    );
+                                  },
                           ),
                           _buildDetailTile(
                             context,
@@ -298,6 +324,13 @@ class ProfilePage extends ConsumerWidget {
                             userProfile.town,
                           ),
                           _buildDetailTile(
+                            context,
+                            context.l10n.dateOfBirth,
+                            userProfile.dateOfBirth != null
+                                ? dateFormat.format(userProfile.dateOfBirth!)
+                                : null,
+                          ),
+                          _buildDetailTile(
                             key: keys.profilePage.changeEmailListTile,
                             context,
                             context.l10n.email,
@@ -340,7 +373,10 @@ class ProfilePage extends ConsumerWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => UpdateUsernamePage(),
+                                  builder: (context) => UpdateProfileFieldPage(
+                                    field: EditableProfileField.username,
+                                    initialValue: userProfile.displayName,
+                                  ),
                                 ),
                               );
                             },

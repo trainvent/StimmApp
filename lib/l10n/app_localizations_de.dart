@@ -2416,4 +2416,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get profileSaveFailed =>
       'Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.';
+
+  @override
+  String get editGivenName => 'Vornamen bearbeiten';
+
+  @override
+  String get editSurname => 'Nachnamen bearbeiten';
+
+  @override
+  String get profileDetailsUpdated => 'Dein Profil wurde aktualisiert.';
 }

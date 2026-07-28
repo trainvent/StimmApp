@@ -955,5 +955,8 @@
 	"usernameAvailable": "This username is available.",
 	"usernameUnavailable": "This username is already in use. Try another one.",
 	"usernameAvailabilityCheckFailed": "Couldn’t check availability right now. Tap to try again.",
-	"profileSaveFailed": "We couldn’t save your profile. Please try again."
+	"profileSaveFailed": "We couldn’t save your profile. Please try again.",
+	"editGivenName": "Edit given name",
+	"editSurname": "Edit surname",
+	"profileDetailsUpdated": "Your profile has been updated."
 }

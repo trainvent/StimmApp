@@ -2384,4 +2384,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileSaveFailed =>
       'We couldn’t save your profile. Please try again.';
+
+  @override
+  String get editGivenName => 'Edit given name';
+
+  @override
+  String get editSurname => 'Edit surname';
+
+  @override
+  String get profileDetailsUpdated => 'Your profile has been updated.';
 }
