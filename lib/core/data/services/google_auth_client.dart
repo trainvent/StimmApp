@@ -14,28 +14,27 @@ class GoogleProfileData {
   const GoogleProfileData({
     this.givenName,
     this.surname,
-    this.displayName,
+    this.fullName,
     this.dateOfBirth,
     this.address,
   });
 
   final String? givenName;
   final String? surname;
-  final String? displayName;
+  final String? fullName;
   final DateTime? dateOfBirth;
   final String? address;
 
   bool get isEmpty =>
       givenName == null &&
       surname == null &&
-      displayName == null &&
+      fullName == null &&
       dateOfBirth == null &&
       address == null;
 
   bool get hasCompleteSyncData =>
       givenName?.trim().isNotEmpty == true &&
       surname?.trim().isNotEmpty == true &&
-      displayName?.trim().isNotEmpty == true &&
       dateOfBirth != null &&
       address?.trim().isNotEmpty == true;
 
@@ -44,7 +43,9 @@ class GoogleProfileData {
     return GoogleProfileData(
       givenName: name?['givenName'],
       surname: name?['familyName'],
-      displayName: name?['displayName'],
+      // People API calls this `displayName`, but it is the formatted full name,
+      // not the app-specific public username.
+      fullName: name?['displayName'],
       dateOfBirth: _primaryBirthday(json['birthdays']),
       address: _primaryLocation(json['locations']),
     );

@@ -188,12 +188,12 @@ class TomTomAddressWidgetState extends State<TomTomAddressWidget> {
     _isApplyingSuggestion = false;
   }
 
-  Future<void> resolveCurrentTextIfNeeded() async {
+  Future<void> resolveCurrentTextIfNeeded({bool force = false}) async {
     final text = widget.controller.text.trim();
     if (!mounted ||
         text.isEmpty ||
         text.length < 2 ||
-        text == _lastResolvedAddress ||
+        (!force && text == _lastResolvedAddress) ||
         !_service.hasApiKey) {
       return;
     }

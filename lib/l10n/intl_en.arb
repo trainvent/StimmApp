@@ -134,6 +134,7 @@
 	"googleProfileHasNoBirthdayOrAddress": "No birthday or address was found in your Google profile",
 	"googleProfileImportFailed": "Google profile details could not be imported",
 	"synchronizeGoogleDataPeriodically": "Synchronize Google data periodically",
+	"synchronization": "Synchronization",
 	"googleSyncLocksPersonalData": "While enabled, name, birthday, and address can only be changed in your Google Account.",
 	"syncGoogleDataNow": "Sync Google data now",
 	"googleSyncRequiresCompleteProfile": "Google must provide your full name, birthday, and current location before synchronization can be enabled.",

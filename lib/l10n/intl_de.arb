@@ -135,6 +135,7 @@
 	"googleProfileHasNoBirthdayOrAddress": "Im Google-Profil wurden weder Geburtsdatum noch Anschrift gefunden",
 	"googleProfileImportFailed": "Google-Profildaten konnten nicht importiert werden",
 	"synchronizeGoogleDataPeriodically": "Google-Daten regelmäßig synchronisieren",
+	"synchronization": "Synchronisierung",
 	"googleSyncLocksPersonalData": "Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.",
 	"syncGoogleDataNow": "Google-Daten jetzt synchronisieren",
 	"googleSyncRequiresCompleteProfile": "Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.",

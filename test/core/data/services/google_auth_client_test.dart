@@ -33,7 +33,7 @@ void main() {
 
       expect(data.givenName, 'Leon');
       expect(data.surname, 'Marquardt');
-      expect(data.displayName, 'Leon Marquardt');
+      expect(data.fullName, 'Leon Marquardt');
       expect(data.dateOfBirth, DateTime(1992, 4, 3));
       expect(data.address, 'Ravensberger Straße 42, 33602 Bielefeld');
       expect(data.hasCompleteSyncData, isTrue);
@@ -54,6 +54,18 @@ void main() {
       expect(data.dateOfBirth, isNull);
       expect(data.address, 'Main Street 1, 10115 Berlin, Germany');
       expect(data.hasCompleteSyncData, isFalse);
+    });
+
+    test('does not require Googles formatted name for synchronization', () {
+      final data = GoogleProfileData(
+        givenName: 'Leon',
+        surname: 'Marquardt',
+        dateOfBirth: DateTime(1992, 4, 3),
+        address: 'Ravensberger Straße 42, 33602 Bielefeld',
+      );
+
+      expect(data.fullName, isNull);
+      expect(data.hasCompleteSyncData, isTrue);
     });
 
     test('returns empty data when Google has neither field', () {

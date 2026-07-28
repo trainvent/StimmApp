@@ -656,6 +656,12 @@ abstract class AppLocalizations {
   /// **'Synchronize Google data periodically'**
   String get synchronizeGoogleDataPeriodically;
 
+  /// No description provided for @synchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronization'**
+  String get synchronization;
+
   /// No description provided for @googleSyncLocksPersonalData.
   ///
   /// In en, this message translates to:

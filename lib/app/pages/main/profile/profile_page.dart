@@ -12,6 +12,7 @@ import 'package:stimmapp/app/pages/main/profile/profile_settings/change_living_a
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_profile_picture_page.dart';
+import 'package:stimmapp/app/pages/main/profile/profile_settings/synchronization_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/update_username_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/user_history_page.dart';
 import 'package:stimmapp/app/pages/others/privacy_page.dart';
@@ -134,6 +135,11 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
     final hasPasswordProvider = authService.hasPasswordProvider;
+    final isGoogleAccount =
+        currentUser?.providerData.any(
+          (provider) => provider.providerId == 'google.com',
+        ) ??
+        false;
     final profileState = ref.watch(userProfileProvider);
 
     return AppBarScaffold(
@@ -303,17 +309,14 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.nickname,
                             userProfile.displayName,
-                            onTap: userProfile.isGoogleSyncActive == true
-                                ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            UpdateUsernamePage(),
-                                      ),
-                                    );
-                                  },
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UpdateUsernamePage(),
+                                ),
+                              );
+                            },
                           ),
 
                           _buildDetailTile(
@@ -491,6 +494,19 @@ class ProfilePage extends ConsumerWidget {
                       );
                     },
                   ),
+                  if (isGoogleAccount)
+                    PointingListTile(
+                      key: const Key('synchronizationListTile'),
+                      title: Text(context.l10n.synchronization),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SynchronizationPage(),
+                          ),
+                        );
+                      },
+                    ),
                   // Logout
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,

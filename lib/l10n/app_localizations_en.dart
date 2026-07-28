@@ -311,6 +311,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Synchronize Google data periodically';
 
   @override
+  String get synchronization => 'Synchronization';
+
+  @override
   String get googleSyncLocksPersonalData =>
       'While enabled, name, birthday, and address can only be changed in your Google Account.';
 

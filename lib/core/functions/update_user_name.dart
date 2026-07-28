@@ -9,11 +9,6 @@ Future<void> updateUsername(String username) async {
   final userRepository = UserRepository.create();
   final uid = authService.currentUser!.uid;
   final userProfile = await userRepository.getById(uid);
-  if (userProfile?.isGoogleSyncActive == true) {
-    throw StateError(
-      'The username is managed by Google profile synchronization.',
-    );
-  }
   if (userProfile != null) {
     await userRepository.upsertWithUniqueUsername(
       userProfile.copyWith(displayName: normalized),

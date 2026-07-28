@@ -22,7 +22,9 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/google_auth_client.dart';
+import 'package:stimmapp/core/data/services/google_profile_sync_validator.dart';
 import 'package:stimmapp/core/data/services/profile_picture_service.dart';
+import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
@@ -81,7 +83,6 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     if (nameParts.length > 1) {
       controllerSurname.text = _limitName(nameParts.skip(1).join(' '));
     }
-    controllerDisplayName.text = normalizeUsername(googleName);
   }
 
   String _limitName(String value) {
@@ -97,9 +98,8 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     try {
       final data = await authService.importGoogleProfileData();
       if (!mounted) return false;
-      if (activateSync && !data.hasCompleteSyncData) {
-        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
-        return false;
+      if (activateSync) {
+        GoogleProfileSyncValidator.validateGoogleData(data);
       }
 
       var birthdayImported = false;
@@ -112,10 +112,6 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       if (surname != null && surname.isNotEmpty) {
         controllerSurname.text = _limitName(surname);
       }
-      final displayName = data.displayName?.trim();
-      if (displayName != null && displayName.isNotEmpty) {
-        controllerDisplayName.text = normalizeUsername(displayName);
-      }
       final birthday = data.dateOfBirth;
       if (birthday != null && birthday.year >= 1900) {
         _selectedDateOfBirth = birthday;
@@ -125,24 +121,28 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
 
       final address = data.address?.trim();
       if (address != null && address.isNotEmpty) {
+        _selectedTown = null;
+        _selectedState = null;
+        _selectedCountryCode = null;
         controllerAddress.text = address;
         controllerAddress.selection = TextSelection.collapsed(
           offset: address.length,
         );
-        await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded();
+        await _addressFieldKey.currentState?.resolveCurrentTextIfNeeded(
+          force: true,
+        );
         if (!mounted) return false;
         addressImported = true;
       }
 
-      if (activateSync &&
-          (!birthdayImported ||
-              !addressImported ||
-              _selectedTown?.isNotEmpty != true ||
-              _selectedCountryCode?.isNotEmpty != true ||
-              (_selectedCountryCode == 'DE' &&
-                  _selectedState?.isNotEmpty != true))) {
-        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
-        return false;
+      if (activateSync) {
+        GoogleProfileSyncValidator.validateResolvedAddress(
+          PlaceAddressInfo(
+            town: _selectedTown,
+            state: _selectedState,
+            countryCode: _selectedCountryCode,
+          ),
+        );
       }
 
       setState(() {
@@ -160,6 +160,13 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
       return true;
     } on GoogleProfileImportCancelledException {
+      return false;
+    } on GoogleProfileSyncException catch (e, st) {
+      debugPrint('Google profile synchronization validation failed: $e');
+      debugPrintStack(stackTrace: st);
+      if (mounted) {
+        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
+      }
       return false;
     } on GoogleProfileImportException catch (e, st) {
       debugPrint('Google profile import failed (${e.code}): ${e.message}');
@@ -491,7 +498,6 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     TextFormField(
                       key: const Key('displayNameTextField'),
                       controller: controllerDisplayName,
-                      enabled: !_isGoogleSyncActive,
                       maxLength: AppLimits.maxDisplayNameLength,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(

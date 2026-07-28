@@ -313,6 +313,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Google-Daten regelmäßig synchronisieren';
 
   @override
+  String get synchronization => 'Synchronisierung';
+
+  @override
   String get googleSyncLocksPersonalData =>
       'Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.';
 
