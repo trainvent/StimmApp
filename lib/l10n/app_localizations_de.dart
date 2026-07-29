@@ -1664,7 +1664,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get continueWithApple => 'Mit Apple fortfahren';
 
   @override
-  String get orSeparator => 'oder';
+  String get orSeparator => 'oder direkt weiter mit';
 
   @override
   String get googleSignInFailed =>

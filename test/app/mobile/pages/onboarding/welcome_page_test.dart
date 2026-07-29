@@ -20,7 +20,7 @@ void main() {
     final google = find.byKey(keys.welcomePage.googleSignInButton);
 
     expect(login, findsOneWidget);
-    expect(find.text('or'), findsOneWidget);
+    expect(find.text('or continue directly with'), findsOneWidget);
     expect(find.byType(Divider), findsNWidgets(2));
     expect(google, findsOneWidget);
     expect(tester.getTopLeft(login).dy, lessThan(tester.getTopLeft(google).dy));
@@ -35,7 +35,7 @@ void main() {
     );
 
     expect(find.text('Google'), findsOneWidget);
-    expect(find.text('oder'), findsOneWidget);
+    expect(find.text('oder direkt weiter mit'), findsOneWidget);
   });
 
   testWidgets(

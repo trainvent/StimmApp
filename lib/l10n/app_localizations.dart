@@ -3155,7 +3155,7 @@ abstract class AppLocalizations {
   /// No description provided for @orSeparator.
   ///
   /// In en, this message translates to:
-  /// **'or'**
+  /// **'or continue directly with'**
   String get orSeparator;
 
   /// No description provided for @googleSignInFailed.

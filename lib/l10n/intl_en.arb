@@ -586,7 +586,7 @@
 	"loginLegalNoticeSuffix": ".",
 	"continueWithGoogle": "Continue with Google",
 	"continueWithApple": "Continue with Apple",
-	"orSeparator": "or",
+	"orSeparator": "or continue directly with",
 	"googleSignInFailed": "Google sign-in failed. Please try again.",
 	"saving": "Saving...",
 	"removeAbusiveLanguageFromPublicName": "Please remove abusive or objectionable language from your public name.",

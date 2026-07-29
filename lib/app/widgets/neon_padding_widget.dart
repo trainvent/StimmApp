@@ -42,7 +42,7 @@ class NeonPaddingWidget extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(
           getOutterBorderRadius(
-            innerBorderRadius: DConst.kBorderRadius10,
+            innerBorderRadius: AppRadii.small,
             margin: DConst.kMargin3,
           ),
         ),
@@ -53,7 +53,7 @@ class NeonPaddingWidget extends StatelessWidget {
           color: Theme.of(context).cardColor,
           shadowColor: tertiaryGlow,
           elevation: 8,
-          borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
+          borderRadius: BorderRadius.circular(AppRadii.small),
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.all(10.0),

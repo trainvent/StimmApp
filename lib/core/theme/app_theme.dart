@@ -73,9 +73,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(DConst.kBorderRadius10),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(AppRadii.small)),
         ),
         filled: true,
         fillColor: isDark ? themedScheme.surfaceContainerHighest : Colors.white,
@@ -96,7 +94,14 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: onPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DConst.kBorderRadius10),
+            borderRadius: BorderRadius.circular(AppRadii.small),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadii.small),
           ),
         ),
       ),
@@ -104,6 +109,9 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadii.small),
+          ),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
