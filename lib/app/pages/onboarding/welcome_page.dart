@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
+import 'package:stimmapp/app/widgets/buttons/login_provider_button_widget.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -25,95 +25,42 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   bool _isGoogleSigningIn = false;
 
-  Widget _buildGoogleSignInButton(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
-    final asset = switch ((isIos, isDark)) {
-      (true, true) => AppAssets.googleSignInIosDark,
-      (true, false) => AppAssets.googleSignInIosLight,
-      (false, true) => AppAssets.googleSignInAndroidWebDark,
-      (false, false) => AppAssets.googleSignInAndroidWebLight,
-    };
-    final buttonSize = isIos ? const Size(214, 50) : const Size(225, 50);
-    if (Localizations.localeOf(context).languageCode == 'de') {
-      return SizedBox.fromSize(
-        size: buttonSize,
-        child: OutlinedButton(
-          key: keys.welcomePage.googleSignInButton,
-          onPressed: _isGoogleSigningIn ? null : _continueWithGoogle,
-          style: OutlinedButton.styleFrom(
-            backgroundColor: isDark
-                ? const Color(0xFF131314)
-                : const Color(0xFFFFFFFF),
-            foregroundColor: isDark
-                ? const Color(0xFFE3E3E3)
-                : const Color(0xFF1F1F1F),
-            disabledBackgroundColor: isDark
-                ? const Color(0xFF131314)
-                : const Color(0xFFFFFFFF),
-            disabledForegroundColor: isDark
-                ? const Color(0xFFE3E3E3)
-                : const Color(0xFF1F1F1F),
-            side: BorderSide(
-              color: isDark ? const Color(0xFF8E918F) : const Color(0xFF747775),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: isIos ? 16 : 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            textStyle: const TextStyle(
-              fontFamily: 'Google Sans',
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              height: 20 / 14,
-            ),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: _isGoogleSigningIn
-                    ? const SizedBox.square(
-                        dimension: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Image.asset(AppAssets.googleLogo, width: 20, height: 20),
-              ),
-              Text(context.l10n.continueWithGoogle),
-            ],
-          ),
-        ),
-      );
-    }
+  bool get _showsAppleSignIn =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
-    return Semantics(
-      button: true,
-      enabled: !_isGoogleSigningIn,
-      label: context.l10n.continueWithGoogle,
-      child: GestureDetector(
-        key: keys.welcomePage.googleSignInButton,
-        onTap: _isGoogleSigningIn ? null : _continueWithGoogle,
-        child: SizedBox.fromSize(
-          size: buttonSize,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Opacity(
-                opacity: _isGoogleSigningIn ? 0.55 : 1,
-                child: Image.asset(asset, fit: BoxFit.contain),
-              ),
-              if (_isGoogleSigningIn)
-                const Center(
-                  child: SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
+  Widget _buildAppleSignInButton(BuildContext context) {
+    // Authentication will be connected after the Apple Developer and Firebase
+    // provider configuration is in place.
+    return LoginProviderButtonWidget(
+      key: keys.welcomePage.appleSignInButton,
+      provider: LoginProvider.apple,
+      label: 'Apple',
+      semanticLabel: context.l10n.continueWithApple,
+      onPressed: null,
+    );
+  }
+
+  Widget _buildGoogleSignInButton(BuildContext context) {
+    return LoginProviderButtonWidget(
+      key: keys.welcomePage.googleSignInButton,
+      provider: LoginProvider.google,
+      label: 'Google',
+      semanticLabel: context.l10n.continueWithGoogle,
+      onPressed: _isGoogleSigningIn ? null : _continueWithGoogle,
+      isLoading: _isGoogleSigningIn,
+    );
+  }
+
+  Widget _buildProviderSignInButtons(BuildContext context) {
+    final googleButton = _buildGoogleSignInButton(context);
+    if (!_showsAppleSignIn) return googleButton;
+
+    return Row(
+      children: [
+        Expanded(child: googleButton),
+        const SizedBox(width: 10),
+        Expanded(child: _buildAppleSignInButton(context)),
+      ],
     );
   }
 
@@ -247,7 +194,7 @@ class _WelcomePageState extends State<WelcomePage> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildGoogleSignInButton(context),
+        _buildProviderSignInButtons(context),
       ],
     );
   }

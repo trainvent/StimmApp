@@ -587,6 +587,7 @@
 	"loginLegalNoticePrivacy": "Datenschutzerklärung",
 	"loginLegalNoticeSuffix": " zu.",
 	"continueWithGoogle": "Mit Google fortfahren",
+	"continueWithApple": "Mit Apple fortfahren",
 	"orSeparator": "oder",
 	"googleSignInFailed": "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
 	"saving": "Speichern...",

@@ -22,4 +22,12 @@ class AppAssets {
       'assets/images/google_sign_in_ios_light.png';
   static const String googleSignInIosDark =
       'assets/images/google_sign_in_ios_dark.png';
+  static const String appleSignInIosLightEnglish =
+      'assets/images/apple_sign_in_ios_light_en.png';
+  static const String appleSignInIosDarkEnglish =
+      'assets/images/apple_sign_in_ios_dark_en.png';
+  static const String appleSignInIosLightGerman =
+      'assets/images/apple_sign_in_ios_light_de.png';
+  static const String appleSignInIosDarkGerman =
+      'assets/images/apple_sign_in_ios_dark_de.png';
 }

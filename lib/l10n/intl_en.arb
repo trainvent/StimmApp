@@ -585,6 +585,7 @@
 	"loginLegalNoticePrivacy": "Privacy Policy",
 	"loginLegalNoticeSuffix": ".",
 	"continueWithGoogle": "Continue with Google",
+	"continueWithApple": "Continue with Apple",
 	"orSeparator": "or",
 	"googleSignInFailed": "Google sign-in failed. Please try again.",
 	"saving": "Saving...",
