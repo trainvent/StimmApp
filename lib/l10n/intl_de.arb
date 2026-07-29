@@ -590,6 +590,7 @@
 	"continueWithApple": "Mit Apple fortfahren",
 	"orSeparator": "oder direkt weiter mit",
 	"googleSignInFailed": "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
+	"appleSignInFailed": "Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
 	"saving": "Speichern...",
 	"removeAbusiveLanguageFromPublicName": "Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.",
 	"newUser": "Neuer Benutzer",

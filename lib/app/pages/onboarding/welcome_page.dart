@@ -6,6 +6,7 @@ import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
 import 'package:stimmapp/app/widgets/buttons/login_provider_button_widget.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -24,19 +25,24 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   bool _isGoogleSigningIn = false;
+  bool _isAppleSigningIn = false;
 
   bool get _showsAppleSignIn =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+      !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.iOS &&
+      Environment.isProd &&
+      Environment.isStimmapp;
+
+  bool get _isProviderSigningIn => _isGoogleSigningIn || _isAppleSigningIn;
 
   Widget _buildAppleSignInButton(BuildContext context) {
-    // Authentication will be connected after the Apple Developer and Firebase
-    // provider configuration is in place.
     return LoginProviderButtonWidget(
       key: keys.welcomePage.appleSignInButton,
       provider: LoginProvider.apple,
       label: 'Apple',
       semanticLabel: context.l10n.continueWithApple,
-      onPressed: null,
+      onPressed: _isProviderSigningIn ? null : _continueWithApple,
+      isLoading: _isAppleSigningIn,
     );
   }
 
@@ -46,7 +52,7 @@ class _WelcomePageState extends State<WelcomePage> {
       provider: LoginProvider.google,
       label: 'Google',
       semanticLabel: context.l10n.continueWithGoogle,
-      onPressed: _isGoogleSigningIn ? null : _continueWithGoogle,
+      onPressed: _isProviderSigningIn ? null : _continueWithGoogle,
       isLoading: _isGoogleSigningIn,
     );
   }
@@ -65,7 +71,7 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   Future<void> _continueWithGoogle() async {
-    if (_isGoogleSigningIn) return;
+    if (_isProviderSigningIn) return;
 
     setState(() => _isGoogleSigningIn = true);
     try {
@@ -99,6 +105,45 @@ class _WelcomePageState extends State<WelcomePage> {
     } finally {
       if (mounted) {
         setState(() => _isGoogleSigningIn = false);
+      }
+    }
+  }
+
+  Future<void> _continueWithApple() async {
+    if (_isProviderSigningIn) return;
+
+    setState(() => _isAppleSigningIn = true);
+    try {
+      await authService.signInWithApple();
+      unawaited(
+        AnalyticsService.instance.logAuthResult(
+          action: 'apple_sign_in',
+          success: true,
+        ),
+      );
+    } on AuthException catch (e) {
+      debugPrint(
+        'Apple sign-in Firebase failure '
+        '(code: ${e.code}, message: ${e.message})',
+      );
+      unawaited(
+        AnalyticsService.instance.logAuthResult(
+          action: 'apple_sign_in',
+          success: false,
+          errorCode: e.code,
+        ),
+      );
+      if (!mounted || e.code == 'apple-sign-in-cancelled') return;
+      showErrorSnackBar(e.message ?? context.l10n.appleSignInFailed);
+    } catch (e, st) {
+      debugPrint('Apple sign-in failed: $e');
+      debugPrintStack(stackTrace: st);
+      if (mounted) {
+        showErrorSnackBar(context.l10n.appleSignInFailed);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAppleSigningIn = false);
       }
     }
   }

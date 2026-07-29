@@ -81,6 +81,59 @@ class AuthService {
         false;
   }
 
+  bool get hasGoogleProvider {
+    return currentUser?.providerData.any(
+          (provider) => provider.providerId == GoogleAuthProvider.PROVIDER_ID,
+        ) ??
+        false;
+  }
+
+  bool get hasAppleProvider {
+    return currentUser?.providerData.any(
+          (provider) => provider.providerId == AppleAuthProvider.PROVIDER_ID,
+        ) ??
+        false;
+  }
+
+  AppleAuthProvider _appleProvider() {
+    return AppleAuthProvider()
+      ..addScope('email')
+      ..addScope('name');
+  }
+
+  bool _isAppleCancellation(String code) {
+    return const {
+      'canceled',
+      'cancelled',
+      'popup-closed-by-user',
+      'web-context-cancelled',
+    }.contains(code);
+  }
+
+  AuthException _appleAuthException(FirebaseAuthException error) {
+    if (_isAppleCancellation(error.code)) {
+      return AuthException(
+        FirebaseAuthException(
+          code: 'apple-sign-in-cancelled',
+          message: 'Apple sign-in was cancelled.',
+        ),
+      );
+    }
+    return AuthException(error);
+  }
+
+  Future<void> _assertFederatedSignupEligible(UserCredential result) async {
+    if (!(result.additionalUserInfo?.isNewUser ?? false)) return;
+
+    try {
+      await assertSignupEligible(email: result.user?.email ?? '');
+    } on AuthException {
+      await result.user?.delete();
+      await firebaseAuth.signOut();
+      rethrow;
+    }
+  }
+
   Future<GoogleProfileData> importGoogleProfileData({
     bool promptIfNecessary = true,
   }) {
@@ -137,16 +190,7 @@ class AuthService {
         result = await firebaseAuth.signInWithCredential(credential);
       }
 
-      if (result.additionalUserInfo?.isNewUser ?? false) {
-        try {
-          await assertSignupEligible(email: result.user?.email ?? '');
-        } on AuthException {
-          await result.user?.delete();
-          await firebaseAuth.signOut();
-          rethrow;
-        }
-      }
-
+      await _assertFederatedSignupEligible(result);
       return result;
     } on GoogleAuthCancelledException {
       throw AuthException(
@@ -164,6 +208,19 @@ class AuthService {
       );
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
+    }
+  }
+
+  Future<UserCredential> signInWithApple() async {
+    try {
+      final provider = _appleProvider();
+      final result = kIsWeb
+          ? await firebaseAuth.signInWithPopup(provider)
+          : await firebaseAuth.signInWithProvider(provider);
+      await _assertFederatedSignupEligible(result);
+      return result;
+    } on FirebaseAuthException catch (e) {
+      throw _appleAuthException(e);
     }
   }
 
@@ -303,6 +360,60 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw AuthException(e);
     }
+  }
+
+  Future<void> deleteAccountWithApple() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+
+    try {
+      final provider = _appleProvider();
+      final credential = kIsWeb
+          ? await user.reauthenticateWithPopup(provider)
+          : await user.reauthenticateWithProvider(provider);
+
+      if (!kIsWeb) {
+        final authorizationCode =
+            credential.additionalUserInfo?.authorizationCode;
+        if (authorizationCode == null || authorizationCode.isEmpty) {
+          throw FirebaseAuthException(
+            code: 'missing-apple-authorization-code',
+            message:
+                'Apple did not return the authorization code required to '
+                'revoke access.',
+          );
+        }
+        await firebaseAuth.revokeTokenWithAuthorizationCode(authorizationCode);
+      }
+
+      await UserRepository.create().delete(user.uid);
+      await user.delete();
+      await firebaseAuth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw _appleAuthException(e);
+    }
+  }
+
+  Future<void> deleteAccountWithFederatedProvider() async {
+    if (hasAppleProvider) {
+      return deleteAccountWithApple();
+    }
+    if (hasGoogleProvider) {
+      return deleteAccountWithGoogle();
+    }
+    throw AuthException(
+      FirebaseAuthException(
+        code: 'unsupported-auth-provider',
+        message: 'No supported sign-in provider was found for this account.',
+      ),
+    );
   }
 
   /// Deletes an account while its authentication session is still recent.

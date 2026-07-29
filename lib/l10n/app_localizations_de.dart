@@ -1671,6 +1671,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.';
 
   @override
+  String get appleSignInFailed =>
+      'Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
   String get saving => 'Speichern...';
 
   @override

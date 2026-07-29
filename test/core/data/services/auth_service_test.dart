@@ -47,6 +47,21 @@ class _GoogleFirebaseAuth extends Mock implements FirebaseAuth {
   }
 }
 
+class _AppleFirebaseAuth extends Mock implements FirebaseAuth {
+  _AppleFirebaseAuth({required this.result, this.error});
+
+  final UserCredential result;
+  final FirebaseAuthException? error;
+  AuthProvider? receivedProvider;
+
+  @override
+  Future<UserCredential> signInWithProvider(AuthProvider provider) async {
+    receivedProvider = provider;
+    if (error case final error?) throw error;
+    return result;
+  }
+}
+
 class _FakeGoogleAuthClient implements GoogleAuthClient {
   _FakeGoogleAuthClient({this.error});
 
@@ -150,6 +165,44 @@ void main() {
             (error) => error.code,
             'code',
             'google-sign-in-cancelled',
+          ),
+        ),
+      );
+    });
+  });
+
+  group('signInWithApple', () {
+    test('uses the native Apple provider with email and name scopes', () async {
+      final expectedResult = _MockUserCredential();
+      final firebaseAuth = _AppleFirebaseAuth(result: expectedResult);
+      final service = AuthService(firebaseAuth: firebaseAuth);
+
+      final result = await service.signInWithApple();
+
+      expect(result, same(expectedResult));
+      final provider = firebaseAuth.receivedProvider;
+      expect(provider, isA<AppleAuthProvider>());
+      expect(
+        (provider! as AppleAuthProvider).scopes,
+        containsAll(['email', 'name']),
+      );
+    });
+
+    test('maps user cancellation to a non-fatal auth code', () async {
+      final service = AuthService(
+        firebaseAuth: _AppleFirebaseAuth(
+          result: _MockUserCredential(),
+          error: FirebaseAuthException(code: 'canceled'),
+        ),
+      );
+
+      await expectLater(
+        service.signInWithApple(),
+        throwsA(
+          isA<AuthException>().having(
+            (error) => error.code,
+            'code',
+            'apple-sign-in-cancelled',
           ),
         ),
       );

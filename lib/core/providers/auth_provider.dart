@@ -27,11 +27,13 @@ final currentUserProvider = Provider<User?>((ref) {
 });
 
 /// Password accounts must complete StimmApp's verification-code flow.
-/// Federated Google accounts have already verified control of their email.
+/// Federated Google and Apple accounts have already verified their identity.
 bool requiresEmailVerification(User user) {
   if (user.emailVerified) return false;
   return !user.providerData.any(
-    (provider) => provider.providerId == GoogleAuthProvider.PROVIDER_ID,
+    (provider) =>
+        provider.providerId == GoogleAuthProvider.PROVIDER_ID ||
+        provider.providerId == AppleAuthProvider.PROVIDER_ID,
   );
 }
 

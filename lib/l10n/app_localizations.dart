@@ -3164,6 +3164,12 @@ abstract class AppLocalizations {
   /// **'Google sign-in failed. Please try again.'**
   String get googleSignInFailed;
 
+  /// No description provided for @appleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign-in failed. Please try again.'**
+  String get appleSignInFailed;
+
   /// No description provided for @saving.
   ///
   /// In en, this message translates to:

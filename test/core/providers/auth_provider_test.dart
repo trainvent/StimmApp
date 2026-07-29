@@ -53,5 +53,14 @@ void main() {
 
       expect(requiresEmailVerification(user), isFalse);
     });
+
+    test('does not require custom verification for an Apple account', () {
+      final user = _TestUser(
+        verified: false,
+        providers: [_TestUserInfo(AppleAuthProvider.PROVIDER_ID)],
+      );
+
+      expect(requiresEmailVerification(user), isFalse);
+    });
   });
 }

@@ -42,7 +42,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
           password: _passwordController.text,
         );
       } else {
-        await authService.deleteAccountWithGoogle();
+        await authService.deleteAccountWithFederatedProvider();
       }
 
       if (!mounted) return;
@@ -57,7 +57,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } on AuthException catch (e) {
-      if (!mounted || e.code == 'google-sign-in-cancelled') return;
+      if (!mounted ||
+          e.code == 'google-sign-in-cancelled' ||
+          e.code == 'apple-sign-in-cancelled') {
+        return;
+      }
       setState(() {
         if (e.code == 'user-not-found') {
           _statusMessage = context.l10n.deleteAccountUserNotFound;

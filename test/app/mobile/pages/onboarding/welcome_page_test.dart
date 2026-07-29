@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart';
 import 'package:stimmapp/app/widgets/buttons/login_provider_button_widget.dart';
+import 'package:stimmapp/core/config/brand_config.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 
 import '../../../../test_helper.dart';
 
 void main() {
+  setUp(() => Environment.init(BrandConfig.stimmappProd));
+
   testWidgets('places Google sign-in below the login flow and divider', (
     tester,
   ) async {
@@ -61,6 +65,10 @@ void main() {
       expect(find.text('Google'), findsOneWidget);
       expect(find.text('Apple'), findsOneWidget);
       expect(find.byType(LoginProviderButtonWidget), findsNWidgets(2));
+      final appleButton = tester.widget<OutlinedButton>(
+        find.descendant(of: apple, matching: find.byType(OutlinedButton)),
+      );
+      expect(appleButton.onPressed, isNotNull);
       expect(tester.getSize(google), tester.getSize(apple));
       expect(tester.getTopLeft(google).dy, tester.getTopLeft(apple).dy);
       expect(
@@ -69,4 +77,21 @@ void main() {
       );
     },
   );
+
+  testWidgets('hides Apple sign-in in the dev flavor', (tester) async {
+    Environment.init(BrandConfig.stimmappDev);
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() {
+      Environment.init(BrandConfig.stimmappProd);
+      debugDefaultTargetPlatformOverride = null;
+      tester.binding.setSurfaceSize(null);
+    });
+
+    await tester.pumpWidget(createTestWidget(const WelcomePage()));
+    debugDefaultTargetPlatformOverride = null;
+
+    expect(find.byKey(keys.welcomePage.googleSignInButton), findsOneWidget);
+    expect(find.byKey(keys.welcomePage.appleSignInButton), findsNothing);
+  });
 }
