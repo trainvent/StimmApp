@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/google_profile_sync_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/google_account_links.dart';
@@ -69,7 +70,6 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileProvider);
-    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.synchronization)),
@@ -91,8 +91,9 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
                   leading: const Icon(FontAwesome5.google, size: 18),
                   title: Text(context.l10n.editGoogleProfile),
                   trailing: const Icon(Icons.open_in_new),
-                  onTap: () =>
-                      _openGoogleProfile(currentUser?.email ?? profile.email),
+                  onTap: () => _openGoogleProfile(
+                    authService.authenticatedEmail ?? profile.email,
+                  ),
                 ),
                 SwitchListTile(
                   key: const Key('googleProfileSyncSwitch'),

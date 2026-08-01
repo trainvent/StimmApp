@@ -80,6 +80,7 @@ dependencies:
   intl_utils: ^2.8.14
   firebase_crashlytics: ^5.2.4
   google_sign_in: ^7.2.0
+  google_sign_in_platform_interface: ^3.1.0
   trainvent_general: ^0.0.3
   pinput: ^6.0.2
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:http/http.dart' as http;
 
 const _googleProfileScopes = <String>[
@@ -150,10 +151,20 @@ class GoogleAuthIdentity {
   final String? idToken;
 }
 
+class GoogleAccountReference {
+  const GoogleAccountReference({required this.id, required this.email});
+
+  final String id;
+  final String email;
+}
+
 abstract interface class GoogleAuthClient {
   Future<GoogleAuthIdentity> authenticate();
 
-  Future<GoogleProfileData> importProfileData({bool promptIfNecessary = true});
+  Future<GoogleProfileData> importProfileData({
+    bool promptIfNecessary = true,
+    GoogleAccountReference? account,
+  });
 
   Future<void> signOut();
 }
@@ -191,22 +202,19 @@ class GoogleSignInClient implements GoogleAuthClient {
   @override
   Future<GoogleProfileData> importProfileData({
     bool promptIfNecessary = true,
+    GoogleAccountReference? account,
   }) async {
     await _initialize();
     try {
-      _currentAccount ??= await _googleSignIn
-          .attemptLightweightAuthentication();
-      final authorizationClient =
-          _currentAccount?.authorizationClient ??
-          _googleSignIn.authorizationClient;
-      final authorization =
-          await authorizationClient.authorizationForScopes(
-            _googleProfileScopes,
-          ) ??
-          (promptIfNecessary
-              ? await authorizationClient.authorizeScopes(_googleProfileScopes)
-              : null);
-      if (authorization == null) {
+      final accessToken = account == null
+          ? await _authorizeUnlinkedAccount(
+              promptIfNecessary: promptIfNecessary,
+            )
+          : await _authorizeLinkedAccount(
+              account,
+              promptIfNecessary: promptIfNecessary,
+            );
+      if (accessToken == null) {
         throw const GoogleProfileImportException(
           code: 'authorization-required',
           message: 'Google profile authorization requires user interaction.',
@@ -217,7 +225,7 @@ class GoogleSignInClient implements GoogleAuthClient {
           'personFields': 'names,emailAddresses,locations,birthdays',
         }),
         headers: {
-          'Authorization': 'Bearer ${authorization.accessToken}',
+          'Authorization': 'Bearer $accessToken',
           'Accept': 'application/json',
         },
       );
@@ -240,7 +248,27 @@ class GoogleSignInClient implements GoogleAuthClient {
           message: 'Google returned an invalid profile response.',
         );
       }
-      return GoogleProfileData.fromPeopleApi(body);
+      final data = GoogleProfileData.fromPeopleApi(body);
+      final linkedEmail = account?.email.trim();
+      final returnedEmail = data.email?.trim();
+      if (linkedEmail != null &&
+          linkedEmail.isNotEmpty &&
+          returnedEmail != null &&
+          returnedEmail.isNotEmpty &&
+          returnedEmail.toLowerCase() != linkedEmail.toLowerCase()) {
+        throw const GoogleProfileImportException(
+          code: 'account-mismatch',
+          message: 'Google returned profile data for a different account.',
+        );
+      }
+      return GoogleProfileData(
+        givenName: data.givenName,
+        surname: data.surname,
+        fullName: data.fullName,
+        email: returnedEmail?.isNotEmpty == true ? returnedEmail : linkedEmail,
+        dateOfBirth: data.dateOfBirth,
+        address: data.address,
+      );
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw const GoogleProfileImportCancelledException();
@@ -262,6 +290,66 @@ class GoogleSignInClient implements GoogleAuthClient {
         message: 'Google returned an invalid profile response.',
       );
     }
+  }
+
+  Future<String?> _authorizeLinkedAccount(
+    GoogleAccountReference account, {
+    required bool promptIfNecessary,
+  }) async {
+    final currentAccount = _currentAccount;
+    if (currentAccount != null &&
+        currentAccount.id == account.id &&
+        currentAccount.email.toLowerCase() == account.email.toLowerCase()) {
+      final authorization =
+          await currentAccount.authorizationClient.authorizationForScopes(
+            _googleProfileScopes,
+          ) ??
+          (promptIfNecessary
+              ? await currentAccount.authorizationClient.authorizeScopes(
+                  _googleProfileScopes,
+                )
+              : null);
+      return authorization?.accessToken;
+    }
+
+    // Firebase restores its linked provider after an app restart, while the
+    // GoogleSignInAccount object is process-local. Bind authorization to the
+    // restored provider identity so platforms with multiple Google accounts
+    // do not have to guess which account owns this StimmApp session.
+    final tokens = await GoogleSignInPlatform.instance
+        .clientAuthorizationTokensForScopes(
+          ClientAuthorizationTokensForScopesParameters(
+            request: AuthorizationRequestDetails(
+              scopes: _googleProfileScopes,
+              userId: account.id,
+              email: account.email,
+              promptIfUnauthorized: promptIfNecessary,
+            ),
+          ),
+        );
+    return tokens?.accessToken;
+  }
+
+  Future<String?> _authorizeUnlinkedAccount({
+    required bool promptIfNecessary,
+  }) async {
+    if (_currentAccount == null && !promptIfNecessary) {
+      final authorization = await _googleSignIn.authorizationClient
+          .authorizationForScopes(_googleProfileScopes);
+      return authorization?.accessToken;
+    }
+    _currentAccount ??= await _googleSignIn.attemptLightweightAuthentication();
+    final authorizationClient =
+        _currentAccount?.authorizationClient ??
+        _googleSignIn.authorizationClient;
+    final authorization =
+        await authorizationClient.authorizationForScopes(
+          _googleProfileScopes,
+        ) ??
+        (promptIfNecessary
+            ? await authorizationClient.authorizeScopes(_googleProfileScopes)
+            : null);
+    return authorization?.accessToken;
   }
 
   @override

@@ -89,6 +89,31 @@ class AuthService {
         false;
   }
 
+  String? get authenticatedEmail {
+    final user = currentUser;
+    final directEmail = user?.email?.trim();
+    if (directEmail?.isNotEmpty == true) return directEmail;
+    for (final provider in user?.providerData ?? const <UserInfo>[]) {
+      final providerEmail = provider.email?.trim();
+      if (providerEmail?.isNotEmpty == true) return providerEmail;
+    }
+    return null;
+  }
+
+  GoogleAccountReference? get linkedGoogleAccount {
+    final user = currentUser;
+    if (user == null) return null;
+    for (final provider in user.providerData) {
+      if (provider.providerId != GoogleAuthProvider.PROVIDER_ID) continue;
+      final id = provider.uid?.trim();
+      final email = (provider.email ?? user.email)?.trim();
+      if (id?.isNotEmpty == true && email?.isNotEmpty == true) {
+        return GoogleAccountReference(id: id!, email: email!);
+      }
+    }
+    return null;
+  }
+
   bool get hasAppleProvider {
     return currentUser?.providerData.any(
           (provider) => provider.providerId == AppleAuthProvider.PROVIDER_ID,
@@ -140,6 +165,7 @@ class AuthService {
   }) {
     return googleAuthClient.importProfileData(
       promptIfNecessary: promptIfNecessary,
+      account: linkedGoogleAccount,
     );
   }
 

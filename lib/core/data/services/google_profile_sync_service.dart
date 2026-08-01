@@ -51,7 +51,7 @@ class GoogleProfileSyncService {
     final updated = profile.copyWith(
       givenName: _clampName(google.givenName!),
       surname: _clampName(google.surname!),
-      email: google.email ?? _auth.currentUser?.email ?? profile.email,
+      email: google.email ?? _auth.authenticatedEmail ?? profile.email,
       dateOfBirth: google.dateOfBirth,
       address: address,
       town: town,

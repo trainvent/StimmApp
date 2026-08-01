@@ -82,7 +82,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _googleEmail = authService.currentUser?.email?.trim();
+    _googleEmail = authService.authenticatedEmail;
     final googleName = authService.currentUser?.displayName?.trim();
     if (googleName == null || googleName.isEmpty) return;
 
@@ -345,7 +345,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
 
       final profile = UserProfile(
         uid: currentUser.uid,
-        email: currentUser.email ?? _googleEmail,
+        email: authService.authenticatedEmail ?? _googleEmail,
         displayName: displayName,
         state: _requiresStateScope ? _selectedState : null,
         countryCode: _selectedCountryCode,
@@ -528,7 +528,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
 
   Future<void> _openGoogleProfile() async {
     final opened = await openGoogleProfile(
-      _googleEmail ?? authService.currentUser?.email,
+      _googleEmail ?? authService.authenticatedEmail,
     );
     if (mounted && !opened) {
       showErrorSnackBar(context.l10n.couldNotOpenLink);

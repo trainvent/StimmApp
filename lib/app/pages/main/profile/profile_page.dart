@@ -335,13 +335,15 @@ class ProfilePage extends ConsumerWidget {
                             context,
                             context.l10n.email,
                             isGoogleAccount
-                                ? currentUser?.email ?? userProfile.email
+                                ? authService.authenticatedEmail ??
+                                      userProfile.email
                                 : userProfile.email,
                             hideWhenEmpty: false,
                             onTap: isGoogleAccount
                                 ? () => _openGoogleProfile(
                                     context,
-                                    currentUser?.email ?? userProfile.email,
+                                    authService.authenticatedEmail ??
+                                        userProfile.email,
                                   )
                                 : hasPasswordProvider
                                 ? () {

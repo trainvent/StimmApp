@@ -5,8 +5,13 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/google_auth_client.dart';
 
 class _MockFirebaseAuth extends Mock implements FirebaseAuth {
+  _MockFirebaseAuth([this.user]);
+
+  final User? user;
+
   @override
   User? get currentUser =>
+      user ??
       super.noSuchMethod(Invocation.getter(#currentUser), returnValue: null)
           as User?;
 
@@ -27,6 +32,35 @@ class _MockUser extends Mock implements User {
             returnValue: Future<void>.value(),
           )
           as Future<void>;
+}
+
+class _GoogleUserInfo extends Mock implements UserInfo {
+  _GoogleUserInfo({required this.googleId, required this.googleEmail});
+
+  final String googleId;
+  final String googleEmail;
+
+  @override
+  String get providerId => GoogleAuthProvider.PROVIDER_ID;
+
+  @override
+  String? get uid => googleId;
+
+  @override
+  String? get email => googleEmail;
+}
+
+class _GoogleUser extends Mock implements User {
+  _GoogleUser({this.primaryEmail, required this.googleProvider});
+
+  final String? primaryEmail;
+  final UserInfo googleProvider;
+
+  @override
+  String? get email => primaryEmail;
+
+  @override
+  List<UserInfo> get providerData => [googleProvider];
 }
 
 class _MockUserCredential extends Mock implements UserCredential {
@@ -66,6 +100,7 @@ class _FakeGoogleAuthClient implements GoogleAuthClient {
   _FakeGoogleAuthClient({this.error});
 
   final Object? error;
+  GoogleAccountReference? receivedAccount;
 
   @override
   Future<GoogleAuthIdentity> authenticate() async {
@@ -79,7 +114,9 @@ class _FakeGoogleAuthClient implements GoogleAuthClient {
   @override
   Future<GoogleProfileData> importProfileData({
     bool promptIfNecessary = true,
+    GoogleAccountReference? account,
   }) async {
+    receivedAccount = account;
     return const GoogleProfileData();
   }
 
@@ -177,6 +214,41 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('linked Google account', () {
+    test('uses provider data to bind profile imports after restart', () async {
+      final googleClient = _FakeGoogleAuthClient();
+      final provider = _GoogleUserInfo(
+        googleId: 'google-user-id',
+        googleEmail: 'person@example.com',
+      );
+      final service = AuthService(
+        firebaseAuth: _MockFirebaseAuth(
+          _GoogleUser(primaryEmail: null, googleProvider: provider),
+        ),
+        googleAuthClient: googleClient,
+      );
+
+      await service.importGoogleProfileData(promptIfNecessary: false);
+
+      expect(googleClient.receivedAccount?.id, 'google-user-id');
+      expect(googleClient.receivedAccount?.email, 'person@example.com');
+    });
+
+    test('falls back to the Google provider email', () {
+      final provider = _GoogleUserInfo(
+        googleId: 'google-user-id',
+        googleEmail: 'person@example.com',
+      );
+      final service = AuthService(
+        firebaseAuth: _MockFirebaseAuth(
+          _GoogleUser(primaryEmail: null, googleProvider: provider),
+        ),
+      );
+
+      expect(service.authenticatedEmail, 'person@example.com');
     });
   });
 

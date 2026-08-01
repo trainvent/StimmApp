@@ -52,6 +52,17 @@ bool isHomeItemInUserZone({
   }
 }
 
+List<T> filterHomeItemsInUserZone<T extends HomeItem>({
+  required Iterable<T> items,
+  required UserProfile? userProfile,
+}) {
+  return items
+      .where(
+        (item) => isHomeItemInUserZone(item: item, userProfile: userProfile),
+      )
+      .toList();
+}
+
 String normalizedHomeItemScopeType(HomeItem item) {
   final itemCountryCode = item.countryCode?.toUpperCase();
   final itemStateOrRegion = item.stateOrRegion;

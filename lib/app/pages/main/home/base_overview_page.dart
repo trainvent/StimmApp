@@ -53,14 +53,12 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
 
 class DiscoveryStatus {
   const DiscoveryStatus({
-    required this.isEligible,
     required this.hasParticipated,
     required this.isFinished,
     required this.isGroupOnly,
     this.groupName,
   });
 
-  final bool isEligible;
   final bool hasParticipated;
   final bool isFinished;
   final bool isGroupOnly;
@@ -75,15 +73,6 @@ class DiscoveryStatusChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chips = <Widget>[];
-    if (!status.isFinished && !status.isEligible) {
-      chips.add(
-        _DiscoveryChip(
-          icon: Icons.location_off_outlined,
-          label: context.l10n.outsideYourZone,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
     if (!status.isFinished && status.hasParticipated) {
       chips.add(
         _DiscoveryChip(
@@ -581,6 +570,11 @@ class _BaseOverviewPageState<T extends HomeItem>
                             )
                             .toList();
 
+                        items = filterHomeItemsInUserZone(
+                          items: items,
+                          userProfile: userProfile,
+                        );
+
                         if (blockedIds.isNotEmpty) {
                           items = items
                               .where(
@@ -616,10 +610,6 @@ class _BaseOverviewPageState<T extends HomeItem>
                           itemBuilder: (context, index) {
                             final item = items[index];
                             final discoveryStatus = DiscoveryStatus(
-                              isEligible: isHomeItemInUserZone(
-                                item: item,
-                                userProfile: userProfile,
-                              ),
                               hasParticipated: participatedIds.contains(
                                 widget.participationKeyProvider?.call(item) ??
                                     item.id,
