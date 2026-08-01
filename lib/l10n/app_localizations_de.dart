@@ -883,6 +883,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profilePictureUpdated => 'Profilbild aktualisiert';
 
   @override
+  String get uploadingProfilePicture => 'Profilbild wird hochgeladen';
+
+  @override
   String get purchaseCancelled => 'Kauf abgebrochen.';
 
   @override

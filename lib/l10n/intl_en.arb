@@ -327,6 +327,7 @@
 	"products": "Products",
 	"profile": "Profile",
 	"profilePictureUpdated": "Profile picture updated",
+	"uploadingProfilePicture": "Uploading profile picture",
 	"purchaseCancelled": "Purchase cancelled.",
 	"purchaseFailed": "Purchase failed.",
 	"purchaseSuccessful": "Purchase successful!",

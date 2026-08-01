@@ -10,6 +10,7 @@ import 'package:stimmapp/core/data/services/google_profile_sync_preview.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/google_account_links.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 class SynchronizationPage extends ConsumerStatefulWidget {
   const SynchronizationPage({super.key});
@@ -260,7 +261,7 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: profileState.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: TriangleLoadingIndicator()),
           error: (error, stackTrace) =>
               Center(child: Text(context.l10n.googleSyncFailed)),
           data: (profile) {
@@ -299,12 +300,20 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
                   key: const Key('syncGoogleProfileNowButton'),
                   contentPadding: EdgeInsets.zero,
                   enabled: !_isSyncingGoogleProfile,
-                  leading: _isSyncingGoogleProfile
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.sync),
+                  leading: SizedBox(
+                    width: 40,
+                    child: Center(
+                      child: _isSyncingGoogleProfile
+                          ? TriangleLoadingIndicator(
+                              size: 20,
+                              showFill: false,
+                              strokeColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                            )
+                          : const Icon(Icons.sync),
+                    ),
+                  ),
                   title: Text(context.l10n.syncGoogleDataNow),
                   onTap: _isSyncingGoogleProfile
                       ? null

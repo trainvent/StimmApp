@@ -33,6 +33,7 @@ import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum _UsernameAvailability {
@@ -631,12 +632,16 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         suffixIcon:
                             _usernameAvailability ==
                                 _UsernameAvailability.checking
-                            ? const Padding(
-                                padding: EdgeInsets.all(14),
+                            ? Padding(
+                                padding: const EdgeInsets.all(14),
                                 child: SizedBox.square(
                                   dimension: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  child: TriangleLoadingIndicator(
+                                    size: 20,
+                                    showFill: false,
+                                    strokeColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                               )
@@ -710,11 +715,12 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                                           activateSync: _isGoogleSyncActive,
                                         ),
                                   icon: _isImportingGoogleProfile
-                                      ? const SizedBox.square(
-                                          dimension: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
+                                      ? TriangleLoadingIndicator(
+                                          size: 16,
+                                          showFill: false,
+                                          strokeColor: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                         )
                                       : const Icon(Icons.sync, size: 19),
                                   label: Text(context.l10n.syncNow),

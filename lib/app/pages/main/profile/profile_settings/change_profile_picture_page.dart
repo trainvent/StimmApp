@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
-import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -185,10 +184,19 @@ class _ChangeProfilePicturePageState
                     ),
                   ),
                   if (_uploading)
-                    const SizedBox(
-                      width: 128,
-                      height: 128,
-                      child: TriangleLoadingIndicator(showFill: false),
+                    SizedBox.square(
+                      dimension: 140,
+                      child: CircularProgressIndicator(
+                        value: _progress.clamp(0.0, 1.0),
+                        strokeWidth: 5,
+                        strokeCap: StrokeCap.round,
+                        color: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.16),
+                        semanticsLabel: context.l10n.uploadingProfilePicture,
+                        semanticsValue: '${(_progress * 100).round()}%',
+                      ),
                     ),
                 ],
               ),

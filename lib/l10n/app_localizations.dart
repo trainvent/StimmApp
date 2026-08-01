@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'Profile picture updated'**
   String get profilePictureUpdated;
 
+  /// No description provided for @uploadingProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading profile picture'**
+  String get uploadingProfilePicture;
+
   /// No description provided for @purchaseCancelled.
   ///
   /// In en, this message translates to:

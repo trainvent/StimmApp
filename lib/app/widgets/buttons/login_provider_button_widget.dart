@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/constants/dimension_constants.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 enum LoginProvider { google, apple }
 
@@ -56,12 +57,10 @@ class LoginProviderButtonWidget extends StatelessWidget {
             ),
           ),
           child: isLoading
-              ? SizedBox.square(
-                  dimension: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.2,
-                    color: foregroundColor,
-                  ),
+              ? TriangleLoadingIndicator(
+                  size: 22,
+                  showFill: false,
+                  strokeColor: foregroundColor,
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,

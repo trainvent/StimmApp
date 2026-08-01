@@ -89,6 +89,11 @@ The app follows a clean architecture approach, separated into layers:
 *   **Integration:** Patrol is used for UI/Integration testing (`integration_test/`).
 *   **Note:** Patrol requires specific setup in `build.gradle`.
 
+### Loading Indicators
+*   Use `TriangleLoadingIndicator` from `trainvent_general` for loading states throughout the app. Do not introduce other spinner styles.
+*   Constrain and center compact triangle indicators inside their button, icon, or `ListTile` slot so the animation cannot overflow or be clipped.
+*   The profile-picture upload is the sole exception: use a determinate `CircularProgressIndicator` around the circular image preview so it communicates upload progress and follows the image shape.
+
 ## 4. Common Workflows
 
 ### Deploying Cloud Functions

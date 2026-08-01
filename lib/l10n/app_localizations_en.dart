@@ -874,6 +874,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePictureUpdated => 'Profile picture updated';
 
   @override
+  String get uploadingProfilePicture => 'Uploading profile picture';
+
+  @override
   String get purchaseCancelled => 'Purchase cancelled.';
 
   @override
