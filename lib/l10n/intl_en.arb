@@ -143,6 +143,7 @@
 	"syncRegularly": "Sync regularly",
 	"googleSyncManagedFields": "While active, name, birthday, and address are managed by Google.",
 	"googleSyncRequiresCompleteProfile": "Google must provide your full name, birthday, and current location before synchronization can be enabled.",
+	"completeGoogleProfile": "Complete your Google profile",
 	"googleSyncEnabled": "Google synchronization enabled",
 	"googleSyncDisabled": "Google synchronization disabled",
 	"googleSyncSucceeded": "Google profile synchronized",

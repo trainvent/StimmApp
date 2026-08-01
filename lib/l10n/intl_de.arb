@@ -144,6 +144,7 @@
 	"syncRegularly": "Regelmäßig synchronisieren",
 	"googleSyncManagedFields": "Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.",
 	"googleSyncRequiresCompleteProfile": "Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.",
+	"completeGoogleProfile": "Vervollständige dein Google-Profil",
 	"googleSyncEnabled": "Google-Synchronisierung aktiviert",
 	"googleSyncDisabled": "Google-Synchronisierung deaktiviert",
 	"googleSyncSucceeded": "Google-Profil synchronisiert",

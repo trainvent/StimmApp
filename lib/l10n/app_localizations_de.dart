@@ -343,6 +343,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.';
 
   @override
+  String get completeGoogleProfile => 'Vervollständige dein Google-Profil';
+
+  @override
   String get googleSyncEnabled => 'Google-Synchronisierung aktiviert';
 
   @override

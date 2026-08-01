@@ -934,6 +934,16 @@ class S {
     );
   }
 
+  /// `Complete your Google profile`
+  String get completeGoogleProfile {
+    return Intl.message(
+      'Complete your Google profile',
+      name: 'completeGoogleProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Google synchronization enabled`
   String get googleSyncEnabled {
     return Intl.message(

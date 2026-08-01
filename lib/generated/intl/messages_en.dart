@@ -306,6 +306,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "communityRulesZeroTolerance": MessageLookupByLibrary.simpleMessage(
       "StimmApp has zero tolerance for objectionable content, harassment, hate speech, sexual exploitation, or abusive users.",
     ),
+    "completeGoogleProfile": MessageLookupByLibrary.simpleMessage(
+      "Complete your Google profile",
+    ),
     "completelyPrivateAccessMode": MessageLookupByLibrary.simpleMessage(
       "Completely private",
     ),

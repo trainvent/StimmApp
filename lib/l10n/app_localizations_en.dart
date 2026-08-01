@@ -341,6 +341,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Google must provide your full name, birthday, and current location before synchronization can be enabled.';
 
   @override
+  String get completeGoogleProfile => 'Complete your Google profile';
+
+  @override
   String get googleSyncEnabled => 'Google synchronization enabled';
 
   @override

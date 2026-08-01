@@ -710,6 +710,12 @@ abstract class AppLocalizations {
   /// **'Google must provide your full name, birthday, and current location before synchronization can be enabled.'**
   String get googleSyncRequiresCompleteProfile;
 
+  /// No description provided for @completeGoogleProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your Google profile'**
+  String get completeGoogleProfile;
+
   /// No description provided for @googleSyncEnabled.
   ///
   /// In en, this message translates to:

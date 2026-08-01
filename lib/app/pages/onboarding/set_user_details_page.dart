@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
+import 'package:stimmapp/app/widgets/google_profile_requirements_dialog.dart';
 import 'package:stimmapp/app/widgets/tomtom_address_widget.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
@@ -27,6 +28,7 @@ import 'package:stimmapp/core/data/services/profile_picture_service.dart';
 import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
+import 'package:stimmapp/core/functions/google_account_links.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
@@ -234,7 +236,12 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       debugPrint('Google profile synchronization validation failed: $e');
       debugPrintStack(stackTrace: st);
       if (mounted) {
-        showErrorSnackBar(context.l10n.googleSyncRequiresCompleteProfile);
+        await showDialog<void>(
+          context: context,
+          builder: (_) => GoogleProfileRequirementsDialog(
+            onOpenGoogleProfile: _openGoogleProfile,
+          ),
+        );
       }
       return false;
     } on GoogleProfileImportException catch (e, st) {
@@ -516,6 +523,15 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     );
     if (mounted && !ok) {
       showErrorSnackBar(couldNotOpenLink);
+    }
+  }
+
+  Future<void> _openGoogleProfile() async {
+    final opened = await openGoogleProfile(
+      _googleEmail ?? authService.currentUser?.email,
+    );
+    if (mounted && !opened) {
+      showErrorSnackBar(context.l10n.couldNotOpenLink);
     }
   }
 
