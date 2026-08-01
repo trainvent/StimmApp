@@ -16,11 +16,13 @@ class PetitionDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = PetitionRepository.create();
+    final participantIdsStream = repo.watchParticipantIds(id);
     return BaseDetailPage<Petition>(
       id: id,
       appBarTitle: context.l10n.petitionDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(id),
+      participantIdsStream: participantIdsStream,
       signaturesStream: repo.watchSignatures(id),
       sharePathSegment: 'petition',
       topRightActionBuilder: (context, petition) {
@@ -79,7 +81,7 @@ class PetitionDetailPage extends StatelessWidget {
       },
       bottomAction: SignActionButton(
         label: context.l10n.sign,
-        participantsStream: repo.watchParticipants(id),
+        participantIdsStream: participantIdsStream,
         askForReason: true,
         onAction: ({String? reason}) async {
           final user = authService.currentUser!;
@@ -91,10 +93,7 @@ class PetitionDetailPage extends StatelessWidget {
     );
   }
 
-  Future<void> _deletePetition(
-    BuildContext context,
-    Petition petition,
-  ) async {
+  Future<void> _deletePetition(BuildContext context, Petition petition) async {
     if (petition.signatureCount != 0) {
       showErrorSnackBar(context.l10n.cannotDeletePetitionHasSignatures);
       return;

@@ -171,6 +171,12 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
                             if (value == null || value.trim().isEmpty) {
                               return context.l10n.enterSomething;
                             }
+                            if (widget.field == EditableProfileField.username &&
+                                !hasValidUsernameLength(value)) {
+                              return context.l10n.usernameTooShort(
+                                AppLimits.minUsernameLength,
+                              );
+                            }
                             if (value.trim().length > _maxLength) {
                               return context.l10n.enterSomething;
                             }

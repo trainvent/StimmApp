@@ -5,11 +5,16 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 import 'package:universal_io/io.dart';
 
 class PollRepository {
-  PollRepository(this._fs);
+  PollRepository(this._fs, {ParticipantProfileLoader? participantProfileLoader})
+    : _participantProfileLoader =
+          participantProfileLoader ??
+          ParticipantProfileLoader(UserRepository(_fs));
   final DatabaseService _fs;
+  final ParticipantProfileLoader _participantProfileLoader;
 
   static PollRepository create() => PollRepository(locator.databaseService);
 
@@ -123,21 +128,16 @@ class PollRepository {
   }
 
   Stream<List<UserProfile>> watchParticipants(String pollId) {
+    return watchParticipantIds(pollId).asyncMap(_participantProfileLoader.load);
+  }
+
+  Stream<Set<String>> watchParticipantIds(String pollId) {
     return _fs.instance
         .collection('polls')
         .doc(pollId)
         .collection('votes')
         .snapshots()
-        .asyncMap((snap) async {
-          final uids = snap.docs.map((d) => d.id).toList();
-          if (uids.isEmpty) return [];
-
-          final userRepo = UserRepository.create();
-          final profiles = await Future.wait(
-            uids.map((uid) => userRepo.getById(uid)),
-          );
-          return profiles.whereType<UserProfile>().toList();
-        });
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
   }
 
   Stream<Set<String>> watchVotedPollIds(String uid) {
@@ -158,11 +158,7 @@ class PollRepository {
         .get();
     final uids = snap.docs.map((d) => d.id).toList();
     if (uids.isEmpty) return [];
-    final userRepo = UserRepository.create();
-    final profiles = await Future.wait(
-      uids.map((uid) => userRepo.getById(uid)),
-    );
-    return profiles.whereType<UserProfile>().toList();
+    return _participantProfileLoader.load(uids);
   }
 
   // Remove all votes by a user and decrement poll counts (used by user deletion)

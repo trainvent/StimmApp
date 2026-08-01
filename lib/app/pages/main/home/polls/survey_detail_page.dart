@@ -23,11 +23,13 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
   @override
   Widget build(BuildContext context) {
     final repo = SurveyRepository.create();
+    final participantIdsStream = repo.watchParticipantIds(widget.id);
     return BaseDetailPage<Survey>(
       id: widget.id,
       appBarTitle: context.l10n.surveyDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(widget.id),
+      participantIdsStream: participantIdsStream,
       sharePathSegment: 'survey',
       topRightActionBuilder: (context, survey) {
         final currentUid = authService.currentUser?.uid;
@@ -128,7 +130,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       },
       bottomAction: SignActionButton(
         label: context.l10n.submitSurvey,
-        participantsStream: repo.watchParticipants(widget.id),
+        participantIdsStream: participantIdsStream,
         onAction: ({String? reason}) async {
           final answerAllQuestionsMessage =
               context.l10n.answerAllSurveyQuestions;

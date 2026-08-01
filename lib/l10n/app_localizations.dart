@@ -1526,6 +1526,12 @@ abstract class AppLocalizations {
   /// **'Participants List'**
   String get participantsList;
 
+  /// No description provided for @erroneousProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'<erroneous profile>'**
+  String get erroneousProfile;
+
   /// No description provided for @password.
   ///
   /// In en, this message translates to:
@@ -3242,11 +3248,11 @@ abstract class AppLocalizations {
   /// **'Group: {group}'**
   String groupLabelWithValue(String group);
 
-  /// No description provided for @eligibleForYou.
+  /// No description provided for @outsideYourZone.
   ///
   /// In en, this message translates to:
-  /// **'Eligible for you'**
-  String get eligibleForYou;
+  /// **'Outside your zone'**
+  String get outsideYourZone;
 
   /// No description provided for @alreadyParticipated.
   ///
@@ -4441,6 +4447,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This username is already in use. Try another one.'**
   String get usernameUnavailable;
+
+  /// No description provided for @usernameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least {minimumLength} characters long.'**
+  String usernameTooShort(int minimumLength);
 
   /// No description provided for @usernameAvailabilityCheckFailed.
   ///

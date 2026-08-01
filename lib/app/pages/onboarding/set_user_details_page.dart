@@ -106,7 +106,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
     if (_usernameAvailability == _UsernameAvailability.checking) return;
 
     final username = normalizeUsername(controllerDisplayName.text);
-    if (username.isEmpty) {
+    if (!hasValidUsernameLength(username)) {
       _formKey.currentState?.validate();
       return;
     }
@@ -643,6 +643,11 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
                           return S.of(context).faultyInput;
+                        }
+                        if (!hasValidUsernameLength(value)) {
+                          return context.l10n.usernameTooShort(
+                            AppLimits.minUsernameLength,
+                          );
                         }
                         if (value.trim().length >
                             AppLimits.maxDisplayNameLength) {

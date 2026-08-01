@@ -4,6 +4,7 @@ import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -21,11 +22,11 @@ class _TestHomeItem implements HomeItem {
   @override
   final String status;
   @override
-  String get scopeType => 'global';
+  final String scopeType;
   @override
   String? get continentCode => null;
   @override
-  String? get countryCode => null;
+  final String? countryCode;
   @override
   String? get stateOrRegion => state;
   @override
@@ -51,6 +52,8 @@ class _TestHomeItem implements HomeItem {
     this.state,
     this.participantCount = 0,
     this.tags = const [],
+    this.scopeType = 'global',
+    this.countryCode,
   });
 }
 
@@ -80,6 +83,7 @@ void main() {
     Widget? bottomAction,
     VoidCallback? onContentTap,
     Widget? topRightAction,
+    UserProfile? userProfile,
   }) async {
     await tester.pumpWidget(
       createTestWidget(
@@ -98,6 +102,7 @@ void main() {
           topRightActionBuilder: topRightAction == null
               ? null
               : (context, item) => topRightAction,
+          userProfileFuture: Future<UserProfile?>.value(userProfile),
         ),
       ),
     );
@@ -154,6 +159,56 @@ void main() {
       expect(taps, 0);
     },
   );
+
+  testWidgets('shows no positive eligibility label for an in-zone item', (
+    tester,
+  ) async {
+    final item = _TestHomeItem(
+      id: 'in-zone',
+      title: 'Title',
+      description: 'Desc',
+      createdBy: 'user-1',
+      status: IConst.active,
+      expiresAt: DateTime.now().add(const Duration(days: 1)),
+      scopeType: 'country',
+      countryCode: 'DE',
+    );
+
+    await pumpPage(
+      tester,
+      item: item,
+      userProfile: const UserProfile(uid: 'viewer', countryCode: 'DE'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Eligible for you'), findsNothing);
+    expect(find.text('Outside your zone'), findsNothing);
+  });
+
+  testWidgets('shows an outside-zone warning for a scope mismatch', (
+    tester,
+  ) async {
+    final item = _TestHomeItem(
+      id: 'outside-zone',
+      title: 'Title',
+      description: 'Desc',
+      createdBy: 'user-1',
+      status: IConst.active,
+      expiresAt: DateTime.now().add(const Duration(days: 1)),
+      scopeType: 'country',
+      countryCode: 'DE',
+    );
+
+    await pumpPage(
+      tester,
+      item: item,
+      userProfile: const UserProfile(uid: 'viewer', countryCode: 'US'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Outside your zone'), findsOneWidget);
+    expect(find.byIcon(Icons.location_off_outlined), findsOneWidget);
+  });
 
   testWidgets(
     'closes UI when expiresAt is in the past even if status is active',

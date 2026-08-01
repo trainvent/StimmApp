@@ -51,6 +51,43 @@ Widget _testApp(Widget child) {
 }
 
 void main() {
+  testWidgets('creates each running-form stream only once across rebuilds', (
+    tester,
+  ) async {
+    var petitionStreamCreations = 0;
+    var pollStreamCreations = 0;
+    var surveyStreamCreations = 0;
+
+    await tester.pumpWidget(
+      _testApp(
+        RunningFormsPage(
+          auth: _FakeAuthService(const _FakeUser('creator')),
+          petitionsStreamFactory: () {
+            petitionStreamCreations++;
+            return Stream.value(const <Petition>[]);
+          },
+          pollsStreamFactory: () {
+            pollStreamCreations++;
+            return Stream.value(const <Poll>[]);
+          },
+          surveysStreamFactory: () {
+            surveyStreamCreations++;
+            return Stream.value(const <Survey>[]);
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.binding.setSurfaceSize(const Size(500, 900));
+    await tester.pumpAndSettle();
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    expect(petitionStreamCreations, 1);
+    expect(pollStreamCreations, 1);
+    expect(surveyStreamCreations, 1);
+  });
+
   testWidgets('creator cannot delete running forms after participation', (
     tester,
   ) async {

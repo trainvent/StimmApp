@@ -4,7 +4,6 @@ import 'package:stimmapp/app/pages/onboarding/login_page.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
-import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
@@ -14,14 +13,14 @@ class SignActionButton extends ConsumerWidget {
   const SignActionButton({
     super.key,
     required this.label,
-    required this.participantsStream,
+    required this.participantIdsStream,
     required this.onAction,
     required this.successMessage,
     this.askForReason = false,
   });
 
   final String label;
-  final Stream<List<UserProfile>> participantsStream;
+  final Stream<Set<String>> participantIdsStream;
   final Future<void> Function({String? reason}) onAction;
   final String successMessage;
   final bool askForReason;
@@ -30,13 +29,12 @@ class SignActionButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final showPetitionReason = ref.watch(showPetitionReasonProvider);
 
-    return StreamBuilder<List<UserProfile>>(
-      stream: participantsStream,
+    return StreamBuilder<Set<String>>(
+      stream: participantIdsStream,
       builder: (context, snap) {
         final uid = authService.currentUser?.uid;
-        final participants = snap.data ?? const [];
-        final alreadySigned =
-            uid != null && participants.any((p) => p.uid == uid);
+        final participantIds = snap.data ?? const <String>{};
+        final alreadySigned = uid != null && participantIds.contains(uid);
         final loading = snap.connectionState == ConnectionState.waiting;
         final disabled = alreadySigned || loading;
 

@@ -6,10 +6,17 @@ import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 
 class SurveyRepository {
-  SurveyRepository(this._fs);
+  SurveyRepository(
+    this._fs, {
+    ParticipantProfileLoader? participantProfileLoader,
+  }) : _participantProfileLoader =
+           participantProfileLoader ??
+           ParticipantProfileLoader(UserRepository(_fs));
   final DatabaseService _fs;
+  final ParticipantProfileLoader _participantProfileLoader;
 
   static SurveyRepository create() => SurveyRepository(locator.databaseService);
 
@@ -126,21 +133,18 @@ class SurveyRepository {
   }
 
   Stream<List<UserProfile>> watchParticipants(String surveyId) {
+    return watchParticipantIds(
+      surveyId,
+    ).asyncMap(_participantProfileLoader.load);
+  }
+
+  Stream<Set<String>> watchParticipantIds(String surveyId) {
     return _fs.instance
         .collection(DatabaseCollections.surveys)
         .doc(surveyId)
         .collection(DatabaseCollections.responses)
         .snapshots()
-        .asyncMap((snap) async {
-          final uids = snap.docs.map((doc) => doc.id).toList();
-          if (uids.isEmpty) return [];
-
-          final userRepo = UserRepository.create();
-          final profiles = await Future.wait(
-            uids.map((uid) => userRepo.getById(uid)),
-          );
-          return profiles.whereType<UserProfile>().toList();
-        });
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
   }
 
   Stream<Set<String>> watchCompletedSurveyIds(String uid) {

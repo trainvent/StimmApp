@@ -4,6 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/google_auth_client.dart';
 
@@ -277,10 +278,12 @@ class AuthService {
   }
 
   Future<void> updateUsername({required String username}) async {
-    final normalized = username.trim();
-    final clamped = normalized.length > AppLimits.maxDisplayNameLength
-        ? normalized.substring(0, AppLimits.maxDisplayNameLength)
-        : normalized;
+    final clamped = normalizeUsername(username);
+    if (!hasValidUsernameLength(clamped)) {
+      throw StateError(
+        'Username must be at least ${AppLimits.minUsernameLength} characters long.',
+      );
+    }
     try {
       await currentUser!.updateDisplayName(clamped);
     } on FirebaseAuthException catch (e) {

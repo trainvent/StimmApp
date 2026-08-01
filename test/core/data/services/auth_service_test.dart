@@ -88,6 +88,15 @@ class _FakeGoogleAuthClient implements GoogleAuthClient {
 }
 
 void main() {
+  test('updateUsername rejects fewer than four characters before Firebase', () {
+    final service = AuthService(firebaseAuth: _MockFirebaseAuth());
+
+    expect(
+      () => service.updateUsername(username: 'abc'),
+      throwsA(isA<StateError>()),
+    );
+  });
+
   group('AuthService without Firebase initialization', () {
     test('currentUser returns null instead of throwing', () {
       expect(() => authService.currentUser, returnsNormally);

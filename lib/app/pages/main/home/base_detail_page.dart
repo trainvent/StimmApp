@@ -16,8 +16,10 @@ import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/form_scope_eligibility.dart';
 
 class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   BaseDetailPage({
@@ -29,9 +31,11 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
     required this.sharePathSegment,
     this.bottomAction,
     this.participantsStream,
+    this.participantIdsStream,
     this.signaturesStream,
     this.actions,
     this.topRightActionBuilder,
+    this.userProfileFuture,
     AuthService? auth,
   }) : auth = auth ?? authService;
 
@@ -43,9 +47,11 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   final Widget Function(BuildContext context, T item) contentBuilder;
   final Widget? bottomAction;
   final Stream<List<UserProfile>>? participantsStream;
+  final Stream<Set<String>>? participantIdsStream;
   final Stream<List<Map<String, dynamic>>>? signaturesStream;
   final List<Widget>? actions;
   final Widget Function(BuildContext context, T item)? topRightActionBuilder;
+  final Future<UserProfile?>? userProfileFuture;
   final String sharePathSegment;
 
   @override
@@ -57,18 +63,24 @@ class _DiscoveryStatusBanner extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.isMuted,
+    this.isWarning = false,
     this.trailing,
   });
 
   final String label;
   final IconData icon;
   final bool isMuted;
+  final bool isWarning;
   final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final color = isMuted ? colorScheme.secondary : colorScheme.primary;
+    final color = isWarning
+        ? colorScheme.error
+        : isMuted
+        ? colorScheme.secondary
+        : colorScheme.primary;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -135,11 +147,13 @@ class _BaseDetailPageState<T extends HomeItem>
     extends State<BaseDetailPage<T>> {
   late Stream<T?> _itemStream;
   late Stream<T?> _topRightItemStream;
+  late Future<UserProfile?> _userProfileFuture;
 
   @override
   void initState() {
     super.initState();
     _refreshItemStreams();
+    _refreshUserProfile();
   }
 
   @override
@@ -148,11 +162,27 @@ class _BaseDetailPageState<T extends HomeItem>
     if (widget.id != oldWidget.id) {
       _refreshItemStreams();
     }
+    if (widget.auth != oldWidget.auth ||
+        widget.userProfileFuture != oldWidget.userProfileFuture) {
+      _refreshUserProfile();
+    }
   }
 
   void _refreshItemStreams() {
     _itemStream = widget.streamProvider(widget.id);
     _topRightItemStream = widget.streamProvider(widget.id);
+  }
+
+  void _refreshUserProfile() {
+    final suppliedFuture = widget.userProfileFuture;
+    if (suppliedFuture != null) {
+      _userProfileFuture = suppliedFuture;
+      return;
+    }
+    final uid = _safeCurrentUid();
+    _userProfileFuture = uid == null
+        ? Future<UserProfile?>.value(null)
+        : UserRepository.create().getById(uid);
   }
 
   DatabaseService get _databaseService => locator.databaseService;
@@ -275,44 +305,64 @@ class _BaseDetailPageState<T extends HomeItem>
       return const SizedBox.shrink();
     }
 
-    final participantsStream = widget.participantsStream;
-    if (participantsStream == null) {
-      return _DiscoveryStatusBanner(
-        label: context.l10n.eligibleForYou,
-        icon: Icons.person_pin_circle_outlined,
-        isMuted: false,
-      );
-    }
+    return FutureBuilder<UserProfile?>(
+      future: _userProfileFuture,
+      builder: (context, profileSnapshot) {
+        if (profileSnapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox.shrink();
+        }
+        final isInZone = isHomeItemInUserZone(
+          item: item,
+          userProfile: profileSnapshot.data,
+        );
+        final participantIdsStream = widget.participantIdsStream;
+        if (participantIdsStream == null) {
+          return isInZone
+              ? const SizedBox.shrink()
+              : _outsideZoneBanner(context, item);
+        }
 
-    return StreamBuilder<List<UserProfile>>(
-      stream: participantsStream,
-      builder: (context, snapshot) {
-        final currentUid = _safeCurrentUid();
-        final participants = snapshot.data ?? const <UserProfile>[];
-        final hasParticipated =
-            currentUid != null &&
-            participants.any((profile) => profile.uid == currentUid);
-        final label = hasParticipated
-            ? context.l10n.alreadyParticipated
-            : context.l10n.eligibleForYou;
-        final icon = hasParticipated
-            ? Icons.check_circle_outline
-            : Icons.person_pin_circle_outlined;
-        final groupName = _groupName(item)?.trim();
-        return _DiscoveryStatusBanner(
-          label: label,
-          icon: icon,
-          isMuted: hasParticipated,
-          trailing: _isGroupOnly(item)
-              ? _DiscoveryStatusPill(
-                  icon: Icons.groups_2_outlined,
-                  label: groupName == null || groupName.isEmpty
-                      ? context.l10n.groupOnly
-                      : groupName,
-                )
-              : null,
+        return StreamBuilder<Set<String>>(
+          stream: participantIdsStream,
+          builder: (context, snapshot) {
+            if (!isInZone) return _outsideZoneBanner(context, item);
+
+            final currentUid = _safeCurrentUid();
+            final participantIds = snapshot.data ?? const <String>{};
+            final hasParticipated =
+                currentUid != null && participantIds.contains(currentUid);
+            if (!hasParticipated) return const SizedBox.shrink();
+
+            return _DiscoveryStatusBanner(
+              label: context.l10n.alreadyParticipated,
+              icon: Icons.check_circle_outline,
+              isMuted: true,
+              trailing: _groupPill(context, item),
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _outsideZoneBanner(BuildContext context, T item) {
+    return _DiscoveryStatusBanner(
+      label: context.l10n.outsideYourZone,
+      icon: Icons.location_off_outlined,
+      isMuted: false,
+      isWarning: true,
+      trailing: _groupPill(context, item),
+    );
+  }
+
+  Widget? _groupPill(BuildContext context, T item) {
+    if (!_isGroupOnly(item)) return null;
+    final groupName = _groupName(item)?.trim();
+    return _DiscoveryStatusPill(
+      icon: Icons.groups_2_outlined,
+      label: groupName == null || groupName.isEmpty
+          ? context.l10n.groupOnly
+          : groupName,
     );
   }
 

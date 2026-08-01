@@ -5,11 +5,18 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
+import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 import 'package:universal_io/io.dart';
 
 class PetitionRepository {
-  PetitionRepository(this._fs);
+  PetitionRepository(
+    this._fs, {
+    ParticipantProfileLoader? participantProfileLoader,
+  }) : _participantProfileLoader =
+           participantProfileLoader ??
+           ParticipantProfileLoader(UserRepository(_fs));
   final DatabaseService _fs;
+  final ParticipantProfileLoader _participantProfileLoader;
 
   static PetitionRepository create() =>
       PetitionRepository(locator.databaseService);
@@ -119,21 +126,18 @@ class PetitionRepository {
   }
 
   Stream<List<UserProfile>> watchParticipants(String petitionId) {
+    return watchParticipantIds(
+      petitionId,
+    ).asyncMap(_participantProfileLoader.load);
+  }
+
+  Stream<Set<String>> watchParticipantIds(String petitionId) {
     return _fs.instance
         .collection('petitions')
         .doc(petitionId)
         .collection('signatures')
         .snapshots()
-        .asyncMap((snap) async {
-          final uids = snap.docs.map((d) => d.id).toList();
-          if (uids.isEmpty) return [];
-
-          final userRepo = UserRepository.create();
-          final profiles = await Future.wait(
-            uids.map((uid) => userRepo.getById(uid)),
-          );
-          return profiles.whereType<UserProfile>().toList();
-        });
+        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
   }
 
   // Fetch participants once (used by CSV export)
@@ -146,20 +150,18 @@ class PetitionRepository {
         .collection('signatures')
         .get();
 
-    final signatures = snap.docs.map((d) => d.data()).toList();
-    if (signatures.isEmpty) return [];
+    if (snap.docs.isEmpty) return [];
 
-    final userRepo = UserRepository.create();
-    final results = <Map<String, dynamic>>[];
-
-    for (final sig in signatures) {
-      final uid = sig['uid'] as String;
-      final profile = await userRepo.getById(uid);
-      if (profile != null) {
-        results.add({'profile': profile, 'reason': sig['reason']});
-      }
-    }
-    return results;
+    final profiles = await _participantProfileLoader.load(
+      snap.docs.map((doc) => doc.id),
+    );
+    return [
+      for (var index = 0; index < snap.docs.length; index++)
+        {
+          'profile': profiles[index],
+          'reason': snap.docs[index].data()['reason'],
+        },
+    ];
   }
 
   // Fetch participants once (used by CSV export)
@@ -171,11 +173,7 @@ class PetitionRepository {
         .get();
     final uids = snap.docs.map((d) => d.id).toList();
     if (uids.isEmpty) return [];
-    final userRepo = UserRepository.create();
-    final profiles = await Future.wait(
-      uids.map((uid) => userRepo.getById(uid)),
-    );
-    return profiles.whereType<UserProfile>().toList();
+    return _participantProfileLoader.load(uids);
   }
 
   // Remove all signatures by a user and decrement petition counts (used by user deletion)

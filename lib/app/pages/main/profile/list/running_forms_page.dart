@@ -15,16 +15,45 @@ import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 import 'package:stimmapp/generated/l10n.dart';
 
 class RunningFormsPage extends StatefulWidget {
-  RunningFormsPage({super.key, AuthService? auth}) : auth = auth ?? authService;
+  RunningFormsPage({
+    super.key,
+    AuthService? auth,
+    this.petitionsStreamFactory,
+    this.pollsStreamFactory,
+    this.surveysStreamFactory,
+  }) : auth = auth ?? authService;
 
   final AuthService auth;
+  final Stream<List<Petition>> Function()? petitionsStreamFactory;
+  final Stream<List<Poll>> Function()? pollsStreamFactory;
+  final Stream<List<Survey>> Function()? surveysStreamFactory;
 
   @override
   State<RunningFormsPage> createState() => _RunningFormsPageState();
 }
 
 class _RunningFormsPageState extends State<RunningFormsPage> {
+  late final Stream<List<Petition>> _petitionsStream;
+  late final Stream<List<Poll>> _pollsStream;
+  late final Stream<List<Survey>> _surveysStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _petitionsStream = _runningPetitionsByMe().map(
+      (list) => [...list]..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+    );
+    _pollsStream = _runningPollsByMe().map(
+      (list) => [...list]..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+    );
+    _surveysStream = _runningSurveysByMe().map(
+      (list) => [...list]..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+    );
+  }
+
   Stream<List<Petition>> _runningPetitionsByMe() {
+    final factory = widget.petitionsStreamFactory;
+    if (factory != null) return factory();
     return PetitionRepository.create()
         .list(query: null, status: IConst.active)
         .map((items) {
@@ -37,6 +66,8 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
   }
 
   Stream<List<Poll>> _runningPollsByMe() {
+    final factory = widget.pollsStreamFactory;
+    if (factory != null) return factory();
     return PollRepository.create().list(query: null, status: IConst.active).map(
       (items) {
         final uid = widget.auth.currentUser?.uid;
@@ -49,6 +80,8 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
   }
 
   Stream<List<Survey>> _runningSurveysByMe() {
+    final factory = widget.surveysStreamFactory;
+    if (factory != null) return factory();
     return SurveyRepository.create()
         .list(query: null, status: IConst.active)
         .map((items) {
@@ -174,12 +207,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
   Widget _buildPetitionsTab() {
     return StreamBuilder<List<Petition>>(
-      stream: _runningPetitionsByMe().map(
-        (list) => list..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-      ),
+      stream: _petitionsStream,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const Center(child: TriangleLoadingIndicator());
+        }
+        if (snap.hasError) {
+          debugPrint('Failed to load running petitions: ${snap.error}');
+          return Center(child: Text(context.l10n.error));
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {
@@ -213,12 +248,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
   Widget _buildPollsTab() {
     return StreamBuilder<List<Poll>>(
-      stream: _runningPollsByMe().map(
-        (list) => list..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-      ),
+      stream: _pollsStream,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const Center(child: TriangleLoadingIndicator());
+        }
+        if (snap.hasError) {
+          debugPrint('Failed to load running polls: ${snap.error}');
+          return Center(child: Text(context.l10n.error));
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {
@@ -252,12 +289,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
   Widget _buildSurveysTab() {
     return StreamBuilder<List<Survey>>(
-      stream: _runningSurveysByMe().map(
-        (list) => list..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-      ),
+      stream: _surveysStream,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const Center(child: TriangleLoadingIndicator());
+        }
+        if (snap.hasError) {
+          debugPrint('Failed to load running surveys: ${snap.error}');
+          return Center(child: Text(context.l10n.error));
         }
         final items = snap.data ?? const [];
         if (items.isEmpty) {

@@ -839,6 +839,141 @@ class S {
     );
   }
 
+  /// `Google Account`
+  String get googleAccount {
+    return Intl.message(
+      'Google Account',
+      name: 'googleAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Google profile`
+  String get editGoogleProfile {
+    return Intl.message(
+      'Edit Google profile',
+      name: 'editGoogleProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Synchronize Google data periodically`
+  String get synchronizeGoogleDataPeriodically {
+    return Intl.message(
+      'Synchronize Google data periodically',
+      name: 'synchronizeGoogleDataPeriodically',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Synchronization`
+  String get synchronization {
+    return Intl.message(
+      'Synchronization',
+      name: 'synchronization',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `While enabled, name, birthday, and address can only be changed in your Google Account.`
+  String get googleSyncLocksPersonalData {
+    return Intl.message(
+      'While enabled, name, birthday, and address can only be changed in your Google Account.',
+      name: 'googleSyncLocksPersonalData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sync Google data now`
+  String get syncGoogleDataNow {
+    return Intl.message(
+      'Sync Google data now',
+      name: 'syncGoogleDataNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sync now`
+  String get syncNow {
+    return Intl.message('Sync now', name: 'syncNow', desc: '', args: []);
+  }
+
+  /// `Sync regularly`
+  String get syncRegularly {
+    return Intl.message(
+      'Sync regularly',
+      name: 'syncRegularly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `While active, name, birthday, and address are managed by Google.`
+  String get googleSyncManagedFields {
+    return Intl.message(
+      'While active, name, birthday, and address are managed by Google.',
+      name: 'googleSyncManagedFields',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google must provide your full name, birthday, and current location before synchronization can be enabled.`
+  String get googleSyncRequiresCompleteProfile {
+    return Intl.message(
+      'Google must provide your full name, birthday, and current location before synchronization can be enabled.',
+      name: 'googleSyncRequiresCompleteProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google synchronization enabled`
+  String get googleSyncEnabled {
+    return Intl.message(
+      'Google synchronization enabled',
+      name: 'googleSyncEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google synchronization disabled`
+  String get googleSyncDisabled {
+    return Intl.message(
+      'Google synchronization disabled',
+      name: 'googleSyncDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google profile synchronized`
+  String get googleSyncSucceeded {
+    return Intl.message(
+      'Google profile synchronized',
+      name: 'googleSyncSucceeded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google profile synchronization failed`
+  String get googleSyncFailed {
+    return Intl.message(
+      'Google profile synchronization failed',
+      name: 'googleSyncFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Days Left`
   String get daysLeft {
     return Intl.message('Days Left', name: 'daysLeft', desc: '', args: []);
@@ -1864,6 +1999,16 @@ class S {
     return Intl.message(
       'Participants List',
       name: 'participantsList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `<erroneous profile>`
+  String get erroneousProfile {
+    return Intl.message(
+      '<erroneous profile>',
+      name: 'erroneousProfile',
       desc: '',
       args: [],
     );
@@ -4214,11 +4359,41 @@ class S {
     );
   }
 
+  /// `Continue with Apple`
+  String get continueWithApple {
+    return Intl.message(
+      'Continue with Apple',
+      name: 'continueWithApple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `or continue directly with`
+  String get orSeparator {
+    return Intl.message(
+      'or continue directly with',
+      name: 'orSeparator',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Google sign-in failed. Please try again.`
   String get googleSignInFailed {
     return Intl.message(
       'Google sign-in failed. Please try again.',
       name: 'googleSignInFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple sign-in failed. Please try again.`
+  String get appleSignInFailed {
+    return Intl.message(
+      'Apple sign-in failed. Please try again.',
+      name: 'appleSignInFailed',
       desc: '',
       args: [],
     );
@@ -4334,11 +4509,11 @@ class S {
     );
   }
 
-  /// `Eligible for you`
-  String get eligibleForYou {
+  /// `Outside your zone`
+  String get outsideYourZone {
     return Intl.message(
-      'Eligible for you',
-      name: 'eligibleForYou',
+      'Outside your zone',
+      name: 'outsideYourZone',
       desc: '',
       args: [],
     );
@@ -6149,6 +6324,106 @@ class S {
     return Intl.message(
       'Could not export account data.',
       name: 'accountDataExportFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check username availability`
+  String get checkUsernameAvailability {
+    return Intl.message(
+      'Check username availability',
+      name: 'checkUsernameAvailability',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checking availability…`
+  String get checkingUsernameAvailability {
+    return Intl.message(
+      'Checking availability…',
+      name: 'checkingUsernameAvailability',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This username is available.`
+  String get usernameAvailable {
+    return Intl.message(
+      'This username is available.',
+      name: 'usernameAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This username is already in use. Try another one.`
+  String get usernameUnavailable {
+    return Intl.message(
+      'This username is already in use. Try another one.',
+      name: 'usernameUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username must be at least {minimumLength} characters long.`
+  String usernameTooShort(int minimumLength) {
+    return Intl.message(
+      'Username must be at least $minimumLength characters long.',
+      name: 'usernameTooShort',
+      desc: '',
+      args: [minimumLength],
+    );
+  }
+
+  /// `Couldn’t check availability right now. Tap to try again.`
+  String get usernameAvailabilityCheckFailed {
+    return Intl.message(
+      'Couldn’t check availability right now. Tap to try again.',
+      name: 'usernameAvailabilityCheckFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We couldn’t save your profile. Please try again.`
+  String get profileSaveFailed {
+    return Intl.message(
+      'We couldn’t save your profile. Please try again.',
+      name: 'profileSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit given name`
+  String get editGivenName {
+    return Intl.message(
+      'Edit given name',
+      name: 'editGivenName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit surname`
+  String get editSurname {
+    return Intl.message(
+      'Edit surname',
+      name: 'editSurname',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your profile has been updated.`
+  String get profileDetailsUpdated {
+    return Intl.message(
+      'Your profile has been updated.',
+      name: 'profileDetailsUpdated',
       desc: '',
       args: [],
     );

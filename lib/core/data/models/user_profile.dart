@@ -28,6 +28,7 @@ class UserProfile {
   final String? themeMode; // 'light', 'dark', or null (system)
   final String? themeScheme; // 'stimm', 'ocean', etc.
   final String? locale; // 'en', 'de', etc.
+  final bool hasLoadError;
 
   /// Returns the date when the subscription expires (30 days after purchase).
   DateTime? get subscriptionEndsAt {
@@ -97,7 +98,10 @@ class UserProfile {
     this.themeMode,
     this.themeScheme,
     this.locale,
+    this.hasLoadError = false,
   });
+
+  const UserProfile.erroneous(String uid) : this(uid: uid, hasLoadError: true);
 
   UserProfile copyWith({
     String? uid,
@@ -173,6 +177,7 @@ class UserProfile {
       themeMode: themeMode ?? this.themeMode,
       themeScheme: themeScheme ?? this.themeScheme,
       locale: locale ?? this.locale,
+      hasLoadError: hasLoadError,
     );
   }
 

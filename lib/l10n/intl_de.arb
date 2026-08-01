@@ -279,6 +279,7 @@
 	"other": "Andere",
 	"participants": "Teilnehmer",
 	"participantsList": "Teilnehmerliste",
+	"erroneousProfile": "<fehlerhaftes Profil>",
 	"password": "Passwort",
 	"passwordChangeFailed": "Passwortänderung fehlgeschlagen",
 	"passwordChangedSuccessfully": "Passwort erfolgreich geändert",
@@ -648,7 +649,7 @@
 			}
 		}
 	},
-	"eligibleForYou": "Für dich geeignet",
+	"outsideYourZone": "Außerhalb deines Bereichs",
 	"alreadyParticipated": "Bereits teilgenommen",
 	"groupOnly": "Nur Gruppe",
 	"groupOnlyUnavailable": "Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.",
@@ -960,6 +961,12 @@
 	"checkingUsernameAvailability": "Verfügbarkeit wird geprüft…",
 	"usernameAvailable": "Dieser Benutzername ist verfügbar.",
 	"usernameUnavailable": "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
+	"usernameTooShort": "Der Benutzername muss mindestens {minimumLength} Zeichen lang sein.",
+	"@usernameTooShort": {
+		"placeholders": {
+			"minimumLength": { "type": "int" }
+		}
+	},
 	"usernameAvailabilityCheckFailed": "Die Verfügbarkeit konnte gerade nicht geprüft werden. Tippe, um es erneut zu versuchen.",
 	"profileSaveFailed": "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.",
 	"editGivenName": "Vornamen bearbeiten",

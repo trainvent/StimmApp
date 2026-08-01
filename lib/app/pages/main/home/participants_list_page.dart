@@ -43,7 +43,11 @@ class ParticipantsListPage extends StatelessWidget {
             final user = participants[index];
             return ListTile(
               leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(user.displayName ?? context.l10n.anonymous),
+              title: Text(
+                user.hasLoadError
+                    ? context.l10n.erroneousProfile
+                    : user.displayName ?? context.l10n.anonymous,
+              ),
             );
           },
         );
@@ -72,6 +76,9 @@ class ParticipantsListPage extends StatelessWidget {
             if (userSnap.connectionState == ConnectionState.waiting) {
               return const Center(child: TriangleLoadingIndicator());
             }
+            if (userSnap.hasError) {
+              return Center(child: Text(context.l10n.error));
+            }
             final users = userSnap.data ?? [];
             final userMap = {for (var u in users) u.uid: u};
 
@@ -85,7 +92,11 @@ class ParticipantsListPage extends StatelessWidget {
 
                 return ListTile(
                   leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(user?.displayName ?? context.l10n.anonymous),
+                  title: Text(
+                    user?.hasLoadError == true
+                        ? context.l10n.erroneousProfile
+                        : user?.displayName ?? context.l10n.anonymous,
+                  ),
                   subtitle: reason != null && reason.isNotEmpty
                       ? Text('Reason: $reason')
                       : null,

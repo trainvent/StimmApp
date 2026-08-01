@@ -47,6 +47,13 @@ service cloud.firestore {
              data.displayName.size() > 0;
     }
 
+    // Must mirror AppLimits.minUsernameLength and maxDisplayNameLength.
+    function hasValidDisplayName(data) {
+      return hasDisplayName(data) &&
+             data.displayName.size() >= 4 &&
+             data.displayName.size() <= 30;
+    }
+
     function usernameClaimMatches(userId) {
       return request.resource.data.keys().hasAny(['usernameKey']) &&
              request.resource.data.usernameKey is string &&
@@ -57,7 +64,8 @@ service cloud.firestore {
 
     function hasValidUsernameOnCreate(userId) {
       return !hasDisplayName(request.resource.data) ||
-             usernameClaimMatches(userId);
+             (hasValidDisplayName(request.resource.data) &&
+              usernameClaimMatches(userId));
     }
 
     function hasValidUsernameOnUpdate(userId) {
@@ -205,11 +213,15 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAuthenticated() &&
                     request.resource.data.uid == request.auth.uid &&
-                    request.resource.data.displayName is string;
+                    request.resource.data.displayName is string &&
+                    request.resource.data.displayName.size() >= 4 &&
+                    request.resource.data.displayName.size() <= 30;
       allow update: if isAuthenticated() &&
                     resource.data.uid == request.auth.uid &&
                     request.resource.data.uid == request.auth.uid &&
-                    request.resource.data.displayName is string;
+                    request.resource.data.displayName is string &&
+                    request.resource.data.displayName.size() >= 4 &&
+                    request.resource.data.displayName.size() <= 30;
       allow delete: if isAdmin() ||
                     (isAuthenticated() &&
                      resource.data.uid == request.auth.uid &&

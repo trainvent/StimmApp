@@ -60,4 +60,30 @@ class CrashReportingService {
       );
     }
   }
+
+  Future<void> recordNonFatal(
+    Object error,
+    StackTrace stackTrace, {
+    String? reason,
+  }) async {
+    errorLogTool(
+      exception: error,
+      errorCustomMessage: reason ?? 'Non-fatal error',
+    );
+    if (kIsWeb) return;
+
+    try {
+      await FirebaseCrashlytics.instance.recordError(
+        error,
+        stackTrace,
+        reason: reason,
+        fatal: false,
+      );
+    } catch (reportingError) {
+      errorLogTool(
+        exception: reportingError,
+        errorCustomMessage: 'Failed to report non-fatal error',
+      );
+    }
+  }
 }

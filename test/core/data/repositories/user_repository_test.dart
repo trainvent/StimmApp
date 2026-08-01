@@ -85,6 +85,26 @@ void main() {
       },
     );
 
+    test('isUsernameAvailable rejects usernames shorter than four', () async {
+      expect(await userRepository.isUsernameAvailable('abc'), isFalse);
+      expect(await userRepository.isUsernameAvailable('abcd'), isTrue);
+    });
+
+    test('upsertWithUniqueUsername rejects usernames shorter than four', () {
+      expect(
+        () => userRepository.upsertWithUniqueUsername(
+          tUserProfile.copyWith(displayName: 'abc'),
+        ),
+        throwsA(
+          isA<DatabaseException>().having(
+            (error) => error.code,
+            'code',
+            'invalid-argument',
+          ),
+        ),
+      );
+    });
+
     test('isUsernameAvailable returns false for another user claim', () async {
       await userRepository.upsertWithUniqueUsername(tUserProfile);
 

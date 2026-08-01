@@ -286,6 +286,7 @@
 	"other": "Other",
 	"participants": "Participants",
 	"participantsList": "Participants List",
+	"erroneousProfile": "<erroneous profile>",
 	"password": "Password",
 	"passwordChangeFailed": "Password change failed",
 	"passwordChangedSuccessfully": "Password changed successfully",
@@ -646,7 +647,7 @@
 			}
 		}
 	},
-	"eligibleForYou": "Eligible for you",
+	"outsideYourZone": "Outside your zone",
 	"alreadyParticipated": "Already participated",
 	"groupOnly": "Group-only",
 	"groupOnlyUnavailable": "This form is only visible to members of its group.",
@@ -956,6 +957,12 @@
 	"checkingUsernameAvailability": "Checking availability…",
 	"usernameAvailable": "This username is available.",
 	"usernameUnavailable": "This username is already in use. Try another one.",
+	"usernameTooShort": "Username must be at least {minimumLength} characters long.",
+	"@usernameTooShort": {
+		"placeholders": {
+			"minimumLength": { "type": "int" }
+		}
+	},
 	"usernameAvailabilityCheckFailed": "Couldn’t check availability right now. Tap to try again.",
 	"profileSaveFailed": "We couldn’t save your profile. Please try again.",
 	"editGivenName": "Edit given name",

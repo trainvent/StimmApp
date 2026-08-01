@@ -9,3 +9,9 @@ String normalizeUsername(String username) {
 
 String usernameKeyFor(String username) =>
     normalizeUsername(username).toLowerCase();
+
+bool hasValidUsernameLength(String username) {
+  final length = normalizeUsername(username).length;
+  return length >= AppLimits.minUsernameLength &&
+      length <= AppLimits.maxDisplayNameLength;
+}

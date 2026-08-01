@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -9,8 +10,9 @@ import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'petition_repository.dart';
 import 'poll_repository.dart';
 import 'survey_repository.dart';
+import 'user_interface.dart';
 
-class UserRepository {
+class UserRepository implements UserInterface {
   UserRepository(this._fs);
 
   final DatabaseService _fs;
@@ -38,6 +40,7 @@ class UserRepository {
     return _col().doc(uid);
   }
 
+  @override
   Future<UserProfile?> getById(String uid) async {
     return _fs.getDoc(_doc(uid));
   }
@@ -50,6 +53,7 @@ class UserRepository {
     return snapshot.data()?['isPro'] as bool?;
   }
 
+  @override
   Future<void> upsert(UserProfile profile) async {
     await _fs.upsert(
       _doc(profile.uid),
@@ -58,8 +62,8 @@ class UserRepository {
   }
 
   Future<bool> isUsernameAvailable(String username, {String? forUserId}) async {
+    if (!hasValidUsernameLength(username)) return false;
     final usernameKey = usernameKeyFor(username);
-    if (usernameKey.isEmpty) return false;
 
     try {
       final snapshot = await _fs.instance
@@ -76,9 +80,15 @@ class UserRepository {
 
   Future<void> upsertWithUniqueUsername(UserProfile profile) async {
     final displayName = normalizeUsername(profile.displayName ?? '');
-    if (displayName.isEmpty) {
-      await upsert(profile);
-      return;
+    if (!hasValidUsernameLength(displayName)) {
+      throw DatabaseException(
+        FirebaseException(
+          plugin: 'cloud_firestore',
+          code: 'invalid-argument',
+          message:
+              'Username must be at least ${AppLimits.minUsernameLength} characters long.',
+        ),
+      );
     }
 
     final usernameKey = usernameKeyFor(displayName);
@@ -136,6 +146,7 @@ class UserRepository {
         .update(data);
   }
 
+  @override
   Future<void> delete(String uid) async {
     final profile = await getById(uid);
 
@@ -174,10 +185,12 @@ class UserRepository {
     await surveyRepo.closeSurveysCreatedByUser(uid);
   }
 
+  @override
   Stream<UserProfile?> watchById(String uid) {
     return _fs.watchDoc(_doc(uid));
   }
 
+  @override
   Stream<List<UserProfile>> watchAll({int? limit}) {
     return _fs.watchCol(_col(), limit: limit);
   }

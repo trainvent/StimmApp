@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/search_text_field.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/constants/eu_country_codes.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
@@ -14,6 +13,7 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/form_scope_eligibility.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 
 class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
@@ -75,20 +75,21 @@ class DiscoveryStatusChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chips = <Widget>[];
+    if (!status.isFinished && !status.isEligible) {
+      chips.add(
+        _DiscoveryChip(
+          icon: Icons.location_off_outlined,
+          label: context.l10n.outsideYourZone,
+          color: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
     if (!status.isFinished && status.hasParticipated) {
       chips.add(
         _DiscoveryChip(
           icon: Icons.check_circle_outline,
           label: context.l10n.alreadyParticipated,
           color: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    } else if (!status.isFinished && status.isEligible) {
-      chips.add(
-        _DiscoveryChip(
-          icon: Icons.person_pin_circle_outlined,
-          label: context.l10n.eligibleForYou,
-          color: Theme.of(context).colorScheme.tertiary,
         ),
       );
     }
@@ -317,75 +318,8 @@ class _BaseOverviewPageState<T extends HomeItem>
     );
   }
 
-  bool _isVisibleForUser({required T item, required UserProfile? userProfile}) {
-    final userCountryCode =
-        userProfile?.countryCode?.toUpperCase() ??
-        (userProfile?.supportsStateScope == true ? 'DE' : null);
-    final userStateOrRegion = userProfile?.state;
-    final userTown = userProfile?.town?.trim().toLowerCase();
-    final itemCountryCode = item.countryCode?.toUpperCase();
-    final itemStateOrRegion = item.stateOrRegion;
-    final itemTown = item.town?.trim().toLowerCase();
-    final normalizedScopeType = _normalizedScopeType(item);
-
-    switch (normalizedScopeType) {
-      case 'global':
-        return true;
-      case 'eu':
-        return isEuCountryCode(userCountryCode);
-      case 'continent':
-        if ((item.continentCode ?? '').toUpperCase() == 'EU') {
-          return isEuCountryCode(userCountryCode);
-        }
-        return true;
-      case 'country':
-        if (userCountryCode == null || userCountryCode.isEmpty) return false;
-        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
-        return userCountryCode == itemCountryCode;
-      case 'stateOrRegion':
-        if (userCountryCode == null || userCountryCode.isEmpty) return false;
-        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
-        if (userCountryCode != itemCountryCode) return false;
-        if (itemStateOrRegion == null || itemStateOrRegion.isEmpty) {
-          return true;
-        }
-        return userStateOrRegion == itemStateOrRegion;
-      case 'city':
-      case 'town':
-        if (userCountryCode == null || userCountryCode.isEmpty) return false;
-        if (itemCountryCode == null || itemCountryCode.isEmpty) return false;
-        if (userCountryCode != itemCountryCode) return false;
-        if (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) {
-          if (userStateOrRegion != itemStateOrRegion) return false;
-        }
-        if (itemTown == null || itemTown.isEmpty) {
-          return true;
-        }
-        if (userTown == null || userTown.isEmpty) return false;
-        return userTown == itemTown;
-      default:
-        return true;
-    }
-  }
-
   String _normalizedScopeType(T item) {
-    final itemCountryCode = item.countryCode?.toUpperCase();
-    final itemStateOrRegion = item.stateOrRegion;
-    final itemTown = item.town?.trim().toLowerCase();
-    final hasLegacyScopeData =
-        (itemCountryCode != null && itemCountryCode.isNotEmpty) ||
-        (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty) ||
-        (itemTown != null && itemTown.isNotEmpty);
-
-    return item.scopeType.isEmpty
-        ? (itemTown != null && itemTown.isNotEmpty
-              ? 'city'
-              : (hasLegacyScopeData
-                    ? (itemStateOrRegion != null && itemStateOrRegion.isNotEmpty
-                          ? 'stateOrRegion'
-                          : 'country')
-                    : 'global'))
-        : item.scopeType;
+    return normalizedHomeItemScopeType(item);
   }
 
   bool _matchesSelectedScopes(T item) {
@@ -639,12 +573,6 @@ class _BaseOverviewPageState<T extends HomeItem>
                         var items = snap.data ?? const [];
                         items = items
                             .where(
-                              (item) => _isVisibleForUser(
-                                item: item,
-                                userProfile: userProfile,
-                              ),
-                            )
-                            .where(
                               (item) => _isAccessibleForCurrentUser(
                                 item: item,
                                 currentUid: currentUid,
@@ -688,7 +616,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                           itemBuilder: (context, index) {
                             final item = items[index];
                             final discoveryStatus = DiscoveryStatus(
-                              isEligible: true,
+                              isEligible: isHomeItemInUserZone(
+                                item: item,
+                                userProfile: userProfile,
+                              ),
                               hasParticipated: participatedIds.contains(
                                 widget.participationKeyProvider?.call(item) ??
                                     item.id,

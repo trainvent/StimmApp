@@ -93,9 +93,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(error) => "Unerwarteter Fehler: ${error}";
 
-  static String m32(date) => "Gültig bis";
+  static String m32(minimumLength) =>
+      "Der Benutzername muss mindestens ${minimumLength} Zeichen lang sein.";
 
-  static String m33(email) =>
+  static String m33(date) => "Gültig bis";
+
+  static String m34(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -193,6 +196,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "answerAllSurveyQuestions": MessageLookupByLibrary.simpleMessage(
       "Bitte beantworte alle Fragen im Fragebogen.",
     ),
+    "appleSignInFailed": MessageLookupByLibrary.simpleMessage(
+      "Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
+    ),
     "approveRequest": MessageLookupByLibrary.simpleMessage(
       "Anfrage genehmigen",
     ),
@@ -281,6 +287,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "changeLanguage": MessageLookupByLibrary.simpleMessage("Sprache ändern"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Passwort ändern"),
+    "checkUsernameAvailability": MessageLookupByLibrary.simpleMessage(
+      "Verfügbarkeit des Benutzernamens prüfen",
+    ),
+    "checkingUsernameAvailability": MessageLookupByLibrary.simpleMessage(
+      "Verfügbarkeit wird geprüft…",
+    ),
     "cityScopeFallback": MessageLookupByLibrary.simpleMessage("Stadt"),
     "clearGroupFilter": MessageLookupByLibrary.simpleMessage(
       "Gruppenfilter löschen",
@@ -320,6 +332,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "continueNext": MessageLookupByLibrary.simpleMessage("Weiter"),
     "continueText": MessageLookupByLibrary.simpleMessage("Weiter"),
     "continueToApp": MessageLookupByLibrary.simpleMessage("Zur App"),
+    "continueWithApple": MessageLookupByLibrary.simpleMessage(
+      "Mit Apple fortfahren",
+    ),
     "continueWithGoogle": MessageLookupByLibrary.simpleMessage(
       "Mit Google fortfahren",
     ),
@@ -463,13 +478,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "domainHint": MessageLookupByLibrary.simpleMessage("company.com"),
     "domainLabel": MessageLookupByLibrary.simpleMessage("Domain"),
     "dropCsvHere": MessageLookupByLibrary.simpleMessage("CSV hier ablegen"),
+    "editGivenName": MessageLookupByLibrary.simpleMessage(
+      "Vornamen bearbeiten",
+    ),
+    "editGoogleProfile": MessageLookupByLibrary.simpleMessage(
+      "Google-Profil bearbeiten",
+    ),
     "editGroupDescription": MessageLookupByLibrary.simpleMessage(
       "Passe Zugriffsregeln und Einstellungen für diese Gruppe an.",
     ),
     "editGroupTitle": MessageLookupByLibrary.simpleMessage("Gruppe bearbeiten"),
     "editLabel": MessageLookupByLibrary.simpleMessage("Bearbeiten"),
     "editPetition": MessageLookupByLibrary.simpleMessage("Petition bearbeiten"),
-    "eligibleForYou": MessageLookupByLibrary.simpleMessage("Für dich geeignet"),
+    "editSurname": MessageLookupByLibrary.simpleMessage("Nachnamen bearbeiten"),
     "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
     "emailChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "E-Mail erfolgreich geändert",
@@ -507,6 +528,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "entryNotYetImplemented": MessageLookupByLibrary.simpleMessage(
       "Lexikon-Eintrag noch nicht implementiert",
+    ),
+    "erroneousProfile": MessageLookupByLibrary.simpleMessage(
+      "<fehlerhaftes Profil>",
     ),
     "error": MessageLookupByLibrary.simpleMessage("Fehler"),
     "errorCreatingPetition": MessageLookupByLibrary.simpleMessage(
@@ -600,6 +624,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "goToWelcome": MessageLookupByLibrary.simpleMessage("Zum Startbildschirm"),
     "goal": MessageLookupByLibrary.simpleMessage("Ziel"),
+    "googleAccount": MessageLookupByLibrary.simpleMessage("Google-Konto"),
     "googleAddressImportedBirthdayUnavailable":
         MessageLookupByLibrary.simpleMessage(
           "Anschrift importiert. Google hat kein vollständiges Geburtsdatum bereitgestellt",
@@ -619,6 +644,27 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
       "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
+    ),
+    "googleSyncDisabled": MessageLookupByLibrary.simpleMessage(
+      "Google-Synchronisierung deaktiviert",
+    ),
+    "googleSyncEnabled": MessageLookupByLibrary.simpleMessage(
+      "Google-Synchronisierung aktiviert",
+    ),
+    "googleSyncFailed": MessageLookupByLibrary.simpleMessage(
+      "Google-Profil konnte nicht synchronisiert werden",
+    ),
+    "googleSyncLocksPersonalData": MessageLookupByLibrary.simpleMessage(
+      "Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.",
+    ),
+    "googleSyncManagedFields": MessageLookupByLibrary.simpleMessage(
+      "Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.",
+    ),
+    "googleSyncRequiresCompleteProfile": MessageLookupByLibrary.simpleMessage(
+      "Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.",
+    ),
+    "googleSyncSucceeded": MessageLookupByLibrary.simpleMessage(
+      "Google-Profil synchronisiert",
     ),
     "groupAccess": MessageLookupByLibrary.simpleMessage("Gruppenzugang"),
     "groupAccessAccepted": MessageLookupByLibrary.simpleMessage(
@@ -938,7 +984,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Option ist erforderlich",
     ),
     "options": MessageLookupByLibrary.simpleMessage("Optionen"),
+    "orSeparator": MessageLookupByLibrary.simpleMessage(
+      "oder direkt weiter mit",
+    ),
     "other": MessageLookupByLibrary.simpleMessage("Andere"),
+    "outsideYourZone": MessageLookupByLibrary.simpleMessage(
+      "Außerhalb deines Bereichs",
+    ),
     "participants": MessageLookupByLibrary.simpleMessage("Teilnehmer"),
     "participantsList": MessageLookupByLibrary.simpleMessage("Teilnehmerliste"),
     "password": MessageLookupByLibrary.simpleMessage("Passwort"),
@@ -1169,8 +1221,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "processId": MessageLookupByLibrary.simpleMessage("Ausweis verarbeiten"),
     "products": MessageLookupByLibrary.simpleMessage("Produkte"),
     "profile": MessageLookupByLibrary.simpleMessage("Profil"),
+    "profileDetailsUpdated": MessageLookupByLibrary.simpleMessage(
+      "Dein Profil wurde aktualisiert.",
+    ),
     "profilePictureUpdated": MessageLookupByLibrary.simpleMessage(
       "Profilbild aktualisiert",
+    ),
+    "profileSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.",
     ),
     "protectedAccessMode": MessageLookupByLibrary.simpleMessage("Geschützt"),
     "protectedGroupsRequireApprovalRequest": MessageLookupByLibrary.simpleMessage(
@@ -1422,6 +1480,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "swipeToLeaveGroup": MessageLookupByLibrary.simpleMessage(
       "Wische, um die Gruppe zu verlassen.",
     ),
+    "syncGoogleDataNow": MessageLookupByLibrary.simpleMessage(
+      "Google-Daten jetzt synchronisieren",
+    ),
+    "syncNow": MessageLookupByLibrary.simpleMessage("Jetzt"),
+    "syncRegularly": MessageLookupByLibrary.simpleMessage(
+      "Regelmäßig synchronisieren",
+    ),
+    "synchronization": MessageLookupByLibrary.simpleMessage("Synchronisierung"),
+    "synchronizeGoogleDataPeriodically": MessageLookupByLibrary.simpleMessage(
+      "Google-Daten regelmäßig synchronisieren",
+    ),
     "systemDefault": MessageLookupByLibrary.simpleMessage("Systemstandard"),
     "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Tierschutz"),
     "tagCulture": MessageLookupByLibrary.simpleMessage("Kultur"),
@@ -1516,21 +1585,31 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto verifiziert",
     ),
     "userRoleLabel": MessageLookupByLibrary.simpleMessage("Benutzer"),
+    "usernameAvailabilityCheckFailed": MessageLookupByLibrary.simpleMessage(
+      "Die Verfügbarkeit konnte gerade nicht geprüft werden. Tippe, um es erneut zu versuchen.",
+    ),
+    "usernameAvailable": MessageLookupByLibrary.simpleMessage(
+      "Dieser Benutzername ist verfügbar.",
+    ),
     "usernameChangeFailed": MessageLookupByLibrary.simpleMessage(
       "Änderung des Benutzernamens fehlgeschlagen",
     ),
     "usernameChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Benutzername erfolgreich geändert",
     ),
+    "usernameTooShort": m32,
+    "usernameUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
+    ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m32,
+    "validUntil": m33,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m33,
+    "verificationEmailSentTo": m34,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),

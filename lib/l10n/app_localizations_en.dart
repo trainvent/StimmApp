@@ -765,6 +765,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get participantsList => 'Participants List';
 
   @override
+  String get erroneousProfile => '<erroneous profile>';
+
+  @override
   String get password => 'Password';
 
   @override
@@ -1703,7 +1706,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get eligibleForYou => 'Eligible for you';
+  String get outsideYourZone => 'Outside your zone';
 
   @override
   String get alreadyParticipated => 'Already participated';
@@ -2382,6 +2385,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get usernameUnavailable =>
       'This username is already in use. Try another one.';
+
+  @override
+  String usernameTooShort(int minimumLength) {
+    return 'Username must be at least $minimumLength characters long.';
+  }
 
   @override
   String get usernameAvailabilityCheckFailed =>

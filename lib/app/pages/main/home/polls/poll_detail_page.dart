@@ -23,11 +23,13 @@ class _PollDetailPageState extends State<PollDetailPage> {
   @override
   Widget build(BuildContext context) {
     final repo = PollRepository.create();
+    final participantIdsStream = repo.watchParticipantIds(widget.id);
     return BaseDetailPage<Poll>(
       id: widget.id,
       appBarTitle: context.l10n.pollDetails,
       streamProvider: repo.watch,
       participantsStream: repo.watchParticipants(widget.id),
+      participantIdsStream: participantIdsStream,
       sharePathSegment: 'poll',
       topRightActionBuilder: (context, poll) {
         final currentUid = authService.currentUser?.uid;
@@ -105,7 +107,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
       },
       bottomAction: SignActionButton(
         label: context.l10n.vote,
-        participantsStream: repo.watchParticipants(widget.id),
+        participantIdsStream: participantIdsStream,
         onAction: ({String? reason}) async {
           final optionId = _selectedOptionId;
           if (optionId == null) return;
