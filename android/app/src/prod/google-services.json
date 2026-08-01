@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "223242419578-c86oeihhqa8gt60iv2h97attsbjn36u1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.lemarq.stimmapp",
+            "certificate_hash": "d9334c98c143e27cfdccb2ec5824eb70a8e92bbb"
+          }
+        },
+        {
           "client_id": "223242419578-n4b3tgchf52u88n45v1lsb4h2h6r37rp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
