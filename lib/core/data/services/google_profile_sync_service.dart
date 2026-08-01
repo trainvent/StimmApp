@@ -3,7 +3,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
-import 'package:stimmapp/core/data/services/google_profile_sync_validator.dart';
+import 'package:stimmapp/core/data/services/google_profile_sync_preview.dart';
 import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 
 class GoogleProfileSyncService {
@@ -27,36 +27,55 @@ class GoogleProfileSyncService {
     final google = await _auth.importGoogleProfileData(
       promptIfNecessary: promptIfNecessary,
     );
-    GoogleProfileSyncValidator.validateGoogleData(google);
 
-    final address = google.address!.trim();
+    final address = google.address?.trim() ?? '';
     var town = profile.town;
     var state = profile.state;
     var countryCode = profile.countryCode;
 
-    if (activate ||
-        address != profile.address?.trim() ||
-        town?.isNotEmpty != true ||
-        countryCode?.isNotEmpty != true ||
-        (countryCode?.toUpperCase() == 'DE' && state?.isNotEmpty != true)) {
-      final resolved = await _addresses.resolveAddress(address);
-      town = resolved.town;
-      state = resolved.state;
-      countryCode = resolved.countryCode?.toUpperCase();
+    Object? addressResolutionError;
+    if (address.isNotEmpty &&
+        (activate ||
+            address != profile.address?.trim() ||
+            town?.isNotEmpty != true ||
+            countryCode?.isNotEmpty != true ||
+            (countryCode?.toUpperCase() == 'DE' &&
+                state?.isNotEmpty != true))) {
+      try {
+        final resolved = await _addresses.resolveAddress(address);
+        town = resolved.town;
+        state = resolved.state;
+        countryCode = resolved.countryCode?.toUpperCase();
+      } catch (error) {
+        addressResolutionError = error;
+        town = null;
+        state = null;
+        countryCode = null;
+      }
     }
-    GoogleProfileSyncValidator.validateResolvedAddress(
-      PlaceAddressInfo(town: town, state: state, countryCode: countryCode),
+    final preview = GoogleProfileSyncPreview.fromGoogle(
+      google: google,
+      fallbackEmail: _auth.authenticatedEmail ?? profile.email,
+      resolvedAddress: PlaceAddressInfo(
+        town: town,
+        state: state,
+        countryCode: countryCode,
+      ),
+      addressResolutionFailed: addressResolutionError != null,
     );
+    if (!preview.canSynchronize) {
+      throw GoogleProfileSyncPreviewException(preview, addressResolutionError);
+    }
 
     final updated = profile.copyWith(
-      givenName: _clampName(google.givenName!),
-      surname: _clampName(google.surname!),
-      email: google.email ?? _auth.authenticatedEmail ?? profile.email,
-      dateOfBirth: google.dateOfBirth,
-      address: address,
-      town: town,
-      state: countryCode == 'DE' ? state : null,
-      countryCode: countryCode,
+      givenName: _clampName(preview.givenName!),
+      surname: _clampName(preview.surname!),
+      email: preview.email,
+      dateOfBirth: preview.dateOfBirth,
+      address: preview.address,
+      town: preview.town,
+      state: preview.countryCode == 'DE' ? preview.stateOrRegion : null,
+      countryCode: preview.countryCode,
       isGoogleSyncActive: activate || profile.isGoogleSyncActive == true,
       googleSyncLastAt: DateTime.now(),
     );

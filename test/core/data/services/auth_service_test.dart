@@ -63,6 +63,28 @@ class _GoogleUser extends Mock implements User {
   List<UserInfo> get providerData => [googleProvider];
 }
 
+class _GoogleReauthUser extends _GoogleUser {
+  _GoogleReauthUser({
+    required super.primaryEmail,
+    required super.googleProvider,
+    required this.error,
+  });
+
+  final FirebaseAuthException error;
+  AuthProvider? receivedProvider;
+
+  @override
+  String get uid => 'firebase-user-id';
+
+  @override
+  Future<UserCredential> reauthenticateWithProvider(
+    AuthProvider provider,
+  ) async {
+    receivedProvider = provider;
+    throw error;
+  }
+}
+
 class _MockUserCredential extends Mock implements UserCredential {
   @override
   AdditionalUserInfo? get additionalUserInfo => null;
@@ -250,6 +272,36 @@ void main() {
 
       expect(service.authenticatedEmail, 'person@example.com');
     });
+
+    test(
+      'uses the linked email as the deletion reauthentication hint',
+      () async {
+        final providerInfo = _GoogleUserInfo(
+          googleId: 'google-user-id',
+          googleEmail: 'person@example.com',
+        );
+        final user = _GoogleReauthUser(
+          primaryEmail: 'person@example.com',
+          googleProvider: providerInfo,
+          error: FirebaseAuthException(code: 'canceled'),
+        );
+        final service = AuthService(firebaseAuth: _MockFirebaseAuth(user));
+
+        await expectLater(
+          service.deleteAccountWithGoogle(),
+          throwsA(
+            isA<AuthException>().having(
+              (error) => error.code,
+              'code',
+              'google-sign-in-cancelled',
+            ),
+          ),
+        );
+
+        final provider = user.receivedProvider as GoogleAuthProvider;
+        expect(provider.parameters['login_hint'], 'person@example.com');
+      },
+    );
   });
 
   group('signInWithApple', () {

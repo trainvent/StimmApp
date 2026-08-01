@@ -127,6 +127,24 @@ class AuthService {
       ..addScope('name');
   }
 
+  GoogleAuthProvider _googleProvider({String? loginHint}) {
+    final provider = GoogleAuthProvider();
+    final email = loginHint?.trim();
+    if (email?.isNotEmpty == true) {
+      provider.setCustomParameters({'login_hint': email});
+    }
+    return provider;
+  }
+
+  bool _isGoogleCancellation(String code) {
+    return const {
+      'canceled',
+      'cancelled',
+      'popup-closed-by-user',
+      'web-context-cancelled',
+    }.contains(code);
+  }
+
   bool _isAppleCancellation(String code) {
     return const {
       'canceled',
@@ -350,20 +368,11 @@ class AuthService {
     }
 
     try {
+      final provider = _googleProvider(loginHint: linkedGoogleAccount?.email);
       if (kIsWeb) {
-        await user.reauthenticateWithPopup(GoogleAuthProvider());
+        await user.reauthenticateWithPopup(provider);
       } else {
-        final googleIdentity = await googleAuthClient.authenticate();
-        final idToken = googleIdentity.idToken;
-        if (idToken == null || idToken.isEmpty) {
-          throw FirebaseAuthException(
-            code: 'invalid-credential',
-            message: 'Google did not return a valid identity token.',
-          );
-        }
-        await user.reauthenticateWithCredential(
-          GoogleAuthProvider.credential(idToken: idToken),
-        );
+        await user.reauthenticateWithProvider(provider);
       }
 
       await UserRepository.create().delete(user.uid);
@@ -387,6 +396,14 @@ class AuthService {
         ),
       );
     } on FirebaseAuthException catch (e) {
+      if (_isGoogleCancellation(e.code)) {
+        throw AuthException(
+          FirebaseAuthException(
+            code: 'google-sign-in-cancelled',
+            message: 'Google sign-in was cancelled.',
+          ),
+        );
+      }
       throw AuthException(e);
     }
   }

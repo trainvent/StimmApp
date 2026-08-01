@@ -142,6 +142,7 @@
 	"syncNow": "Sync now",
 	"syncRegularly": "Sync regularly",
 	"googleSyncManagedFields": "While active, name, birthday, and address are managed by Google.",
+	"googleSyncAddressMustBePublic": "Your address must be set to public in your Google profile so StimmApp can synchronize it.",
 	"googleSyncRequiresCompleteProfile": "Google must provide your full name, birthday, and current location before synchronization can be enabled.",
 	"completeGoogleProfile": "Complete your Google profile",
 	"googleSyncEnabled": "Google synchronization enabled",

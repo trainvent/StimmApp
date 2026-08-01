@@ -704,6 +704,12 @@ abstract class AppLocalizations {
   /// **'While active, name, birthday, and address are managed by Google.'**
   String get googleSyncManagedFields;
 
+  /// No description provided for @googleSyncAddressMustBePublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Your address must be set to public in your Google profile so StimmApp can synchronize it.'**
+  String get googleSyncAddressMustBePublic;
+
   /// No description provided for @googleSyncRequiresCompleteProfile.
   ///
   /// In en, this message translates to:

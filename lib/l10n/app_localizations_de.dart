@@ -339,6 +339,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.';
 
   @override
+  String get googleSyncAddressMustBePublic =>
+      'Deine Anschrift muss in deinem Google-Profil öffentlich sein, damit StimmApp sie synchronisieren kann.';
+
+  @override
   String get googleSyncRequiresCompleteProfile =>
       'Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.';
 

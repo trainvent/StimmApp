@@ -337,6 +337,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'While active, name, birthday, and address are managed by Google.';
 
   @override
+  String get googleSyncAddressMustBePublic =>
+      'Your address must be set to public in your Google profile so StimmApp can synchronize it.';
+
+  @override
   String get googleSyncRequiresCompleteProfile =>
       'Google must provide your full name, birthday, and current location before synchronization can be enabled.';
 
