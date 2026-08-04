@@ -679,82 +679,86 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                     ),
                     const SizedBox(height: 10),
                     if (_isGoogleAccount) ...[
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerLow,
-                          border: Border.all(
+                      Material(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerLow,
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
                             color: Theme.of(context).colorScheme.outlineVariant,
                           ),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    context.l10n.synchronization,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
+                        clipBehavior: Clip.antiAlias,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      context.l10n.synchronization,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
                                   ),
-                                ),
-                                TextButton.icon(
-                                  key: const Key('importGoogleProfileButton'),
-                                  onPressed:
-                                      _isImportingGoogleProfile ||
-                                          _isSaving ||
-                                          _isCancellingRegistration
-                                      ? null
-                                      : () => _importGoogleProfile(
-                                          activateSync: _isGoogleSyncActive,
-                                        ),
-                                  icon: _isImportingGoogleProfile
-                                      ? TriangleLoadingIndicator(
-                                          size: 16,
-                                          showFill: false,
-                                          strokeColor: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                        )
-                                      : const Icon(Icons.sync, size: 19),
-                                  label: Text(context.l10n.syncNow),
-                                ),
-                              ],
-                            ),
-                            const Divider(height: 1),
-                            SwitchListTile(
-                              key: const Key('googleProfileSyncCheckbox'),
-                              contentPadding: EdgeInsets.zero,
-                              visualDensity: VisualDensity.compact,
-                              value: _isGoogleSyncActive,
-                              onChanged:
-                                  _isImportingGoogleProfile ||
-                                      _isSaving ||
-                                      _isCancellingRegistration
-                                  ? null
-                                  : (value) async {
-                                      if (!value) {
-                                        setState(
-                                          () => _isGoogleSyncActive = false,
-                                        );
-                                        return;
-                                      }
-                                      await _importGoogleProfile(
-                                        activateSync: true,
-                                      );
-                                    },
-                              title: Text(context.l10n.syncRegularly),
-                              subtitle: Text(
-                                context.l10n.googleSyncManagedFields,
+                                  TextButton.icon(
+                                    key: const Key('importGoogleProfileButton'),
+                                    onPressed:
+                                        _isImportingGoogleProfile ||
+                                            _isSaving ||
+                                            _isCancellingRegistration
+                                        ? null
+                                        : () => _importGoogleProfile(
+                                            activateSync: _isGoogleSyncActive,
+                                          ),
+                                    icon: _isImportingGoogleProfile
+                                        ? TriangleLoadingIndicator(
+                                            size: 16,
+                                            showFill: false,
+                                            strokeColor: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          )
+                                        : const Icon(Icons.sync, size: 19),
+                                    label: Text(context.l10n.syncNow),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                              const Divider(height: 1),
+                              SwitchListTile(
+                                key: const Key('googleProfileSyncCheckbox'),
+                                contentPadding: EdgeInsets.zero,
+                                visualDensity: VisualDensity.compact,
+                                value: _isGoogleSyncActive,
+                                onChanged:
+                                    _isImportingGoogleProfile ||
+                                        _isSaving ||
+                                        _isCancellingRegistration
+                                    ? null
+                                    : (value) async {
+                                        if (!value) {
+                                          setState(
+                                            () => _isGoogleSyncActive = false,
+                                          );
+                                          return;
+                                        }
+                                        await _importGoogleProfile(
+                                          activateSync: true,
+                                        );
+                                      },
+                                title: Text(context.l10n.syncRegularly),
+                                subtitle: Text(
+                                  context.l10n.googleSyncManagedFields,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
