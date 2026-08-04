@@ -554,6 +554,8 @@
 	"allow": "Erlauben",
 	"decline": "Ablehnen",
 	"continueToApp": "Zur App",
+	"allowAll": "Alle erlauben",
+	"saveSelection": "Auswahl speichern",
 	"analyticsData": "Analysedaten",
 	"analyticsDataDescription": "Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern koennen.",
 	"sendCrashLogs": "Absturzberichte senden",

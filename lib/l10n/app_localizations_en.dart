@@ -1539,6 +1539,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueToApp => 'Continue to app';
 
   @override
+  String get allowAll => 'Allow all';
+
+  @override
+  String get saveSelection => 'Save selection';
+
+  @override
   String get analyticsData => 'Analytics data';
 
   @override

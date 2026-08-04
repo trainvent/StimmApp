@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/main/home/widget_tree.dart';
 import 'package:stimmapp/app/pages/onboarding/community_guidelines_page.dart';
 import 'package:stimmapp/app/pages/onboarding/email_confirmation_page.dart';
+import 'package:stimmapp/app/pages/onboarding/privacy_consent_page.dart';
 import 'package:stimmapp/app/pages/onboarding/set_user_details_page.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart'
     show WelcomePage;
@@ -135,14 +136,17 @@ class _AuthLayoutState extends ConsumerState<AuthLayout>
           if (profile.acceptedCommunityRulesAt == null) {
             return CommunityGuidelinesPage(profile: profile);
           }
+          if (profile.analyticsCollectionEnabled == null ||
+              profile.sendCrashLogs == null) {
+            return PrivacyConsentPage(profile: profile);
+          }
           return const WidgetTree();
         }
 
         return userProfileState.when(
           data: buildProfileRoute,
-          loading: () => const SizedBox.shrink(),
+          loading: () => const AppLoadingPage(),
           error: (error, stack) => Center(child: Text('Error: $error')),
-          skipLoadingOnReload: true,
           skipLoadingOnRefresh: true,
         );
       },

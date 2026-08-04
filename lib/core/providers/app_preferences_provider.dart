@@ -114,7 +114,7 @@ class AnalyticsCollectionController extends Notifier<bool> {
 
 class CrashLogsController extends Notifier<bool> {
   @override
-  bool build() => true;
+  bool build() => false;
 
   void initialize(bool enabled) {
     state = enabled;

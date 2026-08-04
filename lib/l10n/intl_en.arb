@@ -554,6 +554,8 @@
 	"allow": "Allow",
 	"decline": "Decline",
 	"continueToApp": "Continue to app",
+	"allowAll": "Allow all",
+	"saveSelection": "Save selection",
 	"analyticsData": "Analytics data",
 	"analyticsDataDescription": "Allow anonymous usage analytics so we can understand app usage and improve features over time.",
 	"sendCrashLogs": "Send Crash Logs",

@@ -2960,6 +2960,18 @@ abstract class AppLocalizations {
   /// **'Continue to app'**
   String get continueToApp;
 
+  /// No description provided for @allowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow all'**
+  String get allowAll;
+
+  /// No description provided for @saveSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Save selection'**
+  String get saveSelection;
+
   /// No description provided for @analyticsData.
   ///
   /// In en, this message translates to:

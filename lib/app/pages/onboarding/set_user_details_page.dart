@@ -29,9 +29,7 @@ import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/functions/google_account_links.dart';
-import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/profile_picture_provider.dart';
-import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -336,10 +334,6 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
       setState(() => _usernameAvailability = _UsernameAvailability.available);
 
-      final crashLogsController = ref.read(crashLogsEnabledProvider.notifier);
-      final analyticsController = ref.read(
-        analyticsCollectionEnabledProvider.notifier,
-      );
       final profilePictureController = ref.read(
         profilePictureUrlProvider.notifier,
       );
@@ -356,21 +350,12 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
         dateOfBirth: _selectedDateOfBirth,
         address: controllerAddress.text.trim(),
         town: _selectedTown,
-        sendCrashLogs: true,
-        analyticsCollectionEnabled: true,
         acceptedCommunityRulesAt: DateTime.now(),
         isGoogleSyncActive: _isGoogleSyncActive,
         googleSyncLastAt: _isGoogleSyncActive ? DateTime.now() : null,
       );
 
       await authService.updateUsername(username: displayName);
-      crashLogsController.setEnabled(true);
-      analyticsController.setEnabled(true);
-      await AnalyticsService.instance.logProfileCompleted(
-        countryCode: profile.countryCode,
-        supportsStateScope: profile.supportsStateScope,
-      );
-
       final googlePhotoUrl = currentUser.photoURL?.trim();
       String? profilePictureUrl = googlePhotoUrl?.isEmpty ?? true
           ? null

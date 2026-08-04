@@ -137,7 +137,7 @@ class AppBootstrap {
 
   Future<bool> _loadCrashLogsSetting() async {
     final prefs = await SharedPreferences.getInstance();
-    final enabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? true;
+    final enabled = prefs.getBool(IConst.crashLogsEnabledKey) ?? false;
     await CrashReportingService.instance.setCollectionEnabled(enabled);
     return enabled;
   }

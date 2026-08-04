@@ -1558,6 +1558,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get continueToApp => 'Zur App';
 
   @override
+  String get allowAll => 'Alle erlauben';
+
+  @override
+  String get saveSelection => 'Auswahl speichern';
+
+  @override
   String get analyticsData => 'Analysedaten';
 
   @override
