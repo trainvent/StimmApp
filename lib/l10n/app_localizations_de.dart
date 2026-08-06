@@ -1041,7 +1041,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get town => 'Ort';
 
   @override
-  String get pleaseEnterTown => 'Bitte gib einen Ort ein';
+  String get pleaseSetTownInAddressFirst =>
+      'Hinterlege einen Ort in deiner Adresse, bevor du „Stadt“ als Geltungsbereich auswählst';
 
   @override
   String get euScopeOnlyForEuCountries =>

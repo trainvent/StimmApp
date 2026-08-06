@@ -1095,9 +1095,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnterGroupName": MessageLookupByLibrary.simpleMessage(
       "Bitte gib einen Gruppennamen ein.",
     ),
-    "pleaseEnterTown": MessageLookupByLibrary.simpleMessage(
-      "Bitte gib einen Ort ein",
-    ),
     "pleaseEnterValidEmailDomains": MessageLookupByLibrary.simpleMessage(
       "Bitte gib gültige E-Mail-Domains wie company.com ein.",
     ),
@@ -1131,6 +1128,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSetCountryInAddressFirst": MessageLookupByLibrary.simpleMessage(
       "Bitte hinterlege zuerst dein Land in deiner Adresse",
+    ),
+    "pleaseSetTownInAddressFirst": MessageLookupByLibrary.simpleMessage(
+      "Hinterlege einen Ort in deiner Adresse, bevor du „Stadt“ als Geltungsbereich auswählst",
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Bitte zuerst anmelden",

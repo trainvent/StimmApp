@@ -2699,11 +2699,11 @@ class S {
     return Intl.message('Town', name: 'town', desc: '', args: []);
   }
 
-  /// `Please enter a town`
-  String get pleaseEnterTown {
+  /// `Add a town to your address before selecting City as the scope`
+  String get pleaseSetTownInAddressFirst {
     return Intl.message(
-      'Please enter a town',
-      name: 'pleaseEnterTown',
+      'Add a town to your address before selecting City as the scope',
+      name: 'pleaseSetTownInAddressFirst',
       desc: '',
       args: [],
     );

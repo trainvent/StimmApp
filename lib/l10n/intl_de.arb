@@ -374,7 +374,7 @@
 	"scopeStateRegion": "Bundesland / Region",
 	"scopeCity": "Stadt",
 	"town": "Ort",
-	"pleaseEnterTown": "Bitte gib einen Ort ein",
+	"pleaseSetTownInAddressFirst": "Hinterlege einen Ort in deiner Adresse, bevor du „Stadt“ als Geltungsbereich auswählst",
 	"euScopeOnlyForEuCountries": "Der EU-Geltungsbereich ist nur für EU-Länder verfügbar",
 	"pleaseSetCountryInAddressFirst": "Bitte hinterlege zuerst dein Land in deiner Adresse",
 	"state": "Bundesland",

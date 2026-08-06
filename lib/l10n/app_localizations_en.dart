@@ -1032,7 +1032,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get town => 'Town';
 
   @override
-  String get pleaseEnterTown => 'Please enter a town';
+  String get pleaseSetTownInAddressFirst =>
+      'Add a town to your address before selecting City as the scope';
 
   @override
   String get euScopeOnlyForEuCountries =>

@@ -51,10 +51,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
   FormScopeType _selectedScope = FormScopeType.country;
-  final TextEditingController _scopeTownController = TextEditingController();
   bool _supportsStateScope = false;
   String? _profileCountryCode;
   String? _profileStateOrRegion;
+  String? _profileTown;
   bool _isLoading = false;
   int _durationDays = 28; // Default duration
 
@@ -67,17 +67,14 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     _loadDraft();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
-    _scopeTownController.addListener(_saveDraft);
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_saveDraft);
     _descriptionController.removeListener(_saveDraft);
-    _scopeTownController.removeListener(_saveDraft);
     _titleController.dispose();
     _descriptionController.dispose();
-    _scopeTownController.dispose();
     super.dispose();
   }
 
@@ -98,6 +95,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           profile.countryCode?.toUpperCase() ??
           (profile.supportsStateScope ? 'DE' : null);
       _profileStateOrRegion = profile.state;
+      final profileTown = profile.town?.trim();
+      _profileTown = profileTown == null || profileTown.isEmpty
+          ? null
+          : profileTown;
       if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
         _selectedScope = FormScopeType.country;
       }
@@ -115,9 +116,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     final draftDescription = prefs.getString('${_draftKey}_description');
     final draftTags = prefs.getStringList('${_draftKey}_tags');
     final draftScopeType = prefs.getString('${_draftKey}_scopeType');
-    final draftTown =
-        prefs.getString('${_draftKey}_scopeTown') ??
-        prefs.getString('${_draftKey}_scopeCity');
     final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
     final draftDuration = prefs.getInt('${_draftKey}_duration');
 
@@ -145,7 +143,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
           _selectedScope = FormScopeType.country;
         }
-        if (draftTown != null) _scopeTownController.text = draftTown;
         if (draftDuration != null) _durationDays = draftDuration;
       });
     }
@@ -163,7 +160,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       '${_draftKey}_scopeType',
       formScopeTypeToFirestore(_selectedScope),
     );
-    await prefs.setString('${_draftKey}_scopeTown', _scopeTownController.text);
+    // City scope now always uses the town stored in the user's profile.
+    // Remove previously saved free-text values so they cannot override it.
+    await prefs.remove('${_draftKey}_scopeTown');
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.setInt('${_draftKey}_duration', _durationDays);
@@ -188,12 +187,13 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _descriptionController.clear();
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
-      _scopeTownController.clear();
       _durationDays = 28;
     });
   }
 
   Future<void> _handleSubmit() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     if (!_formKey.currentState!.validate()) {
       showErrorSnackBar(context.l10n.error);
       return;
@@ -213,9 +213,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       showErrorSnackBar(context.l10n.pleaseSelectState);
       return;
     }
-    if (_selectedScope == FormScopeType.city &&
-        _scopeTownController.text.trim().isEmpty) {
-      showErrorSnackBar(context.l10n.pleaseEnterTown);
+    if (_selectedScope == FormScopeType.city && _profileTown == null) {
+      showErrorSnackBar(context.l10n.pleaseSetTownInAddressFirst);
       return;
     }
     if (_selectedScope == FormScopeType.eu && !_supportsEuScope) {
@@ -250,7 +249,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.city:
         scopeCountryCode = _profileCountryCode;
         scopeStateOrRegion = _profileStateOrRegion;
-        scopeTown = _scopeTownController.text.trim();
+        scopeTown = _profileTown;
         break;
     }
 
@@ -516,6 +515,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               DropdownButtonFormField<FormScopeType>(
                 key: ValueKey(_selectedScope),
                 initialValue: _selectedScope,
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                 decoration: InputDecoration(
                   labelText: context.l10n.scope,
                   border: OutlineInputBorder(),
@@ -554,19 +554,21 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               ),
               const SizedBox(height: 10),
               if (_selectedScope == FormScopeType.city) ...[
-                TextFormField(
-                  controller: _scopeTownController,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.town,
-                    border: OutlineInputBorder(),
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: ListTile(
+                    leading: const Icon(Icons.location_city_outlined),
+                    title: Text(context.l10n.town),
+                    subtitle: Text(
+                      _profileTown ?? context.l10n.pleaseSetTownInAddressFirst,
+                    ),
+                    textColor: _profileTown == null
+                        ? Theme.of(context).colorScheme.error
+                        : null,
+                    iconColor: _profileTown == null
+                        ? Theme.of(context).colorScheme.error
+                        : null,
                   ),
-                  validator: (value) {
-                    if (_selectedScope == FormScopeType.city &&
-                        (value == null || value.trim().isEmpty)) {
-                      return context.l10n.pleaseEnterTown;
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 10),
               ],

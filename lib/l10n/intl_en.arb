@@ -379,7 +379,7 @@
 	"scopeStateRegion": "State / Region",
 	"scopeCity": "City",
 	"town": "Town",
-	"pleaseEnterTown": "Please enter a town",
+	"pleaseSetTownInAddressFirst": "Add a town to your address before selecting City as the scope",
 	"euScopeOnlyForEuCountries": "EU scope is only available for EU countries",
 	"pleaseSetCountryInAddressFirst": "Please set your country in your address first",
 	"state": "State",

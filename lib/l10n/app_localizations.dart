@@ -2042,11 +2042,11 @@ abstract class AppLocalizations {
   /// **'Town'**
   String get town;
 
-  /// No description provided for @pleaseEnterTown.
+  /// No description provided for @pleaseSetTownInAddressFirst.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a town'**
-  String get pleaseEnterTown;
+  /// **'Add a town to your address before selecting City as the scope'**
+  String get pleaseSetTownInAddressFirst;
 
   /// No description provided for @euScopeOnlyForEuCountries.
   ///
