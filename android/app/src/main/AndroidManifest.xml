@@ -65,6 +65,14 @@
                     android:scheme="https"
                     android:host="${secondaryDeepLinkHost}"
                     android:pathPrefix="/poll" />
+                <data
+                    android:scheme="https"
+                    android:host="${deepLinkHost}"
+                    android:pathPrefix="/survey" />
+                <data
+                    android:scheme="https"
+                    android:host="${secondaryDeepLinkHost}"
+                    android:pathPrefix="/survey" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
