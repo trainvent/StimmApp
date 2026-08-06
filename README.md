@@ -1,8 +1,6 @@
 # StimmApp
 eine App die politische Volksentscheide vereinfachen soll. Auf Bundes- und Landesebene.
 
-![photo_2025-11-25_20-06-03](https://github.com/user-attachments/assets/c36ef5fb-a589-49cd-bdec-1a949d799bbc)
-
 ## gewünschte Funktionen
 - gezielter Umfang: vorest Petitionen, Unfragen. Irgentwann erhofft Volksentscheide, Wahlen.
 - Anmeldung per BundID/e-ID: Eine eindeutige Verifizierung sicherstellen.
