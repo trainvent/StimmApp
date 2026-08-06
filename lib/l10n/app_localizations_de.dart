@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get pleaseEnterYourSurname => 'Bitte geben Sie Ihren Nachnamen ein';
+  String get pleaseEnterYourSurname => 'Bitte gib deinen Nachnamen ein';
 
   @override
   String get displayName => 'Angezeigter Name';
@@ -59,27 +59,26 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get areYouSureYouWantToDeleteThisPetition =>
-      'Sind Sie sicher, dass Sie diese Petition löschen möchten?';
+      'Möchtest du diese Petition wirklich löschen?';
 
   @override
   String get areYouSureYouWantToDeleteThisPoll =>
-      'Sind Sie sicher, dass Sie diese Umfrage löschen möchten?';
+      'Möchtest du diese Umfrage wirklich löschen?';
 
   @override
   String get areYouSureYouWantToDeleteThisUser =>
-      'Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?';
+      'Möchtest du diesen Nutzer wirklich löschen?';
 
   @override
   String get areYouSureYouWantToDeleteYourAccount =>
-      'Sind Sie sicher, dass Sie Ihr Konto löschen möchten?';
+      'Möchtest du dein Konto wirklich löschen?';
 
   @override
   String get areYouSureYouWantToDeleteYourAccountThisActionIsIrreversible =>
-      'Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion ist unwiderruflich';
+      'Möchtest du dein Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.';
 
   @override
-  String get areYouSureYouWantToLogout =>
-      'Sind Sie sicher, dass Sie sich abmelden möchten?';
+  String get areYouSureYouWantToLogout => 'Möchtest du dich wirklich abmelden?';
 
   @override
   String get backSide => 'Rückseite';
@@ -176,7 +175,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get close => 'Schließen';
 
   @override
-  String get closed => 'Beended';
+  String get closed => 'Beendet';
 
   @override
   String get colorMode => 'Farbmodus';
@@ -191,7 +190,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get confirm => 'Bestätigen';
 
   @override
-  String get confirmAndFinish => 'Bestätigen & Fertigstellen';
+  String get confirmAndFinish => 'Bestätigen und fertigstellen';
 
   @override
   String get confirmPassword => 'Passwort bestätigen';
@@ -228,7 +227,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createNewSurveyDescription => 'Erstelle einen neuen Fragebogen';
 
   @override
-  String get createPetition => 'Petitition erstellen';
+  String get createPetition => 'Petition erstellen';
 
   @override
   String get createPoll => 'Umfrage erstellen';
@@ -373,7 +372,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deleteAccountDescription =>
-      'Bitte melden Sie sich an, um Ihre Identität zu bestätigen. Diese Aktion löscht Ihr Konto und alle zugehörigen Daten unwiderruflich.';
+      'Bitte melde dich an, um deine Identität zu bestätigen. Diese Aktion löscht dein Konto und alle zugehörigen Daten unwiderruflich.';
 
   @override
   String get deleteAccountSuccess => 'Konto erfolgreich gelöscht.';
@@ -387,7 +386,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deleteAccountUserNotFound =>
-      'Kein Benutzer mit dieser E-Mail gefunden.';
+      'Kein Nutzer mit dieser E-Mail-Adresse gefunden.';
 
   @override
   String get deleteAccountWrongPassword => 'Falsches Passwort.';
@@ -448,7 +447,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterDescription => 'Beschreibung eingeben';
 
   @override
-  String get enterSomething => 'Geben Sie etwas ein';
+  String get enterSomething => 'Gib etwas ein';
 
   @override
   String get enterTitle => 'Titel eingeben';
@@ -457,7 +456,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterYourAddress => 'Gib deine Wohnanschrift ein';
 
   @override
-  String get enterYourEmail => 'Geben Sie Ihre E-Mail-Adresse ein';
+  String get enterYourEmail => 'Gib deine E-Mail-Adresse ein';
 
   @override
   String get entryNotYetImplemented =>
@@ -549,7 +548,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get goProToAccessTheseBenefits =>
-      'Pro-Abo abschließen um diese Vorteile zu nutzen';
+      'Pro-Abo abschließen, um diese Vorteile zu nutzen';
 
   @override
   String get goal => 'Ziel';
@@ -562,7 +561,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String helloAndWelcome(String firstName, String lastName) {
-    return 'Wilkommen $firstName $lastName!';
+    return 'Willkommen $firstName $lastName!';
   }
 
   @override
@@ -593,10 +592,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createOrManageGroups => 'Erstelle oder verwalte Gruppen';
 
   @override
-  String get displayQrCode => 'QR Code anzeigen';
+  String get displayQrCode => 'QR-Code anzeigen';
 
   @override
-  String get accentPallette => 'Akzent Palette';
+  String get accentPallette => 'Akzentpalette';
 
   @override
   String get themePaletteForest => 'Wald';
@@ -656,7 +655,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get login => 'Anmelden';
 
   @override
-  String get loginCodeSent => 'Login Code gesendet';
+  String get loginCodeSent => 'Login-Code gesendet';
 
   @override
   String get loginLinkSent => 'Code gesendet!';
@@ -692,10 +691,10 @@ class AppLocalizationsDe extends AppLocalizations {
       locale: localeName,
       other: '$newMessages neue Nachrichten',
       two: 'zwei neue Nachrichten',
-      one: 'Eine neue Nachricht',
-      zero: 'Keine neuen Nachrichten',
+      one: 'eine neue Nachricht',
+      zero: 'keine neuen Nachrichten',
     );
-    return 'Sie haben $_temp0';
+    return 'Du hast $_temp0';
   }
 
   @override
@@ -795,7 +794,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get paywallDescription =>
-      'Genieße eine entspanntere und vielfätigere Oberfläche';
+      'Genieße eine entspanntere und vielfältigere Oberfläche';
 
   @override
   String get paywallSubtitle => 'Unbegrenzter Zugang zu allen Funktionen';
@@ -823,7 +822,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get placeOfBirth => 'Geburtsort';
 
   @override
-  String get pleaseCheckYourEmail => 'Bitte überprüfen Sie Ihre E-Mails';
+  String get pleaseCheckYourEmail => 'Bitte prüfe deine E-Mails';
 
   @override
   String get pleaseCheckYourInbox =>
@@ -955,7 +954,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scanAgain => 'Erneut scannen';
 
   @override
-  String get scanYourId => 'Bitte scannen Sie Ihren deutschen Personalausweis';
+  String get scanYourId => 'Bitte scanne deinen deutschen Personalausweis';
 
   @override
   String get scannedData => 'Gescannte Daten';
@@ -994,7 +993,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get share => 'Teilen';
 
   @override
-  String get sign => 'Unterzeichen';
+  String get sign => 'Unterzeichnen';
 
   @override
   String get signIn => 'Anmelden';
@@ -1012,7 +1011,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signed => 'Unterzeichnet';
 
   @override
-  String get signedOn => 'Eingeloggt';
+  String get signedOn => 'Unterzeichnet am ';
 
   @override
   String get signedPetitions => 'Unterzeichnete Petitionen';
@@ -1042,7 +1041,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get town => 'Ort';
 
   @override
-  String get pleaseEnterTown => 'Bitte geben Sie einen Ort ein';
+  String get pleaseEnterTown => 'Bitte gib einen Ort ein';
 
   @override
   String get euScopeOnlyForEuCountries =>
@@ -1050,7 +1049,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseSetCountryInAddressFirst =>
-      'Bitte hinterlegen Sie zuerst Ihr Land in Ihrer Adresse';
+      'Bitte hinterlege zuerst dein Land in deiner Adresse';
 
   @override
   String get state => 'Bundesland';
@@ -1084,7 +1083,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tags => 'Tags';
 
   @override
-  String get tagsHint => 'Komma-getrennte Tags';
+  String get tagsHint => 'Kommagetrennte Tags';
 
   @override
   String questionNumber(int number) {
@@ -1118,7 +1117,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get thankYouForSigning => 'Danke für deine Unterschrift!';
 
   @override
-  String get theWelcomePhrase => 'Der ultimative Weg deine Meinung zu äußern';
+  String get theWelcomePhrase => 'Der ultimative Weg, deine Meinung zu äußern';
 
   @override
   String get title => 'Titel';
@@ -1202,7 +1201,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn dies aktiviert ist, erscheinen Fragebögen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.';
 
   @override
-  String get surveyDetails => 'Fragebogen-Details';
+  String get surveyDetails => 'Fragebogendetails';
 
   @override
   String get submitSurvey => 'Fragebogen absenden';
@@ -1215,11 +1214,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte beantworte alle Fragen im Fragebogen.';
 
   @override
-  String get requestLoginCode => 'Login Code anfordern';
+  String get requestLoginCode => 'Login-Code anfordern';
 
   @override
   String get welcomeBackPleaseEnterYourDetails =>
-      'Willkommen zurück! Bitte geben Sie Ihre Daten ein.';
+      'Willkommen zurück! Bitte gib deine Daten ein.';
 
   @override
   String get welcomeTo => 'Willkommen bei ';
@@ -1238,15 +1237,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Du hast folgende Vorteile abonniert:';
 
   @override
-  String get pleaseEnterYourEmail => 'Bitte die Email eingeben';
+  String get pleaseEnterYourEmail => 'Bitte gib deine E-Mail-Adresse ein';
 
   @override
   String get welcomePleaseEnterYourDetails =>
-      'Willkommen! Bitte geben Sie Ihre Daten ein.';
+      'Willkommen! Bitte gib deine Daten ein.';
 
   @override
   String get noUserFoundForThatEmail =>
-      'Kein dieser Email zugehöriger Nutzer gefunden.';
+      'Kein Nutzer mit dieser E-Mail-Adresse gefunden.';
 
   @override
   String get wrongPasswordProvided => 'Falsches Passwort eingegeben.';
@@ -1257,14 +1256,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseSignInToConfirmYourIdentity =>
-      'Bitte melden Sie sich an, um Ihre Identität zu bestätigen.';
+      'Bitte melde dich an, um deine Identität zu bestätigen.';
 
   @override
   String get thisActionWillPermanentlyDeleteYourAccountAndAllAssociated =>
-      'Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.';
+      'Diese Aktion löscht dein Konto und alle zugehörigen Daten dauerhaft.';
 
   @override
-  String get pleaseEnterYourPassword => 'Bitte geben Sie Ihr Passwort ein';
+  String get pleaseEnterYourPassword => 'Bitte gib dein Passwort ein';
 
   @override
   String get permanentlyDeleteAccount => 'KONTO DAUERHAFT LÖSCHEN';
@@ -1273,7 +1272,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unknownError => 'Unbekannter Fehler';
 
   @override
-  String get pleaseEnterADateOfBirth => 'Bitte geben Sie ein Geburtsdatum ein';
+  String get pleaseEnterADateOfBirth => 'Bitte gib ein Geburtsdatum ein';
 
   @override
   String get linkedinLinkCopiedToClipboard =>
@@ -1303,7 +1302,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseEnterAValid6digitCode =>
-      'Bitte geben Sie einen gültigen 6-stelligen Code ein';
+      'Bitte gib einen gültigen 6-stelligen Code ein';
 
   @override
   String get emailVerifiedSuccessfully => 'E-Mail erfolgreich verifiziert!';
@@ -1319,7 +1318,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weHaveSentA6digitCodeToYourEmailPlease =>
-      'Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.';
+      'Wir haben einen 6-stelligen Code an deine E-Mail-Adresse gesendet. Bitte gib ihn unten ein.';
 
   @override
   String get verify => 'Verifizieren';
@@ -1338,7 +1337,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weFailedToGetYourStatePleaseProofreadYourLivingaddress =>
-      'Wir konnten Ihr Bundesland nicht ermitteln, bitte überprüfen Sie Ihre Wohnadresse';
+      'Wir konnten dein Bundesland nicht ermitteln. Bitte überprüfe deine Wohnadresse.';
 
   @override
   String get petitionGuidelines => 'Petitionsrichtlinien';
@@ -1355,7 +1354,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Umfragen sollten neutral formuliert sein und keine suggestiven Fragen enthalten. Sie dienen dazu, Meinungen zu einem bestimmten Thema einzuholen.';
 
   @override
-  String get pleaseEnterYourDetails => 'Bitte geben Sie Ihre Daten ein.';
+  String get pleaseEnterYourDetails => 'Bitte gib deine Daten ein.';
 
   @override
   String get thisAppWasDevelopedBy => 'Diese App wurde entwickelt von';
@@ -1416,11 +1415,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tagOther => 'Sonstiges';
 
   @override
-  String get pollTutorialStep1Title => '1. Sei kristallklar über das Ziel';
+  String get pollTutorialStep1Title => '1. Formuliere ein klares Ziel';
 
   @override
   String get pollTutorialStep1Desc =>
-      'Wisse genau, was du lernen willst – nur eine Idee.';
+      'Lege genau fest, was du erfahren möchtest – konzentriere dich auf eine Idee.';
 
   @override
   String get pollTutorialStep2Title => '2. Verwende Alltagssprache';
@@ -1440,17 +1439,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollTutorialStep4Desc =>
-      'Keine Fangfragen. Keine emotionale Wortwahl. Kein Drängen der Leute zu einer Option. Füge „Nicht sicher“ hinzu, wenn relevant.';
+      'Keine Fangfragen und keine emotionale Wortwahl. Dränge niemanden zu einer bestimmten Option. Füge bei Bedarf „Nicht sicher“ hinzu.';
 
   @override
-  String get pollTutorialStep5Title => '5. Halte die Optionen gering';
+  String get pollTutorialStep5Title => '5. Beschränke die Anzahl der Optionen';
 
   @override
   String get pollTutorialStep5Desc =>
       '3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.';
 
   @override
-  String get pollTutorialStep6Title => '6. Mache es schnell zu beantworten';
+  String get pollTutorialStep6Title => '6. Halte die Beantwortung kurz';
 
   @override
   String get pollTutorialStep6Desc =>
@@ -1461,7 +1460,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollTutorialStep7Desc =>
-      'Die Umfrage muss sich sicher, nicht wertend und unvoreingenommen anfühlen.';
+      'Die Umfrage sollte neutral, wertungsfrei und unvoreingenommen formuliert sein.';
 
   @override
   String get petitionTutorialStep1 =>
@@ -1485,7 +1484,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get limitThisPetitionToYourState =>
-      'Diese Petition auf Ihr Bundesland beschränken?';
+      'Diese Petition auf dein Bundesland beschränken?';
 
   @override
   String get source => 'Quelle';
@@ -1494,15 +1493,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get viewInstitutionalGuide => 'Institutionellen Leitfaden ansehen';
 
   @override
-  String get pleaseEnterYourCredentials =>
-      'Bitte geben Sie Ihre Zugangsdaten ein.';
+  String get pleaseEnterYourCredentials => 'Bitte gib deine Zugangsdaten ein.';
 
   @override
   String get pleaseEnterYourDesiredCredentials =>
-      'Bitte geben Sie Ihre gewünschten Zugangsdaten ein.';
+      'Bitte gib deine gewünschten Zugangsdaten ein.';
 
   @override
-  String get sendConfirmationEmail => 'Sende Bestätigungs-E-Mail';
+  String get sendConfirmationEmail => 'Bestätigungs-E-Mail senden';
 
   @override
   String get weCannotProvideSecureVerificationYetButWeAreWorking =>
@@ -1510,7 +1508,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get passwordMustBeAtLeast8CharactersLong =>
-      'Passwort muss mindestens 8 Character lang sein';
+      'Das Passwort muss mindestens 8 Zeichen lang sein';
 
   @override
   String passwordValidation(String type) {
@@ -1529,7 +1527,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get areYouSureYouWantToClearThisDraft =>
-      'Sind Sie sicher, dass Sie das Formular löschen wollen?';
+      'Möchtest du diesen Entwurf wirklich löschen?';
 
   @override
   String get sharingNotSupported =>
@@ -1568,17 +1566,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get analyticsDataDescription =>
-      'Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern koennen.';
+      'Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern können.';
 
   @override
   String get sendCrashLogs => 'Absturzberichte senden';
 
   @override
   String get sendCrashLogsDescription =>
-      'Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.';
+      'Hilf uns, die App zu verbessern, indem du automatisch Absturzberichte sendest.';
 
   @override
-  String get reasonYourSignature => 'Begründen Sie Ihre Unterschrift';
+  String get reasonYourSignature => 'Begründe deine Unterschrift';
 
   @override
   String get signatureReasoning => 'Begründung der Unterschrift';
@@ -1588,10 +1586,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktiviert das Kommentieren deiner Unterschriften und Meinungen vor dem Absenden.';
 
   @override
-  String get whyAreYouSigning => 'Warum unterzeichnen Sie?';
+  String get whyAreYouSigning => 'Warum unterzeichnest du?';
 
   @override
-  String get enterYourReasonHere => 'Geben Sie hier Ihren Grund ein...';
+  String get enterYourReasonHere => 'Gib hier deine Begründung ein …';
 
   @override
   String get runningForms => 'Laufende Formulare';
@@ -1625,7 +1623,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get areYouSureYouWantToDeleteThisForm =>
-      'Sind Sie sicher, dass Sie dieses Formular löschen möchten?';
+      'Möchtest du dieses Formular wirklich löschen?';
 
   @override
   String get noRunningPetitionsFound => 'Keine laufenden Petitionen gefunden.';
@@ -1694,7 +1692,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.';
 
   @override
-  String get saving => 'Speichern...';
+  String get saving => 'Wird gespeichert …';
 
   @override
   String get removeAbusiveLanguageFromPublicName =>
@@ -2218,7 +2216,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sendInvitations => 'Einladungen senden';
 
   @override
-  String get sendingInvitations => 'Einladungen werden gesendet...';
+  String get sendingInvitations => 'Einladungen werden gesendet …';
 
   @override
   String get pleaseAddMemberToInvite =>
@@ -2391,10 +2389,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pickExpirationDate => 'Ablaufdatum auswählen';
 
   @override
-  String get savingGroup => 'Speichere...';
+  String get savingGroup => 'Gruppe wird gespeichert …';
 
   @override
-  String get creatingGroup => 'Erstelle...';
+  String get creatingGroup => 'Gruppe wird erstellt …';
 
   @override
   String get saveGroupLabel => 'Gruppe speichern';

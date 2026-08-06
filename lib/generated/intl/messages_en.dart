@@ -169,6 +169,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alert": MessageLookupByLibrary.simpleMessage("Alert"),
     "allGroups": MessageLookupByLibrary.simpleMessage("All groups"),
     "allow": MessageLookupByLibrary.simpleMessage("Allow"),
+    "allowAll": MessageLookupByLibrary.simpleMessage("Allow all"),
     "allowedMailDomains": MessageLookupByLibrary.simpleMessage(
       "Allowed mail domains",
     ),
@@ -609,6 +610,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
       "Google sign-in failed. Please try again.",
+    ),
+    "googleSyncAddressMustBePublic": MessageLookupByLibrary.simpleMessage(
+      "Your address must be set to public in your Google profile so StimmApp can synchronize it.",
     ),
     "googleSyncDisabled": MessageLookupByLibrary.simpleMessage(
       "Google synchronization disabled",
@@ -1256,6 +1260,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "runningForms": MessageLookupByLibrary.simpleMessage("Running Forms"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "saveGroupLabel": MessageLookupByLibrary.simpleMessage("Save group"),
+    "saveSelection": MessageLookupByLibrary.simpleMessage("Save selection"),
     "saving": MessageLookupByLibrary.simpleMessage("Saving..."),
     "savingGroup": MessageLookupByLibrary.simpleMessage("Saving..."),
     "scanAgain": MessageLookupByLibrary.simpleMessage("Scan Again"),
@@ -1464,6 +1469,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateState": MessageLookupByLibrary.simpleMessage("Update state"),
     "updateUsername": MessageLookupByLibrary.simpleMessage("Update username"),
     "updates": MessageLookupByLibrary.simpleMessage("Updates"),
+    "uploadingProfilePicture": MessageLookupByLibrary.simpleMessage(
+      "Uploading profile picture",
+    ),
     "useForThisPoll": MessageLookupByLibrary.simpleMessage("Use for this poll"),
     "userBlockedContentHidden": MessageLookupByLibrary.simpleMessage(
       "User blocked. Their content is now hidden.",

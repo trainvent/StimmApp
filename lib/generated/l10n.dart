@@ -924,6 +924,16 @@ class S {
     );
   }
 
+  /// `Your address must be set to public in your Google profile so StimmApp can synchronize it.`
+  String get googleSyncAddressMustBePublic {
+    return Intl.message(
+      'Your address must be set to public in your Google profile so StimmApp can synchronize it.',
+      name: 'googleSyncAddressMustBePublic',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Google must provide your full name, birthday, and current location before synchronization can be enabled.`
   String get googleSyncRequiresCompleteProfile {
     return Intl.message(
@@ -2279,6 +2289,16 @@ class S {
     return Intl.message(
       'Profile picture updated',
       name: 'profilePictureUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading profile picture`
+  String get uploadingProfilePicture {
+    return Intl.message(
+      'Uploading profile picture',
+      name: 'uploadingProfilePicture',
       desc: '',
       args: [],
     );
@@ -4019,6 +4039,21 @@ class S {
     return Intl.message(
       'Continue to app',
       name: 'continueToApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow all`
+  String get allowAll {
+    return Intl.message('Allow all', name: 'allowAll', desc: '', args: []);
+  }
+
+  /// `Save selection`
+  String get saveSelection {
+    return Intl.message(
+      'Save selection',
+      name: 'saveSelection',
       desc: '',
       args: [],
     );

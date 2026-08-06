@@ -45,7 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m10(group) => "Gruppe: ${group}";
 
   static String m11(firstName, lastName) =>
-      "Wilkommen ${firstName} ${lastName}!";
+      "Willkommen ${firstName} ${lastName}!";
 
   static String m12(count) => "${count} CSV-Zeilen importiert.";
 
@@ -68,7 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m20(count) => "${count} Einladungen gesendet.";
 
   static String m21(newMessages) =>
-      "Sie haben ${Intl.plural(newMessages, zero: 'Keine neuen Nachrichten', one: 'Eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
+      "Du hast ${Intl.plural(newMessages, zero: 'keine neuen Nachrichten', one: 'eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
   static String m22(number) => "Option ${number}";
 
@@ -106,7 +106,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aUser": MessageLookupByLibrary.simpleMessage("Ein Nutzer"),
     "about": MessageLookupByLibrary.simpleMessage("Über"),
     "aboutThisApp": MessageLookupByLibrary.simpleMessage("Über diese App"),
-    "accentPallette": MessageLookupByLibrary.simpleMessage("Akzent Palette"),
+    "accentPallette": MessageLookupByLibrary.simpleMessage("Akzentpalette"),
     "acceptCommunityRulesBeforeContinuing": MessageLookupByLibrary.simpleMessage(
       "Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.",
     ),
@@ -173,6 +173,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alert": MessageLookupByLibrary.simpleMessage("Warnung"),
     "allGroups": MessageLookupByLibrary.simpleMessage("Alle Gruppen"),
     "allow": MessageLookupByLibrary.simpleMessage("Erlauben"),
+    "allowAll": MessageLookupByLibrary.simpleMessage("Alle erlauben"),
     "allowedMailDomains": MessageLookupByLibrary.simpleMessage(
       "Erlaubte Mail-Domains",
     ),
@@ -190,7 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "analyticsData": MessageLookupByLibrary.simpleMessage("Analysedaten"),
     "analyticsDataDescription": MessageLookupByLibrary.simpleMessage(
-      "Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern koennen.",
+      "Erlaube anonyme Nutzungsanalysen, damit wir die App-Nutzung verstehen und Funktionen im Laufe der Zeit verbessern können.",
     ),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonym"),
     "answerAllSurveyQuestions": MessageLookupByLibrary.simpleMessage(
@@ -207,31 +208,31 @@ class MessageLookup extends MessageLookupByLibrary {
           "Möchtest du dein Pro-Abo wirklich kündigen?",
         ),
     "areYouSureYouWantToClearThisDraft": MessageLookupByLibrary.simpleMessage(
-      "Sind Sie sicher, dass Sie das Formular löschen wollen?",
+      "Möchtest du diesen Entwurf wirklich löschen?",
     ),
     "areYouSureYouWantToDeleteThisForm": MessageLookupByLibrary.simpleMessage(
-      "Sind Sie sicher, dass Sie dieses Formular löschen möchten?",
+      "Möchtest du dieses Formular wirklich löschen?",
     ),
     "areYouSureYouWantToDeleteThisPetition":
         MessageLookupByLibrary.simpleMessage(
-          "Sind Sie sicher, dass Sie diese Petition löschen möchten?",
+          "Möchtest du diese Petition wirklich löschen?",
         ),
     "areYouSureYouWantToDeleteThisPoll": MessageLookupByLibrary.simpleMessage(
-      "Sind Sie sicher, dass Sie diese Umfrage löschen möchten?",
+      "Möchtest du diese Umfrage wirklich löschen?",
     ),
     "areYouSureYouWantToDeleteThisUser": MessageLookupByLibrary.simpleMessage(
-      "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
+      "Möchtest du diesen Nutzer wirklich löschen?",
     ),
     "areYouSureYouWantToDeleteYourAccount":
         MessageLookupByLibrary.simpleMessage(
-          "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+          "Möchtest du dein Konto wirklich löschen?",
         ),
     "areYouSureYouWantToDeleteYourAccountThisActionIsIrreversible":
         MessageLookupByLibrary.simpleMessage(
-          "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion ist unwiderruflich",
+          "Möchtest du dein Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
         ),
     "areYouSureYouWantToLogout": MessageLookupByLibrary.simpleMessage(
-      "Sind Sie sicher, dass Sie sich abmelden möchten?",
+      "Möchtest du dich wirklich abmelden?",
     ),
     "backSide": MessageLookupByLibrary.simpleMessage("Rückseite"),
     "backToLogin": MessageLookupByLibrary.simpleMessage("Zurück zur Anmeldung"),
@@ -298,7 +299,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Gruppenfilter löschen",
     ),
     "close": MessageLookupByLibrary.simpleMessage("Schließen"),
-    "closed": MessageLookupByLibrary.simpleMessage("Beended"),
+    "closed": MessageLookupByLibrary.simpleMessage("Beendet"),
     "colorMode": MessageLookupByLibrary.simpleMessage("Farbmodus"),
     "colorTheme": MessageLookupByLibrary.simpleMessage("Farbthema"),
     "comments": MessageLookupByLibrary.simpleMessage("Kommentare"),
@@ -320,7 +321,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "confirm": MessageLookupByLibrary.simpleMessage("Bestätigen"),
     "confirmAndFinish": MessageLookupByLibrary.simpleMessage(
-      "Bestätigen & Fertigstellen",
+      "Bestätigen und fertigstellen",
     ),
     "confirmPassword": MessageLookupByLibrary.simpleMessage(
       "Passwort bestätigen",
@@ -381,7 +382,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Erstelle oder verwalte Gruppen",
     ),
     "createPetition": MessageLookupByLibrary.simpleMessage(
-      "Petitition erstellen",
+      "Petition erstellen",
     ),
     "createPoll": MessageLookupByLibrary.simpleMessage("Umfrage erstellen"),
     "createSurvey": MessageLookupByLibrary.simpleMessage(
@@ -394,7 +395,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "createdSurvey": MessageLookupByLibrary.simpleMessage(
       "Fragebogen erstellt",
     ),
-    "creatingGroup": MessageLookupByLibrary.simpleMessage("Erstelle..."),
+    "creatingGroup": MessageLookupByLibrary.simpleMessage(
+      "Gruppe wird erstellt …",
+    ),
     "creator": MessageLookupByLibrary.simpleMessage("Ersteller"),
     "creatorRoleLabel": MessageLookupByLibrary.simpleMessage("Ersteller"),
     "csvMembersHint": MessageLookupByLibrary.simpleMessage(
@@ -428,7 +431,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "KONTO ENDGÜLTIG LÖSCHEN",
     ),
     "deleteAccountDescription": MessageLookupByLibrary.simpleMessage(
-      "Bitte melden Sie sich an, um Ihre Identität zu bestätigen. Diese Aktion löscht Ihr Konto und alle zugehörigen Daten unwiderruflich.",
+      "Bitte melde dich an, um deine Identität zu bestätigen. Diese Aktion löscht dein Konto und alle zugehörigen Daten unwiderruflich.",
     ),
     "deleteAccountSuccess": MessageLookupByLibrary.simpleMessage(
       "Konto erfolgreich gelöscht.",
@@ -438,7 +441,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ein unerwarteter Fehler ist aufgetreten.",
     ),
     "deleteAccountUserNotFound": MessageLookupByLibrary.simpleMessage(
-      "Kein Benutzer mit dieser E-Mail gefunden.",
+      "Kein Nutzer mit dieser E-Mail-Adresse gefunden.",
     ),
     "deleteAccountWrongPassword": MessageLookupByLibrary.simpleMessage(
       "Falsches Passwort.",
@@ -476,7 +479,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Entwickler-Sandbox",
     ),
     "displayName": MessageLookupByLibrary.simpleMessage("Angezeigter Name"),
-    "displayQrCode": MessageLookupByLibrary.simpleMessage("QR Code anzeigen"),
+    "displayQrCode": MessageLookupByLibrary.simpleMessage("QR-Code anzeigen"),
     "doYouWantToLeaveGroup": m6,
     "domainHint": MessageLookupByLibrary.simpleMessage("company.com"),
     "domainLabel": MessageLookupByLibrary.simpleMessage("Domain"),
@@ -513,9 +516,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterDescription": MessageLookupByLibrary.simpleMessage(
       "Beschreibung eingeben",
     ),
-    "enterSomething": MessageLookupByLibrary.simpleMessage(
-      "Geben Sie etwas ein",
-    ),
+    "enterSomething": MessageLookupByLibrary.simpleMessage("Gib etwas ein"),
     "enterTitle": MessageLookupByLibrary.simpleMessage("Titel eingeben"),
     "enterVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Bestätigungscode eingeben",
@@ -524,10 +525,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Gib deine Wohnanschrift ein",
     ),
     "enterYourEmail": MessageLookupByLibrary.simpleMessage(
-      "Geben Sie Ihre E-Mail-Adresse ein",
+      "Gib deine E-Mail-Adresse ein",
     ),
     "enterYourReasonHere": MessageLookupByLibrary.simpleMessage(
-      "Geben Sie hier Ihren Grund ein...",
+      "Gib hier deine Begründung ein …",
     ),
     "entryNotYetImplemented": MessageLookupByLibrary.simpleMessage(
       "Lexikon-Eintrag noch nicht implementiert",
@@ -620,7 +621,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "givenName": MessageLookupByLibrary.simpleMessage("Vorname"),
     "globalScopeLabel": MessageLookupByLibrary.simpleMessage("Global"),
     "goProToAccessTheseBenefits": MessageLookupByLibrary.simpleMessage(
-      "Pro-Abo abschließen um diese Vorteile zu nutzen",
+      "Pro-Abo abschließen, um diese Vorteile zu nutzen",
     ),
     "goToGroupOverview": MessageLookupByLibrary.simpleMessage(
       "Zur Gruppenübersicht",
@@ -647,6 +648,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "googleSignInFailed": MessageLookupByLibrary.simpleMessage(
       "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
+    ),
+    "googleSyncAddressMustBePublic": MessageLookupByLibrary.simpleMessage(
+      "Deine Anschrift muss in deinem Google-Profil öffentlich sein, damit StimmApp sie synchronisieren kann.",
     ),
     "googleSyncDisabled": MessageLookupByLibrary.simpleMessage(
       "Google-Synchronisierung deaktiviert",
@@ -794,7 +798,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
     "lightMode": MessageLookupByLibrary.simpleMessage("Heller Modus"),
     "limitThisPetitionToYourState": MessageLookupByLibrary.simpleMessage(
-      "Diese Petition auf Ihr Bundesland beschränken?",
+      "Diese Petition auf dein Bundesland beschränken?",
     ),
     "linkCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
       "Link in die Zwischenablage kopiert",
@@ -808,7 +812,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "login": MessageLookupByLibrary.simpleMessage("Anmelden"),
     "loginCodeSent": MessageLookupByLibrary.simpleMessage(
-      "Login Code gesendet",
+      "Login-Code gesendet",
     ),
     "loginLegalNoticeAnd": MessageLookupByLibrary.simpleMessage(
       " und unserer ",
@@ -931,7 +935,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noTitle": MessageLookupByLibrary.simpleMessage("Kein Titel"),
     "noUserFoundForThatEmail": MessageLookupByLibrary.simpleMessage(
-      "Kein dieser Email zugehöriger Nutzer gefunden.",
+      "Kein Nutzer mit dieser E-Mail-Adresse gefunden.",
     ),
     "noUsernameFound": MessageLookupByLibrary.simpleMessage(
       "Kein Benutzername gefunden",
@@ -1005,7 +1009,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "passwordMustBeAtLeast8CharactersLong":
         MessageLookupByLibrary.simpleMessage(
-          "Passwort muss mindestens 8 Character lang sein",
+          "Das Passwort muss mindestens 8 Zeichen lang sein",
         ),
     "passwordValidation": m23,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
@@ -1016,7 +1020,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "CSV-Mitglieder einfügen",
     ),
     "paywallDescription": MessageLookupByLibrary.simpleMessage(
-      "Genieße eine entspanntere und vielfätigere Oberfläche",
+      "Genieße eine entspanntere und vielfältigere Oberfläche",
     ),
     "paywallSubtitle": MessageLookupByLibrary.simpleMessage(
       "Unbegrenzter Zugang zu allen Funktionen",
@@ -1077,22 +1081,22 @@ class MessageLookup extends MessageLookupByLibrary {
       "Füge mindestens ein Mitglied zum Einladen hinzu.",
     ),
     "pleaseCheckYourEmail": MessageLookupByLibrary.simpleMessage(
-      "Bitte überprüfen Sie Ihre E-Mails",
+      "Bitte prüfe deine E-Mails",
     ),
     "pleaseCheckYourInbox": MessageLookupByLibrary.simpleMessage(
       "Bitte prüfe deinen Posteingang und klicke auf den Bestätigungslink.",
     ),
     "pleaseEnterADateOfBirth": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie ein Geburtsdatum ein",
+      "Bitte gib ein Geburtsdatum ein",
     ),
     "pleaseEnterAValid6digitCode": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie einen gültigen 6-stelligen Code ein",
+      "Bitte gib einen gültigen 6-stelligen Code ein",
     ),
     "pleaseEnterGroupName": MessageLookupByLibrary.simpleMessage(
       "Bitte gib einen Gruppennamen ein.",
     ),
     "pleaseEnterTown": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie einen Ort ein",
+      "Bitte gib einen Ort ein",
     ),
     "pleaseEnterValidEmailDomains": MessageLookupByLibrary.simpleMessage(
       "Bitte gib gültige E-Mail-Domains wie company.com ein.",
@@ -1102,22 +1106,22 @@ class MessageLookup extends MessageLookupByLibrary {
           "Bitte gib für jedes eingeladene Mitglied eine gültige E-Mail-Adresse ein.",
         ),
     "pleaseEnterYourCredentials": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie Ihre Zugangsdaten ein.",
+      "Bitte gib deine Zugangsdaten ein.",
     ),
     "pleaseEnterYourDesiredCredentials": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie Ihre gewünschten Zugangsdaten ein.",
+      "Bitte gib deine gewünschten Zugangsdaten ein.",
     ),
     "pleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie Ihre Daten ein.",
+      "Bitte gib deine Daten ein.",
     ),
     "pleaseEnterYourEmail": MessageLookupByLibrary.simpleMessage(
-      "Bitte die Email eingeben",
+      "Bitte gib deine E-Mail-Adresse ein",
     ),
     "pleaseEnterYourPassword": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie Ihr Passwort ein",
+      "Bitte gib dein Passwort ein",
     ),
     "pleaseEnterYourSurname": MessageLookupByLibrary.simpleMessage(
-      "Bitte geben Sie Ihren Nachnamen ein",
+      "Bitte gib deinen Nachnamen ein",
     ),
     "pleaseSelectAddressWithTown": MessageLookupByLibrary.simpleMessage(
       "Bitte wähle eine Adresse mit Ort aus",
@@ -1126,13 +1130,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bitte wähle dein Bundesland aus.",
     ),
     "pleaseSetCountryInAddressFirst": MessageLookupByLibrary.simpleMessage(
-      "Bitte hinterlegen Sie zuerst Ihr Land in Ihrer Adresse",
+      "Bitte hinterlege zuerst dein Land in deiner Adresse",
     ),
     "pleaseSignInFirst": MessageLookupByLibrary.simpleMessage(
       "Bitte zuerst anmelden",
     ),
     "pleaseSignInToConfirmYourIdentity": MessageLookupByLibrary.simpleMessage(
-      "Bitte melden Sie sich an, um Ihre Identität zu bestätigen.",
+      "Bitte melde dich an, um deine Identität zu bestätigen.",
     ),
     "pleaseSignInToManageGroups": MessageLookupByLibrary.simpleMessage(
       "Bitte melde dich an, um Gruppen zu verwalten.",
@@ -1156,10 +1160,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Umfragerichtlinien",
     ),
     "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
-      "Wisse genau, was du lernen willst – nur eine Idee.",
+      "Lege genau fest, was du erfahren möchtest – konzentriere dich auf eine Idee.",
     ),
     "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
-      "1. Sei kristallklar über das Ziel",
+      "1. Formuliere ein klares Ziel",
     ),
     "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
       "Keine Fachwörter. Kein Jargon. Keine „klug klingenden“ Formulierungen. Wenn ein Teenager und ein Großelternteil es beide verstehen, ist es gut.",
@@ -1174,7 +1178,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "3. Stelle eine kurze, direkte Frage",
     ),
     "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
-      "Keine Fangfragen. Keine emotionale Wortwahl. Kein Drängen der Leute zu einer Option. Füge „Nicht sicher“ hinzu, wenn relevant.",
+      "Keine Fangfragen und keine emotionale Wortwahl. Dränge niemanden zu einer bestimmten Option. Füge bei Bedarf „Nicht sicher“ hinzu.",
     ),
     "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
       "4. Gib faire Auswahlmöglichkeiten",
@@ -1183,16 +1187,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.",
     ),
     "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
-      "5. Halte die Optionen gering",
+      "5. Beschränke die Anzahl der Optionen",
     ),
     "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
       "Die Leute sollten es in unter 10 Sekunden verstehen und abstimmen können.",
     ),
     "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
-      "6. Mache es schnell zu beantworten",
+      "6. Halte die Beantwortung kurz",
     ),
     "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
-      "Die Umfrage muss sich sicher, nicht wertend und unvoreingenommen anfühlen.",
+      "Die Umfrage sollte neutral, wertungsfrei und unvoreingenommen formuliert sein.",
     ),
     "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
       "7. Respektiere Neutralität",
@@ -1262,7 +1266,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "questions": MessageLookupByLibrary.simpleMessage("Fragen"),
     "reasonYourSignature": MessageLookupByLibrary.simpleMessage(
-      "Begründen Sie Ihre Unterschrift",
+      "Begründe deine Unterschrift",
     ),
     "reasonsForSigning": MessageLookupByLibrary.simpleMessage(
       "Gründe für die Unterzeichnung",
@@ -1299,7 +1303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "requestAccess": MessageLookupByLibrary.simpleMessage("Zugang anfragen"),
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
-      "Login Code anfordern",
+      "Login-Code anfordern",
     ),
     "requestedAccessToThisGroup": m27,
     "resendEmail": MessageLookupByLibrary.simpleMessage("E-Mail erneut senden"),
@@ -1324,8 +1328,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "runningForms": MessageLookupByLibrary.simpleMessage("Laufende Formulare"),
     "save": MessageLookupByLibrary.simpleMessage("Speichern"),
     "saveGroupLabel": MessageLookupByLibrary.simpleMessage("Gruppe speichern"),
-    "saving": MessageLookupByLibrary.simpleMessage("Speichern..."),
-    "savingGroup": MessageLookupByLibrary.simpleMessage("Speichere..."),
+    "saveSelection": MessageLookupByLibrary.simpleMessage("Auswahl speichern"),
+    "saving": MessageLookupByLibrary.simpleMessage("Wird gespeichert …"),
+    "savingGroup": MessageLookupByLibrary.simpleMessage(
+      "Gruppe wird gespeichert …",
+    ),
     "scanAgain": MessageLookupByLibrary.simpleMessage("Erneut scannen"),
     "scanGroupQrCode": MessageLookupByLibrary.simpleMessage(
       "QR-Code für Gruppe scannen",
@@ -1335,7 +1342,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "QR-Code scannen",
     ),
     "scanYourId": MessageLookupByLibrary.simpleMessage(
-      "Bitte scannen Sie Ihren deutschen Personalausweis",
+      "Bitte scanne deinen deutschen Personalausweis",
     ),
     "scannedData": MessageLookupByLibrary.simpleMessage("Gescannte Daten"),
     "scope": MessageLookupByLibrary.simpleMessage("Geltungsbereich"),
@@ -1369,13 +1376,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Zahlungsanbieter auswählen",
     ),
     "sendConfirmationEmail": MessageLookupByLibrary.simpleMessage(
-      "Sende Bestätigungs-E-Mail",
+      "Bestätigungs-E-Mail senden",
     ),
     "sendCrashLogs": MessageLookupByLibrary.simpleMessage(
       "Absturzberichte senden",
     ),
     "sendCrashLogsDescription": MessageLookupByLibrary.simpleMessage(
-      "Helfen Sie uns, die App zu verbessern, indem Sie automatisch Absturzberichte senden.",
+      "Hilf uns, die App zu verbessern, indem du automatisch Absturzberichte sendest.",
     ),
     "sendInvitations": MessageLookupByLibrary.simpleMessage(
       "Einladungen senden",
@@ -1384,7 +1391,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Login Link abschicken",
     ),
     "sendingInvitations": MessageLookupByLibrary.simpleMessage(
-      "Einladungen werden gesendet...",
+      "Einladungen werden gesendet …",
     ),
     "setExpirationDate": MessageLookupByLibrary.simpleMessage(
       "Ablaufdatum festlegen",
@@ -1412,7 +1419,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "showSurveysInfo": MessageLookupByLibrary.simpleMessage(
       "Wenn dies aktiviert ist, erscheinen Fragebögen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.",
     ),
-    "sign": MessageLookupByLibrary.simpleMessage("Unterzeichen"),
+    "sign": MessageLookupByLibrary.simpleMessage("Unterzeichnen"),
     "signIn": MessageLookupByLibrary.simpleMessage("Anmelden"),
     "signInToJoinGroup": MessageLookupByLibrary.simpleMessage(
       "Anmelden zum Beitreten",
@@ -1435,7 +1442,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signatures": MessageLookupByLibrary.simpleMessage("Unterschriften"),
     "signed": MessageLookupByLibrary.simpleMessage("Unterzeichnet"),
-    "signedOn": MessageLookupByLibrary.simpleMessage("Eingeloggt"),
+    "signedOn": MessageLookupByLibrary.simpleMessage("Unterzeichnet am "),
     "signedPetitions": MessageLookupByLibrary.simpleMessage(
       "Unterzeichnete Petitionen",
     ),
@@ -1466,7 +1473,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "surveyDeleted": MessageLookupByLibrary.simpleMessage(
       "Fragebogen gelöscht",
     ),
-    "surveyDetails": MessageLookupByLibrary.simpleMessage("Fragebogen-Details"),
+    "surveyDetails": MessageLookupByLibrary.simpleMessage("Fragebogendetails"),
     "surveyQuestion": MessageLookupByLibrary.simpleMessage(
       "Frage im Fragebogen",
     ),
@@ -1511,7 +1518,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tagTechnology": MessageLookupByLibrary.simpleMessage("Technologie"),
     "tagTraffic": MessageLookupByLibrary.simpleMessage("Verkehr"),
     "tags": MessageLookupByLibrary.simpleMessage("Tags"),
-    "tagsHint": MessageLookupByLibrary.simpleMessage("Komma-getrennte Tags"),
+    "tagsHint": MessageLookupByLibrary.simpleMessage("Kommagetrennte Tags"),
     "tagsRequired": MessageLookupByLibrary.simpleMessage(
       "Mindestens ein Tag ist erforderlich",
     ),
@@ -1523,7 +1530,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Danke für deine Unterschrift!",
     ),
     "theWelcomePhrase": MessageLookupByLibrary.simpleMessage(
-      "Der ultimative Weg deine Meinung zu äußern",
+      "Der ultimative Weg, deine Meinung zu äußern",
     ),
     "themePaletteAmber": MessageLookupByLibrary.simpleMessage("Amber"),
     "themePaletteForest": MessageLookupByLibrary.simpleMessage("Wald"),
@@ -1539,7 +1546,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themePaletteTrainvent": MessageLookupByLibrary.simpleMessage("Trainvent"),
     "thisActionWillPermanentlyDeleteYourAccountAndAllAssociated":
         MessageLookupByLibrary.simpleMessage(
-          "Diese Aktion wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.",
+          "Diese Aktion löscht dein Konto und alle zugehörigen Daten dauerhaft.",
         ),
     "thisAppWasDevelopedBy": MessageLookupByLibrary.simpleMessage(
       "Diese App wurde entwickelt von",
@@ -1572,6 +1579,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Benutzernamen aktualisieren",
     ),
     "updates": MessageLookupByLibrary.simpleMessage("Updates"),
+    "uploadingProfilePicture": MessageLookupByLibrary.simpleMessage(
+      "Profilbild wird hochgeladen",
+    ),
     "useForThisPoll": MessageLookupByLibrary.simpleMessage(
       "Für diese Umfrage verwenden",
     ),
@@ -1645,23 +1655,23 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "weFailedToGetYourStatePleaseProofreadYourLivingaddress":
         MessageLookupByLibrary.simpleMessage(
-          "Wir konnten Ihr Bundesland nicht ermitteln, bitte überprüfen Sie Ihre Wohnadresse",
+          "Wir konnten dein Bundesland nicht ermitteln. Bitte überprüfe deine Wohnadresse.",
         ),
     "weHaveSentA6digitCodeToYourEmailPlease": MessageLookupByLibrary.simpleMessage(
-      "Wir haben einen 6-stelligen Code an Ihre E-Mail gesendet. Bitte geben Sie ihn unten ein.",
+      "Wir haben einen 6-stelligen Code an deine E-Mail-Adresse gesendet. Bitte gib ihn unten ein.",
     ),
     "welcomeBackPleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Willkommen zurück! Bitte geben Sie Ihre Daten ein.",
+      "Willkommen zurück! Bitte gib deine Daten ein.",
     ),
     "welcomePleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
-      "Willkommen! Bitte geben Sie Ihre Daten ein.",
+      "Willkommen! Bitte gib deine Daten ein.",
     ),
     "welcomeTo": MessageLookupByLibrary.simpleMessage("Willkommen bei "),
     "welcomeToPro": MessageLookupByLibrary.simpleMessage(
       "Willkommen als Pro-Mitglied!",
     ),
     "whyAreYouSigning": MessageLookupByLibrary.simpleMessage(
-      "Warum unterzeichnen Sie?",
+      "Warum unterzeichnest du?",
     ),
     "wrongPasswordProvided": MessageLookupByLibrary.simpleMessage(
       "Falsches Passwort eingegeben.",
