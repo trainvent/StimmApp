@@ -27,6 +27,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get activityHistory => 'Aktivitätsverlauf';
 
   @override
+  String get activityAndContent => 'Aktivität & Inhalte';
+
+  @override
+  String get privacyAndData => 'Datenschutz & Daten';
+
+  @override
+  String get accountAndSecurity => 'Konto & Sicherheit';
+
+  @override
   String get addComment => 'Einen Kommentar hinzufügen';
 
   @override
@@ -309,6 +318,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get googleAccount => 'Google-Konto';
+
+  @override
+  String get appleAccount => 'Apple-Konto';
+
+  @override
+  String get notConnected => 'Nicht verbunden';
+
+  @override
+  String get connected => 'Verbunden';
+
+  @override
+  String get connect => 'Verbinden';
+
+  @override
+  String get addEmailSignIn => 'E-Mail-Anmeldung hinzufügen';
+
+  @override
+  String addEmailSignInDescription(String email) {
+    return 'Erstelle ein Passwort für $email. Dein bestehendes StimmApp-Konto und Profil bleiben erhalten.';
+  }
+
+  @override
+  String get signInMethodConnected => 'Anmeldemethode verbunden';
+
+  @override
+  String get signInMethodAlreadyUsed =>
+      'Diese Anmeldemethode ist bereits mit einem anderen Konto verbunden.';
 
   @override
   String get editGoogleProfile => 'Google-Profil bearbeiten';

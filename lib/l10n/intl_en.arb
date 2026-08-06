@@ -47,6 +47,9 @@
 	"aboutThisApp": "About this app",
 	"active": "Active",
 	"activityHistory": "Activity History",
+	"activityAndContent": "Activity & content",
+	"privacyAndData": "Privacy & data",
+	"accountAndSecurity": "Account & security",
 	"addComment": "Add a comment",
 	"addImage": "Add Image",
 	"addOption": "Add option",
@@ -134,6 +137,19 @@
 	"googleProfileHasNoBirthdayOrAddress": "No birthday or address was found in your Google profile",
 	"googleProfileImportFailed": "Google profile details could not be imported",
 	"googleAccount": "Google Account",
+	"appleAccount": "Apple Account",
+	"notConnected": "Not connected",
+	"connected": "Connected",
+	"connect": "Connect",
+	"addEmailSignIn": "Add email sign-in",
+	"addEmailSignInDescription": "Create a password for {email}. This keeps your existing StimmApp account and profile.",
+	"@addEmailSignInDescription": {
+		"placeholders": {
+			"email": {"type": "String"}
+		}
+	},
+	"signInMethodConnected": "Sign-in method connected",
+	"signInMethodAlreadyUsed": "This sign-in method is already connected to another account.",
 	"editGoogleProfile": "Edit Google profile",
 	"synchronizeGoogleDataPeriodically": "Synchronize Google data periodically",
 	"synchronization": "Synchronization",

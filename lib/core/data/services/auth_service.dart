@@ -283,6 +283,118 @@ class AuthService {
     }
   }
 
+  Future<UserCredential> linkEmailPassword({required String password}) async {
+    final user = currentUser;
+    final email = authenticatedEmail;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+    if (email == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'missing-email',
+          message: 'The current account does not have an email address.',
+        ),
+      );
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      final result = await user.linkWithCredential(credential);
+      await _refreshLinkedProviders(result.user);
+      return result;
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e);
+    }
+  }
+
+  Future<UserCredential> linkGoogleProvider() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+
+    try {
+      late final UserCredential result;
+      if (kIsWeb) {
+        result = await user.linkWithPopup(
+          _googleProvider(loginHint: authenticatedEmail),
+        );
+      } else {
+        final googleIdentity = await googleAuthClient.authenticate();
+        final idToken = googleIdentity.idToken;
+        if (idToken == null || idToken.isEmpty) {
+          throw FirebaseAuthException(
+            code: 'invalid-credential',
+            message: 'Google did not return a valid identity token.',
+          );
+        }
+        result = await user.linkWithCredential(
+          GoogleAuthProvider.credential(idToken: idToken),
+        );
+      }
+      await _refreshLinkedProviders(result.user);
+      return result;
+    } on GoogleAuthCancelledException {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-cancelled',
+          message: 'Google sign-in was cancelled.',
+        ),
+      );
+    } on GoogleAuthClientException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-${e.code}',
+          message: e.message ?? 'Google sign-in failed.',
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      throw _googleAuthException(e);
+    }
+  }
+
+  Future<UserCredential> linkAppleProvider() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'No authenticated user was found.',
+        ),
+      );
+    }
+
+    try {
+      final provider = _appleProvider();
+      final result = kIsWeb
+          ? await user.linkWithPopup(provider)
+          : await user.linkWithProvider(provider);
+      await _refreshLinkedProviders(result.user);
+      return result;
+    } on FirebaseAuthException catch (e) {
+      throw _appleAuthException(e);
+    }
+  }
+
+  Future<void> _refreshLinkedProviders(User? linkedUser) async {
+    await linkedUser?.reload();
+    await firebaseAuth.currentUser?.getIdToken(true);
+  }
+
   Future<void> assertSignupEligible({required String email}) async {
     try {
       await functions.httpsCallable('assertSignupEligible').call({

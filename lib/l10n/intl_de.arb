@@ -48,6 +48,9 @@
 	"aboutThisApp": "Über diese App",
 	"active": "Aktiv",
 	"activityHistory": "Aktivitätsverlauf",
+	"activityAndContent": "Aktivität & Inhalte",
+	"privacyAndData": "Datenschutz & Daten",
+	"accountAndSecurity": "Konto & Sicherheit",
 	"addComment": "Einen Kommentar hinzufügen",
 	"addImage": "Bild hinzufügen",
 	"addOption": "Option hinzufügen",
@@ -135,6 +138,19 @@
 	"googleProfileHasNoBirthdayOrAddress": "Im Google-Profil wurden weder Geburtsdatum noch Anschrift gefunden",
 	"googleProfileImportFailed": "Google-Profildaten konnten nicht importiert werden",
 	"googleAccount": "Google-Konto",
+	"appleAccount": "Apple-Konto",
+	"notConnected": "Nicht verbunden",
+	"connected": "Verbunden",
+	"connect": "Verbinden",
+	"addEmailSignIn": "E-Mail-Anmeldung hinzufügen",
+	"addEmailSignInDescription": "Erstelle ein Passwort für {email}. Dein bestehendes StimmApp-Konto und Profil bleiben erhalten.",
+	"@addEmailSignInDescription": {
+		"placeholders": {
+			"email": {"type": "String"}
+		}
+	},
+	"signInMethodConnected": "Anmeldemethode verbunden",
+	"signInMethodAlreadyUsed": "Diese Anmeldemethode ist bereits mit einem anderen Konto verbunden.",
 	"editGoogleProfile": "Google-Profil bearbeiten",
 	"synchronizeGoogleDataPeriodically": "Google-Daten regelmäßig synchronisieren",
 	"synchronization": "Synchronisierung",

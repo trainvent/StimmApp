@@ -134,6 +134,24 @@ abstract class AppLocalizations {
   /// **'Activity History'**
   String get activityHistory;
 
+  /// No description provided for @activityAndContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity & content'**
+  String get activityAndContent;
+
+  /// No description provided for @privacyAndData.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & data'**
+  String get privacyAndData;
+
+  /// No description provided for @accountAndSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & security'**
+  String get accountAndSecurity;
+
   /// No description provided for @addComment.
   ///
   /// In en, this message translates to:
@@ -655,6 +673,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Google Account'**
   String get googleAccount;
+
+  /// No description provided for @appleAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Account'**
+  String get appleAccount;
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get notConnected;
+
+  /// No description provided for @connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// No description provided for @connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get connect;
+
+  /// No description provided for @addEmailSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add email sign-in'**
+  String get addEmailSignIn;
+
+  /// No description provided for @addEmailSignInDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a password for {email}. This keeps your existing StimmApp account and profile.'**
+  String addEmailSignInDescription(String email);
+
+  /// No description provided for @signInMethodConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in method connected'**
+  String get signInMethodConnected;
+
+  /// No description provided for @signInMethodAlreadyUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in method is already connected to another account.'**
+  String get signInMethodAlreadyUsed;
 
   /// No description provided for @editGoogleProfile.
   ///

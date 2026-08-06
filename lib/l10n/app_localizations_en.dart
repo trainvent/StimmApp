@@ -27,6 +27,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activityHistory => 'Activity History';
 
   @override
+  String get activityAndContent => 'Activity & content';
+
+  @override
+  String get privacyAndData => 'Privacy & data';
+
+  @override
+  String get accountAndSecurity => 'Account & security';
+
+  @override
   String get addComment => 'Add a comment';
 
   @override
@@ -308,6 +317,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get googleAccount => 'Google Account';
+
+  @override
+  String get appleAccount => 'Apple Account';
+
+  @override
+  String get notConnected => 'Not connected';
+
+  @override
+  String get connected => 'Connected';
+
+  @override
+  String get connect => 'Connect';
+
+  @override
+  String get addEmailSignIn => 'Add email sign-in';
+
+  @override
+  String addEmailSignInDescription(String email) {
+    return 'Create a password for $email. This keeps your existing StimmApp account and profile.';
+  }
+
+  @override
+  String get signInMethodConnected => 'Sign-in method connected';
+
+  @override
+  String get signInMethodAlreadyUsed =>
+      'This sign-in method is already connected to another account.';
 
   @override
   String get editGoogleProfile => 'Edit Google profile';

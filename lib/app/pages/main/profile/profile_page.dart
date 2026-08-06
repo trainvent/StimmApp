@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,7 @@ import 'package:stimmapp/app/pages/main/profile/profile_settings/change_living_a
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_password_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_profile_picture_page.dart';
+import 'package:stimmapp/app/pages/main/profile/profile_settings/connect_email_login_dialog.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/synchronization_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/update_profile_field_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/user_history_page.dart';
@@ -108,6 +110,105 @@ class ProfilePage extends ConsumerWidget {
     }
   }
 
+  String? _providerEmail(User? user, String providerId) {
+    for (final provider in user?.providerData ?? const <UserInfo>[]) {
+      if (provider.providerId != providerId) continue;
+      final email = provider.email?.trim();
+      if (email?.isNotEmpty == true) return email;
+    }
+    return null;
+  }
+
+  String? _accountEmail(User? user) {
+    final directEmail = user?.email?.trim();
+    if (directEmail?.isNotEmpty == true) return directEmail;
+    for (final provider in user?.providerData ?? const <UserInfo>[]) {
+      final email = provider.email?.trim();
+      if (email?.isNotEmpty == true) return email;
+    }
+    return null;
+  }
+
+  bool _isProviderLinked(User? user, String providerId) {
+    return user?.providerData.any(
+          (provider) => provider.providerId == providerId,
+        ) ??
+        false;
+  }
+
+  Future<void> _connectEmail(
+    BuildContext context,
+    WidgetRef ref,
+    User? user,
+  ) async {
+    final email = _accountEmail(user);
+    if (email == null) {
+      showErrorSnackBar(context.l10n.error);
+      return;
+    }
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => ConnectEmailLoginDialog(email: email),
+    );
+    if (password == null || !context.mounted) return;
+    await _linkProvider(
+      context,
+      ref,
+      () => ref.read(authServiceProvider).linkEmailPassword(password: password),
+    );
+  }
+
+  Future<void> _connectGoogle(BuildContext context, WidgetRef ref) {
+    return _linkProvider(
+      context,
+      ref,
+      ref.read(authServiceProvider).linkGoogleProvider,
+    );
+  }
+
+  Future<void> _connectApple(BuildContext context, WidgetRef ref) {
+    return _linkProvider(
+      context,
+      ref,
+      ref.read(authServiceProvider).linkAppleProvider,
+    );
+  }
+
+  Future<void> _linkProvider(
+    BuildContext context,
+    WidgetRef ref,
+    Future<UserCredential> Function() link,
+  ) async {
+    try {
+      await link();
+      ref.invalidate(authStateProvider);
+      if (context.mounted) {
+        showSuccessSnackBar(context.l10n.signInMethodConnected);
+      }
+    } on AuthException catch (error) {
+      if (const {
+        'google-sign-in-cancelled',
+        'apple-sign-in-cancelled',
+      }.contains(error.code)) {
+        return;
+      }
+      if (context.mounted) {
+        final methodBelongsToAnotherAccount = const {
+          'account-exists-with-different-credential',
+          'credential-already-in-use',
+          'email-already-in-use',
+        }.contains(error.code);
+        showErrorSnackBar(
+          methodBelongsToAnotherAccount
+              ? context.l10n.signInMethodAlreadyUsed
+              : error.message ?? context.l10n.error,
+        );
+      }
+    } catch (error, stackTrace) {
+      await showInternalDifficultiesSnackBar(error, stackTrace);
+    }
+  }
+
   Future<void> _logout(BuildContext context) async {
     // Keep stable handles before signing out. The auth-state listener can
     // replace the authenticated widget tree while these futures are pending.
@@ -142,14 +243,33 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profileAuthService = ref.watch(authServiceProvider);
     final currentUser =
-        ref.watch(currentUserProvider) ?? authService.currentUser;
-    final hasPasswordProvider = authService.hasPasswordProvider;
-    final isGoogleAccount =
-        currentUser?.providerData.any(
-          (provider) => provider.providerId == 'google.com',
-        ) ??
-        false;
+        ref.watch(currentUserProvider) ?? profileAuthService.currentUser;
+    final hasPasswordProvider = _isProviderLinked(
+      currentUser,
+      EmailAuthProvider.PROVIDER_ID,
+    );
+    final hasGoogleProvider = _isProviderLinked(
+      currentUser,
+      GoogleAuthProvider.PROVIDER_ID,
+    );
+    final hasAppleProvider = _isProviderLinked(
+      currentUser,
+      AppleAuthProvider.PROVIDER_ID,
+    );
+    final emailProviderEmail = _providerEmail(
+      currentUser,
+      EmailAuthProvider.PROVIDER_ID,
+    );
+    final googleProviderEmail = _providerEmail(
+      currentUser,
+      GoogleAuthProvider.PROVIDER_ID,
+    );
+    final appleProviderEmail = _providerEmail(
+      currentUser,
+      AppleAuthProvider.PROVIDER_ID,
+    );
     final profileState = ref.watch(userProfileProvider);
 
     return AppBarScaffold(
@@ -331,42 +451,6 @@ class ProfilePage extends ConsumerWidget {
                                 : null,
                           ),
                           _buildDetailTile(
-                            key: keys.profilePage.changeEmailListTile,
-                            context,
-                            context.l10n.email,
-                            isGoogleAccount
-                                ? authService.authenticatedEmail ??
-                                      userProfile.email
-                                : userProfile.email,
-                            hideWhenEmpty: false,
-                            onTap: isGoogleAccount
-                                ? () => _openGoogleProfile(
-                                    context,
-                                    authService.authenticatedEmail ??
-                                        userProfile.email,
-                                  )
-                                : hasPasswordProvider
-                                ? () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ChangeEmailPage(),
-                                      ),
-                                    );
-                                  }
-                                : null,
-                            trailing: isGoogleAccount
-                                ? Tooltip(
-                                    message: context.l10n.googleAccount,
-                                    child: const Icon(
-                                      FontAwesome5.google,
-                                      size: 18,
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
                             context,
                             context.l10n.nickname,
@@ -446,6 +530,56 @@ class ProfilePage extends ConsumerWidget {
                               },
                             ),
                           ],
+                          _buildDetailTile(
+                            key: keys.profilePage.changeEmailListTile,
+                            context,
+                            context.l10n.email,
+                            hasPasswordProvider
+                                ? emailProviderEmail ??
+                                      _accountEmail(currentUser)
+                                : context.l10n.notConnected,
+                            hideWhenEmpty: false,
+                            leading: const Icon(Icons.email_outlined),
+                            onTap: hasPasswordProvider
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChangeEmailPage(),
+                                      ),
+                                    );
+                                  }
+                                : () =>
+                                      _connectEmail(context, ref, currentUser),
+                          ),
+                          _buildDetailTile(
+                            context,
+                            context.l10n.googleAccount,
+                            hasGoogleProvider
+                                ? googleProviderEmail ?? context.l10n.connected
+                                : context.l10n.notConnected,
+                            hideWhenEmpty: false,
+                            leading: const Icon(FontAwesome5.google, size: 18),
+                            onTap: hasGoogleProvider
+                                ? () => _openGoogleProfile(
+                                    context,
+                                    googleProviderEmail,
+                                  )
+                                : () => _connectGoogle(context, ref),
+                          ),
+                          _buildDetailTile(
+                            context,
+                            context.l10n.appleAccount,
+                            hasAppleProvider
+                                ? appleProviderEmail ?? context.l10n.connected
+                                : context.l10n.notConnected,
+                            hideWhenEmpty: false,
+                            leading: const Icon(FontAwesome5.apple, size: 19),
+                            onTap: hasAppleProvider
+                                ? null
+                                : () => _connectApple(context, ref),
+                          ),
                         ],
                       ),
                     ),
@@ -459,7 +593,11 @@ class ProfilePage extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  // Update username
+                  _buildSettingsSectionHeader(
+                    context,
+                    context.l10n.activityAndContent,
+                    topPadding: 0,
+                  ),
                   PointingListTile(
                     key: keys.profilePage.userHistoryPageListTile,
                     title: Text(context.l10n.activityHistory),
@@ -498,6 +636,10 @@ class ProfilePage extends ConsumerWidget {
                       );
                     },
                   ),
+                  _buildSettingsSectionHeader(
+                    context,
+                    context.l10n.privacyAndData,
+                  ),
                   PointingListTile(
                     key: keys.profilePage.blockedUsersListTile,
                     title: Text(context.l10n.blockedUsers),
@@ -513,22 +655,6 @@ class ProfilePage extends ConsumerWidget {
                             );
                           },
                   ),
-                  if (hasPasswordProvider)
-                    PointingListTile(
-                      key: keys.profilePage.changePasswordListTile,
-                      title: Text(context.l10n.changePassword),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return ChangePasswordPage();
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  // Privacy Settings
                   PointingListTile(
                     title: Text(context.l10n.privacy),
                     onTap: () {
@@ -559,7 +685,7 @@ class ProfilePage extends ConsumerWidget {
                       );
                     },
                   ),
-                  if (isGoogleAccount)
+                  if (hasGoogleProvider)
                     PointingListTile(
                       key: const Key('synchronizationListTile'),
                       title: Text(context.l10n.synchronization),
@@ -572,7 +698,25 @@ class ProfilePage extends ConsumerWidget {
                         );
                       },
                     ),
-                  // Logout
+                  _buildSettingsSectionHeader(
+                    context,
+                    context.l10n.accountAndSecurity,
+                  ),
+                  if (hasPasswordProvider)
+                    PointingListTile(
+                      key: keys.profilePage.changePasswordListTile,
+                      title: Text(context.l10n.changePassword),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ChangePasswordPage();
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,
                     title: Text(context.l10n.logout, style: AppTextStyles.red),
@@ -611,7 +755,6 @@ class ProfilePage extends ConsumerWidget {
                     },
                   ),
 
-                  // Delete my account
                   PointingListTile(
                     key: keys.profilePage.deleteAccountListTile,
                     title: Text(
@@ -669,12 +812,33 @@ class ProfilePage extends ConsumerWidget {
   }
 }
 
+Widget _buildSettingsSectionHeader(
+  BuildContext context,
+  String title, {
+  double topPadding = 24,
+}) {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(16, topPadding, 16, 6),
+    child: Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
+  );
+}
+
 Widget _buildDetailTile(
   BuildContext context,
   String label,
   String? value, {
   Key? key,
   VoidCallback? onTap,
+  Widget? leading,
   Widget? trailing,
   bool hideWhenEmpty = true,
 }) {
@@ -690,6 +854,7 @@ Widget _buildDetailTile(
       style: AppTextStyles.mBold,
     ),
     dense: true,
+    leading: leading,
     onTap: onTap,
     trailing:
         trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),

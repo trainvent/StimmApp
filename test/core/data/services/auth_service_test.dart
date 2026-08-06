@@ -90,6 +90,49 @@ class _MockUserCredential extends Mock implements UserCredential {
   AdditionalUserInfo? get additionalUserInfo => null;
 }
 
+class _LinkUserCredential extends _MockUserCredential {
+  _LinkUserCredential(this.linkedUser);
+
+  final User linkedUser;
+
+  @override
+  User? get user => linkedUser;
+}
+
+class _LinkUser extends Mock implements User {
+  _LinkUser() {
+    result = _LinkUserCredential(this);
+  }
+
+  late final UserCredential result;
+  AuthCredential? receivedCredential;
+  AuthProvider? receivedProvider;
+
+  @override
+  String? get email => 'person@example.com';
+
+  @override
+  List<UserInfo> get providerData => const [];
+
+  @override
+  Future<UserCredential> linkWithCredential(AuthCredential credential) async {
+    receivedCredential = credential;
+    return result;
+  }
+
+  @override
+  Future<UserCredential> linkWithProvider(AuthProvider provider) async {
+    receivedProvider = provider;
+    return result;
+  }
+
+  @override
+  Future<void> reload() async {}
+
+  @override
+  Future<String?> getIdToken([bool forceRefresh = false]) async => 'token';
+}
+
 class _GoogleFirebaseAuth extends Mock implements FirebaseAuth {
   _GoogleFirebaseAuth(this.result, {this.error});
 
@@ -362,6 +405,41 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('provider linking', () {
+    test('adds email and password credentials to the current user', () async {
+      final user = _LinkUser();
+      final service = AuthService(firebaseAuth: _MockFirebaseAuth(user));
+
+      final result = await service.linkEmailPassword(password: 'Secret1!');
+
+      expect(result, same(user.result));
+      expect(user.receivedCredential, isA<EmailAuthCredential>());
+    });
+
+    test('adds Google credentials to the current user', () async {
+      final user = _LinkUser();
+      final service = AuthService(
+        firebaseAuth: _MockFirebaseAuth(user),
+        googleAuthClient: _FakeGoogleAuthClient(),
+      );
+
+      final result = await service.linkGoogleProvider();
+
+      expect(result, same(user.result));
+      expect(user.receivedCredential, isA<OAuthCredential>());
+    });
+
+    test('adds the Apple provider to the current user', () async {
+      final user = _LinkUser();
+      final service = AuthService(firebaseAuth: _MockFirebaseAuth(user));
+
+      final result = await service.linkAppleProvider();
+
+      expect(result, same(user.result));
+      expect(user.receivedProvider, isA<AppleAuthProvider>());
     });
   });
 }

@@ -104,6 +104,36 @@ class S {
     );
   }
 
+  /// `Activity & content`
+  String get activityAndContent {
+    return Intl.message(
+      'Activity & content',
+      name: 'activityAndContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy & data`
+  String get privacyAndData {
+    return Intl.message(
+      'Privacy & data',
+      name: 'privacyAndData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account & security`
+  String get accountAndSecurity {
+    return Intl.message(
+      'Account & security',
+      name: 'accountAndSecurity',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add a comment`
   String get addComment {
     return Intl.message(
@@ -844,6 +874,76 @@ class S {
     return Intl.message(
       'Google Account',
       name: 'googleAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Account`
+  String get appleAccount {
+    return Intl.message(
+      'Apple Account',
+      name: 'appleAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not connected`
+  String get notConnected {
+    return Intl.message(
+      'Not connected',
+      name: 'notConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected`
+  String get connected {
+    return Intl.message('Connected', name: 'connected', desc: '', args: []);
+  }
+
+  /// `Connect`
+  String get connect {
+    return Intl.message('Connect', name: 'connect', desc: '', args: []);
+  }
+
+  /// `Add email sign-in`
+  String get addEmailSignIn {
+    return Intl.message(
+      'Add email sign-in',
+      name: 'addEmailSignIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a password for {email}. This keeps your existing StimmApp account and profile.`
+  String addEmailSignInDescription(String email) {
+    return Intl.message(
+      'Create a password for $email. This keeps your existing StimmApp account and profile.',
+      name: 'addEmailSignInDescription',
+      desc: '',
+      args: [email],
+    );
+  }
+
+  /// `Sign-in method connected`
+  String get signInMethodConnected {
+    return Intl.message(
+      'Sign-in method connected',
+      name: 'signInMethodConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This sign-in method is already connected to another account.`
+  String get signInMethodAlreadyUsed {
+    return Intl.message(
+      'This sign-in method is already connected to another account.',
+      name: 'signInMethodAlreadyUsed',
       desc: '',
       args: [],
     );
