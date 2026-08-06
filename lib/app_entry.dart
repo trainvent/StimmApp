@@ -165,7 +165,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       return null;
     }
 
-    if (uri.path == '/group-invite') {
+    final isAppScheme = uri.scheme == 'stimmapp' || uri.scheme == 'vivot';
+    final pathSegments = isAppScheme && uri.host.isNotEmpty
+        ? <String>[uri.host, ...uri.pathSegments]
+        : uri.pathSegments;
+
+    if (pathSegments.length == 1 && pathSegments.first == 'group-invite') {
       final groupId = uri.queryParameters['groupId'];
       if (groupId == null || groupId.isEmpty) {
         return null;
@@ -173,14 +178,14 @@ class _MyAppState extends ConsumerState<MyApp> {
       return GroupEntryPage(groupId: groupId);
     }
 
-    if (uri.path.isEmpty || uri.path == '/') {
+    if (pathSegments.isEmpty) {
       return null;
     }
 
-    if (uri.pathSegments.length != 2) return null;
+    if (pathSegments.length != 2) return null;
 
-    final id = uri.pathSegments[1];
-    switch (uri.pathSegments[0]) {
+    final id = pathSegments[1];
+    switch (pathSegments[0]) {
       case 'petition':
         return PetitionDetailPage(id: id);
       case 'poll':

@@ -45,6 +45,8 @@ export default function NotFoundPage() {
       ? 'https://web.vivot.net'
       : 'https://web.stimmapp.net';
     const webUrl = `${appOrigin}${pathname}${search}${hash}`;
+    const appScheme = isVivot ? 'vivot' : 'stimmapp';
+    const appUrl = `${appScheme}://${pathname.slice(1)}${search}${hash}`;
     const isMobile = mobilePattern.test(navigator.userAgent)
       || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -58,6 +60,7 @@ export default function NotFoundPage() {
     setLinkState({
       status: 'choose',
       isVivot,
+      appUrl,
       webUrl,
       storeUrl: isAppleDevice
         ? 'https://apps.apple.com/app/stimmapp/id6759249651'
@@ -96,7 +99,7 @@ export default function NotFoundPage() {
 
         {isChooser && (
           <div className="form-link-actions">
-            <a className="button" href={linkState.webUrl}>
+            <a className="button" href={linkState.appUrl}>
               {labels.openApp}
             </a>
             <a className="button secondary" href={linkState.storeUrl}>
