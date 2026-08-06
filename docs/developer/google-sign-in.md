@@ -45,6 +45,31 @@ Add every deployed site origin to the Firebase Authentication authorized
 domains for the matching project. The app uses Firebase's Google popup flow, so
 it does not require the `google_sign_in_web` meta tag.
 
+For the current deployments, verify these domains in **Authentication →
+Settings → Authorized domains**:
+
+- `stimmapp-dev` → `stimmapp-dev.web.app`
+- `stimmapp-f0141` → `web.stimmapp.net`
+
+## Sign in with Apple on web
+
+The production web app exposes Apple sign-in and uses Firebase's Apple popup
+flow. In addition to enabling Apple in **Firebase Authentication → Sign-in
+method**, configure Apple's web authorization for the production Firebase
+project:
+
+1. Create a **Services ID** in Apple Developer and associate it with the
+   StimmApp primary App ID.
+2. Add `stimmapp-f0141.firebaseapp.com` as a web domain.
+3. Add
+   `https://stimmapp-f0141.firebaseapp.com/__/auth/handler` as the return URL.
+4. Create a Sign in with Apple private key and enter the Services ID, Team ID,
+   Key ID, and private key in Firebase's Apple provider configuration.
+5. Keep `web.stimmapp.net` in Firebase Authentication's authorized domains.
+
+Apple sign-in remains hidden for dev and non-StimmApp flavors because their
+Apple Services IDs are not configured.
+
 ## Birthday and address import
 
 Basic Google sign-in supplies identity data such as email, name, and profile

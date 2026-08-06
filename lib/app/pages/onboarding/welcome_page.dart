@@ -28,8 +28,7 @@ class _WelcomePageState extends State<WelcomePage> {
   bool _isAppleSigningIn = false;
 
   bool get _showsAppleSignIn =>
-      !kIsWeb &&
-      defaultTargetPlatform == TargetPlatform.iOS &&
+      (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS) &&
       Environment.isProd &&
       Environment.isStimmapp;
 

@@ -11,4 +11,6 @@ flutter build web --release --target lib/main_dev.dart --dart-define-from-file=.
 mkdir -p build/web/.well-known
 cp web/.well-known/assetlinks.json build/web/.well-known/assetlinks.json
 cp web/apple-app-site-association build/web/apple-app-site-association
-cp web/app-ads.txt build/web/app-ads.txt
+if [[ -f web/app-ads.txt ]]; then
+  cp web/app-ads.txt build/web/app-ads.txt
+fi

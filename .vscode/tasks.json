@@ -133,6 +133,26 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Build Web (Prod Release)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/build_web_prod.sh"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Web (Dev Release)",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/build_web_dev.sh"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
 			"label": "Build Android AAB (Prod Release)",
 			"type": "shell",
 			"command": "flutter",
