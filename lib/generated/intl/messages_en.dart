@@ -1339,10 +1339,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "share": MessageLookupByLibrary.simpleMessage("Share"),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Share Petition"),
-    "shareThis": MessageLookupByLibrary.simpleMessage("Share this"),
-    "shareThisPetition": MessageLookupByLibrary.simpleMessage(
-      "Share this petition",
-    ),
     "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
       "Sharing not supported on this platform.",
     ),

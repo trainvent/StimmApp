@@ -42,6 +42,18 @@
 		],
 		"rewrites": [
 			{
+				"source": "/petition/**",
+				"function": "sharePage"
+			},
+			{
+				"source": "/poll/**",
+				"function": "sharePage"
+			},
+			{
+				"source": "/survey/**",
+				"function": "sharePage"
+			},
+			{
 				"source": "**",
 				"destination": "/index.html"
 			}

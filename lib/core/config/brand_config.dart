@@ -61,7 +61,7 @@ class BrandConfig {
     privacyPolicyCookiesUrl: 'https://www.stimmapp.net/privacy-policy',
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
-    shareHost: 'stimmapp.net',
+    shareHost: 'share.stimmapp.net',
   );
 
   static const BrandConfig vivotDev = BrandConfig(
@@ -87,6 +87,6 @@ class BrandConfig {
     privacyPolicyCookiesUrl: 'https://vivot.net/privacy',
     termsOfServiceUrl: 'https://vivot.net/terms',
     faqUrl: 'https://vivot.net/faq',
-    shareHost: 'vivot.net',
+    shareHost: 'share.vivot.net',
   );
 }

@@ -1988,18 +1988,6 @@ abstract class AppLocalizations {
   /// **'Share Petition'**
   String get sharePetition;
 
-  /// No description provided for @shareThisPetition.
-  ///
-  /// In en, this message translates to:
-  /// **'Share this petition'**
-  String get shareThisPetition;
-
-  /// No description provided for @shareThis.
-  ///
-  /// In en, this message translates to:
-  /// **'Share this'**
-  String get shareThis;
-
   /// No description provided for @share.
   ///
   /// In en, this message translates to:

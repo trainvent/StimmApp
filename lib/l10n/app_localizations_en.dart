@@ -1007,12 +1007,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharePetition => 'Share Petition';
 
   @override
-  String get shareThisPetition => 'Share this petition';
-
-  @override
-  String get shareThis => 'Share this';
-
-  @override
   String get share => 'Share';
 
   @override

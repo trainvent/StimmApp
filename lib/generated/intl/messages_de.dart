@@ -1429,10 +1429,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "share": MessageLookupByLibrary.simpleMessage("Teilen"),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Petition teilen"),
-    "shareThis": MessageLookupByLibrary.simpleMessage("Teile dies"),
-    "shareThisPetition": MessageLookupByLibrary.simpleMessage(
-      "Teile diese Petition",
-    ),
     "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
       "Teilen wird auf dieser Plattform nicht unterstützt.",
     ),

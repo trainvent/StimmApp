@@ -2664,21 +2664,6 @@ class S {
     );
   }
 
-  /// `Share this petition`
-  String get shareThisPetition {
-    return Intl.message(
-      'Share this petition',
-      name: 'shareThisPetition',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Share this`
-  String get shareThis {
-    return Intl.message('Share this', name: 'shareThis', desc: '', args: []);
-  }
-
   /// `Share`
   String get share {
     return Intl.message('Share', name: 'share', desc: '', args: []);

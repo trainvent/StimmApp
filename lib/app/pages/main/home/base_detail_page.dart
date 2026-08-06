@@ -450,55 +450,57 @@ class _BaseDetailPageState<T extends HomeItem>
         title: Text(widget.appBarTitle),
         actions: [
           if (widget.actions != null) ...widget.actions!,
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () async {
-              final link =
-                  '${Environment.shareBaseUrl}/${widget.sharePathSegment}/${widget.id}';
-              final shareText = '${context.l10n.shareThis}: $link';
-              final shareSubject = context.l10n.share;
-              final linkCopiedText = context.l10n.linkCopiedToClipboard;
-              final messenger = ScaffoldMessenger.of(context);
+          Builder(
+            builder: (shareButtonContext) => IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () async {
+                final link =
+                    '${Environment.shareBaseUrl}/${widget.sharePathSegment}/${widget.id}';
+                final linkCopiedText = context.l10n.linkCopiedToClipboard;
+                final messenger = ScaffoldMessenger.of(context);
+                final renderBox = shareButtonContext.findRenderObject();
+                final shareOrigin = renderBox is RenderBox
+                    ? renderBox.localToGlobal(Offset.zero) & renderBox.size
+                    : null;
 
-              if (kIsWeb) {
-                await Clipboard.setData(ClipboardData(text: link));
-                if (context.mounted) {
-                  messenger.showSnackBar(
-                    SnackBar(content: Text(linkCopiedText)),
-                  );
-                }
-                return;
-              }
-
-              try {
                 try {
-                  await _databaseService.disableNetwork();
-                } catch (e) {
-                  debugPrint('Failed to disable Firestore network: $e');
-                }
+                  if (!kIsWeb) {
+                    try {
+                      await _databaseService.disableNetwork();
+                    } catch (e) {
+                      debugPrint('Failed to disable Firestore network: $e');
+                    }
+                  }
 
-                await SharePlus.instance.share(
-                  ShareParams(text: shareText, subject: shareSubject),
-                );
-              } catch (e) {
-                debugPrint('Share failed: $e');
-                if (context.mounted) {
-                  // Fallback: Copy to clipboard
-                  await Clipboard.setData(ClipboardData(text: link));
+                  await SharePlus.instance.share(
+                    ShareParams(
+                      uri: Uri.parse(link),
+                      sharePositionOrigin: shareOrigin,
+                      mailToFallbackEnabled: false,
+                    ),
+                  );
+                } catch (e) {
+                  debugPrint('Share failed: $e');
                   if (context.mounted) {
-                    messenger.showSnackBar(
-                      SnackBar(content: Text(linkCopiedText)),
-                    );
+                    // Fallback: Copy the bare link to the clipboard.
+                    await Clipboard.setData(ClipboardData(text: link));
+                    if (context.mounted) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(linkCopiedText)),
+                      );
+                    }
+                  }
+                } finally {
+                  if (!kIsWeb) {
+                    try {
+                      await _databaseService.enableNetwork();
+                    } catch (e) {
+                      debugPrint('Failed to re-enable Firestore network: $e');
+                    }
                   }
                 }
-              } finally {
-                try {
-                  await _databaseService.enableNetwork();
-                } catch (e) {
-                  debugPrint('Failed to re-enable Firestore network: $e');
-                }
-              }
-            },
+              },
+            ),
           ),
           if (widget.topRightActionBuilder != null)
             StreamBuilder<T?>(
