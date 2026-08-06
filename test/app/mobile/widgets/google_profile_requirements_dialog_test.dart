@@ -32,11 +32,11 @@ void main() {
     expect(find.text('Complete your Google profile'), findsOneWidget);
     expect(
       find.text(
-        'Google must provide your full name, birthday, and current location before synchronization can be enabled.',
+        'Add your full name, birthday, and current location to Google first.',
       ),
       findsOneWidget,
     );
-    expect(find.text('Edit Google profile'), findsOneWidget);
+    expect(find.text('Open Google profile'), findsOneWidget);
     expect(find.byIcon(Icons.open_in_new), findsOneWidget);
 
     await tester.tap(
