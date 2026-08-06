@@ -347,39 +347,35 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diese Anmeldemethode ist bereits mit einem anderen Konto verbunden.';
 
   @override
-  String get editGoogleProfile => 'Google-Profil bearbeiten';
+  String get editGoogleProfile => 'Google-Profil öffnen';
 
   @override
-  String get synchronizeGoogleDataPeriodically =>
-      'Google-Daten regelmäßig synchronisieren';
-
-  @override
-  String get synchronization => 'Synchronisierung';
+  String get synchronization => 'Google-Synchronisierung';
 
   @override
   String get googleSyncLocksPersonalData =>
-      'Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.';
+      'Synchronisierte Felder können nur bei Google bearbeitet werden.';
 
   @override
-  String get syncGoogleDataNow => 'Google-Daten jetzt synchronisieren';
+  String get syncNow => 'Jetzt synchronisieren';
 
   @override
-  String get syncNow => 'Jetzt';
-
-  @override
-  String get syncRegularly => 'Regelmäßig synchronisieren';
+  String get syncRegularly => 'Automatisch synchronisieren';
 
   @override
   String get googleSyncManagedFields =>
-      'Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.';
+      'Google hält Name, Geburtsdatum und Anschrift aktuell.';
+
+  @override
+  String get syncedProfileData => 'Synchronisierte Profildaten';
 
   @override
   String get googleSyncAddressMustBePublic =>
-      'Deine Anschrift muss in deinem Google-Profil öffentlich sein, damit StimmApp sie synchronisieren kann.';
+      'Die Adresssynchronisierung erfordert eine öffentliche Google-Anschrift.';
 
   @override
   String get googleSyncRequiresCompleteProfile =>
-      'Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.';
+      'Ergänze zuerst deinen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bei Google.';
 
   @override
   String get completeGoogleProfile => 'Vervollständige dein Google-Profil';
@@ -391,7 +387,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get googleSyncDisabled => 'Google-Synchronisierung deaktiviert';
 
   @override
-  String get googleSyncSucceeded => 'Google-Profil synchronisiert';
+  String get googleSyncSucceeded => 'Profil synchronisiert';
 
   @override
   String get googleSyncFailed =>

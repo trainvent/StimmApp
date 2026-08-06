@@ -186,14 +186,14 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
   ) {
     final warnings = preview.warningFields;
     return Card(
-      margin: const EdgeInsets.only(top: 8),
+      margin: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
             child: Text(
-              context.l10n.googleSyncManagedFields,
+              context.l10n.syncedProfileData,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -276,49 +276,59 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
                 );
             return ListView(
               children: [
-                ListTile(
-                  key: const Key('editGoogleProfileButton'),
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(FontAwesome5.google, size: 18),
-                  title: Text(context.l10n.editGoogleProfile),
-                  trailing: const Icon(Icons.open_in_new),
-                  onTap: () => _openGoogleProfile(
-                    authService.authenticatedEmail ?? profile.email,
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        key: const Key('googleProfileSyncSwitch'),
+                        value: profile.isGoogleSyncActive == true,
+                        onChanged: _isSyncingGoogleProfile
+                            ? null
+                            : (active) => _setGoogleSyncActive(profile, active),
+                        title: Text(context.l10n.syncRegularly),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        key: const Key('syncGoogleProfileNowButton'),
+                        enabled: !_isSyncingGoogleProfile,
+                        leading: SizedBox.square(
+                          dimension: 24,
+                          child: Center(
+                            child: _isSyncingGoogleProfile
+                                ? TriangleLoadingIndicator(
+                                    size: 20,
+                                    showFill: false,
+                                    strokeColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  )
+                                : const Icon(Icons.sync),
+                          ),
+                        ),
+                        title: Text(context.l10n.syncNow),
+                        onTap: _isSyncingGoogleProfile
+                            ? null
+                            : () => _syncGoogleProfileNow(profile),
+                      ),
+                      ListTile(
+                        key: const Key('editGoogleProfileButton'),
+                        leading: const SizedBox.square(
+                          dimension: 24,
+                          child: Center(
+                            child: Icon(FontAwesome5.google, size: 18),
+                          ),
+                        ),
+                        title: Text(context.l10n.editGoogleProfile),
+                        trailing: const Icon(Icons.open_in_new),
+                        onTap: () => _openGoogleProfile(
+                          authService.authenticatedEmail ?? profile.email,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SwitchListTile(
-                  key: const Key('googleProfileSyncSwitch'),
-                  contentPadding: EdgeInsets.zero,
-                  value: profile.isGoogleSyncActive == true,
-                  onChanged: _isSyncingGoogleProfile
-                      ? null
-                      : (active) => _setGoogleSyncActive(profile, active),
-                  title: Text(context.l10n.synchronizeGoogleDataPeriodically),
-                  subtitle: Text(context.l10n.googleSyncLocksPersonalData),
-                ),
-                ListTile(
-                  key: const Key('syncGoogleProfileNowButton'),
-                  contentPadding: EdgeInsets.zero,
-                  enabled: !_isSyncingGoogleProfile,
-                  leading: SizedBox(
-                    width: 40,
-                    child: Center(
-                      child: _isSyncingGoogleProfile
-                          ? TriangleLoadingIndicator(
-                              size: 20,
-                              showFill: false,
-                              strokeColor: Theme.of(
-                                context,
-                              ).colorScheme.primary,
-                            )
-                          : const Icon(Icons.sync),
-                    ),
-                  ),
-                  title: Text(context.l10n.syncGoogleDataNow),
-                  onTap: _isSyncingGoogleProfile
-                      ? null
-                      : () => _syncGoogleProfileNow(profile),
-                ),
+                const SizedBox(height: 12),
                 _managedFieldsCard(profile, preview),
               ],
             );

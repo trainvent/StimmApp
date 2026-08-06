@@ -476,7 +476,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dropCsvHere": MessageLookupByLibrary.simpleMessage("Drop a CSV here"),
     "editGivenName": MessageLookupByLibrary.simpleMessage("Edit given name"),
     "editGoogleProfile": MessageLookupByLibrary.simpleMessage(
-      "Edit Google profile",
+      "Open Google profile",
     ),
     "editGroupDescription": MessageLookupByLibrary.simpleMessage(
       "Adjust the access rules and settings for this group.",
@@ -626,28 +626,28 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google sign-in failed. Please try again.",
     ),
     "googleSyncAddressMustBePublic": MessageLookupByLibrary.simpleMessage(
-      "Your address must be set to public in your Google profile so StimmApp can synchronize it.",
+      "Address sync requires a public Google address.",
     ),
     "googleSyncDisabled": MessageLookupByLibrary.simpleMessage(
-      "Google synchronization disabled",
+      "Google sync disabled",
     ),
     "googleSyncEnabled": MessageLookupByLibrary.simpleMessage(
-      "Google synchronization enabled",
+      "Google sync enabled",
     ),
     "googleSyncFailed": MessageLookupByLibrary.simpleMessage(
-      "Google profile synchronization failed",
+      "Couldn’t sync Google profile",
     ),
     "googleSyncLocksPersonalData": MessageLookupByLibrary.simpleMessage(
-      "While enabled, name, birthday, and address can only be changed in your Google Account.",
+      "Synced fields can only be edited in Google.",
     ),
     "googleSyncManagedFields": MessageLookupByLibrary.simpleMessage(
-      "While active, name, birthday, and address are managed by Google.",
+      "Google keeps your name, birthday, and address up to date.",
     ),
     "googleSyncRequiresCompleteProfile": MessageLookupByLibrary.simpleMessage(
-      "Google must provide your full name, birthday, and current location before synchronization can be enabled.",
+      "Add your full name, birthday, and current location to Google first.",
     ),
     "googleSyncSucceeded": MessageLookupByLibrary.simpleMessage(
-      "Google profile synchronized",
+      "Profile synced",
     ),
     "groupAccess": MessageLookupByLibrary.simpleMessage("Group access"),
     "groupAccessAccepted": MessageLookupByLibrary.simpleMessage(
@@ -1413,15 +1413,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "swipeToLeaveGroup": MessageLookupByLibrary.simpleMessage(
       "Swipe to leave the group.",
     ),
-    "syncGoogleDataNow": MessageLookupByLibrary.simpleMessage(
-      "Sync Google data now",
-    ),
     "syncNow": MessageLookupByLibrary.simpleMessage("Sync now"),
-    "syncRegularly": MessageLookupByLibrary.simpleMessage("Sync regularly"),
-    "synchronization": MessageLookupByLibrary.simpleMessage("Synchronization"),
-    "synchronizeGoogleDataPeriodically": MessageLookupByLibrary.simpleMessage(
-      "Synchronize Google data periodically",
+    "syncRegularly": MessageLookupByLibrary.simpleMessage("Automatic sync"),
+    "syncedProfileData": MessageLookupByLibrary.simpleMessage(
+      "Synced profile data",
     ),
+    "synchronization": MessageLookupByLibrary.simpleMessage("Google sync"),
     "systemDefault": MessageLookupByLibrary.simpleMessage("System Default"),
     "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Animal Welfare"),
     "tagCulture": MessageLookupByLibrary.simpleMessage("Culture"),

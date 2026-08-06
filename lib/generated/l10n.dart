@@ -949,51 +949,31 @@ class S {
     );
   }
 
-  /// `Edit Google profile`
+  /// `Open Google profile`
   String get editGoogleProfile {
     return Intl.message(
-      'Edit Google profile',
+      'Open Google profile',
       name: 'editGoogleProfile',
       desc: '',
       args: [],
     );
   }
 
-  /// `Synchronize Google data periodically`
-  String get synchronizeGoogleDataPeriodically {
-    return Intl.message(
-      'Synchronize Google data periodically',
-      name: 'synchronizeGoogleDataPeriodically',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Synchronization`
+  /// `Google sync`
   String get synchronization {
     return Intl.message(
-      'Synchronization',
+      'Google sync',
       name: 'synchronization',
       desc: '',
       args: [],
     );
   }
 
-  /// `While enabled, name, birthday, and address can only be changed in your Google Account.`
+  /// `Synced fields can only be edited in Google.`
   String get googleSyncLocksPersonalData {
     return Intl.message(
-      'While enabled, name, birthday, and address can only be changed in your Google Account.',
+      'Synced fields can only be edited in Google.',
       name: 'googleSyncLocksPersonalData',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Sync Google data now`
-  String get syncGoogleDataNow {
-    return Intl.message(
-      'Sync Google data now',
-      name: 'syncGoogleDataNow',
       desc: '',
       args: [],
     );
@@ -1004,40 +984,50 @@ class S {
     return Intl.message('Sync now', name: 'syncNow', desc: '', args: []);
   }
 
-  /// `Sync regularly`
+  /// `Automatic sync`
   String get syncRegularly {
     return Intl.message(
-      'Sync regularly',
+      'Automatic sync',
       name: 'syncRegularly',
       desc: '',
       args: [],
     );
   }
 
-  /// `While active, name, birthday, and address are managed by Google.`
+  /// `Google keeps your name, birthday, and address up to date.`
   String get googleSyncManagedFields {
     return Intl.message(
-      'While active, name, birthday, and address are managed by Google.',
+      'Google keeps your name, birthday, and address up to date.',
       name: 'googleSyncManagedFields',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your address must be set to public in your Google profile so StimmApp can synchronize it.`
+  /// `Synced profile data`
+  String get syncedProfileData {
+    return Intl.message(
+      'Synced profile data',
+      name: 'syncedProfileData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address sync requires a public Google address.`
   String get googleSyncAddressMustBePublic {
     return Intl.message(
-      'Your address must be set to public in your Google profile so StimmApp can synchronize it.',
+      'Address sync requires a public Google address.',
       name: 'googleSyncAddressMustBePublic',
       desc: '',
       args: [],
     );
   }
 
-  /// `Google must provide your full name, birthday, and current location before synchronization can be enabled.`
+  /// `Add your full name, birthday, and current location to Google first.`
   String get googleSyncRequiresCompleteProfile {
     return Intl.message(
-      'Google must provide your full name, birthday, and current location before synchronization can be enabled.',
+      'Add your full name, birthday, and current location to Google first.',
       name: 'googleSyncRequiresCompleteProfile',
       desc: '',
       args: [],
@@ -1054,40 +1044,40 @@ class S {
     );
   }
 
-  /// `Google synchronization enabled`
+  /// `Google sync enabled`
   String get googleSyncEnabled {
     return Intl.message(
-      'Google synchronization enabled',
+      'Google sync enabled',
       name: 'googleSyncEnabled',
       desc: '',
       args: [],
     );
   }
 
-  /// `Google synchronization disabled`
+  /// `Google sync disabled`
   String get googleSyncDisabled {
     return Intl.message(
-      'Google synchronization disabled',
+      'Google sync disabled',
       name: 'googleSyncDisabled',
       desc: '',
       args: [],
     );
   }
 
-  /// `Google profile synchronized`
+  /// `Profile synced`
   String get googleSyncSucceeded {
     return Intl.message(
-      'Google profile synchronized',
+      'Profile synced',
       name: 'googleSyncSucceeded',
       desc: '',
       args: [],
     );
   }
 
-  /// `Google profile synchronization failed`
+  /// `Couldn’t sync Google profile`
   String get googleSyncFailed {
     return Intl.message(
-      'Google profile synchronization failed',
+      'Couldn’t sync Google profile',
       name: 'googleSyncFailed',
       desc: '',
       args: [],

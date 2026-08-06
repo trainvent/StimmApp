@@ -346,54 +346,50 @@ class AppLocalizationsEn extends AppLocalizations {
       'This sign-in method is already connected to another account.';
 
   @override
-  String get editGoogleProfile => 'Edit Google profile';
+  String get editGoogleProfile => 'Open Google profile';
 
   @override
-  String get synchronizeGoogleDataPeriodically =>
-      'Synchronize Google data periodically';
-
-  @override
-  String get synchronization => 'Synchronization';
+  String get synchronization => 'Google sync';
 
   @override
   String get googleSyncLocksPersonalData =>
-      'While enabled, name, birthday, and address can only be changed in your Google Account.';
-
-  @override
-  String get syncGoogleDataNow => 'Sync Google data now';
+      'Synced fields can only be edited in Google.';
 
   @override
   String get syncNow => 'Sync now';
 
   @override
-  String get syncRegularly => 'Sync regularly';
+  String get syncRegularly => 'Automatic sync';
 
   @override
   String get googleSyncManagedFields =>
-      'While active, name, birthday, and address are managed by Google.';
+      'Google keeps your name, birthday, and address up to date.';
+
+  @override
+  String get syncedProfileData => 'Synced profile data';
 
   @override
   String get googleSyncAddressMustBePublic =>
-      'Your address must be set to public in your Google profile so StimmApp can synchronize it.';
+      'Address sync requires a public Google address.';
 
   @override
   String get googleSyncRequiresCompleteProfile =>
-      'Google must provide your full name, birthday, and current location before synchronization can be enabled.';
+      'Add your full name, birthday, and current location to Google first.';
 
   @override
   String get completeGoogleProfile => 'Complete your Google profile';
 
   @override
-  String get googleSyncEnabled => 'Google synchronization enabled';
+  String get googleSyncEnabled => 'Google sync enabled';
 
   @override
-  String get googleSyncDisabled => 'Google synchronization disabled';
+  String get googleSyncDisabled => 'Google sync disabled';
 
   @override
-  String get googleSyncSucceeded => 'Google profile synchronized';
+  String get googleSyncSucceeded => 'Profile synced';
 
   @override
-  String get googleSyncFailed => 'Google profile synchronization failed';
+  String get googleSyncFailed => 'Couldn’t sync Google profile';
 
   @override
   String get daysLeft => 'Days Left';

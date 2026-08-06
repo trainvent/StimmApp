@@ -504,7 +504,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Vornamen bearbeiten",
     ),
     "editGoogleProfile": MessageLookupByLibrary.simpleMessage(
-      "Google-Profil bearbeiten",
+      "Google-Profil öffnen",
     ),
     "editGroupDescription": MessageLookupByLibrary.simpleMessage(
       "Passe Zugriffsregeln und Einstellungen für diese Gruppe an.",
@@ -666,7 +666,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
     ),
     "googleSyncAddressMustBePublic": MessageLookupByLibrary.simpleMessage(
-      "Deine Anschrift muss in deinem Google-Profil öffentlich sein, damit StimmApp sie synchronisieren kann.",
+      "Die Adresssynchronisierung erfordert eine öffentliche Google-Anschrift.",
     ),
     "googleSyncDisabled": MessageLookupByLibrary.simpleMessage(
       "Google-Synchronisierung deaktiviert",
@@ -678,16 +678,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google-Profil konnte nicht synchronisiert werden",
     ),
     "googleSyncLocksPersonalData": MessageLookupByLibrary.simpleMessage(
-      "Solange dies aktiviert ist, können Name, Geburtsdatum und Anschrift nur im Google-Konto geändert werden.",
+      "Synchronisierte Felder können nur bei Google bearbeitet werden.",
     ),
     "googleSyncManagedFields": MessageLookupByLibrary.simpleMessage(
-      "Solange dies aktiv ist, werden Name, Geburtsdatum und Anschrift von Google verwaltet.",
+      "Google hält Name, Geburtsdatum und Anschrift aktuell.",
     ),
     "googleSyncRequiresCompleteProfile": MessageLookupByLibrary.simpleMessage(
-      "Google muss deinen vollständigen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bereitstellen, bevor die Synchronisierung aktiviert werden kann.",
+      "Ergänze zuerst deinen Namen, dein Geburtsdatum und deinen aktuellen Wohnort bei Google.",
     ),
     "googleSyncSucceeded": MessageLookupByLibrary.simpleMessage(
-      "Google-Profil synchronisiert",
+      "Profil synchronisiert",
     ),
     "groupAccess": MessageLookupByLibrary.simpleMessage("Gruppenzugang"),
     "groupAccessAccepted": MessageLookupByLibrary.simpleMessage(
@@ -1517,16 +1517,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "swipeToLeaveGroup": MessageLookupByLibrary.simpleMessage(
       "Wische, um die Gruppe zu verlassen.",
     ),
-    "syncGoogleDataNow": MessageLookupByLibrary.simpleMessage(
-      "Google-Daten jetzt synchronisieren",
-    ),
-    "syncNow": MessageLookupByLibrary.simpleMessage("Jetzt"),
+    "syncNow": MessageLookupByLibrary.simpleMessage("Jetzt synchronisieren"),
     "syncRegularly": MessageLookupByLibrary.simpleMessage(
-      "Regelmäßig synchronisieren",
+      "Automatisch synchronisieren",
     ),
-    "synchronization": MessageLookupByLibrary.simpleMessage("Synchronisierung"),
-    "synchronizeGoogleDataPeriodically": MessageLookupByLibrary.simpleMessage(
-      "Google-Daten regelmäßig synchronisieren",
+    "syncedProfileData": MessageLookupByLibrary.simpleMessage(
+      "Synchronisierte Profildaten",
+    ),
+    "synchronization": MessageLookupByLibrary.simpleMessage(
+      "Google-Synchronisierung",
     ),
     "systemDefault": MessageLookupByLibrary.simpleMessage("Systemstandard"),
     "tagAnimalWelfare": MessageLookupByLibrary.simpleMessage("Tierschutz"),

@@ -725,32 +725,20 @@ abstract class AppLocalizations {
   /// No description provided for @editGoogleProfile.
   ///
   /// In en, this message translates to:
-  /// **'Edit Google profile'**
+  /// **'Open Google profile'**
   String get editGoogleProfile;
-
-  /// No description provided for @synchronizeGoogleDataPeriodically.
-  ///
-  /// In en, this message translates to:
-  /// **'Synchronize Google data periodically'**
-  String get synchronizeGoogleDataPeriodically;
 
   /// No description provided for @synchronization.
   ///
   /// In en, this message translates to:
-  /// **'Synchronization'**
+  /// **'Google sync'**
   String get synchronization;
 
   /// No description provided for @googleSyncLocksPersonalData.
   ///
   /// In en, this message translates to:
-  /// **'While enabled, name, birthday, and address can only be changed in your Google Account.'**
+  /// **'Synced fields can only be edited in Google.'**
   String get googleSyncLocksPersonalData;
-
-  /// No description provided for @syncGoogleDataNow.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync Google data now'**
-  String get syncGoogleDataNow;
 
   /// No description provided for @syncNow.
   ///
@@ -761,25 +749,31 @@ abstract class AppLocalizations {
   /// No description provided for @syncRegularly.
   ///
   /// In en, this message translates to:
-  /// **'Sync regularly'**
+  /// **'Automatic sync'**
   String get syncRegularly;
 
   /// No description provided for @googleSyncManagedFields.
   ///
   /// In en, this message translates to:
-  /// **'While active, name, birthday, and address are managed by Google.'**
+  /// **'Google keeps your name, birthday, and address up to date.'**
   String get googleSyncManagedFields;
+
+  /// No description provided for @syncedProfileData.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced profile data'**
+  String get syncedProfileData;
 
   /// No description provided for @googleSyncAddressMustBePublic.
   ///
   /// In en, this message translates to:
-  /// **'Your address must be set to public in your Google profile so StimmApp can synchronize it.'**
+  /// **'Address sync requires a public Google address.'**
   String get googleSyncAddressMustBePublic;
 
   /// No description provided for @googleSyncRequiresCompleteProfile.
   ///
   /// In en, this message translates to:
-  /// **'Google must provide your full name, birthday, and current location before synchronization can be enabled.'**
+  /// **'Add your full name, birthday, and current location to Google first.'**
   String get googleSyncRequiresCompleteProfile;
 
   /// No description provided for @completeGoogleProfile.
@@ -791,25 +785,25 @@ abstract class AppLocalizations {
   /// No description provided for @googleSyncEnabled.
   ///
   /// In en, this message translates to:
-  /// **'Google synchronization enabled'**
+  /// **'Google sync enabled'**
   String get googleSyncEnabled;
 
   /// No description provided for @googleSyncDisabled.
   ///
   /// In en, this message translates to:
-  /// **'Google synchronization disabled'**
+  /// **'Google sync disabled'**
   String get googleSyncDisabled;
 
   /// No description provided for @googleSyncSucceeded.
   ///
   /// In en, this message translates to:
-  /// **'Google profile synchronized'**
+  /// **'Profile synced'**
   String get googleSyncSucceeded;
 
   /// No description provided for @googleSyncFailed.
   ///
   /// In en, this message translates to:
-  /// **'Google profile synchronization failed'**
+  /// **'Couldn’t sync Google profile'**
   String get googleSyncFailed;
 
   /// No description provided for @daysLeft.
