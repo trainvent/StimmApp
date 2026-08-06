@@ -13,6 +13,11 @@ class ProfilePictureUrlController extends Notifier<String?> {
     state = url;
   }
 
+  void setUrlIfUnchanged({required String? expected, required String? url}) {
+    if (state != expected) return;
+    state = url;
+  }
+
   void clear() {
     state = null;
   }

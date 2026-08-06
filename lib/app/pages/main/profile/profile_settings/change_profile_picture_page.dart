@@ -89,13 +89,15 @@ class _ChangeProfilePicturePageState
           }
         },
       );
+      // Publish the persisted URL immediately. Updating Firebase Auth is useful
+      // as a fallback, but should not delay the visible in-app update.
+      ref.read(profilePictureUrlProvider.notifier).setUrl(url);
       try {
         await user.updatePhotoURL(url);
         await user.reload();
       } catch (e) {
         debugPrint('[ChangeProfilePicture] error updating user photoURL: $e');
       }
-      ref.read(profilePictureUrlProvider.notifier).setUrl(url);
 
       if (!mounted) return;
       showSuccessSnackBar(context.l10n.profilePictureUpdated);

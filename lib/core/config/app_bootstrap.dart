@@ -35,10 +35,15 @@ class AppBootstrap {
 
     _authSub = authService.authStateChanges.listen((user) async {
       if (user != null) {
+        final profileUrlBeforeLoad = ref.read(profilePictureUrlProvider);
         ProfilePictureService.instance
             .loadProfileUrl(user.uid)
             .then((url) {
-              ref.read(profilePictureUrlProvider.notifier).setUrl(url);
+              // Do not let an older bootstrap read overwrite a URL published
+              // by an upload that completed while this request was in flight.
+              ref
+                  .read(profilePictureUrlProvider.notifier)
+                  .setUrlIfUnchanged(expected: profileUrlBeforeLoad, url: url);
             })
             .catchError((e) {
               debugPrint('[AppBootstrap] Error loading profile URL: $e');
