@@ -2012,6 +2012,12 @@ abstract class AppLocalizations {
   /// **'EU'**
   String get scopeEu;
 
+  /// No description provided for @scopeCountryUnion.
+  ///
+  /// In en, this message translates to:
+  /// **'Country union'**
+  String get scopeCountryUnion;
+
   /// No description provided for @scopeContinent.
   ///
   /// In en, this message translates to:

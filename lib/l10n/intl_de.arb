@@ -369,6 +369,7 @@
 	"scope": "Geltungsbereich",
 	"scopeGlobal": "Global",
 	"scopeEu": "EU",
+	"scopeCountryUnion": "Länderbund",
 	"scopeContinent": "Kontinent",
 	"scopeCountry": "Land",
 	"scopeStateRegion": "Bundesland / Region",

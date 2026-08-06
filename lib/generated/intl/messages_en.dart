@@ -1278,6 +1278,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scopeCity": MessageLookupByLibrary.simpleMessage("City"),
     "scopeContinent": MessageLookupByLibrary.simpleMessage("Continent"),
     "scopeCountry": MessageLookupByLibrary.simpleMessage("Country"),
+    "scopeCountryUnion": MessageLookupByLibrary.simpleMessage("Country union"),
     "scopeDetails": MessageLookupByLibrary.simpleMessage("Scope details"),
     "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
     "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),

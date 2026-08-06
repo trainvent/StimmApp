@@ -374,6 +374,7 @@
 	"scope": "Scope",
 	"scopeGlobal": "Global",
 	"scopeEu": "EU",
+	"scopeCountryUnion": "Country union",
 	"scopeContinent": "Continent",
 	"scopeCountry": "Country",
 	"scopeStateRegion": "State / Region",

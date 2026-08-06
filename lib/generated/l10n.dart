@@ -2664,6 +2664,16 @@ class S {
     return Intl.message('EU', name: 'scopeEu', desc: '', args: []);
   }
 
+  /// `Country union`
+  String get scopeCountryUnion {
+    return Intl.message(
+      'Country union',
+      name: 'scopeCountryUnion',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Continent`
   String get scopeContinent {
     return Intl.message(

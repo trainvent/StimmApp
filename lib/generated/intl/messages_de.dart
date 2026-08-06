@@ -1352,6 +1352,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scopeCity": MessageLookupByLibrary.simpleMessage("Stadt"),
     "scopeContinent": MessageLookupByLibrary.simpleMessage("Kontinent"),
     "scopeCountry": MessageLookupByLibrary.simpleMessage("Land"),
+    "scopeCountryUnion": MessageLookupByLibrary.simpleMessage("Länderbund"),
     "scopeDetails": MessageLookupByLibrary.simpleMessage(
       "Details zum Geltungsbereich",
     ),

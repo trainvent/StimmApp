@@ -83,6 +83,7 @@ dependencies:
   google_sign_in_platform_interface: ^3.1.0
   trainvent_general: ^0.0.3
   pinput: ^6.0.2
+  flag: ^7.0.2
 
 dev_dependencies:
   flutter_test:

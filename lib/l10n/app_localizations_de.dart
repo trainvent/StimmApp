@@ -1026,6 +1026,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scopeEu => 'EU';
 
   @override
+  String get scopeCountryUnion => 'Länderbund';
+
+  @override
   String get scopeContinent => 'Kontinent';
 
   @override

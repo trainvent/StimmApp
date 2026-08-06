@@ -1,3 +1,4 @@
+import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -94,7 +95,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _profileCountryCode =
           profile.countryCode?.toUpperCase() ??
           (profile.supportsStateScope ? 'DE' : null);
-      _profileStateOrRegion = profile.state;
+      final profileStateOrRegion = profile.state?.trim();
+      _profileStateOrRegion =
+          profileStateOrRegion == null || profileStateOrRegion.isEmpty
+          ? null
+          : profileStateOrRegion;
       final profileTown = profile.town?.trim();
       _profileTown = profileTown == null || profileTown.isEmpty
           ? null
@@ -209,7 +214,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
-    if (_selectedScope == FormScopeType.stateOrRegion && !_supportsStateScope) {
+    if (_selectedScope == FormScopeType.stateOrRegion &&
+        (!_supportsStateScope || _profileStateOrRegion == null)) {
       showErrorSnackBar(context.l10n.pleaseSelectState);
       return;
     }
@@ -376,7 +382,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.global:
         return context.l10n.scopeGlobal;
       case FormScopeType.eu:
-        return context.l10n.scopeEu;
+        return context.l10n.scopeCountryUnion;
       case FormScopeType.continent:
         return context.l10n.scopeContinent;
       case FormScopeType.country:
@@ -386,6 +392,156 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.city:
         return context.l10n.scopeCity;
     }
+  }
+
+  List<FormScopeType> get _availableScopes => <FormScopeType>[
+    FormScopeType.global,
+    if (_supportsEuScope) FormScopeType.eu,
+    FormScopeType.country,
+    if (_supportsStateScope) FormScopeType.stateOrRegion,
+    FormScopeType.city,
+  ];
+
+  Widget _scopeLeading(FormScopeType scope, {bool showResolvedValue = false}) {
+    switch (scope) {
+      case FormScopeType.global:
+        return const Icon(Icons.language);
+      case FormScopeType.eu:
+        if (!showResolvedValue) {
+          return const Icon(Icons.hub_outlined);
+        }
+        return Semantics(
+          label: context.l10n.scopeEu,
+          child: ExcludeSemantics(
+            child: Flag.fromCode(
+              FlagsCode.EU,
+              width: 40,
+              height: 28,
+              borderRadius: 2,
+            ),
+          ),
+        );
+      case FormScopeType.continent:
+        return const Icon(Icons.public);
+      case FormScopeType.country:
+        final countryCode = _profileCountryCode;
+        if (showResolvedValue &&
+            countryCode != null &&
+            Flag.flagsCode.contains(countryCode.toLowerCase())) {
+          return Semantics(
+            label: '${context.l10n.scopeCountry}: $countryCode',
+            child: ExcludeSemantics(
+              child: Flag.fromString(
+                countryCode,
+                width: 40,
+                height: 28,
+                borderRadius: 2,
+              ),
+            ),
+          );
+        }
+        return const Icon(Icons.flag_outlined);
+      case FormScopeType.stateOrRegion:
+        return const Icon(Icons.map_outlined);
+      case FormScopeType.city:
+        return const Icon(Icons.location_city_outlined);
+    }
+  }
+
+  String? _scopeValue(FormScopeType scope) {
+    switch (scope) {
+      case FormScopeType.global:
+      case FormScopeType.continent:
+        return null;
+      case FormScopeType.eu:
+        return context.l10n.scopeEu;
+      case FormScopeType.country:
+        return _profileCountryCode;
+      case FormScopeType.stateOrRegion:
+        return _profileStateOrRegion;
+      case FormScopeType.city:
+        return _profileTown;
+    }
+  }
+
+  String? _scopeMissingMessage(FormScopeType scope) {
+    switch (scope) {
+      case FormScopeType.global:
+      case FormScopeType.eu:
+      case FormScopeType.continent:
+        return null;
+      case FormScopeType.country:
+        return context.l10n.pleaseSetCountryInAddressFirst;
+      case FormScopeType.stateOrRegion:
+        return context.l10n.pleaseSelectState;
+      case FormScopeType.city:
+        return context.l10n.pleaseSetTownInAddressFirst;
+    }
+  }
+
+  Widget _scopeLocationCard({
+    required Widget leading,
+    required String title,
+    required String? value,
+    required String? missingMessage,
+    Widget? trailing,
+  }) {
+    final hasValue = value != null && value.isNotEmpty;
+    final isMissing = !hasValue && missingMessage != null;
+    final color = isMissing ? Theme.of(context).colorScheme.error : null;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        leading: leading,
+        title: Text(title),
+        subtitle: hasValue
+            ? Text(value)
+            : missingMessage == null
+            ? null
+            : Text(missingMessage),
+        trailing: trailing,
+        textColor: color,
+        iconColor: color,
+      ),
+    );
+  }
+
+  Widget _scopeSelectorCard() {
+    return PopupMenuButton<FormScopeType>(
+      key: const Key('scopeSelectorCard'),
+      initialValue: _selectedScope,
+      tooltip: context.l10n.scope,
+      onOpened: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onSelected: (value) {
+        setState(() => _selectedScope = value);
+        _saveDraft();
+      },
+      itemBuilder: (context) => _availableScopes
+          .map(
+            (scope) => PopupMenuItem<FormScopeType>(
+              value: scope,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 40,
+                    child: Center(child: _scopeLeading(scope)),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(_scopeLabel(scope)),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+      child: _scopeLocationCard(
+        leading: _scopeLeading(_selectedScope, showResolvedValue: true),
+        title: _scopeLabel(_selectedScope),
+        value: _scopeValue(_selectedScope),
+        missingMessage: _scopeMissingMessage(_selectedScope),
+        trailing: const Icon(Icons.arrow_drop_down),
+      ),
+    );
   }
 
   @override
@@ -512,66 +668,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               ),
               Center(child: Text('$_durationDays days')),
               const SizedBox(height: 10),
-              DropdownButtonFormField<FormScopeType>(
-                key: ValueKey(_selectedScope),
-                initialValue: _selectedScope,
-                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-                decoration: InputDecoration(
-                  labelText: context.l10n.scope,
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  DropdownMenuItem(
-                    value: FormScopeType.global,
-                    child: Text(_scopeLabel(FormScopeType.global)),
-                  ),
-                  if (_supportsEuScope)
-                    DropdownMenuItem(
-                      value: FormScopeType.eu,
-                      child: Text(_scopeLabel(FormScopeType.eu)),
-                    ),
-                  DropdownMenuItem(
-                    value: FormScopeType.country,
-                    child: Text(_scopeLabel(FormScopeType.country)),
-                  ),
-                  if (_supportsStateScope)
-                    DropdownMenuItem(
-                      value: FormScopeType.stateOrRegion,
-                      child: Text(_scopeLabel(FormScopeType.stateOrRegion)),
-                    ),
-                  DropdownMenuItem(
-                    value: FormScopeType.city,
-                    child: Text(_scopeLabel(FormScopeType.city)),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _selectedScope = value;
-                  });
-                  _saveDraft();
-                },
-              ),
+              _scopeSelectorCard(),
               const SizedBox(height: 10),
-              if (_selectedScope == FormScopeType.city) ...[
-                Card(
-                  margin: EdgeInsets.zero,
-                  child: ListTile(
-                    leading: const Icon(Icons.location_city_outlined),
-                    title: Text(context.l10n.town),
-                    subtitle: Text(
-                      _profileTown ?? context.l10n.pleaseSetTownInAddressFirst,
-                    ),
-                    textColor: _profileTown == null
-                        ? Theme.of(context).colorScheme.error
-                        : null,
-                    iconColor: _profileTown == null
-                        ? Theme.of(context).colorScheme.error
-                        : null,
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
               if (widget.additionalBottomFields != null)
                 ...widget.additionalBottomFields!,
               Builder(

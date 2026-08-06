@@ -45,14 +45,23 @@ void main() {
     );
     expect(titleEditable.focusNode.hasFocus, isTrue);
 
-    final scopeSelector = find.byWidgetPredicate(
-      (widget) => widget is DropdownButtonFormField<FormScopeType>,
-    );
+    final scopeSelector = find.byKey(const Key('scopeSelectorCard'));
     await tester.scrollUntilVisible(
       scopeSelector,
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    expect(
+      find.text('Please set your country in your address first'),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is DropdownButtonFormField<FormScopeType>,
+      ),
+      findsNothing,
+    );
+
     await tester.tap(scopeSelector);
     await tester.pumpAndSettle();
 
