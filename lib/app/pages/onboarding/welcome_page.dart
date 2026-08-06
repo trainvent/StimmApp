@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
@@ -10,6 +11,7 @@ import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/auth_popup_lifecycle.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 
@@ -33,6 +35,31 @@ class _WelcomePageState extends State<WelcomePage> {
       Environment.isStimmapp;
 
   bool get _isProviderSigningIn => _isGoogleSigningIn || _isAppleSigningIn;
+
+  Future<void> _waitForProviderPopup(
+    Future<void> Function() authenticate,
+    String provider,
+  ) async {
+    if (!kIsWeb) return authenticate();
+
+    final popup = AuthPopupLifecycle();
+    try {
+      final authentication = authenticate();
+      await Future.any([
+        authentication,
+        popup.returned.then((_) {
+          throw AuthException(
+            FirebaseAuthException(
+              code: '$provider-sign-in-cancelled',
+              message: '$provider sign-in was cancelled.',
+            ),
+          );
+        }),
+      ]);
+    } finally {
+      popup.dispose();
+    }
+  }
 
   Widget _buildAppleSignInButton(BuildContext context) {
     return LoginProviderButtonWidget(
@@ -74,7 +101,10 @@ class _WelcomePageState extends State<WelcomePage> {
 
     setState(() => _isGoogleSigningIn = true);
     try {
-      await authService.signInWithGoogle();
+      await _waitForProviderPopup(
+        () async => authService.signInWithGoogle(),
+        'google',
+      );
       unawaited(
         AnalyticsService.instance.logAuthResult(
           action: 'google_sign_in',
@@ -113,7 +143,10 @@ class _WelcomePageState extends State<WelcomePage> {
 
     setState(() => _isAppleSigningIn = true);
     try {
-      await authService.signInWithApple();
+      await _waitForProviderPopup(
+        () async => authService.signInWithApple(),
+        'apple',
+      );
       unawaited(
         AnalyticsService.instance.logAuthResult(
           action: 'apple_sign_in',

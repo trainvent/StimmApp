@@ -91,14 +91,16 @@ class _MockUserCredential extends Mock implements UserCredential {
 }
 
 class _GoogleFirebaseAuth extends Mock implements FirebaseAuth {
-  _GoogleFirebaseAuth(this.result);
+  _GoogleFirebaseAuth(this.result, {this.error});
 
   final UserCredential result;
+  final FirebaseAuthException? error;
   AuthCredential? receivedCredential;
 
   @override
   Future<UserCredential> signInWithCredential(AuthCredential credential) async {
     receivedCredential = credential;
+    if (error case final error?) throw error;
     return result;
   }
 }
@@ -224,6 +226,27 @@ void main() {
         googleAuthClient: _FakeGoogleAuthClient(
           error: const GoogleAuthCancelledException(),
         ),
+      );
+
+      await expectLater(
+        service.signInWithGoogle(),
+        throwsA(
+          isA<AuthException>().having(
+            (error) => error.code,
+            'code',
+            'google-sign-in-cancelled',
+          ),
+        ),
+      );
+    });
+
+    test('maps a closed Firebase popup to the cancellation code', () async {
+      final service = AuthService(
+        firebaseAuth: _GoogleFirebaseAuth(
+          _MockUserCredential(),
+          error: FirebaseAuthException(code: 'popup-closed-by-user'),
+        ),
+        googleAuthClient: _FakeGoogleAuthClient(),
       );
 
       await expectLater(

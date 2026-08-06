@@ -141,6 +141,7 @@ class AuthService {
       'canceled',
       'cancelled',
       'popup-closed-by-user',
+      'web-context-canceled',
       'web-context-cancelled',
     }.contains(code);
   }
@@ -150,8 +151,21 @@ class AuthService {
       'canceled',
       'cancelled',
       'popup-closed-by-user',
+      'web-context-canceled',
       'web-context-cancelled',
     }.contains(code);
+  }
+
+  AuthException _googleAuthException(FirebaseAuthException error) {
+    if (_isGoogleCancellation(error.code)) {
+      return AuthException(
+        FirebaseAuthException(
+          code: 'google-sign-in-cancelled',
+          message: 'Google sign-in was cancelled.',
+        ),
+      );
+    }
+    return AuthException(error);
   }
 
   AuthException _appleAuthException(FirebaseAuthException error) {
@@ -252,7 +266,7 @@ class AuthService {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      throw AuthException(e);
+      throw _googleAuthException(e);
     }
   }
 
