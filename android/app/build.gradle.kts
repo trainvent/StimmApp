@@ -77,6 +77,8 @@ android {
             applicationId = "de.lemarq.stimmapp.dev"
             manifestPlaceholders["deepLinkHost"] = "stimmapp-dev.web.app"
             manifestPlaceholders["secondaryDeepLinkHost"] = "vivot-dev.web.app"
+            manifestPlaceholders["webDeepLinkHost"] = "stimmapp-dev.web.app"
+            manifestPlaceholders["secondaryWebDeepLinkHost"] = "vivot-dev.web.app"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp-dev.web.app"
             resValue("string", "app_name", "StimmApp Dev")
         }
@@ -85,6 +87,8 @@ android {
             applicationId = "de.lemarq.stimmapp"
             manifestPlaceholders["deepLinkHost"] = "stimmapp.net"
             manifestPlaceholders["secondaryDeepLinkHost"] = "vivot.net"
+            manifestPlaceholders["webDeepLinkHost"] = "web.stimmapp.net"
+            manifestPlaceholders["secondaryWebDeepLinkHost"] = "web.vivot.net"
             manifestPlaceholders["debugDeepLinkHost"] = "stimmapp.net"
             resValue("string", "app_name", "StimmApp")
         }

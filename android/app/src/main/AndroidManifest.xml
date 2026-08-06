@@ -50,6 +50,14 @@
                     android:scheme="https"
                     android:host="${secondaryDeepLinkHost}"
                     android:pathPrefix="/petition" />
+                <data
+                    android:scheme="https"
+                    android:host="${webDeepLinkHost}"
+                    android:pathPrefix="/petition" />
+                <data
+                    android:scheme="https"
+                    android:host="${secondaryWebDeepLinkHost}"
+                    android:pathPrefix="/petition" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -67,11 +75,27 @@
                     android:pathPrefix="/poll" />
                 <data
                     android:scheme="https"
+                    android:host="${webDeepLinkHost}"
+                    android:pathPrefix="/poll" />
+                <data
+                    android:scheme="https"
+                    android:host="${secondaryWebDeepLinkHost}"
+                    android:pathPrefix="/poll" />
+                <data
+                    android:scheme="https"
                     android:host="${deepLinkHost}"
                     android:pathPrefix="/survey" />
                 <data
                     android:scheme="https"
                     android:host="${secondaryDeepLinkHost}"
+                    android:pathPrefix="/survey" />
+                <data
+                    android:scheme="https"
+                    android:host="${webDeepLinkHost}"
+                    android:pathPrefix="/survey" />
+                <data
+                    android:scheme="https"
+                    android:host="${secondaryWebDeepLinkHost}"
                     android:pathPrefix="/survey" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -87,6 +111,14 @@
                 <data
                     android:scheme="https"
                     android:host="${secondaryDeepLinkHost}"
+                    android:path="/group-invite" />
+                <data
+                    android:scheme="https"
+                    android:host="${webDeepLinkHost}"
+                    android:path="/group-invite" />
+                <data
+                    android:scheme="https"
+                    android:host="${secondaryWebDeepLinkHost}"
                     android:path="/group-invite" />
             </intent-filter>
         </activity>

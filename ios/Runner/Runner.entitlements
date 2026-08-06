@@ -10,6 +10,8 @@
 	<array>
 		<string>applinks:$(DEEP_LINK_HOST)</string>
 		<string>applinks:$(SECONDARY_DEEP_LINK_HOST)</string>
+		<string>applinks:$(WEB_DEEP_LINK_HOST)</string>
+		<string>applinks:$(SECONDARY_WEB_DEEP_LINK_HOST)</string>
 	</array>
 </dict>
 </plist>

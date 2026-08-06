@@ -555,6 +555,48 @@ a.micro-card span {
   border-radius: 22px;
 }
 
+.form-link-card {
+  padding: 28px;
+}
+
+.form-link-card h1 {
+  max-width: none;
+  font-size: clamp(2rem, 9vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.form-link-card p {
+  margin: 16px auto 0;
+  max-width: 38ch;
+}
+
+.form-link-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.form-link-actions .button {
+  width: 100%;
+  margin-top: 0;
+}
+
+.form-link-web-action {
+  appearance: none;
+  border: 0;
+  padding: 10px;
+  color: var(--primary);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.form-link-web-action:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 980px) {
   .section-grid,
   .story {
