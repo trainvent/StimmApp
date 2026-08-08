@@ -106,6 +106,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
         );
       },
       bottomAction: SignActionButton(
+        submissionId: 'poll:${widget.id}',
         label: context.l10n.vote,
         participantIdsStream: participantIdsStream,
         onAction: ({String? reason}) async {

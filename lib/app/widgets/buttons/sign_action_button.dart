@@ -7,11 +7,14 @@ import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 class SignActionButton extends ConsumerWidget {
   const SignActionButton({
     super.key,
+    required this.submissionId,
     required this.label,
     required this.participantIdsStream,
     required this.onAction,
@@ -19,6 +22,7 @@ class SignActionButton extends ConsumerWidget {
     this.askForReason = false,
   });
 
+  final String submissionId;
   final String label;
   final Stream<Set<String>> participantIdsStream;
   final Future<void> Function({String? reason}) onAction;
@@ -28,6 +32,11 @@ class SignActionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showPetitionReason = ref.watch(showPetitionReasonProvider);
+    final submissionPhase = ref.watch(
+      deferredSubmissionProvider.select((state) => state[submissionId]),
+    );
+    final isPending = submissionPhase == DeferredSubmissionPhase.pending;
+    final isCommitting = submissionPhase == DeferredSubmissionPhase.committing;
 
     return StreamBuilder<Set<String>>(
       stream: participantIdsStream,
@@ -36,11 +45,15 @@ class SignActionButton extends ConsumerWidget {
         final participantIds = snap.data ?? const <String>{};
         final alreadySigned = uid != null && participantIds.contains(uid);
         final loading = snap.connectionState == ConnectionState.waiting;
-        final disabled = alreadySigned || loading;
+        final disabled = alreadySigned || loading || isCommitting;
 
         return ElevatedButton(
           key: keys.petitionDetailPage.signButton,
-          onPressed: disabled
+          onPressed: isPending
+              ? () => ref
+                    .read(deferredSubmissionProvider.notifier)
+                    .cancel(submissionId)
+              : disabled
               ? null
               : () async {
                   final user = authService.currentUser;
@@ -54,20 +67,37 @@ class SignActionButton extends ConsumerWidget {
                     // After bottom sheet closes, check if user is logged in
                     if (authService.currentUser != null) {
                       if (!context.mounted) return;
-                      await _handleSign(context, showPetitionReason);
+                      await _queueSubmission(context, ref, showPetitionReason);
                     }
                     return;
                   }
-                  await _handleSign(context, showPetitionReason);
+                  await _queueSubmission(context, ref, showPetitionReason);
                 },
-          child: Text(alreadySigned ? '⛔ $label ⛔' : label),
+          child: isPending || isCommitting
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TriangleLoadingIndicator(
+                      size: 20,
+                      showFill: false,
+                      strokeColor: Theme.of(context).colorScheme.onPrimary,
+                      iterationDuration:
+                          DeferredSubmissionController.undoDuration,
+                      iterations: 1,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(isPending ? context.l10n.undo : label),
+                  ],
+                )
+              : Text(alreadySigned ? '⛔ $label ⛔' : label),
         );
       },
     );
   }
 
-  Future<void> _handleSign(
+  Future<void> _queueSubmission(
     BuildContext context,
+    WidgetRef ref,
     bool showPetitionReason,
   ) async {
     String? reason;
@@ -99,17 +129,21 @@ class SignActionButton extends ConsumerWidget {
       );
     }
 
-    try {
-      await onAction(reason: reason);
-      if (!context.mounted) return;
-      showSuccessSnackBar(successMessage);
-    } on StateError catch (e) {
-      if (!context.mounted) return;
-      showErrorSnackBar(e.message);
-    } catch (e) {
-      if (!context.mounted) return;
-      showErrorSnackBar(e.toString());
-    }
+    if (!context.mounted) return;
+    ref
+        .read(deferredSubmissionProvider.notifier)
+        .queue(
+          id: submissionId,
+          action: () => onAction(reason: reason),
+          onSuccess: () => showSuccessSnackBar(successMessage),
+          onError: (error) {
+            if (error is StateError) {
+              showErrorSnackBar(error.message);
+            } else {
+              showErrorSnackBar(error.toString());
+            }
+          },
+        );
   }
 }
 

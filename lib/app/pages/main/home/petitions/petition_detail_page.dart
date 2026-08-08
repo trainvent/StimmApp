@@ -80,6 +80,7 @@ class PetitionDetailPage extends StatelessWidget {
         return const SizedBox.shrink();
       },
       bottomAction: SignActionButton(
+        submissionId: 'petition:$id',
         label: context.l10n.sign,
         participantIdsStream: participantIdsStream,
         askForReason: true,

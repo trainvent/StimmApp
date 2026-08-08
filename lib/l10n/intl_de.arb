@@ -74,6 +74,7 @@
 	"blockedUsersLoadError": "Blockierte Nutzer konnten nicht geladen werden",
 	"blockedContentHidden": "Dieser Inhalt ist ausgeblendet, weil du diesen Nutzer blockiert hast.",
 	"cancel": "Abbrechen",
+	"undo": "Rückgängig machen",
 	"reportContent": "Inhalt melden",
 	"blockUser": "Nutzer blockieren",
 	"blockUserDescription": "Dadurch werden die Inhalte dieses Nutzers sofort aus deinem Feed ausgeblendet und das StimmApp-Team zur Prüfung informiert.",

@@ -73,6 +73,7 @@
 	"blockedUsersLoadError": "Failed to load blocked users",
 	"blockedContentHidden": "This content is hidden because you blocked this user.",
 	"cancel": "Cancel",
+	"undo": "Undo",
 	"reportContent": "Report content",
 	"blockUser": "Block user",
 	"blockUserDescription": "This will hide this user's content from your feed immediately and notify the StimmApp team for review.",

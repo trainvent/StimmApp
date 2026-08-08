@@ -113,6 +113,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cancel => 'Abbrechen';
 
   @override
+  String get undo => 'Rückgängig machen';
+
+  @override
   String get reportContent => 'Inhalt melden';
 
   @override
