@@ -144,13 +144,20 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   final AppBootstrap _bootstrap = AppBootstrap();
   bool _initialized = false;
+  Uri? _pendingDeepLink;
+  bool _openingDeepLink = false;
 
   Uri _initialUri() {
     if (kIsWeb) {
-      return Uri.base;
+      final uri = Uri.base;
+      final requestedRoute = uri.queryParameters['open'];
+      if (requestedRoute != null && requestedRoute.startsWith('/')) {
+        return Uri.tryParse(requestedRoute) ?? uri;
+      }
+      return uri;
     }
 
     final routeName = PlatformDispatcher.instance.defaultRouteName;
@@ -158,6 +165,56 @@ class _MyAppState extends ConsumerState<MyApp> {
       return Uri(path: '/');
     }
     return Uri.tryParse(routeName) ?? Uri(path: routeName);
+  }
+
+  String? _routeNameForUri(Uri? uri) {
+    if (uri == null || _pageForUri(uri) == null) return null;
+
+    final isAppScheme = uri.scheme == 'stimmapp' || uri.scheme == 'vivot';
+    final pathSegments = isAppScheme && uri.host.isNotEmpty
+        ? <String>[uri.host, ...uri.pathSegments]
+        : uri.pathSegments;
+    final path = '/${pathSegments.join('/')}';
+    return uri.hasQuery ? '$path?${uri.query}' : path;
+  }
+
+  void _openPendingDeepLink() {
+    final uri = _pendingDeepLink;
+    if (!_initialized || uri == null) return;
+    _pendingDeepLink = null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _openDeepLink(uri);
+    });
+  }
+
+  void _openDeepLink(Uri uri) {
+    final routeName = _routeNameForUri(uri);
+    final navigator = navigatorKey.currentState;
+    if (routeName == null || navigator == null || _openingDeepLink) return;
+
+    _openingDeepLink = true;
+    try {
+      navigator.pushNamed<void>(routeName);
+    } finally {
+      _openingDeepLink = false;
+    }
+  }
+
+  @override
+  Future<bool> didPushRouteInformation(
+    RouteInformation routeInformation,
+  ) async {
+    final uri = routeInformation.uri;
+    if (_routeNameForUri(uri) == null) return false;
+
+    if (!_initialized || navigatorKey.currentState == null) {
+      _pendingDeepLink = uri;
+    } else {
+      _openDeepLink(uri);
+    }
+    return true;
   }
 
   Widget? _pageForUri(Uri? uri) {
@@ -200,20 +257,24 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _pendingDeepLink = _initialUri();
     _bootstrap.init(ref).then((_) {
-      if (mounted) setState(() => _initialized = true);
+      if (!mounted) return;
+      setState(() => _initialized = true);
+      _openPendingDeepLink();
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _bootstrap.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final initialUri = _initialUri();
     final themeMode = ref.watch(themeModeProvider);
     final themeScheme = ref.watch(themeSchemeProvider);
     final locale = ref.watch(appLocaleProvider);
@@ -247,6 +308,17 @@ class _MyAppState extends ConsumerState<MyApp> {
           },
         );
       },
+      // Custom schemes such as `stimmapp://petition/...` are not slash-based,
+      // so Flutter's default initial-route generator would make the linked
+      // form the only route in the stack. Always establish the app root first;
+      // `_openPendingDeepLink` pushes the form once bootstrap is complete.
+      onGenerateInitialRoutes: (_) => [
+        MaterialPageRoute<void>(
+          builder: (context) =>
+              !_initialized ? const AppLoadingPage() : const InitAppLayout(),
+          settings: const RouteSettings(name: '/'),
+        ),
+      ],
       onGenerateRoute: (settings) {
         final page = _pageForUri(
           settings.name == null ? null : Uri.tryParse(settings.name!),
@@ -266,9 +338,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
-      home: !_initialized
-          ? const AppLoadingPage()
-          : _pageForUri(initialUri) ?? const InitAppLayout(),
+      home: !_initialized ? const AppLoadingPage() : const InitAppLayout(),
     );
 
     if (Environment.isDev) {

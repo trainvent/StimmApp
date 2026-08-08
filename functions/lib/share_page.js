@@ -75,6 +75,15 @@ function requestHost(request) {
     const forwardedHost = (_a = request.get("x-forwarded-host")) === null || _a === void 0 ? void 0 : _a.split(",")[0].trim();
     return forwardedHost || request.get("host") || "stimmapp.net";
 }
+function webAppUrl(webOrigin, route) {
+    if (!route)
+        return webOrigin;
+    return `${webOrigin}/?open=${encodeURIComponent(route)}`;
+}
+function isWebAppHost(host) {
+    const hostname = host.toLowerCase().split(":")[0];
+    return hostname === "web.stimmapp.net" || hostname === "web.vivot.net";
+}
 function renderShareShell({ locale, appName, formTitle, title, description, canonicalUrl, imageUrl, robots, route, isVivot, }) {
     const safeFormTitle = escapeHtml(formTitle);
     const safeTitle = escapeHtml(title);
@@ -87,7 +96,11 @@ function renderShareShell({ locale, appName, formTitle, title, description, cano
         ? "https://web.vivot.net"
         : "https://web.stimmapp.net";
     const appScheme = isVivot ? "vivot" : "stimmapp";
-    const webUrl = route ? `${webOrigin}${route}` : webOrigin;
+    // Firebase Hosting applies the form-path rewrite to every domain attached to
+    // this site. Enter the Flutter web app through `/`, which is served by
+    // index.html, and pass the intended form route separately. The app restores
+    // the clean route after startup.
+    const webUrl = webAppUrl(webOrigin, route);
     const appUrl = route ? `${appScheme}://${route.slice(1)}` : `${appScheme}://`;
     const labels = locale === "de" ? {
         heading: "Wie möchtest du dieses Formular öffnen?",
@@ -202,6 +215,20 @@ exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
     const match = request.path.match(/^\/(petition|poll|survey)\/([^/?#]+)\/?$/);
     const host = requestHost(request);
     const isVivot = host.toLowerCase().includes("vivot");
+    const webOrigin = isVivot
+        ? "https://web.vivot.net"
+        : "https://web.stimmapp.net";
+    // A direct/reloaded Flutter web route also reaches this function because
+    // Hosting rewrites are site-wide. Send it through the non-rewritten root
+    // instead of rendering the share chooser on the web-app subdomain.
+    if (isWebAppHost(host)) {
+        const route = match
+            ? `/${match[1]}/${encodeURIComponent(match[2])}`
+            : null;
+        response.set("Cache-Control", "private, no-store");
+        response.redirect(302, webAppUrl(webOrigin, route));
+        return;
+    }
     const appName = isVivot ? "Vivot" : "StimmApp";
     const locale = isVivot ? "en" : "de";
     const genericDescription = isVivot
