@@ -331,14 +331,17 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         }
         return null;
       },
-      routes: {'/delete_account': (context) => const DeleteAccountPage()},
+      routes: {
+        '/': (context) =>
+            !_initialized ? const AppLoadingPage() : const InitAppLayout(),
+        '/delete_account': (context) => const DeleteAccountPage(),
+      },
       localizationsDelegates: const [
         S.delegate,
         ...AppLocalizations.localizationsDelegates,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
-      home: !_initialized ? const AppLoadingPage() : const InitAppLayout(),
     );
 
     if (Environment.isDev) {
