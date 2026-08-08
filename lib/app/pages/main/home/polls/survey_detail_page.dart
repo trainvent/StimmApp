@@ -63,7 +63,11 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
         return PopupMenuButton<String>(
           onSelected: (value) async {
             if (value == 'report') {
-              await _showReportDialog(context, survey);
+              await BaseDetailPage.showReportDialog(
+                context,
+                item: survey,
+                contentType: 'survey',
+              );
             } else if (value == 'block') {
               await _confirmBlockUser(context, survey);
             }
@@ -191,97 +195,6 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       showSuccessSnackBar(context.l10n.surveyDeleted);
       Navigator.of(context).pop();
     }
-  }
-
-  Future<void> _showReportDialog(BuildContext context, Survey survey) async {
-    final detailsController = TextEditingController();
-    String selectedReason = 'harassment';
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(context.l10n.reportContent),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedReason,
-                    items: [
-                      DropdownMenuItem(
-                        value: 'harassment',
-                        child: Text(context.l10n.harassmentOrBullying),
-                      ),
-                      DropdownMenuItem(
-                        value: 'hate_speech',
-                        child: Text(context.l10n.hateSpeech),
-                      ),
-                      DropdownMenuItem(
-                        value: 'sexual_content',
-                        child: Text(context.l10n.sexualOrExplicitContent),
-                      ),
-                      DropdownMenuItem(
-                        value: 'violence',
-                        child: Text(context.l10n.violenceOrThreats),
-                      ),
-                      DropdownMenuItem(
-                        value: 'misinformation',
-                        child: Text(context.l10n.misinformationOrFraud),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => selectedReason = value);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: detailsController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.additionalDetailsOptional,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(context.l10n.cancel),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    final reporterId = authService.currentUser?.uid;
-                    if (reporterId == null) {
-                      return;
-                    }
-                    await ModerationRepository.create().submitReport(
-                      reporterId: reporterId,
-                      reportedUserId: survey.createdBy,
-                      contentType: 'survey',
-                      contentId: survey.id,
-                      reason: selectedReason,
-                      details: detailsController.text,
-                    );
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                      showSuccessSnackBar(
-                        context.l10n.reportSubmittedReview24Hours,
-                      );
-                    }
-                  },
-                  child: Text(context.l10n.submit),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-    detailsController.dispose();
   }
 
   Future<void> _confirmBlockUser(BuildContext context, Survey survey) async {

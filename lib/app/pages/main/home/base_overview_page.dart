@@ -378,7 +378,7 @@ class _BaseOverviewPageState<T extends HomeItem>
       case FormScopeType.global:
         return context.l10n.scopeGlobal;
       case FormScopeType.eu:
-        return context.l10n.scopeEu;
+        return context.l10n.scopeCountryUnion;
       case FormScopeType.continent:
         return context.l10n.scopeContinent;
       case FormScopeType.country:

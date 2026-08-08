@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
@@ -53,6 +54,102 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   final Widget Function(BuildContext context, T item)? topRightActionBuilder;
   final Future<UserProfile?>? userProfileFuture;
   final String sharePathSegment;
+
+  static Future<void> showReportDialog(
+    BuildContext context, {
+    required HomeItem item,
+    required String contentType,
+  }) async {
+    final detailsController = TextEditingController();
+    var selectedReason = 'harassment';
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(context.l10n.reportContent),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedReason,
+                    isExpanded: true,
+                    items: [
+                      DropdownMenuItem(
+                        value: 'harassment',
+                        child: Text(context.l10n.harassmentOrBullying),
+                      ),
+                      DropdownMenuItem(
+                        value: 'hate_speech',
+                        child: Text(context.l10n.hateSpeech),
+                      ),
+                      DropdownMenuItem(
+                        value: 'sexual_content',
+                        child: Text(context.l10n.sexualOrExplicitContent),
+                      ),
+                      DropdownMenuItem(
+                        value: 'violence',
+                        child: Text(context.l10n.violenceOrThreats),
+                      ),
+                      DropdownMenuItem(
+                        value: 'misinformation',
+                        child: Text(context.l10n.misinformationOrFraud),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => selectedReason = value);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: detailsController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.additionalDetailsOptional,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(context.l10n.cancel),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    final reporterId = authService.currentUser?.uid;
+                    if (reporterId == null) return;
+                    final successMessage =
+                        context.l10n.reportSubmittedReview24Hours;
+                    await ModerationRepository.create().submitReport(
+                      reporterId: reporterId,
+                      reportedUserId: item.createdBy,
+                      contentType: contentType,
+                      contentId: item.id,
+                      reason: selectedReason,
+                      details: detailsController.text,
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      showSuccessSnackBar(successMessage);
+                    }
+                  },
+                  child: Text(context.l10n.submit),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    detailsController.dispose();
+  }
 
   @override
   State<BaseDetailPage<T>> createState() => _BaseDetailPageState<T>();

@@ -56,7 +56,11 @@ class PetitionDetailPage extends StatelessWidget {
         return PopupMenuButton<String>(
           onSelected: (value) async {
             if (value == 'report') {
-              await _showReportDialog(context, petition);
+              await BaseDetailPage.showReportDialog(
+                context,
+                item: petition,
+                contentType: 'petition',
+              );
             } else if (value == 'block') {
               await _confirmBlockUser(context, petition);
             }
@@ -128,111 +132,6 @@ class PetitionDetailPage extends StatelessWidget {
       showSuccessSnackBar(context.l10n.petitionDeleted);
       Navigator.of(context).pop();
     }
-  }
-
-  Future<void> _showReportDialog(
-    BuildContext context,
-    Petition petition,
-  ) async {
-    final detailsController = TextEditingController();
-    String selectedReason = 'harassment';
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final reportContent = context.l10n.reportContent;
-            final additionalDetailsOptional =
-                context.l10n.additionalDetailsOptional;
-            final cancel = context.l10n.cancel;
-            final submit = context.l10n.submit;
-            final harassmentOrBullying = context.l10n.harassmentOrBullying;
-            final hateSpeech = context.l10n.hateSpeech;
-            final sexualOrExplicitContent =
-                context.l10n.sexualOrExplicitContent;
-            final violenceOrThreats = context.l10n.violenceOrThreats;
-            final misinformationOrFraud = context.l10n.misinformationOrFraud;
-            final reportSubmittedReview24Hours =
-                context.l10n.reportSubmittedReview24Hours;
-            return AlertDialog(
-              title: Text(reportContent),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedReason,
-                    items: [
-                      DropdownMenuItem(
-                        value: 'harassment',
-                        child: Text(harassmentOrBullying),
-                      ),
-                      DropdownMenuItem(
-                        value: 'hate_speech',
-                        child: Text(hateSpeech),
-                      ),
-                      DropdownMenuItem(
-                        value: 'sexual_content',
-                        child: Text(sexualOrExplicitContent),
-                      ),
-                      DropdownMenuItem(
-                        value: 'violence',
-                        child: Text(violenceOrThreats),
-                      ),
-                      DropdownMenuItem(
-                        value: 'misinformation',
-                        child: Text(misinformationOrFraud),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => selectedReason = value);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: detailsController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: additionalDetailsOptional,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(cancel),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    final reporterId = authService.currentUser?.uid;
-                    if (reporterId == null) {
-                      return;
-                    }
-                    await ModerationRepository.create().submitReport(
-                      reporterId: reporterId,
-                      reportedUserId: petition.createdBy,
-                      contentType: 'petition',
-                      contentId: petition.id,
-                      reason: selectedReason,
-                      details: detailsController.text,
-                    );
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                      showSuccessSnackBar(reportSubmittedReview24Hours);
-                    }
-                  },
-                  child: Text(submit),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-    detailsController.dispose();
   }
 
   Future<void> _confirmBlockUser(
