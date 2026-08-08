@@ -7,10 +7,7 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 class BlockedUserProfile {
-  const BlockedUserProfile({
-    required this.userId,
-    this.profile,
-  });
+  const BlockedUserProfile({required this.userId, this.profile});
 
   final String userId;
   final UserProfile? profile;
@@ -39,24 +36,7 @@ class ModerationRepository {
         .collection(DatabaseCollections.blockedUsers);
   }
 
-  Future<DocumentReference<ModerationReport>?> _findOpenReport({
-    required String reportedUserId,
-    required String contentType,
-    required String contentId,
-  }) async {
-    final snapshot = await _reports()
-        .where('reportedUserId', isEqualTo: reportedUserId)
-        .where('contentType', isEqualTo: contentType)
-        .where('contentId', isEqualTo: contentId)
-        .where('status', isEqualTo: 'open')
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isEmpty) return null;
-    return snapshot.docs.first.reference;
-  }
-
-  Future<void> _appendEntry({
+  Future<void> _createReport({
     required String reporterId,
     required String reportedUserId,
     required String contentType,
@@ -65,13 +45,9 @@ class ModerationRepository {
     required String source,
     String? details,
   }) async {
-    final normalizedDetails =
-        details?.trim().isEmpty ?? true ? null : details?.trim();
-    final ref = await _findOpenReport(
-      reportedUserId: reportedUserId,
-      contentType: contentType,
-      contentId: contentId,
-    );
+    final normalizedDetails = details?.trim().isEmpty ?? true
+        ? null
+        : details?.trim();
 
     final entry = ModerationReportEntry(
       reporterId: reporterId,
@@ -81,27 +57,18 @@ class ModerationRepository {
       createdAt: DateTime.now(),
     );
 
-    if (ref == null) {
-      await _reports().add(
-        ModerationReport(
-          id: '',
-          reportedUserId: reportedUserId,
-          contentType: contentType,
-          contentId: contentId,
-          entries: <ModerationReportEntry>[entry],
-        ),
-      );
-      return;
-    }
-
-    await ref.update(<String, Object?>{
-      'entries': FieldValue.arrayUnion(<Object?>[entry.toMap()]),
-      'reporterId': reporterId,
-      'reason': reason,
-      'source': source,
-      'details': normalizedDetails,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    // Reports are deliberately unreadable to non-admin users. Creating one
+    // document per signal avoids a client-side lookup that Firestore rules
+    // must reject and keeps other reporters' moderation data private.
+    await _reports().add(
+      ModerationReport(
+        id: '',
+        reportedUserId: reportedUserId,
+        contentType: contentType,
+        contentId: contentId,
+        entries: <ModerationReportEntry>[entry],
+      ),
+    );
   }
 
   Stream<Set<String>> watchBlockedUserIds(String userId) {
@@ -118,18 +85,20 @@ class ModerationRepository {
       }
 
       final profiles = await Future.wait(
-        blockedUserIds.map((blockedUserId) => locator.databaseService
-            .colRef<UserProfile>(
-              DatabaseCollections.users,
-              fromFirestore: (snap, _) => UserProfile.fromJson(
-                snap.data() as Map<String, dynamic>,
-                snap.id,
-              ),
-              toFirestore: (model, _) => model.toJson(),
-            )
-            .doc(blockedUserId)
-            .get()
-            .then((snap) => snap.data())),
+        blockedUserIds.map(
+          (blockedUserId) => locator.databaseService
+              .colRef<UserProfile>(
+                DatabaseCollections.users,
+                fromFirestore: (snap, _) => UserProfile.fromJson(
+                  snap.data() as Map<String, dynamic>,
+                  snap.id,
+                ),
+                toFirestore: (model, _) => model.toJson(),
+              )
+              .doc(blockedUserId)
+              .get()
+              .then((snap) => snap.data()),
+        ),
       );
 
       return List<BlockedUserProfile>.generate(
@@ -165,7 +134,7 @@ class ModerationRepository {
     String? details,
     String source = 'report',
   }) async {
-    await _appendEntry(
+    await _createReport(
       reporterId: reporterId,
       reportedUserId: reportedUserId,
       contentType: contentType,
@@ -192,7 +161,7 @@ class ModerationRepository {
     });
     await batch.commit();
 
-    await _appendEntry(
+    await _createReport(
       reporterId: blockerId,
       reportedUserId: blockedUserId,
       contentType: contentType,
@@ -222,10 +191,14 @@ class ModerationRepository {
     required String action,
     String? adminMessage,
   }) async {
-    await FirebaseFunctions.instance.httpsCallable('moderateReport').call(<String, Object?>{
-      'reportId': reportId,
-      'action': action,
-      'adminMessage': adminMessage?.trim().isEmpty ?? true ? null : adminMessage?.trim(),
-    });
+    await FirebaseFunctions.instance
+        .httpsCallable('moderateReport')
+        .call(<String, Object?>{
+          'reportId': reportId,
+          'action': action,
+          'adminMessage': adminMessage?.trim().isEmpty ?? true
+              ? null
+              : adminMessage?.trim(),
+        });
   }
 }
