@@ -35,50 +35,50 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   fluttericon: ^2.0.0
-  firebase_core: ^4.3.0
-  firebase_auth: ^6.1.3
-  firebase_analytics: ^12.4.3
-  shared_preferences: ^2.5.3
-  lottie: ^3.3.2
-  dio: ^5.7.0
-  http: ^1.5.0
+  firebase_core: ^4.13.0
+  firebase_auth: ^6.5.7
+  firebase_analytics: ^12.4.6
+  shared_preferences: ^2.5.5
+  lottie: ^3.5.1
+  dio: ^5.11.0
+  http: ^1.6.0
   flutter_launcher_icons: ^0.14.4
-  connectivity_plus: ^6.1.1
+  connectivity_plus: ^6.1.5
   internet_connection_checker: ^3.0.1
   dartz: ^0.10.1
-  intl: any
+  intl: ^0.20.2
   provider: ^6.1.5+1
-  syncfusion_flutter_gauges: ^32.1.20
-  cloud_firestore: ^6.1.1
-  uuid: ^4.5.2
+  syncfusion_flutter_gauges: ^34.2.2
+  cloud_firestore: ^6.8.0
+  uuid: ^4.6.0
   flutter_localizations:
     sdk: flutter
   intl_translation: ^0.21.0
-  image_picker: ^1.2.1
-  firebase_storage: ^13.0.5
-  path_provider: ^2.1.5
+  image_picker: ^1.2.3
+  firebase_storage: ^13.4.6
+  path_provider: ^2.1.6
   universal_io: ^2.3.1
-  share_plus: ^12.0.1
-  purchases_flutter: ^9.10.8
-  purchases_ui_flutter: ^9.10.8
+  share_plus: ^13.3.0
+  purchases_flutter: ^10.8.0
+  purchases_ui_flutter: ^10.8.0
   web: ^1.1.1
-  change_package_name: ^1.1.0
-  cloud_functions: ^6.0.6
-  google_places_autocomplete_text_field: ^3.0.0
-  package_info_plus: ^9.0.0
+  change_package_name: ^1.1.1
+  cloud_functions: ^6.3.6
+  google_places_autocomplete_text_field: ^4.1.0
+  package_info_plus: ^10.2.1
   url_launcher: ^6.3.2
-  flutter_riverpod: ^3.2.1
-  riverpod: ^3.2.1
-  file_picker: ^10.3.2
-  desktop_drop: ^0.6.1
+  flutter_riverpod: ^3.4.2
+  riverpod: ^3.4.2
+  file_picker: ^12.0.0-beta.7
+  desktop_drop: ^0.7.1
   qr_flutter: ^4.1.0
-  mobile_scanner: ^7.1.3
-  csv: ^6.0.0
+  mobile_scanner: ^7.4.0
+  csv: ^8.0.0
   flutter_slidable: ^4.0.3
   intl_utils: ^2.8.14
-  firebase_crashlytics: ^5.2.4
+  firebase_crashlytics: ^5.2.7
   google_sign_in: ^7.2.0
   google_sign_in_platform_interface: ^3.1.0
   trainvent_general: ^0.0.4
@@ -88,8 +88,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  fake_cloud_firestore: ^4.0.0
-  mockito: ^5.4.4
+  fake_cloud_firestore: ^4.2.0
+  mockito: ^5.6.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -97,15 +97,15 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  test: ^1.26.3
+  test: ^1.31.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-  test_api: any
+  test_api: ^0.7.11
   enough_mail: ^2.1.7
-  meta: ^1.17.0
+  meta: ^1.18.0
 flutter:
   generate: true
   # The following line ensures that the Material Icons font is

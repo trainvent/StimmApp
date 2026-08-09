@@ -15,7 +15,6 @@ import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
-import 'package:universal_io/io.dart' as io;
 
 class GroupInviteMembersPage extends StatelessWidget {
   const GroupInviteMembersPage({
@@ -361,9 +360,11 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
 
     final delimiter = _detectDelimiter(normalized);
-    final rows = const CsvToListConverter(
-      shouldParseNumbers: false,
-    ).convert(normalized, fieldDelimiter: delimiter, eol: '\n');
+    final rows = Csv(
+      fieldDelimiter: delimiter,
+      lineDelimiter: '\n',
+      autoDetect: false,
+    ).decode(normalized);
     if (rows.isEmpty) {
       return const _CsvImportResult(members: [], invalidRows: 0);
     }
@@ -1310,22 +1311,13 @@ class DefaultPollGroupCsvImporter extends PollGroupCsvImporter {
 
   @override
   Future<String?> pickCsvText() async {
-    final result = await FilePicker.platform.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['csv', 'tsv'],
-      withData: true,
     );
-    if (result == null || result.files.isEmpty) {
+    if (file == null) {
       return null;
     }
-
-    final file = result.files.single;
-    if (file.bytes != null) {
-      return utf8.decode(file.bytes!);
-    }
-    if (file.path != null && !kIsWeb) {
-      return io.File(file.path!).readAsString();
-    }
-    return null;
+    return utf8.decode(await file.readAsBytes());
   }
 }

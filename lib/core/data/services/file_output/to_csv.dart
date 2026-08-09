@@ -24,7 +24,7 @@ class CsvExportService extends ExportContentService {
           ]
         : document.rows;
 
-    return const ListToCsvConverter().convert(rows);
+    return const CsvEncoder().convert(rows);
   }
 
   @override
