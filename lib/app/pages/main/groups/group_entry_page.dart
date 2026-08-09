@@ -216,11 +216,11 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       final acceptLabel =
           notification.type == PollGroupAccessNotificationType.request
           ? context.l10n.approveRequest
-          : context.l10n.acceptInvite;
+          : context.l10n.accept;
       final denyLabel =
           notification.type == PollGroupAccessNotificationType.request
           ? context.l10n.denyRequest
-          : context.l10n.denyInvite;
+          : context.l10n.deny;
       return Row(
         children: [
           Expanded(

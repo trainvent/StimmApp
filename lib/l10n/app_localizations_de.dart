@@ -451,7 +451,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get description => 'Beschreibung';
 
   @override
-  String get descriptionTooShort => 'Beschreibung ist zu kurz';
+  String minimumCharacterCount(int count) {
+    return 'Mindestens $count Zeichen';
+  }
 
   @override
   String get devContactInformation =>
@@ -1165,9 +1167,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get titleRequired => 'Titel ist erforderlich';
 
   @override
-  String get titleTooShort => 'Titel ist zu kurz';
-
-  @override
   String get travel => 'Reisen';
 
   @override
@@ -1590,6 +1589,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get decline => 'Ablehnen';
+
+  @override
+  String get accept => 'Annehmen';
+
+  @override
+  String get deny => 'Ablehnen';
 
   @override
   String get continueToApp => 'Zur App';

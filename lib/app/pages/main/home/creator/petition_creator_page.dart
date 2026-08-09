@@ -142,7 +142,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         return;
       }
 
-      await PublishingQuotaService.instance.incrementPetition();
+      await PublishingQuotaService.instance.ensureCanCreatePetition();
 
       final petitionId = await PetitionRepository.create().createPetition(
         petition,

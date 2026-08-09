@@ -17,35 +17,23 @@ class DailyPublishingStatus {
 class PublishingQuotaService {
   PublishingQuotaService._({FirebaseFirestore? firestore, FirebaseAuth? auth})
     : _firestore = firestore ?? FirebaseFirestore.instance,
-      _auth = auth ?? FirebaseAuth.instance;
+      _auth = auth ?? FirebaseAuth.instance,
+      _now = DateTime.now;
 
   @visibleForTesting
   PublishingQuotaService.forTest({
     required FirebaseFirestore firestore,
     required FirebaseAuth auth,
+    DateTime Function()? now,
   }) : _firestore = firestore,
-       _auth = auth;
+       _auth = auth,
+       _now = now ?? DateTime.now;
 
   static final PublishingQuotaService instance = PublishingQuotaService._();
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
-
-  String _todayKeyUtc() {
-    final now = DateTime.now().toUtc();
-    final y = now.year.toString().padLeft(4, '0');
-    final m = now.month.toString().padLeft(2, '0');
-    final d = now.day.toString().padLeft(2, '0');
-    return '$y-$m-$d';
-  }
-
-  DocumentReference<Map<String, dynamic>> _doc(String uid) {
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('dailyPublishing')
-        .doc(_todayKeyUtc());
-  }
+  final DateTime Function() _now;
 
   Future<bool> _isProUser(String uid) async {
     final snap = await _firestore
@@ -55,6 +43,22 @@ class PublishingQuotaService {
     final data = snap.data() ?? const <String, dynamic>{};
     final email = data['email'] as String? ?? _auth.currentUser?.email;
     return data['isPro'] == true || UserProfile.shouldForcePro(email);
+  }
+
+  Future<int> _countCreatedToday(String collection, String uid) async {
+    final now = _now().toUtc();
+    final startOfDay = DateTime.utc(now.year, now.month, now.day);
+    final startOfTomorrow = startOfDay.add(const Duration(days: 1));
+    final snapshot = await _firestore
+        .collection(collection)
+        .where('createdBy', isEqualTo: uid)
+        .where(
+          'createdAt',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
+        .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow))
+        .get(const GetOptions(source: Source.server));
+    return snapshot.size;
   }
 
   Future<DailyPublishingStatus> getDailyStatus() async {
@@ -71,57 +75,29 @@ class PublishingQuotaService {
         canCreatePoll: true,
       );
     }
-    final snap = await _doc(uid).get();
-    final data = snap.data() ?? const {};
-    final petitionCount = (data['petitionCount'] ?? 0) as int;
-    final pollCount = (data['pollCount'] ?? 0) as int;
+
+    final counts = await Future.wait<int>([
+      _countCreatedToday(DatabaseCollections.petitions, uid),
+      _countCreatedToday(DatabaseCollections.polls, uid),
+      _countCreatedToday(DatabaseCollections.surveys, uid),
+    ]);
     return DailyPublishingStatus(
-      canCreatePetition: petitionCount < 1,
-      canCreatePoll: pollCount < 1,
+      canCreatePetition: counts[0] < 1,
+      canCreatePoll: counts[1] + counts[2] < 1,
     );
   }
 
-  Future<void> incrementPetition() async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) throw StateError('No authenticated user');
-    final isPro = await _isProUser(uid);
-    final ref = _doc(uid);
-    await _firestore.runTransaction((txn) async {
-      final snap = await txn.get(ref);
-      final data = snap.data();
-      final count = (data?['petitionCount'] ?? 0) as int;
-      if (!isPro && count >= 1) {
-        throw StateError('petition_daily_limit_reached');
-      }
-      final newData = {
-        'petitionCount': count + 1,
-        'lastPetitionAt': FieldValue.serverTimestamp(),
-        'pollCount': (data?['pollCount'] ?? 0),
-        'lastPollAt': data?['lastPollAt'],
-      };
-      txn.set(ref, newData, SetOptions(merge: true));
-    });
+  Future<void> ensureCanCreatePetition() async {
+    final status = await getDailyStatus();
+    if (!status.canCreatePetition) {
+      throw StateError('petition_daily_limit_reached');
+    }
   }
 
-  Future<void> incrementPoll() async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) throw StateError('No authenticated user');
-    final isPro = await _isProUser(uid);
-    final ref = _doc(uid);
-    await _firestore.runTransaction((txn) async {
-      final snap = await txn.get(ref);
-      final data = snap.data();
-      final count = (data?['pollCount'] ?? 0) as int;
-      if (!isPro && count >= 1) {
-        throw StateError('poll_daily_limit_reached');
-      }
-      final newData = {
-        'pollCount': count + 1,
-        'lastPollAt': FieldValue.serverTimestamp(),
-        'petitionCount': (data?['petitionCount'] ?? 0),
-        'lastPetitionAt': data?['lastPetitionAt'],
-      };
-      txn.set(ref, newData, SetOptions(merge: true));
-    });
+  Future<void> ensureCanCreatePoll() async {
+    final status = await getDailyStatus();
+    if (!status.canCreatePoll) {
+      throw StateError('poll_daily_limit_reached');
+    }
   }
 }

@@ -447,7 +447,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get description => 'Description';
 
   @override
-  String get descriptionTooShort => 'Description is too short';
+  String minimumCharacterCount(int count) {
+    return 'Minimum $count characters';
+  }
 
   @override
   String get devContactInformation => 'This app is developed by Trainvent';
@@ -1156,9 +1158,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleRequired => 'Title is required';
 
   @override
-  String get titleTooShort => 'Title is too short';
-
-  @override
   String get travel => 'Travel';
 
   @override
@@ -1573,6 +1572,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get decline => 'Decline';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get deny => 'Deny';
 
   @override
   String get continueToApp => 'Continue to app';

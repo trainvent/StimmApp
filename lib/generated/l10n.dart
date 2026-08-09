@@ -1234,13 +1234,13 @@ class S {
     return Intl.message('Description', name: 'description', desc: '', args: []);
   }
 
-  /// `Description is too short`
-  String get descriptionTooShort {
+  /// `Minimum {count} characters`
+  String minimumCharacterCount(int count) {
     return Intl.message(
-      'Description is too short',
-      name: 'descriptionTooShort',
+      'Minimum $count characters',
+      name: 'minimumCharacterCount',
       desc: '',
-      args: [],
+      args: [count],
     );
   }
 
@@ -3029,16 +3029,6 @@ class S {
     );
   }
 
-  /// `Title is too short`
-  String get titleTooShort {
-    return Intl.message(
-      'Title is too short',
-      name: 'titleTooShort',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Travel`
   String get travel {
     return Intl.message('Travel', name: 'travel', desc: '', args: []);
@@ -4137,6 +4127,16 @@ class S {
   /// `Decline`
   String get decline {
     return Intl.message('Decline', name: 'decline', desc: '', args: []);
+  }
+
+  /// `Accept`
+  String get accept {
+    return Intl.message('Accept', name: 'accept', desc: '', args: []);
+  }
+
+  /// `Deny`
+  String get deny {
+    return Intl.message('Deny', name: 'deny', desc: '', args: []);
   }
 
   /// `Continue to app`

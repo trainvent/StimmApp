@@ -300,7 +300,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           return;
         }
 
-        await PublishingQuotaService.instance.incrementPoll();
+        await PublishingQuotaService.instance.ensureCanCreatePoll();
 
         final pollId = await PollRepository.create().createPoll(poll);
         await AnalyticsService.instance.logPollCreated(
@@ -346,7 +346,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         return;
       }
 
-      await PublishingQuotaService.instance.incrementPoll();
+      await PublishingQuotaService.instance.ensureCanCreatePoll();
 
       final surveyId = await SurveyRepository.create().createSurvey(survey);
       await AnalyticsService.instance.logEvent(

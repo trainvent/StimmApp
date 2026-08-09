@@ -125,4 +125,45 @@ void main() {
       expect(find.text('UN'), findsOneWidget);
     },
   );
+
+  testWidgets('shows minimum lengths inline without a generic error snackbar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        BaseCreatorPage(
+          title: 'Create form',
+          tutorialSteps: const [],
+          onSubmit:
+              ({
+                required title,
+                required description,
+                required tags,
+                required scope,
+                required durationDays,
+              }) async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Minimum 5 characters'), findsOneWidget);
+    expect(find.text('Minimum 20 characters'), findsOneWidget);
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Valid title');
+    await tester.enterText(fields.at(1), 'Too short');
+
+    final submitButton = find.widgetWithText(ElevatedButton, 'Create form');
+    await tester.scrollUntilVisible(
+      submitButton,
+      300,
+      scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+    expect(find.text('Minimum 20 characters'), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+  });
 }

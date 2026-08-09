@@ -182,7 +182,12 @@
 	"deleted": "Deleted",
 	"descriptionRequired": "Description is required",
 	"description": "Description",
-	"descriptionTooShort": "Description is too short",
+	"minimumCharacterCount": "Minimum {count} characters",
+	"@minimumCharacterCount": {
+		"placeholders": {
+			"count": { "type": "int" }
+		}
+	},
 	"devContactInformation": "This app is developed by Trainvent",
 	"developerSandbox": "Developer Sandbox",
 	"editPetition": "Edit Petition",
@@ -436,7 +441,6 @@
 	"theWelcomePhrase": "The ultimate way to share your opinion",
 	"title": "Title",
 	"titleRequired": "Title is required",
-	"titleTooShort": "Title is too short",
 	"travel": "Travel",
 	"updateLivingAddress": "Change address",
 	"updateState": "Update state",
@@ -570,6 +574,8 @@
 	"privacyPolicyEssentialDescription": "Essential information about how the app processes personal data.",
 	"allow": "Allow",
 	"decline": "Decline",
+	"accept": "Accept",
+	"deny": "Deny",
 	"continueToApp": "Continue to app",
 	"allowAll": "Allow all",
 	"saveSelection": "Save selection",

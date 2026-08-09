@@ -230,7 +230,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (!_formKey.currentState!.validate()) {
-      showErrorSnackBar(context.l10n.error);
       return;
     }
 
@@ -672,9 +671,13 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               TextFormField(
                 controller: _titleController,
                 maxLength: AppLimits.maxTitleLength,
+                autovalidateMode: AutovalidateMode.onUnfocus,
                 decoration: InputDecoration(
                   labelText: context.l10n.title,
                   hintText: context.l10n.enterTitle,
+                  helperText: context.l10n.minimumCharacterCount(
+                    AppLimits.minTitleLength,
+                  ),
                   border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -682,7 +685,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                     return context.l10n.titleRequired;
                   }
                   if (value.trim().length < AppLimits.minTitleLength) {
-                    return context.l10n.titleTooShort;
+                    return context.l10n.minimumCharacterCount(
+                      AppLimits.minTitleLength,
+                    );
                   }
                   return null;
                 },
@@ -691,9 +696,13 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               TextFormField(
                 controller: _descriptionController,
                 maxLength: AppLimits.maxDescriptionLength,
+                autovalidateMode: AutovalidateMode.onUnfocus,
                 decoration: InputDecoration(
                   labelText: context.l10n.description,
                   hintText: context.l10n.enterDescription,
+                  helperText: context.l10n.minimumCharacterCount(
+                    AppLimits.minDescriptionLength,
+                  ),
                   border: const OutlineInputBorder(),
                   alignLabelWithHint: true,
                 ),
@@ -703,7 +712,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                     return context.l10n.descriptionRequired;
                   }
                   if (value.trim().length < AppLimits.minDescriptionLength) {
-                    return context.l10n.descriptionTooShort;
+                    return context.l10n.minimumCharacterCount(
+                      AppLimits.minDescriptionLength,
+                    );
                   }
                   return null;
                 },

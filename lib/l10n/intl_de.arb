@@ -183,7 +183,12 @@
 	"deleted": "Gelöscht",
 	"description": "Beschreibung",
 	"descriptionRequired": "Beschreibung ist erforderlich",
-	"descriptionTooShort": "Beschreibung ist zu kurz",
+	"minimumCharacterCount": "Mindestens {count} Zeichen",
+	"@minimumCharacterCount": {
+		"placeholders": {
+			"count": { "type": "int" }
+		}
+	},
 	"devContactInformation": "Diese App wurde von Trainvent entwickelt",
 	"developerSandbox": "Entwickler-Sandbox",
 	"editPetition": "Petition bearbeiten",
@@ -431,7 +436,6 @@
 	"theWelcomePhrase": "Der ultimative Weg, deine Meinung zu äußern",
 	"title": "Titel",
 	"titleRequired": "Titel ist erforderlich",
-	"titleTooShort": "Titel ist zu kurz",
 	"travel": "Reisen",
 	"updateLivingAddress": "Anschrift ändern",
 	"updateState": "Bundesland aktualisieren",
@@ -570,6 +574,8 @@
 	"privacyPolicyEssentialDescription": "Wesentliche Informationen darüber, wie die App personenbezogene Daten verarbeitet.",
 	"allow": "Erlauben",
 	"decline": "Ablehnen",
+	"accept": "Annehmen",
+	"deny": "Ablehnen",
 	"continueToApp": "Zur App",
 	"allowAll": "Alle erlauben",
 	"saveSelection": "Auswahl speichern",

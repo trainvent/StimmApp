@@ -914,11 +914,11 @@ abstract class AppLocalizations {
   /// **'Description'**
   String get description;
 
-  /// No description provided for @descriptionTooShort.
+  /// No description provided for @minimumCharacterCount.
   ///
   /// In en, this message translates to:
-  /// **'Description is too short'**
-  String get descriptionTooShort;
+  /// **'Minimum {count} characters'**
+  String minimumCharacterCount(int count);
 
   /// No description provided for @devContactInformation.
   ///
@@ -2270,12 +2270,6 @@ abstract class AppLocalizations {
   /// **'Title is required'**
   String get titleRequired;
 
-  /// No description provided for @titleTooShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Title is too short'**
-  String get titleTooShort;
-
   /// No description provided for @travel.
   ///
   /// In en, this message translates to:
@@ -3025,6 +3019,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get decline;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @deny.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny'**
+  String get deny;
 
   /// No description provided for @continueToApp.
   ///

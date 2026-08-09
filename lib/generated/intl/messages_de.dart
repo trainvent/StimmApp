@@ -70,38 +70,40 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(count) => "${count} Einladungen gesendet.";
 
-  static String m22(newMessages) =>
+  static String m22(count) => "Mindestens ${count} Zeichen";
+
+  static String m23(newMessages) =>
       "Du hast ${Intl.plural(newMessages, zero: 'keine neuen Nachrichten', one: 'eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
-  static String m23(number) => "Option ${number}";
+  static String m24(number) => "Option ${number}";
 
-  static String m24(type) =>
+  static String m25(type) =>
       "Das Passwort muss mindestens ein ${Intl.select(type, {'uppercase': 'Großbuchstabe', 'lowercase': 'Kleinbuchstabe', 'number': 'Zahl', 'special': 'Sonderzeichen', 'other': 'gültiges Zeichen'})} enthalten";
 
-  static String m25(number) => "Frage ${number}";
+  static String m26(number) => "Frage ${number}";
 
-  static String m26(state) => "Bezogen auf ${state}";
+  static String m27(state) => "Bezogen auf ${state}";
 
-  static String m27(name) => "${name} aus dieser Gruppe entfernen?";
+  static String m28(name) => "${name} aus dieser Gruppe entfernen?";
 
-  static String m28(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
+  static String m29(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
 
-  static String m29(scope) => "Geltungsbereich: ${scope}";
+  static String m30(scope) => "Geltungsbereich: ${scope}";
 
-  static String m30(admin, manager, user) =>
+  static String m31(admin, manager, user) =>
       "Unterstützte Rollen: ${admin}, ${manager}, ${user}.";
 
-  static String m31(groupName) =>
+  static String m32(groupName) =>
       "Gib „${groupName}“ ein, um das Löschen zu bestätigen. Dies kann nicht rückgängig gemacht werden.";
 
-  static String m32(error) => "Unerwarteter Fehler: ${error}";
+  static String m33(error) => "Unerwarteter Fehler: ${error}";
 
-  static String m33(minimumLength) =>
+  static String m34(minimumLength) =>
       "Der Benutzername muss mindestens ${minimumLength} Zeichen lang sein.";
 
-  static String m34(date) => "Gültig bis";
+  static String m35(date) => "Gültig bis";
 
-  static String m35(email) =>
+  static String m36(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -110,6 +112,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "about": MessageLookupByLibrary.simpleMessage("Über"),
     "aboutThisApp": MessageLookupByLibrary.simpleMessage("Über diese App"),
     "accentPallette": MessageLookupByLibrary.simpleMessage("Akzentpalette"),
+    "accept": MessageLookupByLibrary.simpleMessage("Annehmen"),
     "acceptCommunityRulesBeforeContinuing": MessageLookupByLibrary.simpleMessage(
       "Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.",
     ),
@@ -480,14 +483,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "deletePoll": MessageLookupByLibrary.simpleMessage("Umfrage löschen"),
     "deleteUser": MessageLookupByLibrary.simpleMessage("Benutzer löschen"),
     "deleted": MessageLookupByLibrary.simpleMessage("Gelöscht"),
+    "deny": MessageLookupByLibrary.simpleMessage("Ablehnen"),
     "denyInvite": MessageLookupByLibrary.simpleMessage("Einladung ablehnen"),
     "denyRequest": MessageLookupByLibrary.simpleMessage("Anfrage ablehnen"),
     "description": MessageLookupByLibrary.simpleMessage("Beschreibung"),
     "descriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Beschreibung ist erforderlich",
-    ),
-    "descriptionTooShort": MessageLookupByLibrary.simpleMessage(
-      "Beschreibung ist zu kurz",
     ),
     "design": MessageLookupByLibrary.simpleMessage("Design"),
     "detectedStateLabel": m6,
@@ -868,6 +869,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "membershipStatus": MessageLookupByLibrary.simpleMessage(
       "Mitgliedschaftsstatus",
     ),
+    "minimumCharacterCount": m22,
     "misinformationOrFraud": MessageLookupByLibrary.simpleMessage(
       "Falschinformationen oder Betrug",
     ),
@@ -883,7 +885,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "nationality": MessageLookupByLibrary.simpleMessage("Staatsangehörigkeit"),
     "newEmail": MessageLookupByLibrary.simpleMessage("Neue E-Mail"),
-    "newMessages": m22,
+    "newMessages": m23,
     "newPassword": MessageLookupByLibrary.simpleMessage("Neues Passwort"),
     "newUser": MessageLookupByLibrary.simpleMessage("Neuer Benutzer"),
     "newUsername": MessageLookupByLibrary.simpleMessage("Neuer Benutzername"),
@@ -1003,7 +1005,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nutzungsbedingungen öffnen",
     ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
-    "optionNumber": m23,
+    "optionNumber": m24,
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option ist erforderlich",
     ),
@@ -1028,7 +1030,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Das Passwort muss mindestens 8 Zeichen lang sein",
         ),
-    "passwordValidation": m24,
+    "passwordValidation": m25,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
     ),
@@ -1280,7 +1282,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
       "Kauf erfolgreich!",
     ),
-    "questionNumber": m25,
+    "questionNumber": m26,
     "questionRequired": MessageLookupByLibrary.simpleMessage(
       "Frage ist erforderlich",
     ),
@@ -1299,7 +1301,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto registrieren",
     ),
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
-    "relatedToState": m26,
+    "relatedToState": m27,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
     "removeAbusiveLanguageBeforePublishing": MessageLookupByLibrary.simpleMessage(
       "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
@@ -1310,7 +1312,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "removeDomainTooltip": MessageLookupByLibrary.simpleMessage(
       "Domain entfernen",
     ),
-    "removeGroupMemberConfirmation": m27,
+    "removeGroupMemberConfirmation": m28,
     "removeGroupMemberTitle": MessageLookupByLibrary.simpleMessage(
       "Mitglied entfernen?",
     ),
@@ -1325,7 +1327,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Login-Code anfordern",
     ),
-    "requestedAccessToThisGroup": m28,
+    "requestedAccessToThisGroup": m29,
     "resendEmail": MessageLookupByLibrary.simpleMessage("E-Mail erneut senden"),
     "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
       "Bitte warte, bevor du erneut sendest",
@@ -1378,7 +1380,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
     "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
-    "scopeLabelWithValue": m29,
+    "scopeLabelWithValue": m30,
     "scopeStateRegion": MessageLookupByLibrary.simpleMessage(
       "Bundesland / Region",
     ),
@@ -1494,7 +1496,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyLoggedIn": MessageLookupByLibrary.simpleMessage(
       "Erfolgreich angemeldet",
     ),
-    "supportedRoles": m30,
+    "supportedRoles": m31,
     "supporters": MessageLookupByLibrary.simpleMessage("Unterstützer"),
     "surname": MessageLookupByLibrary.simpleMessage("Nachname"),
     "surveyDeleted": MessageLookupByLibrary.simpleMessage(
@@ -1581,16 +1583,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "titleRequired": MessageLookupByLibrary.simpleMessage(
       "Titel ist erforderlich",
     ),
-    "titleTooShort": MessageLookupByLibrary.simpleMessage("Titel ist zu kurz"),
     "town": MessageLookupByLibrary.simpleMessage("Ort"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
-    "typeGroupNameToConfirmDeletion": m31,
+    "typeGroupNameToConfirmDeletion": m32,
     "unblock": MessageLookupByLibrary.simpleMessage("Blockierung aufheben"),
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Nutzer erfolgreich entsperrt.",
     ),
     "undo": MessageLookupByLibrary.simpleMessage("Rückgängig machen"),
-    "unexpectedErrorWithDetails": m32,
+    "unexpectedErrorWithDetails": m33,
     "unknownError": MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
     "unknownGroupMember": MessageLookupByLibrary.simpleMessage(
       "Unbekanntes Mitglied",
@@ -1637,19 +1638,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "usernameChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Benutzername erfolgreich geändert",
     ),
-    "usernameTooShort": m33,
+    "usernameTooShort": m34,
     "usernameUnavailable": MessageLookupByLibrary.simpleMessage(
       "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m34,
+    "validUntil": m35,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m35,
+    "verificationEmailSentTo": m36,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),
