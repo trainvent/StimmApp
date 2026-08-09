@@ -45,65 +45,89 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m10(accessMode, memberCount, expiry) =>
       "Zugang: ${accessMode} • Mitglieder: ${memberCount} • ${expiry}";
 
-  static String m11(group) => "Gruppe: ${group}";
+  static String m11(subject) => "${subject} hat die Gruppenleitung übernommen.";
 
-  static String m12(firstName, lastName) =>
+  static String m12(actor) =>
+      "Nachdem ${actor} die Gruppe verlassen hat, wurde eine Admin-Wahl gestartet.";
+
+  static String m13(actor) => "${actor} hat die Gruppe erstellt.";
+
+  static String m14(actor, count) =>
+      "${actor} hat ${count} Einladungen gesendet.";
+
+  static String m15(actor) => "${actor} ist der Gruppe beigetreten.";
+
+  static String m16(actor) => "${actor} hat die Gruppe verlassen.";
+
+  static String m17(actor, subject) =>
+      "${actor} hat ${subject} aus der Gruppe entfernt.";
+
+  static String m18(actor, subject) =>
+      "${actor} hat die Gruppe verlassen und die Leitung an ${subject} übertragen.";
+
+  static String m19(actor, title) => "${actor} hat „${title}“ veröffentlicht.";
+
+  static String m20(actor) => "${actor} hat die Gruppeneinstellungen geändert.";
+
+  static String m21(group) => "Gruppe: ${group}";
+
+  static String m22(firstName, lastName) =>
       "Willkommen ${firstName} ${lastName}!";
 
-  static String m13(count) => "${count} CSV-Zeilen importiert.";
+  static String m23(count) => "${count} CSV-Zeilen importiert.";
 
-  static String m14(count) => "Importierte Mitglieder: ${count}";
+  static String m24(count) => "Importierte Mitglieder: ${count}";
 
-  static String m15(validRows, invalidRows) =>
+  static String m25(validRows, invalidRows) =>
       "${validRows} Zeilen importiert. ${invalidRows} fehlerhafte Zeilen übersprungen.";
 
-  static String m16(name) => "${name} hat dich in diese Gruppe eingeladen.";
+  static String m26(name) => "${name} hat dich in diese Gruppe eingeladen.";
 
-  static String m17(joinCode) => "Beitrittscode: ${joinCode}";
+  static String m27(joinCode) => "Beitrittscode: ${joinCode}";
 
-  static String m18(validRows, invalidRows) =>
+  static String m28(validRows, invalidRows) =>
       "Letzter Import: ${validRows} gültige Zeilen, ${invalidRows} fehlerhafte Zeilen.";
 
-  static String m19(count) => "Maximal ${count} Optionen erlaubt";
+  static String m29(count) => "Maximal ${count} Optionen erlaubt";
 
-  static String m20(count) => "Maximal ${count} Fragen erlaubt";
+  static String m30(count) => "Maximal ${count} Fragen erlaubt";
 
-  static String m21(count) => "${count} Einladungen gesendet.";
+  static String m31(count) => "${count} Einladungen gesendet.";
 
-  static String m22(count) => "Mindestens ${count} Zeichen";
+  static String m32(count) => "Mindestens ${count} Zeichen";
 
-  static String m23(newMessages) =>
+  static String m33(newMessages) =>
       "Du hast ${Intl.plural(newMessages, zero: 'keine neuen Nachrichten', one: 'eine neue Nachricht', two: 'zwei neue Nachrichten', other: '${newMessages} neue Nachrichten')}";
 
-  static String m24(number) => "Option ${number}";
+  static String m34(number) => "Option ${number}";
 
-  static String m25(type) =>
+  static String m35(type) =>
       "Das Passwort muss mindestens ein ${Intl.select(type, {'uppercase': 'Großbuchstabe', 'lowercase': 'Kleinbuchstabe', 'number': 'Zahl', 'special': 'Sonderzeichen', 'other': 'gültiges Zeichen'})} enthalten";
 
-  static String m26(number) => "Frage ${number}";
+  static String m36(number) => "Frage ${number}";
 
-  static String m27(state) => "Bezogen auf ${state}";
+  static String m37(state) => "Bezogen auf ${state}";
 
-  static String m28(name) => "${name} aus dieser Gruppe entfernen?";
+  static String m38(name) => "${name} aus dieser Gruppe entfernen?";
 
-  static String m29(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
+  static String m39(name) => "${name} hat Zugriff auf diese Gruppe angefragt.";
 
-  static String m30(scope) => "Geltungsbereich: ${scope}";
+  static String m40(scope) => "Geltungsbereich: ${scope}";
 
-  static String m31(admin, manager, user) =>
+  static String m41(admin, manager, user) =>
       "Unterstützte Rollen: ${admin}, ${manager}, ${user}.";
 
-  static String m32(groupName) =>
+  static String m42(groupName) =>
       "Gib „${groupName}“ ein, um das Löschen zu bestätigen. Dies kann nicht rückgängig gemacht werden.";
 
-  static String m33(error) => "Unerwarteter Fehler: ${error}";
+  static String m43(error) => "Unerwarteter Fehler: ${error}";
 
-  static String m34(minimumLength) =>
+  static String m44(minimumLength) =>
       "Der Benutzername muss mindestens ${minimumLength} Zeichen lang sein.";
 
-  static String m35(date) => "Gültig bis";
+  static String m45(date) => "Gültig bis";
 
-  static String m36(email) =>
+  static String m46(email) =>
       "Eine Bestätigungs-E-Mail wurde an ${email} gesendet";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -118,7 +142,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "acceptInvite": MessageLookupByLibrary.simpleMessage("Einladung annehmen"),
     "acceptedCsvFormat": MessageLookupByLibrary.simpleMessage(
-      "Akzeptiertes Format: CSV oder TSV mit email,nickname,role",
+      "CSV oder TSV, mit einer Person pro Zeile:",
     ),
     "accessModeLabel": m0,
     "accessRequestSent": MessageLookupByLibrary.simpleMessage(
@@ -422,8 +446,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "creator": MessageLookupByLibrary.simpleMessage("Ersteller"),
     "creatorRoleLabel": MessageLookupByLibrary.simpleMessage("Ersteller"),
+    "csvColumnFormat": MessageLookupByLibrary.simpleMessage(
+      "<E-Mail>,<Spitzname>,<Rolle>",
+    ),
     "csvMembersHint": MessageLookupByLibrary.simpleMessage(
-      "email,nickname,role\nanna@company.com,Anna,user",
+      "E-Mail;Spitzname;Rolle\nanna@firma.de;Anna;Benutzer",
     ),
     "currentPassword": MessageLookupByLibrary.simpleMessage(
       "Aktuelles Passwort",
@@ -503,7 +530,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "doYouWantToLeaveGroup": m7,
     "domainHint": MessageLookupByLibrary.simpleMessage("company.com"),
     "domainLabel": MessageLookupByLibrary.simpleMessage("Domain"),
-    "dropCsvHere": MessageLookupByLibrary.simpleMessage("CSV hier ablegen"),
+    "dropCsvHere": MessageLookupByLibrary.simpleMessage(
+      "Mehrere Mitglieder importieren",
+    ),
     "editGivenName": MessageLookupByLibrary.simpleMessage(
       "Vornamen bearbeiten",
     ),
@@ -696,6 +725,34 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "groupAccessSummary": m10,
     "groupAccessTitle": MessageLookupByLibrary.simpleMessage("Gruppenzugang"),
+    "groupActivityActorFallback": MessageLookupByLibrary.simpleMessage(
+      "Ein Gruppenmitglied",
+    ),
+    "groupActivityAdminElectionCompleted": m11,
+    "groupActivityAdminElectionStarted": m12,
+    "groupActivityCreated": m13,
+    "groupActivityDescription": MessageLookupByLibrary.simpleMessage(
+      "Sieh wichtige Änderungen an Mitgliedern, Einstellungen und Veröffentlichungen.",
+    ),
+    "groupActivityInvitationsSent": m14,
+    "groupActivityLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Die Gruppenaktivitäten konnten nicht geladen werden.",
+    ),
+    "groupActivityMemberJoined": m15,
+    "groupActivityMemberLeft": m16,
+    "groupActivityMemberRemoved": m17,
+    "groupActivityOwnershipTransferred": m18,
+    "groupActivityPublicationPublished": m19,
+    "groupActivitySettingsUpdated": m20,
+    "groupActivitySubjectFallback": MessageLookupByLibrary.simpleMessage(
+      "ein anderes Mitglied",
+    ),
+    "groupActivityTitle": MessageLookupByLibrary.simpleMessage(
+      "Gruppenaktivität",
+    ),
+    "groupActivityUpdated": MessageLookupByLibrary.simpleMessage(
+      "Die Gruppe wurde aktualisiert.",
+    ),
     "groupAdminFallback": MessageLookupByLibrary.simpleMessage("Gruppenadmin"),
     "groupContentTitle": MessageLookupByLibrary.simpleMessage("Gruppeninhalte"),
     "groupCreated": MessageLookupByLibrary.simpleMessage("Gruppe erstellt."),
@@ -719,7 +776,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupInvitationsTitle": MessageLookupByLibrary.simpleMessage(
       "Einladungsstatus",
     ),
-    "groupLabelWithValue": m11,
+    "groupLabelWithValue": m21,
     "groupManagementTitle": MessageLookupByLibrary.simpleMessage(
       "Gruppe verwalten",
     ),
@@ -747,7 +804,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hateSpeech": MessageLookupByLibrary.simpleMessage("Hassrede"),
     "height": MessageLookupByLibrary.simpleMessage("Größe"),
     "hello": MessageLookupByLibrary.simpleMessage("Hallo"),
-    "helloAndWelcome": m12,
+    "helloAndWelcome": m22,
     "hintTextTags": MessageLookupByLibrary.simpleMessage(
       "Z. B. Umwelt, Verkehr",
     ),
@@ -763,9 +820,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "CSV-Datei importieren",
     ),
     "importLabel": MessageLookupByLibrary.simpleMessage("Importieren"),
-    "importedCsvRows": m13,
-    "importedMembersCount": m14,
-    "importedRowsSkippedMalformed": m15,
+    "importedCsvRows": m23,
+    "importedMembersCount": m24,
+    "importedRowsSkippedMalformed": m25,
     "importingFromGoogle": MessageLookupByLibrary.simpleMessage(
       "Wird von Google importiert…",
     ),
@@ -798,18 +855,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "Füge Personen einzeln hinzu oder importiere unten CSV-Zeilen.",
     ),
     "inviteMembersPageDescription": MessageLookupByLibrary.simpleMessage(
-      "Lade neue Personen in diese Gruppe ein. Erfolgreich gesendete Einträge werden anschließend von dieser Seite entfernt.",
+      "Lade Personen einzeln ein oder importiere mehrere auf einmal.",
     ),
     "inviteMembersTitle": MessageLookupByLibrary.simpleMessage(
       "Mitglieder einladen",
     ),
-    "invitedYouToThisGroup": m16,
+    "invitedYouToThisGroup": m26,
     "isProMember": MessageLookupByLibrary.simpleMessage("Ist Pro-Mitglied"),
-    "joinCodeWithValue": m17,
+    "joinCodeWithValue": m27,
     "joinGroup": MessageLookupByLibrary.simpleMessage("Gruppe beitreten"),
     "keepSelected": MessageLookupByLibrary.simpleMessage("Auswahl behalten"),
     "language": MessageLookupByLibrary.simpleMessage("Sprache"),
-    "lastImportSummary": m18,
+    "lastImportSummary": m28,
     "lastStep": MessageLookupByLibrary.simpleMessage("Letzter Schritt!"),
     "leaveGroup": MessageLookupByLibrary.simpleMessage("Gruppe verlassen"),
     "licenses": MessageLookupByLibrary.simpleMessage("Lizenzen"),
@@ -859,9 +916,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "managersCanPrepareAccessLists": MessageLookupByLibrary.simpleMessage(
       "Manager können Zugangslisten vorbereiten",
     ),
-    "maximumPollOptionsAllowed": m19,
-    "maximumSurveyQuestionsAllowed": m20,
-    "memberInvitationsSent": m21,
+    "maximumPollOptionsAllowed": m29,
+    "maximumSurveyQuestionsAllowed": m30,
+    "memberInvitationsSent": m31,
     "memberRoleLabel": MessageLookupByLibrary.simpleMessage("Mitglied"),
     "membersCanChooseTheirOwnNickname": MessageLookupByLibrary.simpleMessage(
       "Mitglieder können ihren Spitznamen selbst wählen",
@@ -869,7 +926,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "membershipStatus": MessageLookupByLibrary.simpleMessage(
       "Mitgliedschaftsstatus",
     ),
-    "minimumCharacterCount": m22,
+    "minimumCharacterCount": m32,
     "misinformationOrFraud": MessageLookupByLibrary.simpleMessage(
       "Falschinformationen oder Betrug",
     ),
@@ -885,7 +942,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "nationality": MessageLookupByLibrary.simpleMessage("Staatsangehörigkeit"),
     "newEmail": MessageLookupByLibrary.simpleMessage("Neue E-Mail"),
-    "newMessages": m23,
+    "newMessages": m33,
     "newPassword": MessageLookupByLibrary.simpleMessage("Neues Passwort"),
     "newUser": MessageLookupByLibrary.simpleMessage("Neuer Benutzer"),
     "newUsername": MessageLookupByLibrary.simpleMessage("Neuer Benutzername"),
@@ -917,6 +974,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noExpiry": MessageLookupByLibrary.simpleMessage("Kein Ablaufdatum"),
     "noFittingOptions": MessageLookupByLibrary.simpleMessage(
       "Keine passenden Optionen",
+    ),
+    "noGroupActivity": MessageLookupByLibrary.simpleMessage(
+      "Bisher wurden keine Gruppenaktivitäten aufgezeichnet.",
     ),
     "noGroupInvitations": MessageLookupByLibrary.simpleMessage(
       "Es wurde noch kein registrierter App-Nutzer eingeladen.",
@@ -1005,7 +1065,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Nutzungsbedingungen öffnen",
     ),
     "option": MessageLookupByLibrary.simpleMessage("Option"),
-    "optionNumber": m24,
+    "optionNumber": m34,
     "optionRequired": MessageLookupByLibrary.simpleMessage(
       "Option ist erforderlich",
     ),
@@ -1030,7 +1090,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Das Passwort muss mindestens 8 Zeichen lang sein",
         ),
-    "passwordValidation": m25,
+    "passwordValidation": m35,
     "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwörter stimmen nicht überein",
     ),
@@ -1282,7 +1342,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "purchaseSuccessful": MessageLookupByLibrary.simpleMessage(
       "Kauf erfolgreich!",
     ),
-    "questionNumber": m26,
+    "questionNumber": m36,
     "questionRequired": MessageLookupByLibrary.simpleMessage(
       "Frage ist erforderlich",
     ),
@@ -1301,7 +1361,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Konto registrieren",
     ),
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
-    "relatedToState": m27,
+    "relatedToState": m37,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
     "removeAbusiveLanguageBeforePublishing": MessageLookupByLibrary.simpleMessage(
       "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
@@ -1312,7 +1372,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "removeDomainTooltip": MessageLookupByLibrary.simpleMessage(
       "Domain entfernen",
     ),
-    "removeGroupMemberConfirmation": m28,
+    "removeGroupMemberConfirmation": m38,
     "removeGroupMemberTitle": MessageLookupByLibrary.simpleMessage(
       "Mitglied entfernen?",
     ),
@@ -1327,7 +1387,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "requestLoginCode": MessageLookupByLibrary.simpleMessage(
       "Login-Code anfordern",
     ),
-    "requestedAccessToThisGroup": m29,
+    "requestedAccessToThisGroup": m39,
     "resendEmail": MessageLookupByLibrary.simpleMessage("E-Mail erneut senden"),
     "resendEmailCooldown": MessageLookupByLibrary.simpleMessage(
       "Bitte warte, bevor du erneut sendest",
@@ -1380,7 +1440,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "scopeEu": MessageLookupByLibrary.simpleMessage("EU"),
     "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
-    "scopeLabelWithValue": m30,
+    "scopeLabelWithValue": m40,
     "scopeStateRegion": MessageLookupByLibrary.simpleMessage(
       "Bundesland / Region",
     ),
@@ -1434,6 +1494,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sexuelle oder explizite Inhalte",
     ),
     "share": MessageLookupByLibrary.simpleMessage("Teilen"),
+    "shareGroupInvitation": MessageLookupByLibrary.simpleMessage(
+      "Einladung teilen",
+    ),
     "sharePetition": MessageLookupByLibrary.simpleMessage("Petition teilen"),
     "sharingNotSupported": MessageLookupByLibrary.simpleMessage(
       "Teilen wird auf dieser Plattform nicht unterstützt.",
@@ -1496,7 +1559,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyLoggedIn": MessageLookupByLibrary.simpleMessage(
       "Erfolgreich angemeldet",
     ),
-    "supportedRoles": m31,
+    "supportedRoles": m41,
     "supporters": MessageLookupByLibrary.simpleMessage("Unterstützer"),
     "surname": MessageLookupByLibrary.simpleMessage("Nachname"),
     "surveyDeleted": MessageLookupByLibrary.simpleMessage(
@@ -1585,18 +1648,19 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "town": MessageLookupByLibrary.simpleMessage("Ort"),
     "travel": MessageLookupByLibrary.simpleMessage("Reisen"),
-    "typeGroupNameToConfirmDeletion": m32,
+    "typeGroupNameToConfirmDeletion": m42,
     "unblock": MessageLookupByLibrary.simpleMessage("Blockierung aufheben"),
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Nutzer erfolgreich entsperrt.",
     ),
     "undo": MessageLookupByLibrary.simpleMessage("Rückgängig machen"),
-    "unexpectedErrorWithDetails": m33,
+    "unexpectedErrorWithDetails": m43,
     "unknownError": MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
     "unknownGroupMember": MessageLookupByLibrary.simpleMessage(
       "Unbekanntes Mitglied",
     ),
     "unknownUser": MessageLookupByLibrary.simpleMessage("Unbekannter Nutzer"),
+    "untitled": MessageLookupByLibrary.simpleMessage("Ohne Titel"),
     "updateLivingAddress": MessageLookupByLibrary.simpleMessage(
       "Anschrift ändern",
     ),
@@ -1638,19 +1702,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "usernameChangedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Benutzername erfolgreich geändert",
     ),
-    "usernameTooShort": m34,
+    "usernameTooShort": m44,
     "usernameUnavailable": MessageLookupByLibrary.simpleMessage(
       "Dieser Benutzername ist bereits vergeben. Probiere einen anderen.",
     ),
     "users": MessageLookupByLibrary.simpleMessage("Benutzer"),
-    "validUntil": m35,
+    "validUntil": m45,
     "verificationCodeResent": MessageLookupByLibrary.simpleMessage(
       "Verifizierungscode erneut gesendet!",
     ),
     "verificationEmailSent": MessageLookupByLibrary.simpleMessage(
       "Bestätigungs-E-Mail gesendet",
     ),
-    "verificationEmailSentTo": m36,
+    "verificationEmailSentTo": m46,
     "verificationFailed": MessageLookupByLibrary.simpleMessage(
       "Verifizierung fehlgeschlagen",
     ),

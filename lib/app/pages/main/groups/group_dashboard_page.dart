@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:stimmapp/app/pages/main/groups/group_admin_election_page.dart';
+import 'package:stimmapp/app/pages/main/groups/group_activity_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
+import 'package:stimmapp/app/pages/main/groups/group_invite_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_invitations_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_members_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
@@ -37,18 +38,6 @@ class GroupDashboardPage extends StatelessWidget {
       PollGroupRole.manager => context.l10n.managerRoleLabel,
       PollGroupRole.user || null => context.l10n.memberRoleLabel,
     };
-  }
-
-  Future<void> _copyInviteLink(BuildContext context, PollGroup group) async {
-    final link = buildPollGroupInviteLink(group);
-    if (link == null) {
-      showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
-      return;
-    }
-    await Clipboard.setData(ClipboardData(text: link));
-    if (context.mounted) {
-      showSuccessSnackBar(context.l10n.linkCopiedToClipboard);
-    }
   }
 
   Future<void> _deleteGroup(BuildContext context, PollGroup group) async {
@@ -124,36 +113,33 @@ class GroupDashboardPage extends StatelessWidget {
     required IconData icon,
     required String title,
     required String description,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
+    List<Widget> actions = const [],
   }) {
+    final content = Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          CircleAvatar(child: Icon(icon)),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 2),
+                Text(description, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+          if (actions.isEmpty) const Icon(Icons.chevron_right) else ...actions,
+        ],
+      ),
+    );
+
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(child: Icon(icon)),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleSmall),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
-        ),
-      ),
+      child: onTap == null ? content : InkWell(onTap: onTap, child: content),
     );
   }
 
@@ -294,7 +280,6 @@ class GroupDashboardPage extends StatelessWidget {
                       PollsPage(
                         initialGroupId: currentGroup.id,
                         showTopNavigation: true,
-
                       ),
                       context,
                     ),
@@ -312,7 +297,7 @@ class GroupDashboardPage extends StatelessWidget {
                       title: context.l10n.inviteMembersTitle,
                       description: context.l10n.inviteMembersPageDescription,
                       onTap: () => _open(
-                        GroupInviteMembersPage(
+                        GroupInvitePage(
                           group: currentGroup,
                           repository: repository,
                           auth: auth,
@@ -349,6 +334,20 @@ class GroupDashboardPage extends StatelessWidget {
                     ),
                     _actionCard(
                       context: context,
+                      icon: Icons.history_outlined,
+                      title: context.l10n.groupActivityTitle,
+                      description: context.l10n.groupActivityDescription,
+                      onTap: () => _open(
+                        GroupActivityPage(
+                          group: currentGroup,
+                          repository: repository,
+                          auth: auth,
+                        ),
+                        context,
+                      ),
+                    ),
+                    _actionCard(
+                      context: context,
                       icon: Icons.settings_outlined,
                       title: context.l10n.editGroupTitle,
                       description: context.l10n.editGroupDescription,
@@ -364,10 +363,27 @@ class GroupDashboardPage extends StatelessWidget {
                     if (buildPollGroupInviteLink(currentGroup) != null)
                       _actionCard(
                         context: context,
-                        icon: Icons.link,
-                        title: context.l10n.copyInviteLinkTooltip,
+                        icon: Icons.share_outlined,
+                        title: context.l10n.shareGroupInvitation,
                         description: context.l10n.copyInviteLinkDescription,
-                        onTap: () => _copyInviteLink(context, currentGroup),
+                        actions: [
+                          IconButton(
+                            key: const Key('display_group_invite_qr'),
+                            tooltip: context.l10n.displayQrCode,
+                            onPressed: () => showPollGroupInviteQrCode(
+                              context,
+                              currentGroup,
+                            ),
+                            icon: const Icon(Icons.qr_code_2),
+                          ),
+                          IconButton(
+                            key: const Key('copy_group_invite_link'),
+                            tooltip: context.l10n.copyInviteLinkTooltip,
+                            onPressed: () =>
+                                copyPollGroupInviteLink(context, currentGroup),
+                            icon: const Icon(Icons.copy_outlined),
+                          ),
+                        ],
                       ),
                   ],
                   if (isCreator) ...[

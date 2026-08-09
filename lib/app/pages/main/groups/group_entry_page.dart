@@ -151,7 +151,13 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     }
     setState(() => _isSaving = true);
     try {
-      await _repo.joinOpenGroup(group: group, uid: uid, joinedBy: uid);
+      final profile = await UserRepository.create().getById(uid);
+      await _repo.joinOpenGroup(
+        group: group,
+        uid: uid,
+        joinedBy: uid,
+        actorDisplayName: profile?.displayName ?? profile?.email,
+      );
       if (!mounted) {
         return;
       }

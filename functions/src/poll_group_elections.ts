@@ -1,6 +1,7 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
+import { addPollGroupActivity } from "./poll_group_activity";
 
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -54,6 +55,10 @@ export async function handlePollGroupMemberDeparture(
 			memberIds: admin.firestore.FieldValue.arrayRemove(uid),
 		});
 		batch.delete(memberRef);
+		addPollGroupActivity(batch, groupRef, {
+			type: "member_left",
+			actorUid: uid,
+		});
 		await batch.commit();
 		return "left";
 	}
@@ -82,6 +87,11 @@ export async function handlePollGroupMemberDeparture(
 			adminElectionEndsAt: null,
 		});
 		batch.delete(memberRef);
+		addPollGroupActivity(batch, groupRef, {
+			type: "ownership_transferred",
+			actorUid: uid,
+			subjectUid: admins[0].uid,
+		});
 		await batch.commit();
 		return "ownershipTransferred";
 	}
@@ -104,6 +114,11 @@ export async function handlePollGroupMemberDeparture(
 		initiatedBy: uid,
 		candidateUids,
 		winnerUid: null,
+	});
+	addPollGroupActivity(batch, groupRef, {
+		type: "admin_election_started",
+		actorUid: uid,
+		createdAt: now,
 	});
 	await batch.commit();
 	return "electionStarted";
@@ -242,6 +257,12 @@ export const finalizePollGroupAdminElections = onSchedule("every 15 minutes", as
 			status: "closed",
 			winnerUid: winner.uid,
 			resolvedAt: now,
+		});
+		addPollGroupActivity(batch, groupRef, {
+			type: "admin_election_completed",
+			actorUid: "system",
+			subjectUid: winner.uid,
+			createdAt: now,
 		});
 		await batch.commit();
 	}

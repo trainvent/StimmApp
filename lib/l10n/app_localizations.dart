@@ -4169,7 +4169,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteMembersPageDescription.
   ///
   /// In en, this message translates to:
-  /// **'Invite new people to this group. Successfully submitted entries are cleared from this page.'**
+  /// **'Invite people individually or import several at once.'**
   String get inviteMembersPageDescription;
 
   /// No description provided for @sendInvitations.
@@ -4217,14 +4217,20 @@ abstract class AppLocalizations {
   /// No description provided for @dropCsvHere.
   ///
   /// In en, this message translates to:
-  /// **'Drop a CSV here'**
+  /// **'Import multiple members'**
   String get dropCsvHere;
 
   /// No description provided for @acceptedCsvFormat.
   ///
   /// In en, this message translates to:
-  /// **'Accepted format: CSV or TSV with email,nickname,role'**
+  /// **'CSV or TSV, with one person per row:'**
   String get acceptedCsvFormat;
+
+  /// No description provided for @csvColumnFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'<email>,<nickname>,<role>'**
+  String get csvColumnFormat;
 
   /// No description provided for @lastImportSummary.
   ///
@@ -4345,6 +4351,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share the group invitation link.'**
   String get copyInviteLinkDescription;
+
+  /// No description provided for @shareGroupInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Share invitation'**
+  String get shareGroupInvitation;
+
+  /// No description provided for @groupActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group activity'**
+  String get groupActivityTitle;
+
+  /// No description provided for @groupActivityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review important membership, settings, and publishing activity.'**
+  String get groupActivityDescription;
+
+  /// No description provided for @noGroupActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No group activity has been recorded yet.'**
+  String get noGroupActivity;
+
+  /// No description provided for @groupActivityLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The group activity could not be loaded.'**
+  String get groupActivityLoadFailed;
+
+  /// No description provided for @groupActivityActorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'A group member'**
+  String get groupActivityActorFallback;
+
+  /// No description provided for @groupActivitySubjectFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'another member'**
+  String get groupActivitySubjectFallback;
+
+  /// No description provided for @groupActivityUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Group activity was updated.'**
+  String get groupActivityUpdated;
+
+  /// No description provided for @groupActivityCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} created the group.'**
+  String groupActivityCreated(Object actor);
+
+  /// No description provided for @groupActivitySettingsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} updated the group settings.'**
+  String groupActivitySettingsUpdated(Object actor);
+
+  /// No description provided for @groupActivityInvitationsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} sent {count} invitations.'**
+  String groupActivityInvitationsSent(Object actor, int count);
+
+  /// No description provided for @groupActivityMemberJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} joined the group.'**
+  String groupActivityMemberJoined(Object actor);
+
+  /// No description provided for @groupActivityMemberLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} left the group.'**
+  String groupActivityMemberLeft(Object actor);
+
+  /// No description provided for @groupActivityMemberRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} removed {subject} from the group.'**
+  String groupActivityMemberRemoved(Object actor, Object subject);
+
+  /// No description provided for @groupActivityOwnershipTransferred.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} left and transferred ownership to {subject}.'**
+  String groupActivityOwnershipTransferred(Object actor, Object subject);
+
+  /// No description provided for @groupActivityAdminElectionStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'An admin election started after {actor} left.'**
+  String groupActivityAdminElectionStarted(Object actor);
+
+  /// No description provided for @groupActivityAdminElectionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{subject} became the new group owner.'**
+  String groupActivityAdminElectionCompleted(Object subject);
+
+  /// No description provided for @groupActivityPublicationPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} published “{title}”.'**
+  String groupActivityPublicationPublished(Object actor, Object title);
+
+  /// No description provided for @untitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get untitled;
 
   /// No description provided for @openGroupDashboard.
   ///

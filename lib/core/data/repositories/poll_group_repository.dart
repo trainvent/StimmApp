@@ -6,6 +6,7 @@ import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/poll_group_activity.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 enum PollGroupLeaveResult { left, groupDeleted }
@@ -66,6 +67,14 @@ class PollGroupRepository {
         fromFirestore: PollGroupAllowedDomain.fromFirestore,
         toFirestore: PollGroupAllowedDomain.toFirestore,
       );
+
+  CollectionReference<PollGroupActivity> _activities(
+    String groupId,
+  ) => _fs.colRef<PollGroupActivity>(
+    '${DatabaseCollections.pollGroups}/$groupId/${DatabaseCollections.groupActivities}',
+    fromFirestore: PollGroupActivity.fromFirestore,
+    toFirestore: PollGroupActivity.toFirestore,
+  );
 
   CollectionReference<PollGroupAccessNotification> _notifications(
     String uid,
@@ -251,6 +260,74 @@ class PollGroupRepository {
     );
   }
 
+  Stream<List<PollGroupActivity>> watchActivities(String groupId) {
+    return _fs.watchCol(
+      _activities(groupId).orderBy('createdAt', descending: true),
+    );
+  }
+
+  void _addActivityToBatch(
+    WriteBatch batch, {
+    required String groupId,
+    required PollGroupActivityType type,
+    required String actorUid,
+    String? actorDisplayName,
+    String? subjectUid,
+    String? subjectDisplayName,
+    String? targetTitle,
+    int? count,
+    DateTime? createdAt,
+  }) {
+    final ref = _activities(groupId).doc();
+    batch.set(
+      ref,
+      PollGroupActivity(
+        id: ref.id,
+        type: type,
+        actorUid: actorUid,
+        actorDisplayName: actorDisplayName,
+        subjectUid: subjectUid,
+        subjectDisplayName: subjectDisplayName,
+        targetTitle: targetTitle,
+        count: count,
+        createdAt: createdAt ?? DateTime.now(),
+      ),
+    );
+  }
+
+  Future<String?> _userDisplayName(String uid) async {
+    final snapshot = await _fs.instance
+        .collection(DatabaseCollections.users)
+        .doc(uid)
+        .get();
+    final data = snapshot.data();
+    final displayName = data?['displayName'] as String?;
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      return displayName.trim();
+    }
+    final email = data?['email'] as String?;
+    return email == null || email.trim().isEmpty ? null : email.trim();
+  }
+
+  Future<void> recordPublicationPublished({
+    required String groupId,
+    required String actorUid,
+    required String title,
+    String? actorDisplayName,
+  }) async {
+    final ref = _activities(groupId).doc();
+    await ref.set(
+      PollGroupActivity(
+        id: ref.id,
+        type: PollGroupActivityType.publicationPublished,
+        actorUid: actorUid,
+        actorDisplayName: actorDisplayName,
+        targetTitle: title,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
   Stream<PollGroupAdminElection?> watchAdminElection(String groupId) {
     return _fs.watchDoc(_adminElections(groupId).doc('current'));
   }
@@ -280,6 +357,7 @@ class PollGroupRepository {
     final allowedMembersSnap = await _allowedMembers(groupId).get();
     final allowedDomainsSnap = await _allowedDomains(groupId).get();
     final invitationsSnap = await _invitations(groupId).get();
+    final activitiesSnap = await _activities(groupId).get();
     final electionSnap = await _adminElections(groupId).get();
     final electionVotes = electionSnap.docs.isEmpty
         ? const <QueryDocumentSnapshot<PollGroupAdminElectionVote>>[]
@@ -296,6 +374,9 @@ class PollGroupRepository {
       batch.delete(doc.reference);
     }
     for (final doc in invitationsSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    for (final doc in activitiesSnap.docs) {
       batch.delete(doc.reference);
     }
     for (final doc in electionVotes) {
@@ -340,6 +421,9 @@ class PollGroupRepository {
         notification.type == PollGroupAccessNotificationType.invite
         ? await _fs.getDoc(invitationRef)
         : null;
+    final joiningDisplayName = accept
+        ? await _userDisplayName(joiningUid)
+        : null;
     final batch = _fs.instance.batch();
 
     if (accept) {
@@ -354,6 +438,14 @@ class PollGroupRepository {
           joinedAt: now,
           joinedBy: currentUid,
         ),
+      );
+      _addActivityToBatch(
+        batch,
+        groupId: notification.groupId,
+        type: PollGroupActivityType.memberJoined,
+        actorUid: joiningUid,
+        actorDisplayName: joiningDisplayName,
+        createdAt: now,
       );
     }
 
@@ -410,6 +502,7 @@ class PollGroupRepository {
     required PollGroup group,
     required String uid,
     required String joinedBy,
+    String? actorDisplayName,
   }) async {
     final batch = _fs.instance.batch();
     batch.update(_groups().doc(group.id), {
@@ -423,6 +516,13 @@ class PollGroupRepository {
         joinedAt: DateTime.now(),
         joinedBy: joinedBy,
       ),
+    );
+    _addActivityToBatch(
+      batch,
+      groupId: group.id,
+      type: PollGroupActivityType.memberJoined,
+      actorUid: uid,
+      actorDisplayName: actorDisplayName,
     );
     await batch.commit();
   }
@@ -496,6 +596,14 @@ class PollGroupRepository {
             candidateUids: candidateUids,
           ),
         );
+        _addActivityToBatch(
+          batch,
+          groupId: currentGroup.id,
+          type: PollGroupActivityType.adminElectionStarted,
+          actorUid: uid,
+          actorDisplayName: await _userDisplayName(uid),
+          createdAt: now,
+        );
         await batch.commit();
         return PollGroupLeaveResult.left;
       }
@@ -503,6 +611,7 @@ class PollGroupRepository {
     }
 
     final batch = _fs.instance.batch();
+    final actorDisplayName = await _userDisplayName(uid);
     batch.update(_groups().doc(currentGroup.id), {
       'memberIds': FieldValue.arrayRemove([uid]),
       'createdBy': ?successorUid,
@@ -510,6 +619,19 @@ class PollGroupRepository {
       if (successorUid != null) 'adminElectionEndsAt': null,
     });
     batch.delete(_members(currentGroup.id).doc(uid));
+    _addActivityToBatch(
+      batch,
+      groupId: currentGroup.id,
+      type: successorUid == null
+          ? PollGroupActivityType.memberLeft
+          : PollGroupActivityType.ownershipTransferred,
+      actorUid: uid,
+      actorDisplayName: actorDisplayName,
+      subjectUid: successorUid,
+      subjectDisplayName: successorUid == null
+          ? null
+          : await _userDisplayName(successorUid),
+    );
     await batch.commit();
     return PollGroupLeaveResult.left;
   }
@@ -521,6 +643,7 @@ class PollGroupRepository {
     required String actorDisplayName,
     required PollGroupRole role,
     String? email,
+    String? memberDisplayName,
   }) async {
     if (uid == group.createdBy) {
       throw StateError('group_creator_cannot_be_removed');
@@ -574,6 +697,16 @@ class PollGroupRepository {
         createdAt: now,
         resolvedAt: now,
       ),
+    );
+    _addActivityToBatch(
+      batch,
+      groupId: group.id,
+      type: PollGroupActivityType.memberRemoved,
+      actorUid: actorUid,
+      actorDisplayName: actorDisplayName,
+      subjectUid: uid,
+      subjectDisplayName: memberDisplayName ?? email,
+      createdAt: now,
     );
     await batch.commit();
   }

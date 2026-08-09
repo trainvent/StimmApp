@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/poll_group_activity.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
@@ -390,6 +391,10 @@ void main() {
         expect(updatedGroup.createdBy, 'older-admin');
         expect(updatedGroup.memberIds, isNot(contains('owner')));
         expect(formerOwner.exists, isFalse);
+        expect(
+          (await repository.watchActivities(groupId).first).single.type,
+          PollGroupActivityType.ownershipTransferred,
+        );
       },
     );
 
@@ -429,6 +434,10 @@ void main() {
         );
         expect(election?.candidateUids, ['member']);
         expect(election?.isOpen, isTrue);
+        expect(
+          (await repository.watchActivities(groupId).first).single.type,
+          PollGroupActivityType.adminElectionStarted,
+        );
       },
     );
 
@@ -557,7 +566,39 @@ void main() {
           updatedNotifications.docs.last.data()['actorDisplayName'],
           'Owner',
         );
+        final activities = await repository.watchActivities(groupId).first;
+        expect(
+          activities.map((activity) => activity.type),
+          containsAll([
+            PollGroupActivityType.memberJoined,
+            PollGroupActivityType.memberRemoved,
+          ]),
+        );
       },
     );
+
+    test('records group publication activity', () async {
+      final groupId = await repository.createGroup(
+        creatorUid: 'owner',
+        name: 'Operations',
+        joinCode: 'GRP-ABC123',
+        nicknameMode: PollGroupNicknameMode.selfNamed,
+        managersCanInvite: true,
+        accessMode: PollGroupAccessMode.private,
+        inviteLinkEnabled: false,
+      );
+
+      await repository.recordPublicationPublished(
+        groupId: groupId,
+        actorUid: 'owner',
+        actorDisplayName: 'Owner',
+        title: 'Quarterly priorities',
+      );
+
+      final activity = (await repository.watchActivities(groupId).first).single;
+      expect(activity.type, PollGroupActivityType.publicationPublished);
+      expect(activity.actorDisplayName, 'Owner');
+      expect(activity.targetTitle, 'Quarterly priorities');
+    });
   });
 }

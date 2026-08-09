@@ -16,32 +16,6 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 
-class GroupInviteMembersPage extends StatelessWidget {
-  const GroupInviteMembersPage({
-    super.key,
-    required this.group,
-    this.repository,
-    this.auth,
-    this.csvImporter,
-  });
-
-  final PollGroup group;
-  final PollGroupRepository? repository;
-  final AuthService? auth;
-  final PollGroupCsvImporter? csvImporter;
-
-  @override
-  Widget build(BuildContext context) {
-    return GroupEditorPage(
-      initialGroup: group,
-      repository: repository,
-      auth: auth,
-      csvImporter: csvImporter,
-      inviteOnly: true,
-    );
-  }
-}
-
 class GroupEditorPage extends StatefulWidget {
   const GroupEditorPage({
     super.key,
@@ -424,13 +398,15 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       return false;
     }
     final first = cells.first.trim().toLowerCase();
-    return first == 'email' || first == 'mail';
+    return first == 'email' || first == 'e-mail' || first == 'mail';
   }
 
   PollGroupRole? _parseRoleOrNull(String value) {
     switch (value) {
       case '':
       case 'user':
+      case 'benutzer':
+      case 'mitglied':
         return PollGroupRole.user;
       case 'manager':
         return PollGroupRole.manager;
@@ -902,15 +878,17 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     );
   }
 
-  Widget _buildInviteMembersSection() {
+  Widget _buildInviteMembersSection({bool showTitle = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          context.l10n.inviteMembersTitle,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 16),
+        if (showTitle) ...[
+          Text(
+            context.l10n.inviteMembersTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 16),
+        ],
         ...List.generate(_memberDrafts.length, (index) {
           final draft = _memberDrafts[index];
           return Padding(
@@ -951,6 +929,26 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 Text(
                   context.l10n.acceptedCsvFormat,
                   style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SelectableText(
+                    context.l10n.csvColumnFormat,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -1141,12 +1139,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
             : ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  Text(
-                    context.l10n.inviteMembersPageDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildInviteMembersSection(),
+                  _buildInviteMembersSection(showTitle: false),
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     key: const Key('send_group_invitations'),

@@ -2,6 +2,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/pages/main/groups/group_dashboard_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -116,5 +117,44 @@ void main() {
       tabBarBackground.color,
       Theme.of(tester.element(appBarFinder)).scaffoldBackgroundColor,
     );
+  });
+
+  testWidgets('invite card offers QR display and clipboard copy actions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      createTestWidget(
+        GroupDashboardPage(
+          group: group,
+          repository: _FakePollGroupRepository(group),
+          auth: _FakeAuthService(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final qrButtonFinder = find.byKey(const Key('display_group_invite_qr'));
+    final copyButtonFinder = find.byKey(const Key('copy_group_invite_link'));
+    expect(qrButtonFinder, findsOneWidget);
+    expect(copyButtonFinder, findsOneWidget);
+    expect(
+      (tester.widget<IconButton>(qrButtonFinder).icon as Icon).icon,
+      Icons.qr_code_2,
+    );
+    expect(
+      (tester.widget<IconButton>(copyButtonFinder).icon as Icon).icon,
+      Icons.copy_outlined,
+    );
+
+    await tester.tap(qrButtonFinder);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(QrImageView), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Copy link'), findsOneWidget);
   });
 }

@@ -2,10 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/pages/main/groups/group_access_qr_scanner_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_dashboard_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
@@ -179,76 +177,6 @@ class MemberGroupsPage extends StatelessWidget {
     );
   }
 
-  Future<void> _copyGroupInviteLink(
-    BuildContext context,
-    PollGroup group,
-  ) async {
-    final inviteLink = buildPollGroupInviteLink(group);
-    if (inviteLink == null) {
-      showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
-      return;
-    }
-
-    await Clipboard.setData(ClipboardData(text: inviteLink));
-    if (!context.mounted) {
-      return;
-    }
-    showSuccessSnackBar(context.l10n.linkCopiedToClipboard);
-  }
-
-  Future<void> _showGroupQrCode(BuildContext context, PollGroup group) async {
-    final inviteLink = buildPollGroupInviteLink(group);
-    if (inviteLink == null) {
-      showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
-      return;
-    }
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(group.name),
-        content: SizedBox(
-          width: 320,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              QrImageView(
-                data: inviteLink,
-                size: 240,
-                backgroundColor: Colors.white,
-              ),
-              const SizedBox(height: 16),
-              SelectableText(
-                inviteLink,
-                textAlign: TextAlign.center,
-                style: Theme.of(dialogContext).textTheme.bodySmall,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.l10n.close),
-          ),
-          FilledButton.icon(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: inviteLink));
-              if (dialogContext.mounted) {
-                Navigator.of(dialogContext).pop();
-              }
-              if (context.mounted) {
-                showSuccessSnackBar(context.l10n.linkCopiedToClipboard);
-              }
-            },
-            icon: const Icon(Icons.copy),
-            label: Text(context.l10n.copyLinkLabel),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final uid = authService.currentUser?.uid;
@@ -401,14 +329,14 @@ class MemberGroupsPage extends StatelessWidget {
                               IconButton(
                                 tooltip: context.l10n.copyInviteLinkTooltip,
                                 onPressed: () =>
-                                    _copyGroupInviteLink(context, group),
-                                icon: const Icon(Icons.link),
+                                    copyPollGroupInviteLink(context, group),
+                                icon: const Icon(Icons.copy_outlined),
                               ),
                               IconButton(
-                                tooltip: context.l10n.scanQrCode,
+                                tooltip: context.l10n.displayQrCode,
                                 onPressed: () =>
-                                    _showGroupQrCode(context, group),
-                                icon: const Icon(Icons.qr_code),
+                                    showPollGroupInviteQrCode(context, group),
+                                icon: const Icon(Icons.qr_code_2),
                               ),
                             ],
                           ],

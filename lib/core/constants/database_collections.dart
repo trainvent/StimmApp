@@ -11,4 +11,5 @@ class DatabaseCollections {
   static const kickedUsers = 'kickedUsers';
   static const moderationReports = 'moderationReports';
   static const groupAccessNotifications = 'groupAccessNotifications';
+  static const groupActivities = 'activities';
 }

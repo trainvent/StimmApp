@@ -104,6 +104,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
         actorDisplayName: actorDisplayName,
         role: member.role,
         email: profile?.email,
+        memberDisplayName: memberName,
       );
       if (mounted) {
         showSuccessSnackBar(context.l10n.groupMemberRemoved);

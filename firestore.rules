@@ -380,6 +380,31 @@ service cloud.firestore {
                       isPollGroupAdmin(groupId);
       }
 
+      match /activities/{activityId} {
+        allow read: if isAdmin() ||
+                    isPollGroupCreator(groupId) ||
+                    isPollGroupAdmin(groupId);
+        allow create: if isAdmin() ||
+                      (isAuthenticated() &&
+                       request.resource.data.actorUid == request.auth.uid &&
+                       request.resource.data.type in [
+                         'member_joined',
+                         'member_left',
+                         'member_removed',
+                         'ownership_transferred',
+                         'admin_election_started',
+                         'publication_published'
+                       ] &&
+                       request.resource.data.createdAt is timestamp &&
+                       (isPollGroupMember(groupId) ||
+                        isPollGroupMemberAfter(groupId)));
+        allow update: if false;
+        allow delete: if isAdmin() ||
+                      ((isPollGroupCreator(groupId) ||
+                        isPollGroupAdmin(groupId)) &&
+                       !existsAfter(/databases/$(database)/documents/pollGroups/$(groupId)));
+      }
+
       match /adminElections/{electionId} {
         allow read: if canReadPollGroup(groupId);
         allow create: if isAdmin() ||

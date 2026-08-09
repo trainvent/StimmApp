@@ -37,6 +37,28 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   final Map<String, PollGroup> _knownGroupsById = <String, PollGroup>{};
   PollGroup? _selectedGroup;
 
+  Future<void> _recordGroupPublication({
+    required String actorUid,
+    required String title,
+  }) async {
+    final group = _selectedGroup;
+    if (group == null) {
+      return;
+    }
+    try {
+      final currentUser = authService.currentUser;
+      await PollGroupRepository.create().recordPublicationPublished(
+        groupId: group.id,
+        actorUid: actorUid,
+        actorDisplayName: currentUser?.displayName ?? currentUser?.email,
+        title: title,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Could not record group publication activity: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
   @override
   void dispose() {
     for (final question in _questions) {
@@ -303,6 +325,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         await PublishingQuotaService.instance.ensureCanCreatePoll();
 
         final pollId = await PollRepository.create().createPoll(poll);
+        await _recordGroupPublication(
+          actorUid: currentUser.uid,
+          title: poll.title,
+        );
         await AnalyticsService.instance.logPollCreated(
           scopeType: scope.firestoreType,
           visibility: poll.visibility,
@@ -349,6 +375,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       await PublishingQuotaService.instance.ensureCanCreatePoll();
 
       final surveyId = await SurveyRepository.create().createSurvey(survey);
+      await _recordGroupPublication(
+        actorUid: currentUser.uid,
+        title: survey.title,
+      );
       await AnalyticsService.instance.logEvent(
         'survey_created',
         parameters: {

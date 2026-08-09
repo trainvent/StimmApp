@@ -5894,10 +5894,10 @@ class S {
     );
   }
 
-  /// `Invite new people to this group. Successfully submitted entries are cleared from this page.`
+  /// `Invite people individually or import several at once.`
   String get inviteMembersPageDescription {
     return Intl.message(
-      'Invite new people to this group. Successfully submitted entries are cleared from this page.',
+      'Invite people individually or import several at once.',
       name: 'inviteMembersPageDescription',
       desc: '',
       args: [],
@@ -5969,21 +5969,31 @@ class S {
     );
   }
 
-  /// `Drop a CSV here`
+  /// `Import multiple members`
   String get dropCsvHere {
     return Intl.message(
-      'Drop a CSV here',
+      'Import multiple members',
       name: 'dropCsvHere',
       desc: '',
       args: [],
     );
   }
 
-  /// `Accepted format: CSV or TSV with email,nickname,role`
+  /// `CSV or TSV, with one person per row:`
   String get acceptedCsvFormat {
     return Intl.message(
-      'Accepted format: CSV or TSV with email,nickname,role',
+      'CSV or TSV, with one person per row:',
       name: 'acceptedCsvFormat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `<email>,<nickname>,<role>`
+  String get csvColumnFormat {
+    return Intl.message(
+      '<email>,<nickname>,<role>',
+      name: 'csvColumnFormat',
       desc: '',
       args: [],
     );
@@ -6172,6 +6182,191 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Share invitation`
+  String get shareGroupInvitation {
+    return Intl.message(
+      'Share invitation',
+      name: 'shareGroupInvitation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group activity`
+  String get groupActivityTitle {
+    return Intl.message(
+      'Group activity',
+      name: 'groupActivityTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Review important membership, settings, and publishing activity.`
+  String get groupActivityDescription {
+    return Intl.message(
+      'Review important membership, settings, and publishing activity.',
+      name: 'groupActivityDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No group activity has been recorded yet.`
+  String get noGroupActivity {
+    return Intl.message(
+      'No group activity has been recorded yet.',
+      name: 'noGroupActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The group activity could not be loaded.`
+  String get groupActivityLoadFailed {
+    return Intl.message(
+      'The group activity could not be loaded.',
+      name: 'groupActivityLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A group member`
+  String get groupActivityActorFallback {
+    return Intl.message(
+      'A group member',
+      name: 'groupActivityActorFallback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `another member`
+  String get groupActivitySubjectFallback {
+    return Intl.message(
+      'another member',
+      name: 'groupActivitySubjectFallback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group activity was updated.`
+  String get groupActivityUpdated {
+    return Intl.message(
+      'Group activity was updated.',
+      name: 'groupActivityUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{actor} created the group.`
+  String groupActivityCreated(Object actor) {
+    return Intl.message(
+      '$actor created the group.',
+      name: 'groupActivityCreated',
+      desc: '',
+      args: [actor],
+    );
+  }
+
+  /// `{actor} updated the group settings.`
+  String groupActivitySettingsUpdated(Object actor) {
+    return Intl.message(
+      '$actor updated the group settings.',
+      name: 'groupActivitySettingsUpdated',
+      desc: '',
+      args: [actor],
+    );
+  }
+
+  /// `{actor} sent {count} invitations.`
+  String groupActivityInvitationsSent(Object actor, int count) {
+    return Intl.message(
+      '$actor sent $count invitations.',
+      name: 'groupActivityInvitationsSent',
+      desc: '',
+      args: [actor, count],
+    );
+  }
+
+  /// `{actor} joined the group.`
+  String groupActivityMemberJoined(Object actor) {
+    return Intl.message(
+      '$actor joined the group.',
+      name: 'groupActivityMemberJoined',
+      desc: '',
+      args: [actor],
+    );
+  }
+
+  /// `{actor} left the group.`
+  String groupActivityMemberLeft(Object actor) {
+    return Intl.message(
+      '$actor left the group.',
+      name: 'groupActivityMemberLeft',
+      desc: '',
+      args: [actor],
+    );
+  }
+
+  /// `{actor} removed {subject} from the group.`
+  String groupActivityMemberRemoved(Object actor, Object subject) {
+    return Intl.message(
+      '$actor removed $subject from the group.',
+      name: 'groupActivityMemberRemoved',
+      desc: '',
+      args: [actor, subject],
+    );
+  }
+
+  /// `{actor} left and transferred ownership to {subject}.`
+  String groupActivityOwnershipTransferred(Object actor, Object subject) {
+    return Intl.message(
+      '$actor left and transferred ownership to $subject.',
+      name: 'groupActivityOwnershipTransferred',
+      desc: '',
+      args: [actor, subject],
+    );
+  }
+
+  /// `An admin election started after {actor} left.`
+  String groupActivityAdminElectionStarted(Object actor) {
+    return Intl.message(
+      'An admin election started after $actor left.',
+      name: 'groupActivityAdminElectionStarted',
+      desc: '',
+      args: [actor],
+    );
+  }
+
+  /// `{subject} became the new group owner.`
+  String groupActivityAdminElectionCompleted(Object subject) {
+    return Intl.message(
+      '$subject became the new group owner.',
+      name: 'groupActivityAdminElectionCompleted',
+      desc: '',
+      args: [subject],
+    );
+  }
+
+  /// `{actor} published “{title}”.`
+  String groupActivityPublicationPublished(Object actor, Object title) {
+    return Intl.message(
+      '$actor published “$title”.',
+      name: 'groupActivityPublicationPublished',
+      desc: '',
+      args: [actor, title],
+    );
+  }
+
+  /// `Untitled`
+  String get untitled {
+    return Intl.message('Untitled', name: 'untitled', desc: '', args: []);
   }
 
   /// `Dashboard`

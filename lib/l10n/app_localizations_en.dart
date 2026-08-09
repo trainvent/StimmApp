@@ -2228,7 +2228,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteMembersPageDescription =>
-      'Invite new people to this group. Successfully submitted entries are cleared from this page.';
+      'Invite people individually or import several at once.';
 
   @override
   String get sendInvitations => 'Send invitations';
@@ -2255,11 +2255,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importCsvFileLabel => 'Import CSV file';
 
   @override
-  String get dropCsvHere => 'Drop a CSV here';
+  String get dropCsvHere => 'Import multiple members';
 
   @override
-  String get acceptedCsvFormat =>
-      'Accepted format: CSV or TSV with email,nickname,role';
+  String get acceptedCsvFormat => 'CSV or TSV, with one person per row:';
+
+  @override
+  String get csvColumnFormat => '<email>,<nickname>,<role>';
 
   @override
   String lastImportSummary(Object validRows, Object invalidRows) {
@@ -2329,6 +2331,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copyInviteLinkDescription => 'Share the group invitation link.';
+
+  @override
+  String get shareGroupInvitation => 'Share invitation';
+
+  @override
+  String get groupActivityTitle => 'Group activity';
+
+  @override
+  String get groupActivityDescription =>
+      'Review important membership, settings, and publishing activity.';
+
+  @override
+  String get noGroupActivity => 'No group activity has been recorded yet.';
+
+  @override
+  String get groupActivityLoadFailed =>
+      'The group activity could not be loaded.';
+
+  @override
+  String get groupActivityActorFallback => 'A group member';
+
+  @override
+  String get groupActivitySubjectFallback => 'another member';
+
+  @override
+  String get groupActivityUpdated => 'Group activity was updated.';
+
+  @override
+  String groupActivityCreated(Object actor) {
+    return '$actor created the group.';
+  }
+
+  @override
+  String groupActivitySettingsUpdated(Object actor) {
+    return '$actor updated the group settings.';
+  }
+
+  @override
+  String groupActivityInvitationsSent(Object actor, int count) {
+    return '$actor sent $count invitations.';
+  }
+
+  @override
+  String groupActivityMemberJoined(Object actor) {
+    return '$actor joined the group.';
+  }
+
+  @override
+  String groupActivityMemberLeft(Object actor) {
+    return '$actor left the group.';
+  }
+
+  @override
+  String groupActivityMemberRemoved(Object actor, Object subject) {
+    return '$actor removed $subject from the group.';
+  }
+
+  @override
+  String groupActivityOwnershipTransferred(Object actor, Object subject) {
+    return '$actor left and transferred ownership to $subject.';
+  }
+
+  @override
+  String groupActivityAdminElectionStarted(Object actor) {
+    return 'An admin election started after $actor left.';
+  }
+
+  @override
+  String groupActivityAdminElectionCompleted(Object subject) {
+    return '$subject became the new group owner.';
+  }
+
+  @override
+  String groupActivityPublicationPublished(Object actor, Object title) {
+    return '$actor published “$title”.';
+  }
+
+  @override
+  String get untitled => 'Untitled';
 
   @override
   String get openGroupDashboard => 'Dashboard';

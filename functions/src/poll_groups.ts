@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import { addPollGroupActivity } from "./poll_group_activity";
 
 type CreatePollGroupPayload = {
 	name?: unknown;
@@ -278,6 +279,22 @@ export const createPollGroup = onCall(async (request) => {
 		});
 	}
 
+	addPollGroupActivity(batch, groupRef, {
+		type: "group_created",
+		actorUid: uid,
+		actorDisplayName,
+		createdAt: now,
+	});
+	if (matchingProfiles.length > 0) {
+		addPollGroupActivity(batch, groupRef, {
+			type: "invitations_sent",
+			actorUid: uid,
+			actorDisplayName,
+			count: matchingProfiles.length,
+			createdAt: now,
+		});
+	}
+
 	await batch.commit();
 
 	return { groupId: groupRef.id };
@@ -481,6 +498,25 @@ export const updatePollGroup = onCall(async (request) => {
 			resolvedAt: null,
 		});
 		invitationCount += 1;
+	}
+
+	const isInvitationUpdate = Array.isArray(data.inviteEmails) && data.inviteEmails.length > 0;
+	if (!isInvitationUpdate) {
+		addPollGroupActivity(batch, groupRef, {
+			type: "settings_updated",
+			actorUid: uid,
+			actorDisplayName,
+			createdAt: now,
+		});
+	}
+	if (invitationCount > 0) {
+		addPollGroupActivity(batch, groupRef, {
+			type: "invitations_sent",
+			actorUid: uid,
+			actorDisplayName,
+			count: invitationCount,
+			createdAt: now,
+		});
 	}
 
 	await batch.commit();

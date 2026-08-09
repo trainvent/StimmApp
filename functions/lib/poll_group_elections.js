@@ -39,6 +39,7 @@ exports.handleUserPollGroupDepartures = handleUserPollGroupDepartures;
 const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
+const poll_group_activity_1 = require("./poll_group_activity");
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
 async function clearElectionVotes(db, groupRef) {
     const votes = await groupRef
@@ -76,6 +77,10 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
             memberIds: admin.firestore.FieldValue.arrayRemove(uid),
         });
         batch.delete(memberRef);
+        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+            type: "member_left",
+            actorUid: uid,
+        });
         await batch.commit();
         return "left";
     }
@@ -102,6 +107,11 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
             adminElectionEndsAt: null,
         });
         batch.delete(memberRef);
+        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+            type: "ownership_transferred",
+            actorUid: uid,
+            subjectUid: admins[0].uid,
+        });
         await batch.commit();
         return "ownershipTransferred";
     }
@@ -123,6 +133,11 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
         initiatedBy: uid,
         candidateUids,
         winnerUid: null,
+    });
+    (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        type: "admin_election_started",
+        actorUid: uid,
+        createdAt: now,
     });
     await batch.commit();
     return "electionStarted";
@@ -254,6 +269,12 @@ exports.finalizePollGroupAdminElections = (0, scheduler_1.onSchedule)("every 15 
             status: "closed",
             winnerUid: winner.uid,
             resolvedAt: now,
+        });
+        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+            type: "admin_election_completed",
+            actorUid: "system",
+            subjectUid: winner.uid,
+            createdAt: now,
         });
         await batch.commit();
     }

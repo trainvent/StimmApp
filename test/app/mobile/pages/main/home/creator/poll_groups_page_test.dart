@@ -3,6 +3,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
+import 'package:stimmapp/app/pages/main/groups/group_invite_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -162,20 +163,22 @@ void main() {
     ) async {
       await tester.pumpWidget(
         createTestWidget(
-          GroupInviteMembersPage(
+          GroupInvitePage(
             group: existingGroup,
             repository: repository,
             auth: _FakeAuthService(user),
             csvImporter: const _FakeCsvImporter(
-              'email,nickname,role\n'
-              'anna@example.com,Anna,user\n'
+              'E-Mail;Spitzname;Rolle\n'
+              'anna@example.com;Anna;Benutzer\n'
               'broken-row\n'
-              'lead@example.com,Lead,manager',
+              'lead@example.com;Lead;Manager',
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
+
+      expect(find.text('<email>,<nickname>,<role>'), findsOneWidget);
 
       await tester.scrollUntilVisible(
         find.byKey(const Key('pick_csv_button')),
@@ -201,7 +204,7 @@ void main() {
     testWidgets('invitation page imports TSV rows', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          GroupInviteMembersPage(
+          GroupInvitePage(
             group: existingGroup,
             repository: repository,
             auth: _FakeAuthService(user),
@@ -298,7 +301,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         createTestWidget(
-          GroupInviteMembersPage(
+          GroupInvitePage(
             group: existingGroup,
             repository: repository,
             auth: _FakeAuthService(user),
