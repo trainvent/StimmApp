@@ -4313,8 +4313,50 @@ abstract class AppLocalizations {
   /// No description provided for @manageGroupMembersDescription.
   ///
   /// In en, this message translates to:
-  /// **'View everyone in this group and remove members when needed.'**
+  /// **'Tap or swipe a member to edit them. Swipe the other way to remove them, or long-press to select several.'**
   String get manageGroupMembersDescription;
+
+  /// No description provided for @editGroupMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit member'**
+  String get editGroupMemberTitle;
+
+  /// No description provided for @groupMemberUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Member updated.'**
+  String get groupMemberUpdated;
+
+  /// No description provided for @groupCreatorMustRemainAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'The group creator must remain an admin.'**
+  String get groupCreatorMustRemainAdmin;
+
+  /// No description provided for @selectedGroupMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected} other{{count} selected}}'**
+  String selectedGroupMembersCount(int count);
+
+  /// No description provided for @removeSelectedGroupMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove selected members?'**
+  String get removeSelectedGroupMembersTitle;
+
+  /// No description provided for @removeSelectedGroupMembersConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Remove the selected member from this group?} other{Remove all {count} selected members from this group?}}'**
+  String removeSelectedGroupMembersConfirmation(int count);
+
+  /// No description provided for @selectedGroupMembersRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Member removed from the group.} other{{count} members removed from the group.}}'**
+  String selectedGroupMembersRemoved(int count);
 
   /// No description provided for @groupContentTitle.
   ///

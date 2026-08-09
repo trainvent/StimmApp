@@ -711,6 +711,50 @@ class PollGroupRepository {
     await batch.commit();
   }
 
+  Future<void> updateMember({
+    required PollGroup group,
+    required PollGroupMember member,
+    required PollGroupRole role,
+    String? nickname,
+    String? email,
+  }) async {
+    if (!group.memberIds.contains(member.uid)) {
+      throw StateError('group_member_not_found');
+    }
+    if (member.uid == group.createdBy && role != PollGroupRole.admin) {
+      throw StateError('group_creator_must_remain_admin');
+    }
+
+    final trimmedNickname = nickname?.trim();
+    final normalizedNickname =
+        trimmedNickname == null || trimmedNickname.isEmpty
+        ? null
+        : trimmedNickname;
+    if (normalizedNickname != null &&
+        normalizedNickname.length > AppLimits.maxGroupNicknameLength) {
+      throw StateError('invalid_group_nickname');
+    }
+
+    final batch = _fs.instance.batch();
+    batch.update(_members(group.id).doc(member.uid), {
+      'nickname': normalizedNickname,
+      'role': pollGroupRoleToFirestore(role),
+    });
+
+    final normalizedEmail = email?.trim().toLowerCase();
+    if (normalizedEmail != null && normalizedEmail.isNotEmpty) {
+      final allowedMemberRef = _allowedMembers(group.id).doc(normalizedEmail);
+      if ((await allowedMemberRef.get()).exists) {
+        batch.update(allowedMemberRef, {
+          'nickname': normalizedNickname,
+          'role': pollGroupRoleToFirestore(role),
+        });
+      }
+    }
+
+    await batch.commit();
+  }
+
   static List<PollGroupAllowedMember> normalizeAllowedMembers(
     List<PollGroupAllowedMember> members,
   ) {

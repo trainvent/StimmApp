@@ -337,12 +337,23 @@ service cloud.firestore {
                       (isPollGroupMemberAfter(groupId) &&
                        memberId == request.auth.uid &&
                        request.resource.data.joinedBy == request.auth.uid);
-        allow update, delete: if isAdmin() ||
-                              isPollGroupCreator(groupId) ||
-                              isPollGroupAdmin(groupId) ||
-                              (isAuthenticated() &&
-                               memberId == request.auth.uid &&
-                               isPollGroupMember(groupId));
+        allow update: if isAdmin() ||
+                      (((isPollGroupCreator(groupId) || isPollGroupAdmin(groupId)) &&
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nickname', 'role']) &&
+                        request.resource.data.role in ['admin', 'manager', 'user'] &&
+                        (memberId != groupDoc(groupId).data.createdBy ||
+                         request.resource.data.role == 'admin')) ||
+                       (isAuthenticated() &&
+                        memberId == request.auth.uid &&
+                        isPollGroupMember(groupId) &&
+                        groupDoc(groupId).data.nicknameMode == 'self_named' &&
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nickname'])));
+        allow delete: if isAdmin() ||
+                      isPollGroupCreator(groupId) ||
+                      isPollGroupAdmin(groupId) ||
+                      (isAuthenticated() &&
+                       memberId == request.auth.uid &&
+                       isPollGroupMember(groupId));
       }
 
       match /allowedMembers/{allowedMemberId} {

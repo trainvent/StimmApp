@@ -2336,7 +2336,54 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get manageGroupMembersDescription =>
-      'Sieh alle Mitglieder dieser Gruppe und entferne sie bei Bedarf.';
+      'Tippe oder wische über ein Mitglied, um es zu bearbeiten. Wische in die andere Richtung, um es zu entfernen, oder halte es gedrückt, um mehrere auszuwählen.';
+
+  @override
+  String get editGroupMemberTitle => 'Mitglied bearbeiten';
+
+  @override
+  String get groupMemberUpdated => 'Mitglied aktualisiert.';
+
+  @override
+  String get groupCreatorMustRemainAdmin =>
+      'Der Ersteller der Gruppe muss Administrator bleiben.';
+
+  @override
+  String selectedGroupMembersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ausgewählt',
+      one: '1 ausgewählt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get removeSelectedGroupMembersTitle =>
+      'Ausgewählte Mitglieder entfernen?';
+
+  @override
+  String removeSelectedGroupMembersConfirmation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count ausgewählten Mitglieder aus dieser Gruppe entfernen?',
+      one: 'Das ausgewählte Mitglied aus dieser Gruppe entfernen?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String selectedGroupMembersRemoved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Mitglieder aus der Gruppe entfernt.',
+      one: 'Mitglied aus der Gruppe entfernt.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get groupContentTitle => 'Gruppeninhalte';

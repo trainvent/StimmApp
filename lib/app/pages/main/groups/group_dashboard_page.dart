@@ -112,7 +112,6 @@ class GroupDashboardPage extends StatelessWidget {
     required BuildContext context,
     required IconData icon,
     required String title,
-    required String description,
     VoidCallback? onTap,
     List<Widget> actions = const [],
   }) {
@@ -123,14 +122,7 @@ class GroupDashboardPage extends StatelessWidget {
           CircleAvatar(child: Icon(icon)),
           const SizedBox(width: 14),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 2),
-                Text(description, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
+            child: Text(title, style: Theme.of(context).textTheme.titleSmall),
           ),
           if (actions.isEmpty) const Icon(Icons.chevron_right) else ...actions,
         ],
@@ -253,8 +245,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.how_to_vote_outlined,
                       title: context.l10n.voteForNewGroupAdmin,
-                      description:
-                          context.l10n.adminElectionDashboardDescription,
                       onTap: () => _open(
                         GroupAdminElectionPage(
                           group: currentGroup,
@@ -275,7 +265,6 @@ class GroupDashboardPage extends StatelessWidget {
                     context: context,
                     icon: Icons.how_to_vote_outlined,
                     title: context.l10n.viewGroupPolls,
-                    description: context.l10n.viewGroupPollsDescription,
                     onTap: () => _open(
                       PollsPage(
                         initialGroupId: currentGroup.id,
@@ -295,7 +284,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.person_add_alt_1_outlined,
                       title: context.l10n.inviteMembersTitle,
-                      description: context.l10n.inviteMembersPageDescription,
                       onTap: () => _open(
                         GroupInvitePage(
                           group: currentGroup,
@@ -309,7 +297,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.manage_accounts_outlined,
                       title: context.l10n.manageGroupMembersTitle,
-                      description: context.l10n.manageGroupMembersDescription,
                       onTap: () => _open(
                         GroupMembersPage(
                           group: currentGroup,
@@ -323,7 +310,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.mark_email_read_outlined,
                       title: context.l10n.groupInvitationsTitle,
-                      description: context.l10n.groupInvitationsDescription,
                       onTap: () => _open(
                         GroupInvitationsPage(
                           group: currentGroup,
@@ -336,7 +322,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.history_outlined,
                       title: context.l10n.groupActivityTitle,
-                      description: context.l10n.groupActivityDescription,
                       onTap: () => _open(
                         GroupActivityPage(
                           group: currentGroup,
@@ -350,7 +335,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.settings_outlined,
                       title: context.l10n.editGroupTitle,
-                      description: context.l10n.editGroupDescription,
                       onTap: () => _open(
                         GroupEditorPage(
                           initialGroup: currentGroup,
@@ -365,7 +349,6 @@ class GroupDashboardPage extends StatelessWidget {
                         context: context,
                         icon: Icons.share_outlined,
                         title: context.l10n.shareGroupInvitation,
-                        description: context.l10n.copyInviteLinkDescription,
                         actions: [
                           IconButton(
                             key: const Key('display_group_invite_qr'),
@@ -399,7 +382,6 @@ class GroupDashboardPage extends StatelessWidget {
                       context: context,
                       icon: Icons.delete_forever_outlined,
                       title: context.l10n.deleteGroup,
-                      description: context.l10n.deleteGroupDescription,
                       onTap: () => _deleteGroup(context, currentGroup),
                     ),
                   ],

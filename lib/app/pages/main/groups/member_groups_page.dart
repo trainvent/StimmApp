@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:stimmapp/app/pages/main/groups/group_access_qr_scanner_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_dashboard_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/widgets/slidable_widget.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -274,48 +274,22 @@ class MemberGroupsPage extends StatelessWidget {
 
                   return Card(
                     clipBehavior: Clip.antiAlias,
-                    child: Slidable(
+                    child: AppSlidable(
                       key: ValueKey('member_group_${group.id}'),
-                      startActionPane: ActionPane(
-                        motion: const StretchMotion(),
-                        dismissible: DismissiblePane(
-                          dismissThreshold: 0.3,
-                          confirmDismiss: () async {
-                            await _openDashboard(context, group);
-                            return false;
-                          },
-                          closeOnCancel: true,
-                          onDismissed: () {},
-                        ),
-                        children: [
-                          SlidableAction(
-                            onPressed: (_) => _openDashboard(context, group),
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.onPrimaryContainer,
-                            icon: Icons.dashboard_outlined,
-                            label: context.l10n.openGroupDashboard,
-                          ),
-                        ],
+                      startAction: AppSlidableAction(
+                        onPressed: () => _openDashboard(context, group),
+                        icon: Icons.dashboard_outlined,
+                        label: context.l10n.openGroupDashboard,
                       ),
-                      endActionPane: ActionPane(
-                        motion: const StretchMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (_) => _leaveGroup(context, group),
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.secondaryContainer,
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.onSecondaryContainer,
-                            icon: Icons.logout,
-                            label: context.l10n.leaveGroup,
-                          ),
-                        ],
+                      confirmStartDismiss: () async {
+                        await _openDashboard(context, group);
+                        return false;
+                      },
+                      endAction: AppSlidableAction(
+                        onPressed: () => _leaveGroup(context, group),
+                        icon: Icons.logout,
+                        label: context.l10n.leaveGroup,
+                        style: AppSlidableActionStyle.secondary,
                       ),
                       child: PollGroupSummaryCard(
                         group: group,
