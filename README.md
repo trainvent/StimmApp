@@ -11,7 +11,7 @@ Dadurch können aussagekräftige Standpunkte entstehen und verlässliche Umfrage
 - bietet die Funtkion Kanälen, wie zum Beispiel Peta, den Grünen, jugend Recherchiert etc. zu folgen.
 
 ## Regeln für Benutzer
-- 1 Petition und Umfrage pro Tag
+- eine Petition und Umfrage pro Tag
 - Verröffentlichungen können nur solange keiner unterschrieben hat zurückgezogen werden
 
 ## Lizenz
