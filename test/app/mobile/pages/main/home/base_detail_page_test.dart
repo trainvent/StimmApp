@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -10,7 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../../test_helper.dart';
 
-class _TestHomeItem implements HomeItem {
+class _TestHomeItem extends HomeItem {
   @override
   final String id;
   @override
@@ -22,19 +23,7 @@ class _TestHomeItem implements HomeItem {
   @override
   final String status;
   @override
-  final String scopeType;
-  @override
-  String? get continentCode => null;
-  @override
-  final String? countryCode;
-  @override
-  String? get stateOrRegion => state;
-  @override
-  String? get town => null;
-  @override
-  String? get city => null;
-  @override
-  final String? state;
+  final FormScope scope;
   @override
   final DateTime expiresAt;
   @override
@@ -49,11 +38,9 @@ class _TestHomeItem implements HomeItem {
     required this.createdBy,
     required this.status,
     required this.expiresAt,
-    this.state,
     this.participantCount = 0,
     this.tags = const [],
-    this.scopeType = 'global',
-    this.countryCode,
+    this.scope = const FormScope.global(),
   });
 }
 
@@ -139,7 +126,6 @@ void main() {
         createdBy: 'user-1',
         status: IConst.closed,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
-        state: 'NRW',
         participantCount: 10,
         tags: ['tag1'],
       );
@@ -170,8 +156,7 @@ void main() {
       createdBy: 'user-1',
       status: IConst.active,
       expiresAt: DateTime.now().add(const Duration(days: 1)),
-      scopeType: 'country',
-      countryCode: 'DE',
+      scope: const FormScope.country('DE'),
     );
 
     await pumpPage(
@@ -195,8 +180,7 @@ void main() {
       createdBy: 'user-1',
       status: IConst.active,
       expiresAt: DateTime.now().add(const Duration(days: 1)),
-      scopeType: 'country',
-      countryCode: 'DE',
+      scope: const FormScope.country('DE'),
     );
 
     await pumpPage(
@@ -220,7 +204,6 @@ void main() {
         createdBy: 'user-1',
         status: IConst.active,
         expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
-        state: 'NRW',
         participantCount: 10,
         tags: ['tag1'],
       );
@@ -251,7 +234,6 @@ void main() {
         createdBy: 'user-1',
         status: IConst.active,
         expiresAt: DateTime.now().add(const Duration(days: 1)),
-        state: 'NRW',
         participantCount: 10,
         tags: ['tag1'],
       );

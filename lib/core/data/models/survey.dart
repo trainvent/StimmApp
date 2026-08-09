@@ -51,7 +51,7 @@ class SurveyQuestion {
   };
 }
 
-class Survey implements HomeItem {
+class Survey extends HomeItem {
   @override
   final String id;
   @override
@@ -71,15 +71,7 @@ class Survey implements HomeItem {
   @override
   final String status;
   @override
-  final String scopeType;
-  @override
-  final String? continentCode;
-  @override
-  final String? countryCode;
-  @override
-  final String? stateOrRegion;
-  @override
-  final String? town;
+  final FormScope scope;
   final String? groupId;
   final String? groupName;
   final String visibility;
@@ -96,24 +88,11 @@ class Survey implements HomeItem {
     required this.createdAt,
     required this.expiresAt,
     this.status = IConst.active,
-    this.scopeType = 'global',
-    this.continentCode,
-    this.countryCode,
+    this.scope = const FormScope.global(),
     this.groupId,
     this.groupName,
     this.visibility = 'public',
-    String? stateOrRegion,
-    @Deprecated('Use stateOrRegion') String? state,
-    String? town,
-    @Deprecated('Use town') String? city,
-  }) : stateOrRegion = stateOrRegion ?? state,
-       town = town ?? city;
-
-  @override
-  String? get state => stateOrRegion;
-
-  @override
-  String? get city => town;
+  });
 
   @override
   int get participantCount => responseCount;
@@ -134,16 +113,10 @@ class Survey implements HomeItem {
     DateTime? createdAt,
     DateTime? expiresAt,
     String? status,
-    String? scopeType,
-    String? continentCode,
-    String? countryCode,
+    FormScope? scope,
     String? groupId,
     String? groupName,
     String? visibility,
-    String? stateOrRegion,
-    @Deprecated('Use stateOrRegion') String? state,
-    String? town,
-    @Deprecated('Use town') String? city,
   }) {
     return Survey(
       id: id ?? this.id,
@@ -157,14 +130,10 @@ class Survey implements HomeItem {
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
       status: status ?? this.status,
-      scopeType: scopeType ?? this.scopeType,
-      continentCode: continentCode ?? this.continentCode,
-      countryCode: countryCode ?? this.countryCode,
+      scope: scope ?? this.scope,
       groupId: groupId ?? this.groupId,
       groupName: groupName ?? this.groupName,
       visibility: visibility ?? this.visibility,
-      stateOrRegion: stateOrRegion ?? state ?? this.stateOrRegion,
-      town: town ?? city ?? this.town,
     );
   }
 
@@ -175,20 +144,6 @@ class Survey implements HomeItem {
     final data = snap.data()!;
     final createdAt =
         (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-    final rawScopeType = data['scopeType'] as String?;
-    final countryCode = (data['countryCode'] as String?)?.toUpperCase();
-    final stateOrRegion =
-        data['stateOrRegion'] as String? ?? data['state'] as String?;
-    final town = data['town'] as String? ?? data['city'] as String?;
-    final scopeType = rawScopeType != null && rawScopeType.isNotEmpty
-        ? formScopeTypeToFirestore(parseFormScopeType(rawScopeType))
-        : (town != null && town.isNotEmpty
-              ? formScopeTypeToFirestore(FormScopeType.city)
-              : (stateOrRegion != null && stateOrRegion.isNotEmpty
-                    ? formScopeTypeToFirestore(FormScopeType.stateOrRegion)
-                    : (countryCode != null && countryCode.isNotEmpty
-                          ? formScopeTypeToFirestore(FormScopeType.country)
-                          : formScopeTypeToFirestore(FormScopeType.global))));
 
     return Survey(
       id: snap.id,
@@ -211,14 +166,10 @@ class Survey implements HomeItem {
           (data['expiresAt'] as Timestamp?)?.toDate() ??
           createdAt.add(const Duration(days: 7)),
       status: (data['status'] ?? IConst.active) as String,
-      scopeType: scopeType,
-      continentCode: data['continentCode'] as String?,
-      countryCode: countryCode,
+      scope: FormScope.fromFirestore(data),
       groupId: data['groupId'] as String?,
       groupName: data['groupName'] as String?,
       visibility: (data['visibility'] ?? 'public') as String,
-      stateOrRegion: stateOrRegion,
-      town: town,
     );
   }
 
@@ -235,16 +186,10 @@ class Survey implements HomeItem {
       'expiresAt': Timestamp.fromDate(survey.expiresAt),
       'status': survey.status,
       'titleLowercase': survey.title.toLowerCase(),
-      'scopeType': survey.scopeType,
-      'continentCode': survey.continentCode,
-      'countryCode': survey.countryCode?.toUpperCase(),
+      ...survey.scope.toFirestoreFields(),
       'groupId': survey.groupId,
       'groupName': survey.groupName,
       'visibility': survey.visibility,
-      'stateOrRegion': survey.stateOrRegion,
-      'state': survey.stateOrRegion,
-      'town': survey.town,
-      'city': survey.town,
     };
   }
 

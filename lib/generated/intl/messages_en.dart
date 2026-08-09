@@ -363,6 +363,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "couldNotSaveYourAcceptance": m4,
     "countryScopeFallback": MessageLookupByLibrary.simpleMessage("Country"),
+    "countryUnionScopeOnlyForMembers": MessageLookupByLibrary.simpleMessage(
+      "Country-union scope is only available to member countries",
+    ),
     "createGroupDescription": MessageLookupByLibrary.simpleMessage(
       "Create a members-only polling space for teams, events, and companies.",
     ),
@@ -533,9 +536,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Error uploading image",
     ),
     "errors": MessageLookupByLibrary.simpleMessage("Errors"),
-    "euScopeOnlyForEuCountries": MessageLookupByLibrary.simpleMessage(
-      "EU scope is only available for EU countries",
-    ),
     "europeScopeLabel": MessageLookupByLibrary.simpleMessage("Europe"),
     "everyoneCanJoinWithoutApproval": MessageLookupByLibrary.simpleMessage(
       "Everyone can join without approval.",
@@ -1300,11 +1300,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "scopeGlobal": MessageLookupByLibrary.simpleMessage("Global"),
     "scopeLabelWithValue": m29,
     "scopeStateRegion": MessageLookupByLibrary.simpleMessage("State / Region"),
+    "scopeUn": MessageLookupByLibrary.simpleMessage("UN"),
     "searchPoweredByTomTom": MessageLookupByLibrary.simpleMessage(
       "Search powered by TomTom",
     ),
     "searchTextField": MessageLookupByLibrary.simpleMessage("Schlagwort"),
     "select": MessageLookupByLibrary.simpleMessage("Pick"),
+    "selectCountryUnion": MessageLookupByLibrary.simpleMessage(
+      "Select country union",
+    ),
     "selectFromCamera": MessageLookupByLibrary.simpleMessage(
       "Select from Camera",
     ),
@@ -1473,6 +1477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unblockedUserSuccessfully": MessageLookupByLibrary.simpleMessage(
       "User unblocked.",
     ),
+    "undo": MessageLookupByLibrary.simpleMessage("Undo"),
     "unexpectedErrorWithDetails": m32,
     "unknownError": MessageLookupByLibrary.simpleMessage("Unknown error"),
     "unknownGroupMember": MessageLookupByLibrary.simpleMessage(

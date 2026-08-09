@@ -11,6 +11,7 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/config/environment.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
@@ -327,31 +328,31 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   String _scopeLabel(BuildContext context, T item) {
-    switch (item.scopeType) {
-      case 'eu':
-        return context.l10n.scopeEu;
-      case 'continent':
-        return item.continentCode?.toUpperCase() == 'EU'
-            ? context.l10n.europeScopeLabel
-            : context.l10n.scopeContinent;
-      case 'country':
+    switch (item.scope.type) {
+      case FormScopeType.countryUnion:
+        return switch (item.scope.countryUnion) {
+          CountryUnion.eu => context.l10n.scopeEu,
+          CountryUnion.un => context.l10n.scopeUn,
+          null => context.l10n.scopeCountryUnion,
+        };
+      case FormScopeType.continent:
+        return context.l10n.scopeContinent;
+      case FormScopeType.country:
         return item.countryCode?.toUpperCase() ??
             context.l10n.countryScopeFallback;
-      case 'stateOrRegion':
+      case FormScopeType.stateOrRegion:
         if ((item.stateOrRegion ?? '').isNotEmpty) {
           return item.stateOrRegion!;
         }
         return item.countryCode?.toUpperCase() ??
             context.l10n.stateRegionScopeFallback;
-      case 'city':
-      case 'town':
+      case FormScopeType.city:
         final town = item.town?.trim();
         if (town != null && town.isNotEmpty) {
           return town;
         }
         return context.l10n.cityScopeFallback;
-      case 'global':
-      default:
+      case FormScopeType.global:
         return context.l10n.globalScopeLabel;
     }
   }

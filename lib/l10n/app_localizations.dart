@@ -2066,11 +2066,23 @@ abstract class AppLocalizations {
   /// **'EU'**
   String get scopeEu;
 
+  /// No description provided for @scopeUn.
+  ///
+  /// In en, this message translates to:
+  /// **'UN'**
+  String get scopeUn;
+
   /// No description provided for @scopeCountryUnion.
   ///
   /// In en, this message translates to:
   /// **'Country union'**
   String get scopeCountryUnion;
+
+  /// No description provided for @selectCountryUnion.
+  ///
+  /// In en, this message translates to:
+  /// **'Select country union'**
+  String get selectCountryUnion;
 
   /// No description provided for @scopeContinent.
   ///
@@ -2108,11 +2120,11 @@ abstract class AppLocalizations {
   /// **'Add a town to your address before selecting City as the scope'**
   String get pleaseSetTownInAddressFirst;
 
-  /// No description provided for @euScopeOnlyForEuCountries.
+  /// No description provided for @countryUnionScopeOnlyForMembers.
   ///
   /// In en, this message translates to:
-  /// **'EU scope is only available for EU countries'**
-  String get euScopeOnlyForEuCountries;
+  /// **'Country-union scope is only available to member countries'**
+  String get countryUnionScopeOnlyForMembers;
 
   /// No description provided for @pleaseSetCountryInAddressFirst.
   ///

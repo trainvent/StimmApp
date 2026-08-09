@@ -1055,7 +1055,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scopeEu => 'EU';
 
   @override
+  String get scopeUn => 'UN';
+
+  @override
   String get scopeCountryUnion => 'Länderbund';
+
+  @override
+  String get selectCountryUnion => 'Länderbund auswählen';
 
   @override
   String get scopeContinent => 'Kontinent';
@@ -1077,8 +1083,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hinterlege einen Ort in deiner Adresse, bevor du „Stadt“ als Geltungsbereich auswählst';
 
   @override
-  String get euScopeOnlyForEuCountries =>
-      'Der EU-Geltungsbereich ist nur für EU-Länder verfügbar';
+  String get countryUnionScopeOnlyForMembers =>
+      'Der Länderbund-Geltungsbereich ist nur für Mitgliedsländer verfügbar';
 
   @override
   String get pleaseSetCountryInAddressFirst =>

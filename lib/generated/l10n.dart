@@ -329,6 +329,11 @@ class S {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
   }
 
+  /// `Undo`
+  String get undo {
+    return Intl.message('Undo', name: 'undo', desc: '', args: []);
+  }
+
   /// `Report content`
   String get reportContent {
     return Intl.message(
@@ -2739,11 +2744,26 @@ class S {
     return Intl.message('EU', name: 'scopeEu', desc: '', args: []);
   }
 
+  /// `UN`
+  String get scopeUn {
+    return Intl.message('UN', name: 'scopeUn', desc: '', args: []);
+  }
+
   /// `Country union`
   String get scopeCountryUnion {
     return Intl.message(
       'Country union',
       name: 'scopeCountryUnion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select country union`
+  String get selectCountryUnion {
+    return Intl.message(
+      'Select country union',
+      name: 'selectCountryUnion',
       desc: '',
       args: [],
     );
@@ -2794,11 +2814,11 @@ class S {
     );
   }
 
-  /// `EU scope is only available for EU countries`
-  String get euScopeOnlyForEuCountries {
+  /// `Country-union scope is only available to member countries`
+  String get countryUnionScopeOnlyForMembers {
     return Intl.message(
-      'EU scope is only available for EU countries',
-      name: 'euScopeOnlyForEuCountries',
+      'Country-union scope is only available to member countries',
+      name: 'countryUnionScopeOnlyForMembers',
       desc: '',
       args: [],
     );

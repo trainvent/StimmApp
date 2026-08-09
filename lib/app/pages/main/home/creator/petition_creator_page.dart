@@ -8,6 +8,7 @@ import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/constants/petition_tutorial_helper.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
@@ -88,11 +89,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     required String title,
     required String description,
     required List<String> tags,
-    required String scopeType,
-    String? scopeContinentCode,
-    String? scopeCountryCode,
-    String? scopeStateOrRegion,
-    String? scopeTown,
+    required FormScope scope,
     required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
@@ -119,14 +116,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         }
       }
 
-      final userProfile = await UserRepository.create().getById(
-        currentUser.uid,
-      );
-      final resolvedCountryCode =
-          scopeCountryCode?.toUpperCase() ??
-          userProfile?.countryCode?.toUpperCase() ??
-          (userProfile?.supportsStateScope == true ? 'DE' : null);
-
       final now = DateTime.now();
       final petition = Petition(
         id: '',
@@ -138,11 +127,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
         status: IConst.active,
-        scopeType: scopeType,
-        continentCode: scopeContinentCode,
-        countryCode: resolvedCountryCode,
-        stateOrRegion: scopeStateOrRegion,
-        town: scopeTown,
+        scope: scope,
         imageUrl: imageUrl,
       );
 
@@ -163,7 +148,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         petition,
       );
       await AnalyticsService.instance.logPetitionCreated(
-        scopeType: scopeType,
+        scopeType: scope.firestoreType,
         hasImage: imageUrl != null,
       );
 

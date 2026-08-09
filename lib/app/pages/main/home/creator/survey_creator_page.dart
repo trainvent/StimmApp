@@ -5,13 +5,13 @@ import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/survey_repository.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
@@ -221,11 +221,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     required String title,
     required String description,
     required List<String> tags,
-    required String scopeType,
-    String? scopeContinentCode,
-    String? scopeCountryCode,
-    String? scopeStateOrRegion,
-    String? scopeTown,
+    required FormScope scope,
     required int durationDays,
   }) async {
     final currentUser = authService.currentUser;
@@ -269,14 +265,6 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           })
           .toList(growable: false);
 
-      final userProfile = await UserRepository.create().getById(
-        currentUser.uid,
-      );
-      final resolvedCountryCode =
-          scopeCountryCode?.toUpperCase() ??
-          userProfile?.countryCode?.toUpperCase() ??
-          (userProfile?.supportsStateScope == true ? 'DE' : null);
-
       final now = DateTime.now();
       final isSingleQuestionPoll = questions.length == 1;
       if (isSingleQuestionPoll) {
@@ -293,14 +281,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           createdBy: currentUser.uid,
           createdAt: now,
           expiresAt: now.add(Duration(days: durationDays)),
-          scopeType: scopeType,
-          continentCode: scopeContinentCode,
-          countryCode: resolvedCountryCode,
+          scope: scope,
           groupId: _selectedGroup?.id,
           groupName: _selectedGroup?.name,
           visibility: _selectedGroup == null ? 'public' : 'group',
-          stateOrRegion: scopeStateOrRegion,
-          town: scopeTown,
         );
 
         final matchedTitles = await PollRepository.create()
@@ -320,7 +304,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 
         final pollId = await PollRepository.create().createPoll(poll);
         await AnalyticsService.instance.logPollCreated(
-          scopeType: scopeType,
+          scopeType: scope.firestoreType,
           visibility: poll.visibility,
           optionCount: poll.options.length,
         );
@@ -345,14 +329,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         createdBy: currentUser.uid,
         createdAt: now,
         expiresAt: now.add(Duration(days: durationDays)),
-        scopeType: scopeType,
-        continentCode: scopeContinentCode,
-        countryCode: resolvedCountryCode,
+        scope: scope,
         groupId: _selectedGroup?.id,
         groupName: _selectedGroup?.name,
         visibility: _selectedGroup == null ? 'public' : 'group',
-        stateOrRegion: scopeStateOrRegion,
-        town: scopeTown,
       );
 
       final matchedTitles = await SurveyRepository.create()
@@ -372,7 +352,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       await AnalyticsService.instance.logEvent(
         'survey_created',
         parameters: {
-          'scope_type': scopeType,
+          'scope_type': scope.firestoreType,
           'visibility': survey.visibility,
           'question_count': questions.length,
         },

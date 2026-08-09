@@ -1,16 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/functions/form_scope_eligibility.dart';
 
-Petition _petition({
-  required String scopeType,
-  String? countryCode,
-  String? stateOrRegion,
-  String? town,
-}) {
+Petition _petition({required FormScope scope}) {
   return Petition(
     id: 'petition',
     title: 'Title',
@@ -20,10 +16,7 @@ Petition _petition({
     createdBy: 'creator',
     createdAt: DateTime(2026),
     expiresAt: DateTime(2027),
-    scopeType: scopeType,
-    countryCode: countryCode,
-    stateOrRegion: stateOrRegion,
-    town: town,
+    scope: scope,
   );
 }
 
@@ -32,7 +25,7 @@ void main() {
     test('global items are always in zone', () {
       expect(
         isHomeItemInUserZone(
-          item: _petition(scopeType: 'global'),
+          item: _petition(scope: const FormScope.global()),
           userProfile: null,
         ),
         isTrue,
@@ -40,7 +33,7 @@ void main() {
     });
 
     test('country scope requires the same country', () {
-      final item = _petition(scopeType: 'country', countryCode: 'DE');
+      final item = _petition(scope: const FormScope.country('DE'));
 
       expect(
         isHomeItemInUserZone(
@@ -58,12 +51,51 @@ void main() {
       );
     });
 
+    test('a German profile matches both EU and UN scopes', () {
+      const profile = UserProfile(uid: 'de', countryCode: 'DE');
+
+      expect(
+        isHomeItemInUserZone(
+          item: _petition(scope: const FormScope.countryUnion(CountryUnion.eu)),
+          userProfile: profile,
+        ),
+        isTrue,
+      );
+      expect(
+        isHomeItemInUserZone(
+          item: _petition(scope: const FormScope.countryUnion(CountryUnion.un)),
+          userProfile: profile,
+        ),
+        isTrue,
+      );
+    });
+
+    test('a US profile matches UN but not EU scope', () {
+      const profile = UserProfile(uid: 'us', countryCode: 'US');
+
+      expect(
+        isHomeItemInUserZone(
+          item: _petition(scope: const FormScope.countryUnion(CountryUnion.un)),
+          userProfile: profile,
+        ),
+        isTrue,
+      );
+      expect(
+        isHomeItemInUserZone(
+          item: _petition(scope: const FormScope.countryUnion(CountryUnion.eu)),
+          userProfile: profile,
+        ),
+        isFalse,
+      );
+    });
+
     test('city scope compares country, state, and town', () {
       final item = _petition(
-        scopeType: 'city',
-        countryCode: 'DE',
-        stateOrRegion: 'Bayern',
-        town: 'München',
+        scope: const FormScope.city(
+          countryCode: 'DE',
+          stateOrRegion: 'Bayern',
+          town: 'München',
+        ),
       );
 
       expect(
@@ -98,7 +130,7 @@ void main() {
       final createdAt = DateTime(2026);
       final expiresAt = DateTime(2027);
       final items = [
-        _petition(scopeType: 'country', countryCode: 'DE'),
+        _petition(scope: const FormScope.country('DE')),
         Poll(
           id: 'poll',
           title: 'Poll',
@@ -109,8 +141,7 @@ void main() {
           createdBy: 'creator',
           createdAt: createdAt,
           expiresAt: expiresAt,
-          scopeType: 'country',
-          countryCode: 'DE',
+          scope: const FormScope.country('DE'),
         ),
         Survey(
           id: 'survey',
@@ -122,8 +153,7 @@ void main() {
           createdBy: 'creator',
           createdAt: createdAt,
           expiresAt: expiresAt,
-          scopeType: 'country',
-          countryCode: 'DE',
+          scope: const FormScope.country('DE'),
         ),
       ];
 
@@ -137,9 +167,9 @@ void main() {
 
     test('keeps global items alongside matching country items', () {
       final items = [
-        _petition(scopeType: 'global'),
-        _petition(scopeType: 'country', countryCode: 'US'),
-        _petition(scopeType: 'country', countryCode: 'DE'),
+        _petition(scope: const FormScope.global()),
+        _petition(scope: const FormScope.country('US')),
+        _petition(scope: const FormScope.country('DE')),
       ];
 
       final visibleItems = filterHomeItemsInUserZone(

@@ -95,6 +95,7 @@ void main() {
       'status': 'active',
       'titleLowercase': 'test survey',
       'scopeType': 'global',
+      'scopeUnionCode': null,
       'continentCode': null,
       'countryCode': null,
       'groupId': null,
@@ -104,6 +105,7 @@ void main() {
       'state': null,
       'town': null,
       'city': null,
+      'scopeKey': 'global',
     };
 
     test('fromFirestore creates a Survey', () async {

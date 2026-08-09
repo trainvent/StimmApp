@@ -150,7 +150,7 @@ class _BaseOverviewPageState<T extends HomeItem>
     with SingleTickerProviderStateMixin {
   static const List<FormScopeType> _scopeFilterOrder = [
     FormScopeType.global,
-    FormScopeType.eu,
+    FormScopeType.countryUnion,
     FormScopeType.country,
     FormScopeType.stateOrRegion,
     FormScopeType.city,
@@ -160,6 +160,7 @@ class _BaseOverviewPageState<T extends HomeItem>
   String _query = '';
   List<String> _selectedTags = [];
   Set<FormScopeType> _selectedScopes = {};
+  Set<CountryUnion> _selectedCountryUnions = {};
   bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
   bool _hasLoggedSearchForSession = false;
@@ -187,6 +188,9 @@ class _BaseOverviewPageState<T extends HomeItem>
         // Use a local state for the dialog to allow updating selection before confirming
         List<String> tempSelectedTags = List.from(_selectedTags);
         Set<FormScopeType> tempSelectedScopes = Set.from(_selectedScopes);
+        Set<CountryUnion> tempSelectedCountryUnions = Set.from(
+          _selectedCountryUnions,
+        );
         bool tempOnlyMyPublications = _onlyMyPublications;
 
         return StatefulBuilder(
@@ -209,12 +213,22 @@ class _BaseOverviewPageState<T extends HomeItem>
                       children: [
                         _buildScopeTargetSelector(
                           selectedScopes: tempSelectedScopes,
+                          selectedCountryUnions: tempSelectedCountryUnions,
                           onToggle: (scope) {
                             setState(() {
                               if (tempSelectedScopes.contains(scope)) {
                                 tempSelectedScopes.remove(scope);
                               } else {
                                 tempSelectedScopes.add(scope);
+                              }
+                            });
+                          },
+                          onCountryUnionToggle: (union) {
+                            setState(() {
+                              if (tempSelectedCountryUnions.contains(union)) {
+                                tempSelectedCountryUnions.remove(union);
+                              } else {
+                                tempSelectedCountryUnions.add(union);
                               }
                             });
                           },
@@ -282,6 +296,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                     setState(() {
                       tempSelectedTags = [];
                       tempSelectedScopes = {};
+                      tempSelectedCountryUnions = {};
                       tempOnlyMyPublications = false;
                     });
                     widget.clearExtraFilters?.call();
@@ -293,6 +308,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                     this.setState(() {
                       _selectedTags = tempSelectedTags;
                       _selectedScopes = tempSelectedScopes;
+                      _selectedCountryUnions = tempSelectedCountryUnions;
                       _onlyMyPublications = tempOnlyMyPublications;
                     });
                     Navigator.pop(context);
@@ -307,17 +323,11 @@ class _BaseOverviewPageState<T extends HomeItem>
     );
   }
 
-  String _normalizedScopeType(T item) {
-    return normalizedHomeItemScopeType(item);
-  }
-
   bool _matchesSelectedScopes(T item) {
-    if (_selectedScopes.isEmpty) {
-      return true;
-    }
-    final normalizedScopeType = _normalizedScopeType(item);
-    return _selectedScopes.any(
-      (scope) => formScopeTypeToFirestore(scope) == normalizedScopeType,
+    return matchesFormScopeFilter(
+      scope: item.scope,
+      selectedTypes: _selectedScopes,
+      selectedCountryUnions: _selectedCountryUnions,
     );
   }
 
@@ -377,7 +387,7 @@ class _BaseOverviewPageState<T extends HomeItem>
     switch (scope) {
       case FormScopeType.global:
         return context.l10n.scopeGlobal;
-      case FormScopeType.eu:
+      case FormScopeType.countryUnion:
         return context.l10n.scopeCountryUnion;
       case FormScopeType.continent:
         return context.l10n.scopeContinent;
@@ -390,14 +400,21 @@ class _BaseOverviewPageState<T extends HomeItem>
     }
   }
 
+  String _countryUnionLabel(CountryUnion union) => switch (union) {
+    CountryUnion.eu => context.l10n.scopeEu,
+    CountryUnion.un => context.l10n.scopeUn,
+  };
+
   Widget _buildScopeTargetSelector({
     required Set<FormScopeType> selectedScopes,
+    required Set<CountryUnion> selectedCountryUnions,
     required ValueChanged<FormScopeType> onToggle,
+    required ValueChanged<CountryUnion> onCountryUnionToggle,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     const sizes = <FormScopeType, double>{
       FormScopeType.global: 220,
-      FormScopeType.eu: 180,
+      FormScopeType.countryUnion: 180,
       FormScopeType.country: 140,
       FormScopeType.stateOrRegion: 100,
       FormScopeType.city: 60,
@@ -442,6 +459,26 @@ class _BaseOverviewPageState<T extends HomeItem>
               ),
           ],
         ),
+        if (selectedScopes.contains(FormScopeType.countryUnion)) ...[
+          const SizedBox(height: 12),
+          Text(
+            context.l10n.selectCountryUnion,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            children: [
+              for (final union in CountryUnion.values)
+                FilterChip(
+                  selected: selectedCountryUnions.contains(union),
+                  onSelected: (_) => onCountryUnionToggle(union),
+                  label: Text(_countryUnionLabel(union)),
+                ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -504,7 +541,7 @@ class _BaseOverviewPageState<T extends HomeItem>
     switch (scope) {
       case FormScopeType.global:
         return colorScheme.primary;
-      case FormScopeType.eu:
+      case FormScopeType.countryUnion:
         return Colors.indigo;
       case FormScopeType.continent:
         return colorScheme.secondary;
@@ -650,6 +687,9 @@ class _BaseOverviewPageState<T extends HomeItem>
     // Calculate active filters count
     int filterCount = _selectedTags.length;
     filterCount += _selectedScopes.length;
+    if (_selectedScopes.contains(FormScopeType.countryUnion)) {
+      filterCount += _selectedCountryUnions.length;
+    }
     if (_onlyMyPublications) filterCount++;
     filterCount += widget.extraFilterCount;
 

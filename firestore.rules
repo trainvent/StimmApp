@@ -83,9 +83,41 @@ service cloud.firestore {
 
     function hasValidContentState(data) {
       // Outside DE scope, content cannot be state-scoped.
-      return requesterSupportsStateScope()
-        ? true
-        : (!data.keys().hasAny(['state']) || data.state == null || data.state == '');
+      return (requesterSupportsStateScope()
+          ? true
+          : (!data.keys().hasAny(['state']) || data.state == null || data.state == '')) &&
+        hasValidContentScope(data);
+    }
+
+    function hasValidContentScope(data) {
+      // Petition/poll subcollection writes do not carry form metadata.
+      // Validate scope whenever this is a top-level content document.
+      return !data.keys().hasAll(['title', 'createdBy']) ||
+        (data.keys().hasAll(['scopeType', 'scopeKey']) &&
+         data.scopeType is string &&
+         data.scopeKey is string &&
+         data.scopeKey.size() > 0 &&
+         data.scopeType in [
+           'global',
+           'countryUnion',
+           'continent',
+           'country',
+           'stateOrRegion',
+           'city'
+         ] &&
+         (data.scopeType != 'countryUnion' ||
+           (data.keys().hasAny(['scopeUnionCode']) &&
+            data.scopeUnionCode in ['EU', 'UN'])) &&
+         (!(data.scopeType in ['country', 'stateOrRegion', 'city']) ||
+           hasCountryCode(data)) &&
+         (data.scopeType != 'stateOrRegion' ||
+           (data.keys().hasAny(['stateOrRegion']) &&
+            data.stateOrRegion is string &&
+            data.stateOrRegion.size() > 0)) &&
+         (data.scopeType != 'city' ||
+           (data.keys().hasAny(['town']) &&
+            data.town is string &&
+            data.town.size() > 0)));
     }
 
     function groupDoc(groupId) {

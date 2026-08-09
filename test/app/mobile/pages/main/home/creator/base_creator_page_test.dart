@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 
 import '../../../../../../test_helper.dart';
 
@@ -24,11 +25,7 @@ void main() {
                 required title,
                 required description,
                 required tags,
-                required scopeType,
-                scopeContinentCode,
-                scopeCountryCode,
-                scopeStateOrRegion,
-                scopeTown,
+                required scope,
                 required durationDays,
               }) async {},
         ),
@@ -84,4 +81,48 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'country union scope offers every union for the profile country',
+    (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            title: 'Create form',
+            tutorialSteps: const [],
+            profileLoader: () async =>
+                const UserProfile(uid: 'german-user', countryCode: 'DE'),
+            onSubmit:
+                ({
+                  required title,
+                  required description,
+                  required tags,
+                  required scope,
+                  required durationDays,
+                }) async {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final scopeSelector = find.byKey(const Key('scopeSelectorCard'));
+      await tester.scrollUntilVisible(
+        scopeSelector,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(scopeSelector);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Country union').last);
+      await tester.pumpAndSettle();
+
+      final unionSelector = find.byKey(const Key('countryUnionSelectorCard'));
+      expect(unionSelector, findsOneWidget);
+      await tester.tap(unionSelector);
+      await tester.pumpAndSettle();
+
+      expect(find.text('EU'), findsWidgets);
+      expect(find.text('UN'), findsOneWidget);
+    },
+  );
 }

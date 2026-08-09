@@ -3,7 +3,7 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 
-class Petition implements HomeItem {
+class Petition extends HomeItem {
   @override
   final String id;
   @override
@@ -21,15 +21,7 @@ class Petition implements HomeItem {
   @override
   final String status;
   @override
-  final String scopeType;
-  @override
-  final String? continentCode;
-  @override
-  final String? countryCode;
-  @override
-  final String? stateOrRegion;
-  @override
-  final String? town;
+  final FormScope scope;
   final String? imageUrl;
 
   Petition({
@@ -42,22 +34,9 @@ class Petition implements HomeItem {
     required this.createdAt,
     required this.expiresAt,
     this.status = IConst.active,
-    this.scopeType = 'global',
-    this.continentCode,
-    this.countryCode,
-    String? stateOrRegion,
-    @Deprecated('Use stateOrRegion') String? state,
-    String? town,
-    @Deprecated('Use town') String? city,
+    this.scope = const FormScope.global(),
     this.imageUrl,
-  }) : stateOrRegion = stateOrRegion ?? state,
-       town = town ?? city;
-
-  @override
-  String? get state => stateOrRegion;
-
-  @override
-  String? get city => town;
+  });
 
   @override
   int get participantCount => signatureCount;
@@ -72,13 +51,7 @@ class Petition implements HomeItem {
     DateTime? createdAt,
     DateTime? expiresAt,
     String? status,
-    String? scopeType,
-    String? continentCode,
-    String? countryCode,
-    String? stateOrRegion,
-    @Deprecated('Use stateOrRegion') String? state,
-    String? town,
-    @Deprecated('Use town') String? city,
+    FormScope? scope,
     String? imageUrl,
   }) {
     return Petition(
@@ -91,11 +64,7 @@ class Petition implements HomeItem {
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
       status: status ?? this.status,
-      scopeType: scopeType ?? this.scopeType,
-      continentCode: continentCode ?? this.continentCode,
-      countryCode: countryCode ?? this.countryCode,
-      stateOrRegion: stateOrRegion ?? state ?? this.stateOrRegion,
-      town: town ?? city ?? this.town,
+      scope: scope ?? this.scope,
       imageUrl: imageUrl ?? this.imageUrl,
     );
   }
@@ -107,20 +76,6 @@ class Petition implements HomeItem {
     final data = snap.data()!;
     final createdAt =
         (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-    final rawScopeType = data['scopeType'] as String?;
-    final countryCode = (data['countryCode'] as String?)?.toUpperCase();
-    final stateOrRegion =
-        data['stateOrRegion'] as String? ?? data['state'] as String?;
-    final town = data['town'] as String? ?? data['city'] as String?;
-    final scopeType = rawScopeType != null && rawScopeType.isNotEmpty
-        ? formScopeTypeToFirestore(parseFormScopeType(rawScopeType))
-        : (town != null && town.isNotEmpty
-              ? formScopeTypeToFirestore(FormScopeType.city)
-              : (stateOrRegion != null && stateOrRegion.isNotEmpty
-              ? formScopeTypeToFirestore(FormScopeType.stateOrRegion)
-              : (countryCode != null && countryCode.isNotEmpty
-                    ? formScopeTypeToFirestore(FormScopeType.country)
-                    : formScopeTypeToFirestore(FormScopeType.global))));
 
     return Petition(
       id: snap.id,
@@ -134,11 +89,7 @@ class Petition implements HomeItem {
           (data['expiresAt'] as Timestamp?)?.toDate() ??
           createdAt.add(const Duration(days: 28)),
       status: (data['status'] ?? IConst.active) as String,
-      scopeType: scopeType,
-      continentCode: data['continentCode'] as String?,
-      countryCode: countryCode,
-      stateOrRegion: stateOrRegion,
-      town: town,
+      scope: FormScope.fromFirestore(data),
       imageUrl: data['imageUrl'] as String?,
     );
   }
@@ -154,14 +105,7 @@ class Petition implements HomeItem {
       'expiresAt': Timestamp.fromDate(p.expiresAt),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
-      'scopeType': p.scopeType,
-      'continentCode': p.continentCode,
-      'countryCode': p.countryCode?.toUpperCase(),
-      'stateOrRegion': p.stateOrRegion,
-      // Legacy compatibility for clients still reading `state`.
-      'state': p.stateOrRegion,
-      'town': p.town,
-      'city': p.town,
+      ...p.scope.toFirestoreFields(),
       'imageUrl': p.imageUrl,
     };
   }

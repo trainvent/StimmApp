@@ -48,6 +48,7 @@ void main() {
       'status': 'active',
       'titleLowercase': 'test poll',
       'scopeType': 'global',
+      'scopeUnionCode': null,
       'continentCode': null,
       'countryCode': null,
       'groupId': null,
@@ -57,6 +58,7 @@ void main() {
       'state': null,
       'town': null,
       'city': null,
+      'scopeKey': 'global',
     };
 
     test(

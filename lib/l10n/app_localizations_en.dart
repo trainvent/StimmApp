@@ -1046,7 +1046,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scopeEu => 'EU';
 
   @override
+  String get scopeUn => 'UN';
+
+  @override
   String get scopeCountryUnion => 'Country union';
+
+  @override
+  String get selectCountryUnion => 'Select country union';
 
   @override
   String get scopeContinent => 'Continent';
@@ -1068,8 +1074,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add a town to your address before selecting City as the scope';
 
   @override
-  String get euScopeOnlyForEuCountries =>
-      'EU scope is only available for EU countries';
+  String get countryUnionScopeOnlyForMembers =>
+      'Country-union scope is only available to member countries';
 
   @override
   String get pleaseSetCountryInAddressFirst =>

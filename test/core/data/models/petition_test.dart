@@ -30,12 +30,14 @@ void main() {
       'status': 'active',
       'titleLowercase': 'test petition',
       'scopeType': 'global',
+      'scopeUnionCode': null,
       'continentCode': null,
       'countryCode': null,
       'stateOrRegion': null,
       'state': null,
       'town': null,
       'city': null,
+      'scopeKey': 'global',
       'imageUrl': null,
     };
 

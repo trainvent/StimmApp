@@ -6,8 +6,9 @@ import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:stimmapp/app/widgets/teaching_lemm_image.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
-import 'package:stimmapp/core/constants/eu_country_codes.dart';
+import 'package:stimmapp/core/constants/country_union_memberships.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -22,6 +23,7 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalTopFields,
     this.additionalMiddleFields,
     this.additionalBottomFields,
+    this.profileLoader,
   });
 
   final String title;
@@ -30,17 +32,14 @@ class BaseCreatorPage extends StatefulWidget {
     required String title,
     required String description,
     required List<String> tags,
-    required String scopeType,
-    String? scopeContinentCode,
-    String? scopeCountryCode,
-    String? scopeStateOrRegion,
-    String? scopeTown,
+    required FormScope scope,
     required int durationDays,
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
+  final Future<UserProfile?> Function()? profileLoader;
 
   @override
   State<BaseCreatorPage> createState() => _BaseCreatorPageState();
@@ -52,6 +51,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
   FormScopeType _selectedScope = FormScopeType.country;
+  CountryUnion? _selectedCountryUnion;
   bool _supportsStateScope = false;
   String? _profileCountryCode;
   String? _profileStateOrRegion;
@@ -59,7 +59,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   bool _isLoading = false;
   int _durationDays = 28; // Default duration
 
-  bool get _supportsEuScope => isEuCountryCode(_profileCountryCode);
+  Set<CountryUnion> get _availableCountryUnions =>
+      countryUnionsForCountry(_profileCountryCode);
+
+  CountryUnion? get _firstAvailableCountryUnion =>
+      _availableCountryUnions.isEmpty ? null : _availableCountryUnions.first;
 
   @override
   void initState() {
@@ -82,11 +86,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String get _draftKey => 'draft_${widget.title}';
 
   Future<void> _loadStateScope() async {
-    final uid = authService.currentUser?.uid;
-    if (uid == null) {
-      return;
-    }
-    final profile = await UserRepository.create().getById(uid);
+    final profileLoader = widget.profileLoader;
+    final profile = profileLoader != null
+        ? await profileLoader()
+        : await _loadCurrentUserProfile();
     if (!mounted || profile == null) {
       return;
     }
@@ -104,7 +107,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _profileTown = profileTown == null || profileTown.isEmpty
           ? null
           : profileTown;
-      if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
+      if (!_availableCountryUnions.contains(_selectedCountryUnion)) {
+        _selectedCountryUnion = _firstAvailableCountryUnion;
+      }
+      if (_availableCountryUnions.isEmpty &&
+          _selectedScope == FormScopeType.countryUnion) {
         _selectedScope = FormScopeType.country;
       }
       if (!_supportsStateScope &&
@@ -115,12 +122,19 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await _loadDraft();
   }
 
+  Future<UserProfile?> _loadCurrentUserProfile() async {
+    final uid = authService.currentUser?.uid;
+    if (uid == null) return null;
+    return UserRepository.create().getById(uid);
+  }
+
   Future<void> _loadDraft() async {
     final prefs = await SharedPreferences.getInstance();
     final draftTitle = prefs.getString('${_draftKey}_title');
     final draftDescription = prefs.getString('${_draftKey}_description');
     final draftTags = prefs.getStringList('${_draftKey}_tags');
     final draftScopeType = prefs.getString('${_draftKey}_scopeType');
+    final draftScopeUnion = prefs.getString('${_draftKey}_scopeUnion');
     final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
     final draftDuration = prefs.getInt('${_draftKey}_duration');
 
@@ -145,7 +159,12 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
             _selectedScope == FormScopeType.stateOrRegion) {
           _selectedScope = FormScopeType.country;
         }
-        if (!_supportsEuScope && _selectedScope == FormScopeType.eu) {
+        _selectedCountryUnion = parseCountryUnion(draftScopeUnion);
+        if (!_availableCountryUnions.contains(_selectedCountryUnion)) {
+          _selectedCountryUnion = _firstAvailableCountryUnion;
+        }
+        if (_availableCountryUnions.isEmpty &&
+            _selectedScope == FormScopeType.countryUnion) {
           _selectedScope = FormScopeType.country;
         }
         if (draftDuration != null) _durationDays = draftDuration;
@@ -165,6 +184,15 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       '${_draftKey}_scopeType',
       formScopeTypeToFirestore(_selectedScope),
     );
+    final selectedCountryUnion = _selectedCountryUnion;
+    if (selectedCountryUnion == null) {
+      await prefs.remove('${_draftKey}_scopeUnion');
+    } else {
+      await prefs.setString(
+        '${_draftKey}_scopeUnion',
+        selectedCountryUnion.code,
+      );
+    }
     // City scope now always uses the town stored in the user's profile.
     // Remove previously saved free-text values so they cannot override it.
     await prefs.remove('${_draftKey}_scopeTown');
@@ -179,6 +207,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_description');
     await prefs.remove('${_draftKey}_tags');
     await prefs.remove('${_draftKey}_scopeType');
+    await prefs.remove('${_draftKey}_scopeUnion');
     await prefs.remove('${_draftKey}_scopeTown');
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
@@ -192,6 +221,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _descriptionController.clear();
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
+      _selectedCountryUnion = _firstAvailableCountryUnion;
       _durationDays = 28;
     });
   }
@@ -223,8 +253,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       showErrorSnackBar(context.l10n.pleaseSetTownInAddressFirst);
       return;
     }
-    if (_selectedScope == FormScopeType.eu && !_supportsEuScope) {
-      showErrorSnackBar(context.l10n.euScopeOnlyForEuCountries);
+    if (_selectedScope == FormScopeType.countryUnion &&
+        !_availableCountryUnions.contains(_selectedCountryUnion)) {
+      showErrorSnackBar(context.l10n.countryUnionScopeOnlyForMembers);
       return;
     }
     if (_selectedScope != FormScopeType.global &&
@@ -232,32 +263,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       showErrorSnackBar(context.l10n.pleaseSetCountryInAddressFirst);
       return;
     }
-    final scopeType = formScopeTypeToFirestore(_selectedScope);
-    String? scopeContinentCode;
-    String? scopeCountryCode;
-    String? scopeStateOrRegion;
-    String? scopeTown;
-    switch (_selectedScope) {
-      case FormScopeType.global:
-        break;
-      case FormScopeType.eu:
-        scopeContinentCode = 'EU';
-        break;
-      case FormScopeType.continent:
-        break;
-      case FormScopeType.country:
-        scopeCountryCode = _profileCountryCode;
-        break;
-      case FormScopeType.stateOrRegion:
-        scopeCountryCode = _profileCountryCode;
-        scopeStateOrRegion = _profileStateOrRegion;
-        break;
-      case FormScopeType.city:
-        scopeCountryCode = _profileCountryCode;
-        scopeStateOrRegion = _profileStateOrRegion;
-        scopeTown = _profileTown;
-        break;
-    }
+    final scope = _buildSelectedScope();
 
     setState(() => _isLoading = true);
 
@@ -266,11 +272,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
-        scopeType: scopeType,
-        scopeContinentCode: scopeContinentCode,
-        scopeCountryCode: scopeCountryCode,
-        scopeStateOrRegion: scopeStateOrRegion,
-        scopeTown: scopeTown,
+        scope: scope,
         durationDays: _durationDays,
       );
       await _clearDraft(); // Clear draft on successful submission
@@ -279,6 +281,30 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       if (mounted) showErrorSnackBar(e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  FormScope _buildSelectedScope() {
+    switch (_selectedScope) {
+      case FormScopeType.global:
+        return const FormScope.global();
+      case FormScopeType.countryUnion:
+        return FormScope.countryUnion(_selectedCountryUnion!);
+      case FormScopeType.continent:
+        return const FormScope.global();
+      case FormScopeType.country:
+        return FormScope.country(_profileCountryCode!);
+      case FormScopeType.stateOrRegion:
+        return FormScope.stateOrRegion(
+          countryCode: _profileCountryCode!,
+          stateOrRegion: _profileStateOrRegion!,
+        );
+      case FormScopeType.city:
+        return FormScope.city(
+          countryCode: _profileCountryCode!,
+          stateOrRegion: _profileStateOrRegion,
+          town: _profileTown!,
+        );
     }
   }
 
@@ -381,7 +407,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     switch (scope) {
       case FormScopeType.global:
         return context.l10n.scopeGlobal;
-      case FormScopeType.eu:
+      case FormScopeType.countryUnion:
         return context.l10n.scopeCountryUnion;
       case FormScopeType.continent:
         return context.l10n.scopeContinent;
@@ -396,7 +422,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
 
   List<FormScopeType> get _availableScopes => <FormScopeType>[
     FormScopeType.global,
-    if (_supportsEuScope) FormScopeType.eu,
+    if (_availableCountryUnions.isNotEmpty) FormScopeType.countryUnion,
     FormScopeType.country,
     if (_supportsStateScope) FormScopeType.stateOrRegion,
     FormScopeType.city,
@@ -406,21 +432,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     switch (scope) {
       case FormScopeType.global:
         return const Icon(Icons.language);
-      case FormScopeType.eu:
-        if (!showResolvedValue) {
-          return const Icon(Icons.hub_outlined);
-        }
-        return Semantics(
-          label: context.l10n.scopeEu,
-          child: ExcludeSemantics(
-            child: Flag.fromCode(
-              FlagsCode.EU,
-              width: 40,
-              height: 28,
-              borderRadius: 2,
-            ),
-          ),
-        );
+      case FormScopeType.countryUnion:
+        return const Icon(Icons.hub_outlined);
       case FormScopeType.continent:
         return const Icon(Icons.public);
       case FormScopeType.country:
@@ -453,8 +466,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       case FormScopeType.global:
       case FormScopeType.continent:
         return null;
-      case FormScopeType.eu:
-        return context.l10n.scopeEu;
+      case FormScopeType.countryUnion:
+        return null;
       case FormScopeType.country:
         return _profileCountryCode;
       case FormScopeType.stateOrRegion:
@@ -467,7 +480,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _scopeMissingMessage(FormScopeType scope) {
     switch (scope) {
       case FormScopeType.global:
-      case FormScopeType.eu:
+      case FormScopeType.countryUnion:
       case FormScopeType.continent:
         return null;
       case FormScopeType.country:
@@ -514,7 +527,13 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       tooltip: context.l10n.scope,
       onOpened: () => FocusManager.instance.primaryFocus?.unfocus(),
       onSelected: (value) {
-        setState(() => _selectedScope = value);
+        setState(() {
+          _selectedScope = value;
+          if (value == FormScopeType.countryUnion &&
+              !_availableCountryUnions.contains(_selectedCountryUnion)) {
+            _selectedCountryUnion = _firstAvailableCountryUnion;
+          }
+        });
         _saveDraft();
       },
       itemBuilder: (context) => _availableScopes
@@ -539,6 +558,64 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         title: _scopeLabel(_selectedScope),
         value: _scopeValue(_selectedScope),
         missingMessage: _scopeMissingMessage(_selectedScope),
+        trailing: const Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  String _countryUnionLabel(CountryUnion union) => switch (union) {
+    CountryUnion.eu => context.l10n.scopeEu,
+    CountryUnion.un => context.l10n.scopeUn,
+  };
+
+  FlagsCode _countryUnionFlag(CountryUnion union) => switch (union) {
+    CountryUnion.eu => FlagsCode.EU,
+    CountryUnion.un => FlagsCode.UN,
+  };
+
+  Widget _countryUnionSelectorCard() {
+    final selected = _selectedCountryUnion;
+    return PopupMenuButton<CountryUnion>(
+      key: const Key('countryUnionSelectorCard'),
+      initialValue: selected,
+      tooltip: context.l10n.selectCountryUnion,
+      onSelected: (value) {
+        setState(() => _selectedCountryUnion = value);
+        _saveDraft();
+      },
+      itemBuilder: (context) => [
+        for (final union in CountryUnion.values)
+          if (_availableCountryUnions.contains(union))
+            PopupMenuItem<CountryUnion>(
+              value: union,
+              child: Row(
+                children: [
+                  Flag.fromCode(
+                    _countryUnionFlag(union),
+                    width: 32,
+                    height: 22,
+                    borderRadius: 2,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(_countryUnionLabel(union)),
+                ],
+              ),
+            ),
+      ],
+      child: _scopeLocationCard(
+        leading: selected == null
+            ? const Icon(Icons.hub_outlined)
+            : Flag.fromCode(
+                _countryUnionFlag(selected),
+                width: 40,
+                height: 28,
+                borderRadius: 2,
+              ),
+        title: context.l10n.selectCountryUnion,
+        value: selected == null ? null : _countryUnionLabel(selected),
+        missingMessage: selected == null
+            ? context.l10n.countryUnionScopeOnlyForMembers
+            : null,
         trailing: const Icon(Icons.arrow_drop_down),
       ),
     );
@@ -669,6 +746,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               Center(child: Text('$_durationDays days')),
               const SizedBox(height: 10),
               _scopeSelectorCard(),
+              if (_selectedScope == FormScopeType.countryUnion) ...[
+                const SizedBox(height: 10),
+                _countryUnionSelectorCard(),
+              ],
               const SizedBox(height: 10),
               if (widget.additionalBottomFields != null)
                 ...widget.additionalBottomFields!,
