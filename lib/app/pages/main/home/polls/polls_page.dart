@@ -16,9 +16,14 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class PollsPage extends StatefulWidget {
-  const PollsPage({super.key, this.initialGroupId});
+  const PollsPage({
+    super.key,
+    this.initialGroupId,
+    this.showTopNavigation = false,
+  });
 
   final String? initialGroupId;
+  final bool showTopNavigation;
 
   @override
   State<PollsPage> createState() => _PollsPageState();
@@ -148,6 +153,9 @@ class _PollsPageState extends State<PollsPage> {
   Widget build(BuildContext context) {
     final currentUid = authService.currentUser?.uid;
     return BaseOverviewPage<HomeItem>(
+      appBarTitle: widget.showTopNavigation
+          ? context.l10n.viewGroupPolls
+          : null,
       streamProvider: (query, status) =>
           _listPollsAndSurveys(query: query, status: status),
       participatedIdsStreamProvider: (uid) => _combineLatestSets(

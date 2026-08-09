@@ -291,7 +291,11 @@ class GroupDashboardPage extends StatelessWidget {
                     title: context.l10n.viewGroupPolls,
                     description: context.l10n.viewGroupPollsDescription,
                     onTap: () => _open(
-                      PollsPage(initialGroupId: currentGroup.id),
+                      PollsPage(
+                        initialGroupId: currentGroup.id,
+                        showTopNavigation: true,
+
+                      ),
                       context,
                     ),
                   ),

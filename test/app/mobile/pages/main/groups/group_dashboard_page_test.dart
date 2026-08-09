@@ -82,4 +82,39 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(TextField), findsNothing);
   });
+
+  testWidgets('group content opens with a title and back navigation', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      createTestWidget(
+        GroupDashboardPage(
+          group: group,
+          repository: _FakePollGroupRepository(group),
+          auth: _FakeAuthService(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Polls and surveys'));
+    await tester.pumpAndSettle();
+
+    final appBarFinder = find.widgetWithText(AppBar, 'Polls and surveys');
+    expect(appBarFinder, findsOneWidget);
+    expect(find.byType(BackButton), findsOneWidget);
+
+    final appBar = tester.widget<AppBar>(appBarFinder);
+    final tabBarBackground =
+        (appBar.bottom! as PreferredSize).child as Material;
+    expect(
+      tabBarBackground.color,
+      Theme.of(tester.element(appBarFinder)).scaffoldBackgroundColor,
+    );
+  });
 }

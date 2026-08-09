@@ -28,6 +28,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     this.designFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
+    this.appBarTitle,
   });
 
   final Stream<List<T>> Function(String query, String status) streamProvider;
@@ -46,6 +47,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   final Widget Function(BuildContext context, StateSetter setDialogState)?
   filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
+  final String? appBarTitle;
 
   @override
   State<BaseOverviewPage<T>> createState() => _BaseOverviewPageState<T>();
@@ -693,28 +695,39 @@ class _BaseOverviewPageState<T extends HomeItem>
     if (_onlyMyPublications) filterCount++;
     filterCount += widget.extraFilterCount;
 
+    final tabBar = TabBar(
+      controller: _tabController,
+      labelColor: Theme.of(context).colorScheme.onSurface,
+      unselectedLabelColor: Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.7),
+      indicatorColor: Theme.of(context).colorScheme.onSurface,
+      dividerColor: Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.18),
+      tabs: [
+        Tab(text: context.l10n.active),
+        Tab(text: context.l10n.closed),
+      ],
+    );
+
+    final appBarTitle = widget.appBarTitle;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kTextTabBarHeight),
-        child: Material(
-          color: Colors.transparent,
-          child: TabBar(
-            controller: _tabController,
-            labelColor: Theme.of(context).colorScheme.onSurface,
-            unselectedLabelColor: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.7),
-            indicatorColor: Theme.of(context).colorScheme.onSurface,
-            dividerColor: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.18),
-            tabs: [
-              Tab(text: context.l10n.active),
-              Tab(text: context.l10n.closed),
-            ],
-          ),
-        ),
-      ),
+      appBar: appBarTitle == null
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(kTextTabBarHeight),
+              child: Material(color: Colors.transparent, child: tabBar),
+            )
+          : AppBar(
+              title: Text(appBarTitle),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(kTextTabBarHeight),
+                child: Material(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: tabBar,
+                ),
+              ),
+            ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
