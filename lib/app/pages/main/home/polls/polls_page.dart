@@ -153,6 +153,7 @@ class _PollsPageState extends State<PollsPage> {
   Widget build(BuildContext context) {
     final currentUid = authService.currentUser?.uid;
     return BaseOverviewPage<HomeItem>(
+      streamKey: _showSurveys,
       appBarTitle: widget.showTopNavigation
           ? context.l10n.viewGroupPolls
           : null,

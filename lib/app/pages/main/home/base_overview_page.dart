@@ -29,6 +29,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
     this.appBarTitle,
+    this.streamKey,
   });
 
   final Stream<List<T>> Function(String query, String status) streamProvider;
@@ -48,6 +49,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
   final String? appBarTitle;
+  final Object? streamKey;
 
   @override
   State<BaseOverviewPage<T>> createState() => _BaseOverviewPageState<T>();
@@ -166,6 +168,10 @@ class _BaseOverviewPageState<T extends HomeItem>
   bool _onlyMyPublications = false;
   Future<UserProfile?>? _userProfileFuture;
   bool _hasLoggedSearchForSession = false;
+  final Map<String, Stream<List<T>>> _itemStreams = {};
+  final Map<String, Stream<Set<String>>> _blockedIdsStreams = {};
+  final Map<String, Stream<Set<String>>> _memberGroupIdsStreams = {};
+  final Map<String, Stream<Set<String>>> _participatedIdsStreams = {};
 
   @override
   void initState() {
@@ -182,6 +188,46 @@ class _BaseOverviewPageState<T extends HomeItem>
     _tabController.dispose();
     super.dispose();
   }
+
+  @override
+  void didUpdateWidget(covariant BaseOverviewPage<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.streamKey != widget.streamKey) {
+      _itemStreams.clear();
+      _participatedIdsStreams.clear();
+    }
+  }
+
+  Stream<List<T>> _itemStream(String status) => _itemStreams.putIfAbsent(
+    status,
+    () => widget.streamProvider(_query, status),
+  );
+
+  Stream<Set<String>> _blockedIdsStream(String status, String? uid) =>
+      _blockedIdsStreams.putIfAbsent(
+        status,
+        () => uid == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : ModerationRepository.create().watchBlockedUserIds(uid),
+      );
+
+  Stream<Set<String>> _memberGroupIdsStream(String status, String? uid) =>
+      _memberGroupIdsStreams.putIfAbsent(
+        status,
+        () => uid == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : PollGroupRepository.create()
+                  .watchGroupsForUser(uid)
+                  .map((groups) => groups.map((group) => group.id).toSet()),
+      );
+
+  Stream<Set<String>> _participatedIdsStream(String status, String? uid) =>
+      _participatedIdsStreams.putIfAbsent(
+        status,
+        () => uid == null || widget.participatedIdsStreamProvider == null
+            ? Stream<Set<String>>.value(const <String>{})
+            : widget.participatedIdsStreamProvider!(uid),
+      );
 
   void _showFilterDialog() {
     showDialog(
@@ -565,18 +611,12 @@ class _BaseOverviewPageState<T extends HomeItem>
         }
         final userProfile = userSnap.data;
         final currentUid = authService.currentUser?.uid;
-        final blockedIdsStream = currentUid == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : ModerationRepository.create().watchBlockedUserIds(currentUid);
-        final memberGroupIdsStream = currentUid == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : PollGroupRepository.create()
-                  .watchGroupsForUser(currentUid)
-                  .map((groups) => groups.map((group) => group.id).toSet());
-        final participatedIdsStream =
-            currentUid == null || widget.participatedIdsStreamProvider == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : widget.participatedIdsStreamProvider!(currentUid);
+        final blockedIdsStream = _blockedIdsStream(status, currentUid);
+        final memberGroupIdsStream = _memberGroupIdsStream(status, currentUid);
+        final participatedIdsStream = _participatedIdsStream(
+          status,
+          currentUid,
+        );
         return StreamBuilder<Set<String>>(
           stream: blockedIdsStream,
           builder: (context, blockedSnap) {
@@ -591,9 +631,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                     final participatedIds =
                         participatedSnap.data ?? const <String>{};
                     return StreamBuilder<List<T>>(
-                      stream: widget.streamProvider(_query, status),
+                      stream: _itemStream(status),
                       builder: (context, snap) {
-                        if (snap.connectionState == ConnectionState.waiting) {
+                        if (snap.connectionState == ConnectionState.waiting &&
+                            !snap.hasData) {
                           return const Center(
                             child: TriangleLoadingIndicator(),
                           );
@@ -749,7 +790,10 @@ class _BaseOverviewPageState<T extends HomeItem>
                           filterCount: filterCount,
                         );
                       }
-                      setState(() => _query = q);
+                      setState(() {
+                        _query = q;
+                        _itemStreams.clear();
+                      });
                     },
                   ),
                 ),
