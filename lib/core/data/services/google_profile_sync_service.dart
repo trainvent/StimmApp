@@ -80,7 +80,10 @@ class GoogleProfileSyncService {
       googleSyncLastAt: DateTime.now(),
     );
 
-    await _users.upsertWithUniqueUsername(updated);
+    // Google Sync updates private profile fields only. The public app username
+    // and its existing uniqueness claim are preserved, so opening a Firestore
+    // transaction here is unnecessary (and can race plugin teardown on Android).
+    await _users.upsert(updated);
     return updated;
   }
 

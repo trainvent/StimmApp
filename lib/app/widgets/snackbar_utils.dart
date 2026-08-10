@@ -1,29 +1,33 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app_entry.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void _showAutoClosingSnackBar(
-  ScaffoldMessengerState messenger,
-  SnackBar snackBar,
-) {
-  final controller = messenger.showSnackBar(snackBar);
-  final timer = Timer(snackBar.duration, controller.close);
-  unawaited(controller.closed.whenComplete(timer.cancel));
+void _showSnackBarSafely(SnackBar snackBar) {
+  void show() {
+    final context = navigatorKey.currentContext;
+    if (context == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(snackBar);
+  }
+
+  final phase = SchedulerBinding.instance.schedulerPhase;
+  if (phase == SchedulerPhase.persistentCallbacks ||
+      phase == SchedulerPhase.midFrameMicrotasks) {
+    SchedulerBinding.instance.addPostFrameCallback((_) => show());
+  } else {
+    show();
+  }
 }
 
 /// Show a floating success snackbar. [message] is optional.
 void showSuccessSnackBar([String? message]) {
-  final ctx = navigatorKey.currentContext;
-  if (ctx == null) return;
-  final messenger = ScaffoldMessenger.of(ctx);
-  messenger.clearSnackBars();
-  _showAutoClosingSnackBar(
-    messenger,
+  _showSnackBarSafely(
     SnackBar(
       backgroundColor: Colors.green,
       behavior: SnackBarBehavior.floating,
@@ -39,10 +43,7 @@ void showErrorSnackBar([String? message]) {
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
   final resolvedMessage = message ?? '';
-  final messenger = ScaffoldMessenger.of(ctx);
-  messenger.clearSnackBars();
-  _showAutoClosingSnackBar(
-    messenger,
+  _showSnackBarSafely(
     SnackBar(
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,
@@ -70,9 +71,7 @@ Future<void> showInternalDifficultiesSnackBar([
 
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
-  final messenger = ScaffoldMessenger.of(ctx);
-  messenger.clearSnackBars();
-  messenger.showSnackBar(
+  _showSnackBarSafely(
     SnackBar(
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,

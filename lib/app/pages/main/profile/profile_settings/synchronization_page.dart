@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -24,6 +25,33 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
   bool _isSyncingGoogleProfile = false;
   GoogleProfileSyncPreview? _preview;
 
+  void _finishGoogleSync({
+    GoogleProfileSyncPreview? preview,
+    required String message,
+    required bool isError,
+  }) {
+    void finish() {
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      setState(() {
+        _isSyncingGoogleProfile = false;
+        if (preview != null) _preview = preview;
+      });
+      if (isError) {
+        showErrorSnackBar(message);
+      } else {
+        showSuccessSnackBar(message);
+      }
+    }
+
+    final phase = SchedulerBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.persistentCallbacks ||
+        phase == SchedulerPhase.midFrameMicrotasks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => finish());
+    } else {
+      finish();
+    }
+  }
+
   Future<void> _setGoogleSyncActive(UserProfile profile, bool active) async {
     if (_isSyncingGoogleProfile) return;
     setState(() => _isSyncingGoogleProfile = true);
@@ -34,32 +62,43 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
           profile: profile,
           activate: true,
         );
-        _preview = GoogleProfileSyncPreview.fromProfile(
+        final preview = GoogleProfileSyncPreview.fromProfile(
           updated,
           fallbackEmail: authService.authenticatedEmail,
         );
+        if (!mounted) return;
+        _finishGoogleSync(
+          preview: preview,
+          message: context.l10n.googleSyncEnabled,
+          isError: false,
+        );
       } else {
         await service.setActive(profile, false);
+        if (!mounted) return;
+        _finishGoogleSync(
+          message: context.l10n.googleSyncDisabled,
+          isError: false,
+        );
       }
-      if (!mounted) return;
-      showSuccessSnackBar(
-        active
-            ? context.l10n.googleSyncEnabled
-            : context.l10n.googleSyncDisabled,
-      );
     } on GoogleProfileSyncPreviewException catch (error, stackTrace) {
       debugPrint('Google profile synchronization validation failed: $error');
       debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
-        setState(() => _preview = error.preview);
-        showErrorSnackBar(context.l10n.googleSyncFailed);
+        _finishGoogleSync(
+          preview: error.preview,
+          message: context.l10n.googleSyncFailed,
+          isError: true,
+        );
       }
     } catch (error, stackTrace) {
       debugPrint('Google profile synchronization setting failed: $error');
       debugPrintStack(stackTrace: stackTrace);
-      if (mounted) showErrorSnackBar(context.l10n.googleSyncFailed);
-    } finally {
-      if (mounted) setState(() => _isSyncingGoogleProfile = false);
+      if (mounted) {
+        _finishGoogleSync(
+          message: context.l10n.googleSyncFailed,
+          isError: true,
+        );
+      }
     }
   }
 
@@ -70,24 +109,36 @@ class _SynchronizationPageState extends ConsumerState<SynchronizationPage> {
       final updated = await GoogleProfileSyncService().synchronize(
         profile: profile,
       );
-      _preview = GoogleProfileSyncPreview.fromProfile(
+      final preview = GoogleProfileSyncPreview.fromProfile(
         updated,
         fallbackEmail: authService.authenticatedEmail,
       );
-      if (mounted) showSuccessSnackBar(context.l10n.googleSyncSucceeded);
+      if (mounted) {
+        _finishGoogleSync(
+          preview: preview,
+          message: context.l10n.googleSyncSucceeded,
+          isError: false,
+        );
+      }
     } on GoogleProfileSyncPreviewException catch (error, stackTrace) {
       debugPrint('Google profile synchronization validation failed: $error');
       debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
-        setState(() => _preview = error.preview);
-        showErrorSnackBar(context.l10n.googleSyncFailed);
+        _finishGoogleSync(
+          preview: error.preview,
+          message: context.l10n.googleSyncFailed,
+          isError: true,
+        );
       }
     } catch (error, stackTrace) {
       debugPrint('Google profile synchronization failed: $error');
       debugPrintStack(stackTrace: stackTrace);
-      if (mounted) showErrorSnackBar(context.l10n.googleSyncFailed);
-    } finally {
-      if (mounted) setState(() => _isSyncingGoogleProfile = false);
+      if (mounted) {
+        _finishGoogleSync(
+          message: context.l10n.googleSyncFailed,
+          isError: true,
+        );
+      }
     }
   }
 
