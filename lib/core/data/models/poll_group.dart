@@ -578,6 +578,11 @@ class PollGroupAccessNotification {
   final PollGroupAccessNotificationStatus status;
   final DateTime createdAt;
   final DateTime? resolvedAt;
+  final DateTime? readAt;
+
+  bool get countsAsUnread =>
+      status == PollGroupAccessNotificationStatus.pending ||
+      (type == PollGroupAccessNotificationType.removed && readAt == null);
 
   const PollGroupAccessNotification({
     required this.id,
@@ -592,6 +597,7 @@ class PollGroupAccessNotification {
     required this.status,
     required this.createdAt,
     this.resolvedAt,
+    this.readAt,
   });
 
   PollGroupAccessNotification copyWith({
@@ -607,6 +613,7 @@ class PollGroupAccessNotification {
     PollGroupAccessNotificationStatus? status,
     DateTime? createdAt,
     Object? resolvedAt = _unset,
+    Object? readAt = _unset,
   }) {
     return PollGroupAccessNotification(
       id: id ?? this.id,
@@ -623,6 +630,7 @@ class PollGroupAccessNotification {
       resolvedAt: identical(resolvedAt, _unset)
           ? this.resolvedAt
           : resolvedAt as DateTime?,
+      readAt: identical(readAt, _unset) ? this.readAt : readAt as DateTime?,
     );
   }
 
@@ -644,6 +652,7 @@ class PollGroupAccessNotification {
       status: parsePollGroupAccessNotificationStatus(data['status'] as String?),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
+      readAt: (data['readAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -666,6 +675,9 @@ class PollGroupAccessNotification {
       'createdAt': Timestamp.fromDate(notification.createdAt),
       'resolvedAt': notification.resolvedAt != null
           ? Timestamp.fromDate(notification.resolvedAt!)
+          : null,
+      'readAt': notification.readAt != null
+          ? Timestamp.fromDate(notification.readAt!)
           : null,
     };
   }

@@ -562,10 +562,27 @@ void main() {
         expect(accessibleGroups, isEmpty);
         expect(updatedNotifications.docs, hasLength(2));
         expect(updatedNotifications.docs.last.data()['type'], 'removed');
+        expect(updatedNotifications.docs.last.data()['readAt'], isNull);
         expect(
           updatedNotifications.docs.last.data()['actorDisplayName'],
           'Owner',
         );
+        final removalNotificationId = updatedNotifications.docs.last.id;
+        final unreadRemoval = await repository.getNotification(
+          'invitee',
+          removalNotificationId,
+        );
+        expect(unreadRemoval?.countsAsUnread, isTrue);
+
+        await repository.markNotificationsRead('invitee', [
+          removalNotificationId,
+        ]);
+        final readRemoval = await repository.getNotification(
+          'invitee',
+          removalNotificationId,
+        );
+        expect(readRemoval?.readAt, isNotNull);
+        expect(readRemoval?.countsAsUnread, isFalse);
         final activities = await repository.watchActivities(groupId).first;
         expect(
           activities.map((activity) => activity.type),

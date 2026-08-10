@@ -238,6 +238,18 @@ class PollGroupRepository {
     );
   }
 
+  Future<void> markNotificationsRead(String uid, Iterable<String> ids) async {
+    final uniqueIds = ids.where((id) => id.isNotEmpty).toSet();
+    if (uniqueIds.isEmpty) return;
+    final batch = _fs.instance.batch();
+    for (final id in uniqueIds) {
+      batch.update(_notifications(uid).doc(id), {
+        'readAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+  }
+
   Future<PollGroup?> getGroup(String groupId) async {
     return _fs.getDoc(_groups().doc(groupId));
   }

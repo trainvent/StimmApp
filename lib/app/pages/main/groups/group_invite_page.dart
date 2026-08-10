@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 
 class GroupInvitePage extends StatelessWidget {
@@ -10,12 +11,14 @@ class GroupInvitePage extends StatelessWidget {
     required this.group,
     this.repository,
     this.auth,
+    this.userRepository,
     this.csvImporter,
   });
 
   final PollGroup group;
   final PollGroupRepository? repository;
   final AuthService? auth;
+  final UserRepository? userRepository;
   final PollGroupCsvImporter? csvImporter;
 
   @override
@@ -24,6 +27,7 @@ class GroupInvitePage extends StatelessWidget {
       initialGroup: group,
       repository: repository,
       auth: auth,
+      userRepository: userRepository,
       csvImporter: csvImporter,
       inviteOnly: true,
     );

@@ -944,6 +944,18 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get email;
 
+  /// No description provided for @emailOrUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or username'**
+  String get emailOrUsername;
+
+  /// No description provided for @pleaseEnterValidEmailOrUsernameForEveryInvitedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email or username for every invited member.'**
+  String get pleaseEnterValidEmailOrUsernameForEveryInvitedMember;
+
   /// No description provided for @emailVerification.
   ///
   /// In en, this message translates to:
@@ -4313,7 +4325,7 @@ abstract class AppLocalizations {
   /// No description provided for @manageGroupMembersDescription.
   ///
   /// In en, this message translates to:
-  /// **'Tap or swipe a member to edit them. Swipe the other way to remove them, or long-press to select several.'**
+  /// **'Tap a member to edit them. Long-press to select one or more members to remove.'**
   String get manageGroupMembersDescription;
 
   /// No description provided for @editGroupMemberTitle.

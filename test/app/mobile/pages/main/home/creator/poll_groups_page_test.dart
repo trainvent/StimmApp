@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_invite_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
@@ -310,6 +312,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.text('Email or username *'), findsOneWidget);
+      expect(find.text('Nickname'), findsOneWidget);
       await tester.enterText(
         find.byKey(const Key('member_email_0')),
         'anna@example.com',
@@ -332,6 +336,47 @@ void main() {
             ?.text,
         isEmpty,
       );
+    });
+
+    testWidgets('resolves an invitation username to its account email', (
+      tester,
+    ) async {
+      final firestore = FakeFirebaseFirestore();
+      final userRepository = UserRepository(DatabaseService(firestore));
+      await userRepository.upsertWithUniqueUsername(
+        const UserProfile(
+          uid: 'anna-id',
+          displayName: 'Anna Original',
+          email: 'anna@example.com',
+        ),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          GroupInvitePage(
+            group: existingGroup,
+            repository: repository,
+            userRepository: userRepository,
+            auth: _FakeAuthService(user),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('member_email_0')),
+        'ANNA ORIGINAL',
+      );
+      await tester.tap(find.byKey(const Key('send_group_invitations')));
+      await tester.pumpAndSettle();
+
+      final allowedMembers =
+          repository.lastUpdatePayload?['allowedMembers']
+              as List<PollGroupAllowedMember>;
+      expect(allowedMembers.single.email, 'anna@example.com');
+      expect(repository.lastUpdatePayload?['inviteEmails'], const [
+        'anna@example.com',
+      ]);
     });
   });
 }

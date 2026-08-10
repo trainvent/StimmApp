@@ -469,6 +469,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get email => 'E-Mail';
 
   @override
+  String get emailOrUsername => 'E-Mail oder Benutzername';
+
+  @override
+  String get pleaseEnterValidEmailOrUsernameForEveryInvitedMember =>
+      'Bitte gib für jedes eingeladene Mitglied eine gültige E-Mail-Adresse oder einen gültigen Benutzernamen ein.';
+
+  @override
   String get emailVerification => 'E-Mail-Bestätigung';
 
   @override
@@ -2336,7 +2343,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get manageGroupMembersDescription =>
-      'Tippe oder wische über ein Mitglied, um es zu bearbeiten. Wische in die andere Richtung, um es zu entfernen, oder halte es gedrückt, um mehrere auszuwählen.';
+      'Tippe auf ein Mitglied, um es zu bearbeiten. Halte es gedrückt, um ein oder mehrere Mitglieder zum Entfernen auszuwählen.';
 
   @override
   String get editGroupMemberTitle => 'Mitglied bearbeiten';

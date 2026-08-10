@@ -464,6 +464,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get email => 'Email';
 
   @override
+  String get emailOrUsername => 'Email or username';
+
+  @override
+  String get pleaseEnterValidEmailOrUsernameForEveryInvitedMember =>
+      'Please enter a valid email or username for every invited member.';
+
+  @override
   String get emailVerification => 'Email verification';
 
   @override
@@ -2309,7 +2316,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageGroupMembersDescription =>
-      'Tap or swipe a member to edit them. Swipe the other way to remove them, or long-press to select several.';
+      'Tap a member to edit them. Long-press to select one or more members to remove.';
 
   @override
   String get editGroupMemberTitle => 'Edit member';

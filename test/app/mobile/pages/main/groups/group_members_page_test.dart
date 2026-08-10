@@ -116,12 +116,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.drag(
-      find.byKey(const Key('group_member_member')),
-      const Offset(300, 0),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Edit'));
+    await tester.tap(find.byKey(const Key('group_member_member')));
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byKey(const Key('group_member_nickname_field')),
@@ -151,30 +146,11 @@ void main() {
 
     expect(tester.takeException(), isNull);
 
-    await tester.timedDrag(
-      find.byKey(const Key('group_member_member')),
-      const Offset(-600, 0),
-      const Duration(milliseconds: 400),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Remove member?'), findsOneWidget);
-
-    await tester.tap(find.widgetWithText(FilledButton, 'Remove'));
-    await tester.pumpAndSettle();
-
-    final removed = await firestore
-        .collection('pollGroups')
-        .doc(group.id)
-        .collection('members')
-        .doc(member.uid)
-        .get();
-    expect(removed.exists, isFalse);
-
-    await tester.longPress(find.byKey(const Key('group_member_member-2')));
+    await tester.longPress(find.byKey(const Key('group_member_member')));
     await tester.pumpAndSettle();
     expect(find.text('1 selected'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('group_member_member-3')));
+    await tester.tap(find.byKey(const Key('group_member_member-2')));
     await tester.pumpAndSettle();
     expect(find.text('2 selected'), findsOneWidget);
 
@@ -189,14 +165,22 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm_remove_selected_members')));
     await tester.pumpAndSettle();
 
-    for (final uid in ['member-2', 'member-3']) {
-      final snapshot = await firestore
+    for (final uid in [member.uid, member2.uid]) {
+      final removed = await firestore
           .collection('pollGroups')
           .doc(group.id)
           .collection('members')
           .doc(uid)
           .get();
-      expect(snapshot.exists, isFalse);
+      expect(removed.exists, isFalse);
     }
+    final untouched = await firestore
+        .collection('pollGroups')
+        .doc(group.id)
+        .collection('members')
+        .doc(member3.uid)
+        .get();
+    expect(untouched.exists, isTrue);
+    expect(tester.takeException(), isNull);
   });
 }

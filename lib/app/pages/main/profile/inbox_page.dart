@@ -53,6 +53,19 @@ class InboxPage extends StatelessWidget {
           if (notifications.isEmpty) {
             return Center(child: Text(context.l10n.noGroupNotificationsYet));
           }
+          final unreadRemovalIds = notifications
+              .where(
+                (item) =>
+                    item.type == PollGroupAccessNotificationType.removed &&
+                    item.readAt == null,
+              )
+              .map((item) => item.id)
+              .toList();
+          if (unreadRemovalIds.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await repo.markNotificationsRead(uid, unreadRemovalIds);
+            });
+          }
           return ListView.separated(
             itemCount: notifications.length,
             separatorBuilder: (_, _) => const Divider(height: 1),

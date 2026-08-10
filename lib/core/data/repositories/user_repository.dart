@@ -78,6 +78,23 @@ class UserRepository implements UserInterface {
     }
   }
 
+  Future<UserProfile?> getByUsername(String username) async {
+    if (!hasValidUsernameLength(username)) return null;
+    final usernameKey = usernameKeyFor(username);
+
+    try {
+      final usernameSnapshot = await _fs.instance
+          .collection(DatabaseCollections.usernames)
+          .doc(usernameKey)
+          .get();
+      final uid = usernameSnapshot.data()?['uid'] as String?;
+      if (uid == null || uid.isEmpty) return null;
+      return getById(uid);
+    } on FirebaseException catch (e) {
+      throw DatabaseException(e);
+    }
+  }
+
   Future<void> upsertWithUniqueUsername(UserProfile profile) async {
     final displayName = normalizeUsername(profile.displayName ?? '');
     if (!hasValidUsernameLength(displayName)) {

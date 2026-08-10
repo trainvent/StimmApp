@@ -12,8 +12,10 @@ import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 
 class GroupEditorPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class GroupEditorPage extends StatefulWidget {
     this.initialGroup,
     this.repository,
     this.auth,
+    this.userRepository,
     this.csvImporter,
     this.inviteOnly = false,
   });
@@ -29,6 +32,7 @@ class GroupEditorPage extends StatefulWidget {
   final PollGroup? initialGroup;
   final PollGroupRepository? repository;
   final AuthService? auth;
+  final UserRepository? userRepository;
   final PollGroupCsvImporter? csvImporter;
   final bool inviteOnly;
 
@@ -62,6 +66,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   PollGroupRepository get _repository =>
       widget.repository ?? PollGroupRepository.create();
   AuthService get _auth => widget.auth ?? authService;
+  UserRepository get _userRepository =>
+      widget.userRepository ?? UserRepository.create();
   PollGroupCsvImporter get _csvImporter =>
       widget.csvImporter ?? const DefaultPollGroupCsvImporter();
 
@@ -215,16 +221,21 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
   void _confirmMemberDraft(int index) {
     final draft = _memberDrafts[index];
-    final email = draft.emailController.text.trim().toLowerCase();
-    if (email.isEmpty || !_looksLikeEmail(email)) {
+    final identifier = draft.emailController.text.trim();
+    final isEmail = _looksLikeEmail(identifier);
+    final isUsername =
+        !identifier.contains('@') && hasValidUsernameLength(identifier);
+    if (!isEmail && !isUsername) {
       showErrorSnackBar(
-        context.l10n.pleaseEnterValidEmailForEveryInvitedMember,
+        context.l10n.pleaseEnterValidEmailOrUsernameForEveryInvitedMember,
       );
       return;
     }
 
     setState(() {
-      draft.emailController.text = email;
+      draft.emailController.text = isEmail
+          ? identifier.toLowerCase()
+          : normalizeUsername(identifier);
       draft.isCommitted = true;
     });
     _ensurePendingMemberDraft();
@@ -488,11 +499,33 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       _accessMode == PollGroupAccessMode.protected ||
       _accessMode == PollGroupAccessMode.open;
 
-  List<PollGroupAllowedMember>? _buildAllowedMembers(String creatorUid) {
+  Future<String?> _resolveInviteEmail(String identifier) async {
+    final trimmed = identifier.trim();
+    if (_looksLikeEmail(trimmed)) return trimmed.toLowerCase();
+    if (trimmed.contains('@') || !hasValidUsernameLength(trimmed)) {
+      showErrorSnackBar(
+        context.l10n.pleaseEnterValidEmailOrUsernameForEveryInvitedMember,
+      );
+      return null;
+    }
+
+    final profile = await _userRepository.getByUsername(trimmed);
+    if (!mounted) return null;
+    final email = profile?.email?.trim().toLowerCase();
+    if (email == null || !_looksLikeEmail(email)) {
+      showErrorSnackBar(context.l10n.userNotFound);
+      return null;
+    }
+    return email;
+  }
+
+  Future<List<PollGroupAllowedMember>?> _buildAllowedMembers(
+    String creatorUid,
+  ) async {
     final now = DateTime.now();
     final members = <PollGroupAllowedMember>[];
     for (final draft in _memberDrafts) {
-      final email = draft.emailController.text.trim().toLowerCase();
+      final identifier = draft.emailController.text.trim();
       final nickname = _truncateToLength(
         draft.nicknameController.text.trim(),
         AppLimits.maxGroupNicknameLength,
@@ -500,12 +533,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       if (_isMemberDraftBlank(draft)) {
         continue;
       }
-      if (!_looksLikeEmail(email)) {
-        showErrorSnackBar(
-          context.l10n.pleaseEnterValidEmailForEveryInvitedMember,
-        );
-        return null;
-      }
+      final email = await _resolveInviteEmail(identifier);
+      if (email == null || !mounted) return null;
       members.add(
         PollGroupAllowedMember(
           email: email,
@@ -652,7 +681,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       return;
     }
 
-    final newMembers = _buildAllowedMembers(user.uid);
+    final newMembers = await _buildAllowedMembers(user.uid);
+    if (!mounted) return;
     if (newMembers == null) {
       return;
     }
@@ -772,7 +802,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
       key: Key('member_email_$index'),
       controller: draft.emailController,
       decoration: InputDecoration(
-        labelText: context.l10n.email,
+        labelText: '${context.l10n.emailOrUsername} *',
         border: const OutlineInputBorder(),
       ),
     );

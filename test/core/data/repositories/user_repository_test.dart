@@ -59,6 +59,21 @@ void main() {
       expect(usernameClaim.data()?['displayName'], 'Test User');
     });
 
+    test('getByUsername resolves a normalized username claim', () async {
+      await userRepository.upsertWithUniqueUsername(
+        tUserProfile.copyWith(displayName: 'Test User'),
+      );
+
+      final profile = await userRepository.getByUsername('  TEST USER ');
+
+      expect(profile?.uid, '1');
+      expect(profile?.email, 'test@example.com');
+    });
+
+    test('getByUsername returns null for an unknown username', () async {
+      expect(await userRepository.getByUsername('Missing User'), isNull);
+    });
+
     test('upsertWithUniqueUsername rejects duplicate username', () async {
       await userRepository.upsertWithUniqueUsername(
         tUserProfile.copyWith(uid: '1', displayName: 'Test User'),

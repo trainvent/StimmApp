@@ -290,11 +290,7 @@ class ProfilePage extends ConsumerWidget {
           builder: (context, snapshot) {
             final pendingCount =
                 (snapshot.data ?? const <PollGroupAccessNotification>[])
-                    .where(
-                      (item) =>
-                          item.status ==
-                          PollGroupAccessNotificationStatus.pending,
-                    )
+                    .where((item) => item.countsAsUnread)
                     .length;
             return Badge.count(
               offset: const Offset(-5, 5),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
-import 'package:stimmapp/app/widgets/slidable_widget.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -31,6 +30,7 @@ class GroupMembersPage extends StatefulWidget {
 class _GroupMembersPageState extends State<GroupMembersPage> {
   final Set<String> _removingMemberIds = <String>{};
   final Set<String> _updatingMemberIds = <String>{};
+  final Map<String, Future<UserProfile?>> _profileFutures = {};
   final Map<String, ({PollGroupMember member, UserProfile? profile})>
   _selectedMembers = {};
 
@@ -73,11 +73,23 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     });
   }
 
-  Future<void> _removeSelectedMembers() async {
-    final selected = _selectedMembers.values.toList();
-    if (selected.isEmpty) {
+  void _handleMemberLongPress(PollGroupMember member, UserProfile? profile) {
+    final currentUid = _auth.currentUser?.uid;
+    if (member.uid == widget.group.createdBy) {
+      showErrorSnackBar(context.l10n.cannotRemoveGroupCreator);
       return;
     }
+    if (member.uid == currentUid) {
+      showErrorSnackBar(context.l10n.youCannotRemoveYourselfHere);
+      return;
+    }
+    _toggleMemberSelection(member, profile);
+  }
+
+  Future<void> _removeSelectedMembers() async {
+    final selected = _selectedMembers.values.toList();
+    if (selected.isEmpty) return;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -98,15 +110,14 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
         ],
       ),
     );
-    if (confirmed != true || !mounted) {
-      return;
-    }
+    if (confirmed != true || !mounted) return;
 
     final currentUid = _auth.currentUser?.uid;
     if (currentUid == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
+
     final memberIds = selected.map((entry) => entry.member.uid).toSet();
     setState(() {
       _selectedMembers.clear();
@@ -237,77 +248,6 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     }
   }
 
-  Future<void> _removeMember(
-    PollGroupMember member,
-    UserProfile? profile,
-  ) async {
-    final currentUid = _auth.currentUser?.uid;
-    if (currentUid == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
-    }
-    if (member.uid == widget.group.createdBy) {
-      showErrorSnackBar(context.l10n.cannotRemoveGroupCreator);
-      return;
-    }
-    if (member.uid == currentUid) {
-      showErrorSnackBar(context.l10n.youCannotRemoveYourselfHere);
-      return;
-    }
-
-    final memberName = _memberName(member, profile);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.removeGroupMemberTitle),
-        content: Text(context.l10n.removeGroupMemberConfirmation(memberName)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(context.l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(context.l10n.remove),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) {
-      return;
-    }
-
-    setState(() => _removingMemberIds.add(member.uid));
-    final actorNameFallback = context.l10n.groupAdminFallback;
-    try {
-      final actorProfile = await _userRepository.getById(currentUid);
-      final actorDisplayName =
-          actorProfile?.displayName?.trim().isNotEmpty == true
-          ? actorProfile!.displayName!.trim()
-          : (actorProfile?.email?.trim().isNotEmpty == true
-                ? actorProfile!.email!.trim()
-                : actorNameFallback);
-      await _repository.removeMember(
-        group: widget.group,
-        uid: member.uid,
-        actorUid: currentUid,
-        actorDisplayName: actorDisplayName,
-        role: member.role,
-        email: profile?.email,
-        memberDisplayName: memberName,
-      );
-      if (mounted) {
-        showSuccessSnackBar(context.l10n.groupMemberRemoved);
-      }
-    } catch (error, stackTrace) {
-      await showInternalDifficultiesSnackBar(error, stackTrace);
-    } finally {
-      if (mounted) {
-        setState(() => _removingMemberIds.remove(member.uid));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -376,7 +316,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
 
                 final member = members[index - 1];
                 return FutureBuilder<UserProfile?>(
-                  future: _userRepository.getById(member.uid),
+                  future: _profileFutures.putIfAbsent(
+                    member.uid,
+                    () => _userRepository.getById(member.uid),
+                  ),
                   builder: (context, profileSnapshot) {
                     final profile = profileSnapshot.data;
                     final displayName = profile?.displayName?.trim();
@@ -397,28 +340,11 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                     final isBusy = isRemoving || isUpdating;
                     final isSelected = _selectedMembers.containsKey(member.uid);
 
-                    return AppSlidable(
-                      key: ValueKey('slidable_group_member_${member.uid}'),
-                      enabled: !isBusy && !_selectionMode,
-                      startAction: AppSlidableAction(
-                        icon: Icons.edit_outlined,
-                        label: context.l10n.editLabel,
-                        onPressed: () => _editMember(member, profile),
-                      ),
-                      endAction: canRemove
-                          ? AppSlidableAction(
-                              icon: Icons.person_remove_outlined,
-                              label: context.l10n.remove,
-                              style: AppSlidableActionStyle.destructive,
-                              onPressed: () => _removeMember(member, profile),
-                            )
-                          : null,
-                      confirmEndDismiss: canRemove
-                          ? () async {
-                              await _removeMember(member, profile);
-                              return false;
-                            }
-                          : null,
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onLongPress: isBusy
+                          ? null
+                          : () => _handleMemberLongPress(member, profile),
                       child: ListTile(
                         key: Key('group_member_${member.uid}'),
                         selected: isSelected,
@@ -445,9 +371,6 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                                         _toggleMemberSelection(member, profile)
                                   : null)
                             : () => _editMember(member, profile),
-                        onLongPress: canRemove && !isBusy
-                            ? () => _toggleMemberSelection(member, profile)
-                            : null,
                         trailing: isBusy
                             ? const SizedBox.square(
                                 dimension: 20,
