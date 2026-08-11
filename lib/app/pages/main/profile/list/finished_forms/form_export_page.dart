@@ -28,10 +28,7 @@ class _FormExportPageState extends State<FormExportPage> {
         .list(query: null, status: IConst.closed)
         .map((items) {
           final uid = authService.currentUser?.uid;
-          final now = DateTime.now();
-          return items
-              .where((p) => p.createdBy == uid && p.expiresAt.isBefore(now))
-              .toList();
+          return items.where((p) => p.createdBy == uid).toList();
         });
   }
 
@@ -39,10 +36,7 @@ class _FormExportPageState extends State<FormExportPage> {
     return PollRepository.create().list(query: null, status: IConst.closed).map(
       (items) {
         final uid = authService.currentUser?.uid;
-        final now = DateTime.now();
-        return items
-            .where((p) => p.createdBy == uid && p.expiresAt.isBefore(now))
-            .toList();
+        return items.where((p) => p.createdBy == uid).toList();
       },
     );
   }
@@ -52,10 +46,7 @@ class _FormExportPageState extends State<FormExportPage> {
         .list(query: null, status: IConst.closed)
         .map((items) {
           final uid = authService.currentUser?.uid;
-          final now = DateTime.now();
-          return items
-              .where((s) => s.createdBy == uid && s.expiresAt.isBefore(now))
-              .toList();
+          return items.where((s) => s.createdBy == uid).toList();
         });
   }
 
@@ -384,7 +375,12 @@ class _FormExportPageState extends State<FormExportPage> {
   Widget _buildPetitionsTab(BuildContext context) {
     return StreamBuilder<List<Petition>>(
       stream: _expiredPetitionsByMe().map(
-        (list) => list..sort((a, b) => b.expiresAt.compareTo(a.expiresAt)),
+        (list) => list
+          ..sort(
+            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
+              a.expiresAt ?? a.createdAt,
+            ),
+          ),
       ),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -401,7 +397,11 @@ class _FormExportPageState extends State<FormExportPage> {
             final p = items[i];
             return ListTile(
               title: Text(p.title),
-              subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
+              subtitle: Text(
+                p.expiresAt == null
+                    ? context.l10n.closed
+                    : DateFormat('yyyy-MM-dd').format(p.expiresAt!),
+              ),
               onTap: () => _handlePetitionTap(p),
             );
           },
@@ -413,7 +413,12 @@ class _FormExportPageState extends State<FormExportPage> {
   Widget _buildPollsTab(BuildContext context) {
     return StreamBuilder<List<Poll>>(
       stream: _expiredPollsByMe().map(
-        (list) => list..sort((a, b) => b.expiresAt.compareTo(a.expiresAt)),
+        (list) => list
+          ..sort(
+            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
+              a.expiresAt ?? a.createdAt,
+            ),
+          ),
       ),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -430,7 +435,11 @@ class _FormExportPageState extends State<FormExportPage> {
             final p = items[i];
             return ListTile(
               title: Text(p.title),
-              subtitle: Text(DateFormat('yyyy-MM-dd').format(p.expiresAt)),
+              subtitle: Text(
+                p.expiresAt == null
+                    ? context.l10n.closed
+                    : DateFormat('yyyy-MM-dd').format(p.expiresAt!),
+              ),
               onTap: () => _handlePollTap(p),
             );
           },
@@ -442,7 +451,12 @@ class _FormExportPageState extends State<FormExportPage> {
   Widget _buildSurveysTab(BuildContext context) {
     return StreamBuilder<List<Survey>>(
       stream: _expiredSurveysByMe().map(
-        (list) => list..sort((a, b) => b.expiresAt.compareTo(a.expiresAt)),
+        (list) => list
+          ..sort(
+            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
+              a.expiresAt ?? a.createdAt,
+            ),
+          ),
       ),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -459,7 +473,11 @@ class _FormExportPageState extends State<FormExportPage> {
             final s = items[i];
             return ListTile(
               title: Text(s.title),
-              subtitle: Text(DateFormat('yyyy-MM-dd').format(s.expiresAt)),
+              subtitle: Text(
+                s.expiresAt == null
+                    ? context.l10n.closed
+                    : DateFormat('yyyy-MM-dd').format(s.expiresAt!),
+              ),
               onTap: () => _handleSurveyTap(s),
             );
           },

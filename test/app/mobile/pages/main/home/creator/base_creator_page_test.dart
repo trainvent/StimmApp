@@ -27,6 +27,7 @@ void main() {
                 required tags,
                 required scope,
                 required durationDays,
+                required openUntilClosed,
               }) async {},
         ),
       ),
@@ -48,6 +49,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(scopeSelector);
+    await tester.pumpAndSettle();
     expect(
       find.text('Please set your country in your address first'),
       findsOneWidget,
@@ -99,6 +102,7 @@ void main() {
                   required tags,
                   required scope,
                   required durationDays,
+                  required openUntilClosed,
                 }) async {},
           ),
         ),
@@ -111,6 +115,8 @@ void main() {
         300,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(scopeSelector);
+      await tester.pumpAndSettle();
       await tester.tap(scopeSelector);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Country union').last);
@@ -141,6 +147,7 @@ void main() {
                 required tags,
                 required scope,
                 required durationDays,
+                required openUntilClosed,
               }) async {},
         ),
       ),
@@ -148,7 +155,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Minimum 5 characters'), findsOneWidget);
-    expect(find.text('Minimum 20 characters'), findsOneWidget);
+    expect(
+      find.text('Minimum 20 characters', skipOffstage: false),
+      findsOneWidget,
+    );
 
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.at(0), 'Valid title');
@@ -159,11 +169,55 @@ void main() {
       submitButton,
       300,
       scrollable: find.byType(Scrollable).first,
-      );
-      await tester.tap(submitButton);
-      await tester.pumpAndSettle();
+    );
+    await tester.ensureVisible(submitButton);
+    await tester.pumpAndSettle();
+    await tester.tap(submitButton);
+    await tester.pumpAndSettle();
 
-    expect(find.text('Minimum 20 characters'), findsOneWidget);
+    expect(
+      find.text('Minimum 20 characters', skipOffstage: false),
+      findsOneWidget,
+    );
     expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('defaults to six weeks and can switch to open until closed', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        BaseCreatorPage(
+          title: 'Create form',
+          tutorialSteps: const [],
+          onSubmit:
+              ({
+                required title,
+                required description,
+                required tags,
+                required scope,
+                required durationDays,
+                required openUntilClosed,
+              }) async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final switchFinder = find.byKey(const Key('openUntilClosedSwitch'));
+    await tester.scrollUntilVisible(
+      switchFinder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(switchFinder);
+    await tester.pumpAndSettle();
+    expect(find.text('42 days'), findsOneWidget);
+
+    await tester.tap(switchFinder);
+    await tester.pumpAndSettle();
+
+    expect(find.text('42 days'), findsNothing);
+    expect(tester.widget<SwitchListTile>(switchFinder).value, isTrue);
   });
 }

@@ -211,6 +211,10 @@ class SurveyRepository {
     await batch.commit();
   }
 
+  Future<void> close(String id) async {
+    await _col().doc(id).update({'status': 'closed'});
+  }
+
   Survey _normalizeSurvey(Survey survey) {
     final normalizedTitle = survey.title.trim();
     final normalizedDescription = survey.description.trim();

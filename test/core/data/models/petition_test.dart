@@ -27,6 +27,7 @@ void main() {
       'createdBy': 'user1',
       'createdAt': timestamp,
       'expiresAt': timestamp,
+      'openUntilClosed': false,
       'status': 'active',
       'titleLowercase': 'test petition',
       'scopeType': 'global',
@@ -67,6 +68,16 @@ void main() {
     test('toFirestore returns a map from a Petition object', () {
       final result = Petition.toFirestore(petition, null);
       expect(result, petitionFirestoreData);
+    });
+
+    test('round-trips a petition that stays open until closed', () async {
+      final firestore = FakeFirebaseFirestore();
+      final data = Petition.toFirestore(petition.copyWith(), null)
+        ..['expiresAt'] = null
+        ..['openUntilClosed'] = true;
+      final ref = await firestore.collection('petitions').add(data);
+
+      expect(Petition.fromFirestore(await ref.get(), null).expiresAt, isNull);
     });
   });
 }

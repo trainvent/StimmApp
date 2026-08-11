@@ -398,6 +398,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daysLeft => 'Days Left';
 
   @override
+  String get duration => 'Duration';
+
+  @override
+  String get openUntilClosed => 'Open until closed';
+
+  @override
+  String get openUntilClosedDescription =>
+      'Keep this form open until you close it manually.';
+
+  @override
+  String get closeForm => 'Close form';
+
+  @override
+  String get closeFormConfirmation =>
+      'Close this form now? People will no longer be able to participate.';
+
+  @override
+  String get formClosed => 'Form closed.';
+
+  @override
   String get deleteAccount => 'Delete Account';
 
   @override

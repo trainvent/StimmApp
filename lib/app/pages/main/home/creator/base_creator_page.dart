@@ -34,6 +34,7 @@ class BaseCreatorPage extends StatefulWidget {
     required List<String> tags,
     required FormScope scope,
     required int durationDays,
+    required bool openUntilClosed,
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
@@ -57,7 +58,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _profileStateOrRegion;
   String? _profileTown;
   bool _isLoading = false;
-  int _durationDays = 28; // Default duration
+  int _durationDays = AppLimits.defaultFormDurationDays;
+  bool _openUntilClosed = false;
 
   Set<CountryUnion> get _availableCountryUnions =>
       countryUnionsForCountry(_profileCountryCode);
@@ -137,6 +139,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     final draftScopeUnion = prefs.getString('${_draftKey}_scopeUnion');
     final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
     final draftDuration = prefs.getInt('${_draftKey}_duration');
+    final draftOpenUntilClosed = prefs.getBool('${_draftKey}_openUntilClosed');
 
     if (mounted) {
       setState(() {
@@ -168,6 +171,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           _selectedScope = FormScopeType.country;
         }
         if (draftDuration != null) _durationDays = draftDuration;
+        if (draftOpenUntilClosed != null) {
+          _openUntilClosed = draftOpenUntilClosed;
+        }
       });
     }
   }
@@ -199,6 +205,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.setInt('${_draftKey}_duration', _durationDays);
+    await prefs.setBool('${_draftKey}_openUntilClosed', _openUntilClosed);
   }
 
   Future<void> _clearDraft() async {
@@ -212,6 +219,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.remove('${_draftKey}_duration');
+    await prefs.remove('${_draftKey}_openUntilClosed');
   }
 
   Future<void> _resetForm() async {
@@ -222,7 +230,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
       _selectedCountryUnion = _firstAvailableCountryUnion;
-      _durationDays = 28;
+      _durationDays = AppLimits.defaultFormDurationDays;
+      _openUntilClosed = false;
     });
   }
 
@@ -273,6 +282,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         tags: _selectedTags,
         scope: scope,
         durationDays: _durationDays,
+        openUntilClosed: _openUntilClosed,
       );
       await _clearDraft(); // Clear draft on successful submission
     } catch (e) {
@@ -738,23 +748,36 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               ),
               const SizedBox(height: 20),
               Text(
-                context.l10n.daysLeft,
+                context.l10n.duration,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              Slider(
-                value: _durationDays.toDouble(),
-                min: 1,
-                max: 42, // 6 weeks
-                divisions: 41,
-                label: '$_durationDays days',
-                onChanged: (double value) {
-                  setState(() {
-                    _durationDays = value.toInt();
-                  });
+              SwitchListTile.adaptive(
+                key: const Key('openUntilClosedSwitch'),
+                contentPadding: EdgeInsets.zero,
+                title: Text(context.l10n.openUntilClosed),
+                subtitle: Text(context.l10n.openUntilClosedDescription),
+                value: _openUntilClosed,
+                onChanged: (value) {
+                  setState(() => _openUntilClosed = value);
                   _saveDraft();
                 },
               ),
-              Center(child: Text('$_durationDays days')),
+              if (!_openUntilClosed) ...[
+                Slider(
+                  value: _durationDays.toDouble(),
+                  min: 1,
+                  max: AppLimits.defaultFormDurationDays.toDouble(),
+                  divisions: AppLimits.defaultFormDurationDays - 1,
+                  label: '$_durationDays days',
+                  onChanged: (double value) {
+                    setState(() {
+                      _durationDays = value.toInt();
+                    });
+                    _saveDraft();
+                  },
+                ),
+                Center(child: Text('$_durationDays days')),
+              ],
               const SizedBox(height: 10),
               _scopeSelectorCard(),
               if (_selectedScope == FormScopeType.countryUnion) ...[

@@ -350,7 +350,12 @@ class FileFormatRouter {
       ExportDetail('Signature count', petition.signatureCount.toString()),
       ExportDetail('Created by', petition.createdBy),
       ExportDetail('Created at', _formatDateTime(petition.createdAt)),
-      ExportDetail('Expires at', _formatDateTime(petition.expiresAt)),
+      ExportDetail(
+        'Expires at',
+        petition.expiresAt == null
+            ? 'Open until closed'
+            : _formatDateTime(petition.expiresAt!),
+      ),
       ExportDetail('Status', petition.status),
       ExportDetail('Scope type', petition.scopeType),
       ExportDetail('Continent', petition.continentCode ?? ''),
@@ -386,7 +391,12 @@ class FileFormatRouter {
       ExportDetail('Total votes', poll.totalVotes.toString()),
       ExportDetail('Created by', poll.createdBy),
       ExportDetail('Created at', _formatDateTime(poll.createdAt)),
-      ExportDetail('Expires at', _formatDateTime(poll.expiresAt)),
+      ExportDetail(
+        'Expires at',
+        poll.expiresAt == null
+            ? 'Open until closed'
+            : _formatDateTime(poll.expiresAt!),
+      ),
       ExportDetail('Status', poll.status),
       ExportDetail('Scope type', poll.scopeType),
       ExportDetail('Continent', poll.continentCode ?? ''),
@@ -431,7 +441,12 @@ class FileFormatRouter {
       ExportDetail('Response count', survey.responseCount.toString()),
       ExportDetail('Created by', survey.createdBy),
       ExportDetail('Created at', _formatDateTime(survey.createdAt)),
-      ExportDetail('Expires at', _formatDateTime(survey.expiresAt)),
+      ExportDetail(
+        'Expires at',
+        survey.expiresAt == null
+            ? 'Open until closed'
+            : _formatDateTime(survey.expiresAt!),
+      ),
       ExportDetail('Status', survey.status),
       ExportDetail('Scope type', survey.scopeType),
       ExportDetail('Continent', survey.continentCode ?? ''),

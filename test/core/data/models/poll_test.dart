@@ -45,6 +45,7 @@ void main() {
       'createdBy': 'user1',
       'createdAt': timestamp,
       'expiresAt': timestamp,
+      'openUntilClosed': false,
       'status': 'active',
       'titleLowercase': 'test poll',
       'scopeType': 'global',

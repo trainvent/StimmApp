@@ -213,6 +213,10 @@ class PetitionRepository {
     await batch.commit();
   }
 
+  Future<void> close(String id) async {
+    await _col().doc(id).update({'status': 'closed'});
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> watchSignedPetitions(String uid) {
     return _fs.instance
         .collection('users')

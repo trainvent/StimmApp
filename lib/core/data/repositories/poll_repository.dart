@@ -197,6 +197,10 @@ class PollRepository {
     await batch.commit();
   }
 
+  Future<void> close(String id) async {
+    await _col().doc(id).update({'status': 'closed'});
+  }
+
   Future<void> delete(String id) async {
     await _col().doc(id).delete();
   }

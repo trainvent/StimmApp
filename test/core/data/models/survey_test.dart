@@ -92,6 +92,7 @@ void main() {
       'createdBy': 'user1',
       'createdAt': timestamp,
       'expiresAt': timestamp,
+      'openUntilClosed': false,
       'status': 'active',
       'titleLowercase': 'test survey',
       'scopeType': 'global',

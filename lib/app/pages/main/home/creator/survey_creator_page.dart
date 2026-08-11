@@ -245,6 +245,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     required List<String> tags,
     required FormScope scope,
     required int durationDays,
+    required bool openUntilClosed,
   }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
@@ -302,7 +303,9 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           votes: {for (final option in question.options) option.id: 0},
           createdBy: currentUser.uid,
           createdAt: now,
-          expiresAt: now.add(Duration(days: durationDays)),
+          expiresAt: openUntilClosed
+              ? null
+              : now.add(Duration(days: durationDays)),
           scope: scope,
           groupId: _selectedGroup?.id,
           groupName: _selectedGroup?.name,
@@ -354,7 +357,9 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         },
         createdBy: currentUser.uid,
         createdAt: now,
-        expiresAt: now.add(Duration(days: durationDays)),
+        expiresAt: openUntilClosed
+            ? null
+            : now.add(Duration(days: durationDays)),
         scope: scope,
         groupId: _selectedGroup?.id,
         groupName: _selectedGroup?.name,

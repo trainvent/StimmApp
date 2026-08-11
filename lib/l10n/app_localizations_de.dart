@@ -400,6 +400,26 @@ class AppLocalizationsDe extends AppLocalizations {
   String get daysLeft => 'Verbleibende Tage';
 
   @override
+  String get duration => 'Laufzeit';
+
+  @override
+  String get openUntilClosed => 'Offen, bis es beendet wird';
+
+  @override
+  String get openUntilClosedDescription =>
+      'Dieses Formular bleibt offen, bis du es manuell beendest.';
+
+  @override
+  String get closeForm => 'Formular beenden';
+
+  @override
+  String get closeFormConfirmation =>
+      'Dieses Formular jetzt beenden? Danach kann niemand mehr teilnehmen.';
+
+  @override
+  String get formClosed => 'Formular beendet.';
+
+  @override
   String get deleteAccount => 'Konto löschen';
 
   @override

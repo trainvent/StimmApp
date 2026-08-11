@@ -91,6 +91,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     required List<String> tags,
     required FormScope scope,
     required int durationDays,
+    required bool openUntilClosed,
   }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
@@ -125,7 +126,9 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         signatureCount: 0,
         createdBy: currentUser.uid,
         createdAt: now,
-        expiresAt: now.add(Duration(days: durationDays)),
+        expiresAt: openUntilClosed
+            ? null
+            : now.add(Duration(days: durationDays)),
         status: IConst.active,
         scope: scope,
         imageUrl: imageUrl,

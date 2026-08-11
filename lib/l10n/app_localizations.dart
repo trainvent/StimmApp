@@ -818,6 +818,42 @@ abstract class AppLocalizations {
   /// **'Days Left'**
   String get daysLeft;
 
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @openUntilClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Open until closed'**
+  String get openUntilClosed;
+
+  /// No description provided for @openUntilClosedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this form open until you close it manually.'**
+  String get openUntilClosedDescription;
+
+  /// No description provided for @closeForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Close form'**
+  String get closeForm;
+
+  /// No description provided for @closeFormConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this form now? People will no longer be able to participate.'**
+  String get closeFormConfirmation;
+
+  /// No description provided for @formClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Form closed.'**
+  String get formClosed;
+
   /// No description provided for @deleteAccount.
   ///
   /// In en, this message translates to:

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
@@ -28,7 +29,7 @@ class Poll extends HomeItem {
   final String createdBy;
   final DateTime createdAt;
   @override
-  final DateTime expiresAt;
+  final DateTime? expiresAt;
   @override
   final String status;
   @override
@@ -46,7 +47,7 @@ class Poll extends HomeItem {
     required this.votes,
     required this.createdBy,
     required this.createdAt,
-    required this.expiresAt,
+    this.expiresAt,
     this.status = IConst.active,
     this.scope = const FormScope.global(),
     this.groupId,
@@ -114,9 +115,12 @@ class Poll extends HomeItem {
       votes: Map<String, int>.from(data['votes'] ?? const <String, int>{}),
       createdBy: (data['createdBy'] ?? '') as String,
       createdAt: createdAt,
-      expiresAt:
-          (data['expiresAt'] as Timestamp?)?.toDate() ??
-          createdAt.add(const Duration(days: 7)),
+      expiresAt: data['openUntilClosed'] == true
+          ? null
+          : (data['expiresAt'] as Timestamp?)?.toDate() ??
+                createdAt.add(
+                  const Duration(days: AppLimits.defaultFormDurationDays),
+                ),
       status: (data['status'] ?? IConst.active) as String,
       scope: FormScope.fromFirestore(data),
       groupId: data['groupId'] as String?,
@@ -134,7 +138,10 @@ class Poll extends HomeItem {
       'votes': p.votes,
       'createdBy': p.createdBy,
       'createdAt': Timestamp.fromDate(p.createdAt),
-      'expiresAt': Timestamp.fromDate(p.expiresAt),
+      'expiresAt': p.expiresAt == null
+          ? null
+          : Timestamp.fromDate(p.expiresAt!),
+      'openUntilClosed': p.expiresAt == null,
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
       ...p.scope.toFirestoreFields(),
