@@ -10,7 +10,6 @@ import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/functions/update_user_name.dart';
-import 'package:stimmapp/core/theme/app_text_styles.dart';
 
 enum EditableProfileField { username, givenName, surname }
 
@@ -145,9 +144,14 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 60.0),
-                Text(title, style: AppTextStyles.xxlBold),
-                const SizedBox(height: 50),
+                const SizedBox(height: 20),
+                Image.asset(
+                  'assets/images/Lemm_pen.png',
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 32),
                 Form(
                   key: _formKey,
                   child: Center(
