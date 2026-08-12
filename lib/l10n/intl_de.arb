@@ -168,6 +168,10 @@
 	"googleSyncFailed": "Google-Profil konnte nicht synchronisiert werden",
 	"daysLeft": "Verbleibende Tage",
 	"duration": "Laufzeit",
+	"durationDays": "{count, plural, =1{1 Tag} other{{count} Tage}}",
+	"@durationDays": {
+		"placeholders": {"count": {"type": "int"}}
+	},
 	"openUntilClosed": "Offen, bis es beendet wird",
 	"openUntilClosedDescription": "Dieses Formular bleibt offen, bis du es manuell beendest.",
 	"closeForm": "Formular beenden",

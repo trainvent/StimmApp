@@ -403,6 +403,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get duration => 'Laufzeit';
 
   @override
+  String durationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get openUntilClosed => 'Offen, bis es beendet wird';
 
   @override

@@ -204,20 +204,43 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final switchFinder = find.byKey(const Key('openUntilClosedSwitch'));
+    final sliderFinder = find.byKey(const Key('durationSlider'));
     await tester.scrollUntilVisible(
-      switchFinder,
+      sliderFinder,
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(switchFinder);
+    await tester.ensureVisible(sliderFinder);
     await tester.pumpAndSettle();
     expect(find.text('42 days'), findsOneWidget);
+    expect(tester.widget<Slider>(sliderFinder).value, 42);
+    expect(tester.widget<Slider>(sliderFinder).max, 42);
+    expect(find.text('42'), findsOneWidget);
 
-    await tester.tap(switchFinder);
+    await tester.tap(find.byKey(const Key('openUntilClosedButton')));
     await tester.pumpAndSettle();
 
     expect(find.text('42 days'), findsNothing);
-    expect(tester.widget<SwitchListTile>(switchFinder).value, isTrue);
+    expect(find.text('Open until closed'), findsOneWidget);
+    expect(tester.widget<Slider>(sliderFinder).value, 42);
+    expect(
+      tester
+          .widget<SliderTheme>(find.byKey(const Key('durationSliderTheme')))
+          .data
+          .thumbShape,
+      SliderComponentShape.noThumb,
+    );
+
+    tester.widget<Slider>(sliderFinder).onChanged!(41);
+    await tester.pumpAndSettle();
+
+    expect(find.text('41 days'), findsOneWidget);
+    expect(
+      tester
+          .widget<SliderTheme>(find.byKey(const Key('durationSliderTheme')))
+          .data
+          .thumbShape,
+      isNot(SliderComponentShape.noThumb),
+    );
   });
 }

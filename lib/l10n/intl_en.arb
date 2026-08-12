@@ -167,6 +167,10 @@
 	"googleSyncFailed": "Couldn’t sync Google profile",
 	"daysLeft": "Days Left",
 	"duration": "Duration",
+	"durationDays": "{count, plural, =1{1 day} other{{count} days}}",
+	"@durationDays": {
+		"placeholders": {"count": {"type": "int"}}
+	},
 	"openUntilClosed": "Open until closed",
 	"openUntilClosedDescription": "Keep this form open until you close it manually.",
 	"closeForm": "Close form",

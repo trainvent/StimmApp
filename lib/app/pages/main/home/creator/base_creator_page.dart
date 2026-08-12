@@ -751,33 +751,104 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 context.l10n.duration,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SwitchListTile.adaptive(
-                key: const Key('openUntilClosedSwitch'),
-                contentPadding: EdgeInsets.zero,
-                title: Text(context.l10n.openUntilClosed),
-                subtitle: Text(context.l10n.openUntilClosedDescription),
-                value: _openUntilClosed,
-                onChanged: (value) {
-                  setState(() => _openUntilClosed = value);
-                  _saveDraft();
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: SliderTheme(
+                      key: const Key('durationSliderTheme'),
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: _openUntilClosed
+                            ? SliderComponentShape.noThumb
+                            : SliderTheme.of(context).thumbShape,
+                        overlayShape: _openUntilClosed
+                            ? SliderComponentShape.noOverlay
+                            : SliderTheme.of(context).overlayShape,
+                        activeTrackColor: _openUntilClosed
+                            ? Theme.of(context).colorScheme.outlineVariant
+                            : null,
+                        inactiveTrackColor: _openUntilClosed
+                            ? Theme.of(context).colorScheme.outlineVariant
+                            : null,
+                      ),
+                      child: Slider(
+                        key: const Key('durationSlider'),
+                        value: _durationDays.toDouble(),
+                        min: 1,
+                        max: AppLimits.defaultFormDurationDays.toDouble(),
+                        divisions: AppLimits.defaultFormDurationDays - 1,
+                        label: context.l10n.durationDays(_durationDays),
+                        onChanged: (double value) {
+                          setState(() {
+                            _openUntilClosed = false;
+                            _durationDays = value.round();
+                          });
+                          _saveDraft();
+                        },
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('openUntilClosedButton'),
+                    tooltip: context.l10n.openUntilClosedDescription,
+                    style: IconButton.styleFrom(
+                      backgroundColor: _openUntilClosed
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                      foregroundColor: _openUntilClosed
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: () {
+                      setState(() => _openUntilClosed = true);
+                      _saveDraft();
+                    },
+                    icon: const Icon(Icons.all_inclusive),
+                  ),
+                ],
               ),
-              if (!_openUntilClosed) ...[
-                Slider(
-                  value: _durationDays.toDouble(),
-                  min: 1,
-                  max: AppLimits.defaultFormDurationDays.toDouble(),
-                  divisions: AppLimits.defaultFormDurationDays - 1,
-                  label: '$_durationDays days',
-                  onChanged: (double value) {
-                    setState(() {
-                      _durationDays = value.toInt();
-                    });
-                    _saveDraft();
-                  },
+              Row(
+                children: [
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('1'), Text('42')],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: Container(
+                    key: ValueKey(_openUntilClosed),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: _openUntilClosed
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.all_inclusive, size: 20),
+                              const SizedBox(width: 7),
+                              Text(context.l10n.openUntilClosed),
+                            ],
+                          )
+                        : Text(context.l10n.durationDays(_durationDays)),
+                  ),
                 ),
-                Center(child: Text('$_durationDays days')),
-              ],
+              ),
               const SizedBox(height: 10),
               _scopeSelectorCard(),
               if (_selectedScope == FormScopeType.countryUnion) ...[
