@@ -28,6 +28,7 @@ void main() {
       'createdAt': timestamp,
       'expiresAt': timestamp,
       'openUntilClosed': false,
+      'scheduledCloseAt': null,
       'status': 'active',
       'titleLowercase': 'test petition',
       'scopeType': 'global',

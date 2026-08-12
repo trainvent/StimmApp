@@ -851,14 +851,32 @@ abstract class AppLocalizations {
   /// No description provided for @closeFormConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Close this form now? People will no longer be able to participate.'**
+  /// **'Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.'**
   String get closeFormConfirmation;
 
-  /// No description provided for @formClosed.
+  /// No description provided for @formClosureScheduled.
   ///
   /// In en, this message translates to:
-  /// **'Form closed.'**
-  String get formClosed;
+  /// **'Form stopped. You can resume it for 24 hours.'**
+  String get formClosureScheduled;
+
+  /// No description provided for @resumeForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume form'**
+  String get resumeForm;
+
+  /// No description provided for @formResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Form resumed.'**
+  String get formResumed;
+
+  /// No description provided for @closureFinalizesAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent closure: {date}'**
+  String closureFinalizesAt(String date);
 
   /// No description provided for @deleteAccount.
   ///

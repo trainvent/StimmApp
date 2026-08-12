@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -24,7 +25,11 @@ class PollRepository {
     toFirestore: Poll.toFirestore,
   );
 
-  Stream<List<Poll>> list({String? query, int? limit, required String status}) {
+  Stream<List<Poll>> list({
+    String? query,
+    int? limit,
+    required String? status,
+  }) {
     final q = (query ?? '').trim().toLowerCase();
     final queryRef = _col();
 
@@ -44,7 +49,9 @@ class PollRepository {
     }
 
     return stream.map((polls) {
-      return polls.where((p) => p.status == status).toList();
+      return status == null
+          ? polls
+          : polls.where((p) => p.status == status).toList();
     });
   }
 
@@ -197,8 +204,34 @@ class PollRepository {
     await batch.commit();
   }
 
-  Future<void> close(String id) async {
-    await _col().doc(id).update({'status': 'closed'});
+  Future<void> scheduleClose(String id) async {
+    await _col().doc(id).update({
+      'status': IConst.closing,
+      'scheduledCloseAt': Timestamp.fromDate(
+        DateTime.now().add(AppLimits.formClosureGracePeriod),
+      ),
+    });
+  }
+
+  Future<void> resume(String id) async {
+    final ref = _fs.instance.collection('polls').doc(id);
+    await _fs.instance.runTransaction((transaction) async {
+      final snap = await transaction.get(ref);
+      final data = snap.data();
+      final scheduledCloseAt = data?['scheduledCloseAt'] as Timestamp?;
+      final expiresAt = data?['expiresAt'] as Timestamp?;
+      final now = DateTime.now();
+      if (data?['status'] != IConst.closing ||
+          scheduledCloseAt == null ||
+          !scheduledCloseAt.toDate().isAfter(now) ||
+          (expiresAt != null && !expiresAt.toDate().isAfter(now))) {
+        throw StateError('form_resume_window_expired');
+      }
+      transaction.update(ref, {
+        'status': IConst.active,
+        'scheduledCloseAt': FieldValue.delete(),
+      });
+    });
   }
 
   Future<void> delete(String id) async {

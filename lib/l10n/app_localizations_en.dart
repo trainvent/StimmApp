@@ -423,10 +423,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeFormConfirmation =>
-      'Close this form now? People will no longer be able to participate.';
+      'Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.';
 
   @override
-  String get formClosed => 'Form closed.';
+  String get formClosureScheduled =>
+      'Form stopped. You can resume it for 24 hours.';
+
+  @override
+  String get resumeForm => 'Resume form';
+
+  @override
+  String get formResumed => 'Form resumed.';
+
+  @override
+  String closureFinalizesAt(String date) {
+    return 'Permanent closure: $date';
+  }
 
   @override
   String get deleteAccount => 'Delete Account';

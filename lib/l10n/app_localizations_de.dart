@@ -425,10 +425,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get closeFormConfirmation =>
-      'Dieses Formular jetzt beenden? Danach kann niemand mehr teilnehmen.';
+      'Dieses Formular jetzt stoppen? Du kannst es innerhalb der nächsten 24 Stunden unter Abgeschlossene Formulare fortsetzen. Danach wird es endgültig beendet.';
 
   @override
-  String get formClosed => 'Formular beendet.';
+  String get formClosureScheduled =>
+      'Formular gestoppt. Du kannst es 24 Stunden lang fortsetzen.';
+
+  @override
+  String get resumeForm => 'Formular fortsetzen';
+
+  @override
+  String get formResumed => 'Formular fortgesetzt.';
+
+  @override
+  String closureFinalizesAt(String date) {
+    return 'Endgültige Beendigung: $date';
+  }
 
   @override
   String get deleteAccount => 'Konto löschen';

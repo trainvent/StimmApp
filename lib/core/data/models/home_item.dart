@@ -10,6 +10,7 @@ abstract class HomeItem {
   String get status;
   FormScope get scope;
   DateTime? get expiresAt;
+  DateTime? get scheduledCloseAt;
   int get participantCount;
   List<String> get tags;
 

@@ -1,5 +1,6 @@
 class AppLimits {
   static const int defaultFormDurationDays = 42;
+  static const Duration formClosureGracePeriod = Duration(hours: 24);
 
   static const int minTitleLength = 5;
   static const int maxTitleLength = 100;

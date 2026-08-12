@@ -24,6 +24,8 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
+    this.additionalDraftClearer,
+    this.onResetAdditionalFields,
   });
 
   final String title;
@@ -41,6 +43,8 @@ class BaseCreatorPage extends StatefulWidget {
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
+  final Future<void> Function()? additionalDraftClearer;
+  final VoidCallback? onResetAdditionalFields;
 
   @override
   State<BaseCreatorPage> createState() => _BaseCreatorPageState();
@@ -220,6 +224,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.remove('${_draftKey}_duration');
     await prefs.remove('${_draftKey}_openUntilClosed');
+    await widget.additionalDraftClearer?.call();
   }
 
   Future<void> _resetForm() async {
@@ -233,6 +238,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _durationDays = AppLimits.defaultFormDurationDays;
       _openUntilClosed = false;
     });
+    widget.onResetAdditionalFields?.call();
   }
 
   Future<void> _handleSubmit() async {

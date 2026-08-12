@@ -31,6 +31,8 @@ class Poll extends HomeItem {
   @override
   final DateTime? expiresAt;
   @override
+  final DateTime? scheduledCloseAt;
+  @override
   final String status;
   @override
   final FormScope scope;
@@ -48,6 +50,7 @@ class Poll extends HomeItem {
     required this.createdBy,
     required this.createdAt,
     this.expiresAt,
+    this.scheduledCloseAt,
     this.status = IConst.active,
     this.scope = const FormScope.global(),
     this.groupId,
@@ -70,6 +73,7 @@ class Poll extends HomeItem {
     String? createdBy,
     DateTime? createdAt,
     DateTime? expiresAt,
+    DateTime? scheduledCloseAt,
     String? status,
     FormScope? scope,
     String? groupId,
@@ -86,6 +90,7 @@ class Poll extends HomeItem {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      scheduledCloseAt: scheduledCloseAt ?? this.scheduledCloseAt,
       status: status ?? this.status,
       scope: scope ?? this.scope,
       groupId: groupId ?? this.groupId,
@@ -121,6 +126,7 @@ class Poll extends HomeItem {
                 createdAt.add(
                   const Duration(days: AppLimits.defaultFormDurationDays),
                 ),
+      scheduledCloseAt: (data['scheduledCloseAt'] as Timestamp?)?.toDate(),
       status: (data['status'] ?? IConst.active) as String,
       scope: FormScope.fromFirestore(data),
       groupId: data['groupId'] as String?,
@@ -142,6 +148,9 @@ class Poll extends HomeItem {
           ? null
           : Timestamp.fromDate(p.expiresAt!),
       'openUntilClosed': p.expiresAt == null,
+      'scheduledCloseAt': p.scheduledCloseAt == null
+          ? null
+          : Timestamp.fromDate(p.scheduledCloseAt!),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
       ...p.scope.toFirestoreFields(),

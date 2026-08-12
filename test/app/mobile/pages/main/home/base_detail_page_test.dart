@@ -27,6 +27,8 @@ class _TestHomeItem extends HomeItem {
   @override
   final DateTime expiresAt;
   @override
+  DateTime? get scheduledCloseAt => null;
+  @override
   final int participantCount;
   @override
   final List<String> tags;

@@ -20,6 +20,8 @@ class Petition extends HomeItem {
   @override
   final DateTime? expiresAt;
   @override
+  final DateTime? scheduledCloseAt;
+  @override
   final String status;
   @override
   final FormScope scope;
@@ -34,6 +36,7 @@ class Petition extends HomeItem {
     required this.createdBy,
     required this.createdAt,
     this.expiresAt,
+    this.scheduledCloseAt,
     this.status = IConst.active,
     this.scope = const FormScope.global(),
     this.imageUrl,
@@ -51,6 +54,7 @@ class Petition extends HomeItem {
     String? createdBy,
     DateTime? createdAt,
     DateTime? expiresAt,
+    DateTime? scheduledCloseAt,
     String? status,
     FormScope? scope,
     String? imageUrl,
@@ -64,6 +68,7 @@ class Petition extends HomeItem {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      scheduledCloseAt: scheduledCloseAt ?? this.scheduledCloseAt,
       status: status ?? this.status,
       scope: scope ?? this.scope,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -92,6 +97,7 @@ class Petition extends HomeItem {
                 createdAt.add(
                   const Duration(days: AppLimits.defaultFormDurationDays),
                 ),
+      scheduledCloseAt: (data['scheduledCloseAt'] as Timestamp?)?.toDate(),
       status: (data['status'] ?? IConst.active) as String,
       scope: FormScope.fromFirestore(data),
       imageUrl: data['imageUrl'] as String?,
@@ -110,6 +116,9 @@ class Petition extends HomeItem {
           ? null
           : Timestamp.fromDate(p.expiresAt!),
       'openUntilClosed': p.expiresAt == null,
+      'scheduledCloseAt': p.scheduledCloseAt == null
+          ? null
+          : Timestamp.fromDate(p.scheduledCloseAt!),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
       ...p.scope.toFirestoreFields(),

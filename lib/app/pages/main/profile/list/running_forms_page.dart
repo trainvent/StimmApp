@@ -167,7 +167,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
     );
   }
 
-  Future<void> _closeForm(Future<void> Function() close) async {
+  Future<void> _closeForm(Future<void> Function() scheduleClose) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -186,8 +186,8 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
       ),
     );
     if (confirmed != true) return;
-    await close();
-    if (mounted) showSuccessSnackBar(context.l10n.formClosed);
+    await scheduleClose();
+    if (mounted) showSuccessSnackBar(context.l10n.formClosureScheduled);
   }
 
   String _expiryLabel(DateTime? expiresAt) {
@@ -280,8 +280,9 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
               subtitle: Text(_expiryLabel(p.expiresAt)),
               onTap: () => _openPetitionDetails(p),
               trailing: _actions(
-                onClose: () =>
-                    _closeForm(() => PetitionRepository.create().close(p.id)),
+                onClose: () => _closeForm(
+                  () => PetitionRepository.create().scheduleClose(p.id),
+                ),
                 onDelete: hasNoSignatures ? () => _deletePetition(p) : null,
               ),
             );
@@ -318,8 +319,9 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
               subtitle: Text(_expiryLabel(p.expiresAt)),
               onTap: () => _openPollDetails(p),
               trailing: _actions(
-                onClose: () =>
-                    _closeForm(() => PollRepository.create().close(p.id)),
+                onClose: () => _closeForm(
+                  () => PollRepository.create().scheduleClose(p.id),
+                ),
                 onDelete: hasNoVotes ? () => _deletePoll(p) : null,
               ),
             );
@@ -356,8 +358,9 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
               subtitle: Text(_expiryLabel(s.expiresAt)),
               onTap: () => _openSurveyDetails(s),
               trailing: _actions(
-                onClose: () =>
-                    _closeForm(() => SurveyRepository.create().close(s.id)),
+                onClose: () => _closeForm(
+                  () => SurveyRepository.create().scheduleClose(s.id),
+                ),
                 onDelete: hasNoResponses ? () => _deleteSurvey(s) : null,
               ),
             );

@@ -696,7 +696,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                               ),
                               isFinished:
                                   status == IConst.closed ||
-                                  item.status == IConst.closed ||
+                                  item.status != IConst.active ||
                                   item.isExpiredAt(DateTime.now()),
                               isGroupOnly: _isGroupOnly(item),
                               groupName: _groupName(item),

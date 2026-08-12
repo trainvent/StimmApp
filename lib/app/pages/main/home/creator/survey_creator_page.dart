@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/widgets/choice_option_list_editor.dart';
 import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
@@ -23,9 +26,16 @@ const String _publicGroupValue = '__public__';
 const String _manageGroupsValue = '__manage_groups__';
 
 class SurveyCreatorPage extends StatefulWidget {
-  const SurveyCreatorPage({super.key, this.presentAsPoll = false});
+  const SurveyCreatorPage({
+    super.key,
+    this.presentAsPoll = false,
+    this.auth,
+    this.groupRepository,
+  });
 
   final bool presentAsPoll;
+  final AuthService? auth;
+  final PollGroupRepository? groupRepository;
 
   @override
   State<SurveyCreatorPage> createState() => _SurveyCreatorPageState();
@@ -33,9 +43,117 @@ class SurveyCreatorPage extends StatefulWidget {
 
 class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   final _uuid = const Uuid();
-  final List<_QuestionDraft> _questions = [_QuestionDraft()];
+  late final List<_QuestionDraft> _questions;
   final Map<String, PollGroup> _knownGroupsById = <String, PollGroup>{};
-  PollGroup? _selectedGroup;
+  String? _selectedGroupId;
+  int _draftRevision = 0;
+
+  AuthService get _auth => widget.auth ?? authService;
+  PollGroupRepository get _groupRepository =>
+      widget.groupRepository ?? PollGroupRepository.create();
+  PollGroup? get _selectedGroup =>
+      _selectedGroupId == null ? null : _knownGroupsById[_selectedGroupId];
+  String get _specificDraftKey => widget.presentAsPoll
+      ? 'draft_poll_specific_v1'
+      : 'draft_survey_specific_v1';
+
+  @override
+  void initState() {
+    super.initState();
+    _questions = [_createQuestionDraft()];
+    _restoreSpecificDraft();
+  }
+
+  _QuestionDraft _createQuestionDraft({
+    String title = '',
+    List<String>? options,
+  }) {
+    return _QuestionDraft(
+      title: title,
+      options: options,
+      onChanged: _saveSpecificDraft,
+    );
+  }
+
+  Future<void> _restoreSpecificDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = prefs.getString(_specificDraftKey);
+    if (encoded == null) return;
+
+    try {
+      final data = jsonDecode(encoded) as Map<String, dynamic>;
+      final rawQuestions = data['questions'] as List?;
+      final restoredQuestions = rawQuestions
+          ?.whereType<Map>()
+          .take(AppLimits.maxSurveyQuestions)
+          .map((rawQuestion) {
+            final question = Map<String, dynamic>.from(rawQuestion);
+            final options = (question['options'] as List?)
+                ?.whereType<String>()
+                .take(AppLimits.maxSurveyOptionsPerQuestion)
+                .toList();
+            return _createQuestionDraft(
+              title: question['title'] as String? ?? '',
+              options: options,
+            );
+          })
+          .toList();
+      if (!mounted) return;
+      setState(() {
+        if (restoredQuestions != null && restoredQuestions.isNotEmpty) {
+          for (final question in _questions) {
+            question.dispose();
+          }
+          _questions
+            ..clear()
+            ..addAll(restoredQuestions);
+        }
+        _selectedGroupId = data['groupId'] as String?;
+      });
+    } on FormatException catch (error) {
+      debugPrint('Ignoring malformed poll draft: $error');
+    } on TypeError catch (error) {
+      debugPrint('Ignoring invalid poll draft: $error');
+    }
+  }
+
+  Future<void> _saveSpecificDraft() async {
+    final revision = ++_draftRevision;
+    final encoded = jsonEncode({
+      'groupId': _selectedGroupId,
+      'questions': [
+        for (final question in _questions)
+          {
+            'title': question.titleController.text,
+            'options': [
+              for (final controller in question.optionControllers)
+                controller.text,
+            ],
+          },
+      ],
+    });
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || revision != _draftRevision) return;
+    await prefs.setString(_specificDraftKey, encoded);
+  }
+
+  Future<void> _clearSpecificDraft() async {
+    _draftRevision++;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_specificDraftKey);
+  }
+
+  void _resetSpecificFields() {
+    setState(() {
+      for (final question in _questions) {
+        question.dispose();
+      }
+      _questions
+        ..clear()
+        ..add(_createQuestionDraft());
+      _selectedGroupId = null;
+    });
+  }
 
   Future<void> _recordGroupPublication({
     required String actorUid,
@@ -46,8 +164,8 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       return;
     }
     try {
-      final currentUser = authService.currentUser;
-      await PollGroupRepository.create().recordPublicationPublished(
+      final currentUser = _auth.currentUser;
+      await _groupRepository.recordPublicationPublished(
         groupId: group.id,
         actorUid: actorUid,
         actorDisplayName: currentUser?.displayName ?? currentUser?.email,
@@ -74,13 +192,14 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   }
 
   Future<void> _handleGroupSelection(String? value) async {
-    if (value == null || value == _selectedGroup?.id) {
+    if (value == null || value == _selectedGroupId) {
       return;
     }
     if (value == _publicGroupValue) {
       setState(() {
-        _selectedGroup = null;
+        _selectedGroupId = null;
       });
+      _saveSpecificDraft();
       return;
     }
     if (value == _manageGroupsValue) {
@@ -88,11 +207,11 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       return;
     }
 
-    final currentUser = authService.currentUser;
+    final currentUser = _auth.currentUser;
     if (currentUser == null) {
       return;
     }
-    final groups = await PollGroupRepository.create()
+    final groups = await _groupRepository
         .watchGroupsForUser(currentUser.uid)
         .first;
     if (!mounted) {
@@ -101,9 +220,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     for (final group in groups) {
       if (group.id == value) {
         setState(() {
-          _selectedGroup = group;
+          _selectedGroupId = group.id;
           _rememberGroups(<PollGroup>[group]);
         });
+        _saveSpecificDraft();
         return;
       }
     }
@@ -116,7 +236,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   }
 
   Widget _buildGroupSelector() {
-    final currentUser = authService.currentUser;
+    final currentUser = _auth.currentUser;
     if (currentUser == null) {
       return DropdownButtonFormField<String>(
         key: const Key('survey_group_dropdown'),
@@ -136,7 +256,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     }
 
     return StreamBuilder<List<PollGroup>>(
-      stream: PollGroupRepository.create().watchGroupsForUser(currentUser.uid),
+      stream: _groupRepository.watchGroupsForUser(currentUser.uid),
       builder: (context, snapshot) {
         final latestGroups = List<PollGroup>.from(
           snapshot.data ?? const <PollGroup>[],
@@ -145,35 +265,36 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           _rememberGroups(latestGroups);
         }
         final groups = _knownGroupsById.values.toList();
-        if (_selectedGroup != null &&
-            !_knownGroupsById.containsKey(_selectedGroup!.id)) {
-          groups.insert(0, _selectedGroup!);
-        }
-        final selectedValue = _selectedGroup?.id ?? _publicGroupValue;
-        return DropdownButtonFormField<String>(
-          key: const Key('survey_group_dropdown'),
-          initialValue: selectedValue,
-          decoration: InputDecoration(
-            labelText: context.l10n.publishTo,
-            border: const OutlineInputBorder(),
-          ),
-          items: [
-            DropdownMenuItem<String>(
-              value: _publicGroupValue,
-              child: Text(context.l10n.public),
+        final selectedValue = _knownGroupsById.containsKey(_selectedGroupId)
+            ? _selectedGroupId!
+            : _publicGroupValue;
+        return KeyedSubtree(
+          key: ValueKey(selectedValue),
+          child: DropdownButtonFormField<String>(
+            key: const Key('survey_group_dropdown'),
+            initialValue: selectedValue,
+            decoration: InputDecoration(
+              labelText: context.l10n.publishTo,
+              border: const OutlineInputBorder(),
             ),
-            ...groups.map(
-              (group) => DropdownMenuItem<String>(
-                value: group.id,
-                child: Text(group.name),
+            items: [
+              DropdownMenuItem<String>(
+                value: _publicGroupValue,
+                child: Text(context.l10n.public),
               ),
-            ),
-            DropdownMenuItem<String>(
-              value: _manageGroupsValue,
-              child: Text(context.l10n.createOrManageGroups),
-            ),
-          ],
-          onChanged: _handleGroupSelection,
+              ...groups.map(
+                (group) => DropdownMenuItem<String>(
+                  value: group.id,
+                  child: Text(group.name),
+                ),
+              ),
+              DropdownMenuItem<String>(
+                value: _manageGroupsValue,
+                child: Text(context.l10n.createOrManageGroups),
+              ),
+            ],
+            onChanged: _handleGroupSelection,
+          ),
         );
       },
     );
@@ -189,8 +310,9 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       return;
     }
     setState(() {
-      _questions.add(_QuestionDraft());
+      _questions.add(_createQuestionDraft());
     });
+    _saveSpecificDraft();
   }
 
   void _removeQuestion(int index) {
@@ -201,6 +323,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       _questions[index].dispose();
       _questions.removeAt(index);
     });
+    _saveSpecificDraft();
   }
 
   void _reorderQuestions(int oldIndex, int newIndex) {
@@ -208,6 +331,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       final item = _questions.removeAt(oldIndex);
       _questions.insert(newIndex, item);
     });
+    _saveSpecificDraft();
   }
 
   void _addOption(_QuestionDraft question) {
@@ -221,8 +345,9 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       return;
     }
     setState(() {
-      question.optionControllers.add(TextEditingController());
+      question.addOption();
     });
+    _saveSpecificDraft();
   }
 
   void _removeOption(_QuestionDraft question, int index) {
@@ -230,6 +355,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       question.optionControllers[index].dispose();
       question.optionControllers.removeAt(index);
     });
+    _saveSpecificDraft();
   }
 
   void _reorderOptions(_QuestionDraft question, int oldIndex, int newIndex) {
@@ -237,6 +363,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       final item = question.optionControllers.removeAt(oldIndex);
       question.optionControllers.insert(newIndex, item);
     });
+    _saveSpecificDraft();
   }
 
   Future<void> _createSurvey({
@@ -247,7 +374,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     required int durationDays,
     required bool openUntilClosed,
   }) async {
-    final currentUser = authService.currentUser;
+    final currentUser = _auth.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
@@ -501,6 +628,8 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createSurvey,
       additionalTopFields: [_buildGroupSelector(), const SizedBox(height: 20)],
+      additionalDraftClearer: _clearSpecificDraft,
+      onResetAdditionalFields: _resetSpecificFields,
       additionalMiddleFields: [
         const SizedBox(height: 20),
         Text(
@@ -528,16 +657,42 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 }
 
 class _QuestionDraft {
-  _QuestionDraft()
-    : titleController = TextEditingController(),
-      optionControllers = [TextEditingController(), TextEditingController()];
+  _QuestionDraft({
+    required this.onChanged,
+    String title = '',
+    List<String>? options,
+  }) : titleController = TextEditingController(text: title),
+       optionControllers = _normalizedOptions(
+         options,
+       ).map((text) => TextEditingController(text: text)).toList() {
+    titleController.addListener(onChanged);
+    for (final controller in optionControllers) {
+      controller.addListener(onChanged);
+    }
+  }
 
+  final VoidCallback onChanged;
   final TextEditingController titleController;
   final List<TextEditingController> optionControllers;
 
+  static List<String> _normalizedOptions(List<String>? options) {
+    final normalized = List<String>.from(options ?? const <String>[]);
+    while (normalized.length < 2) {
+      normalized.add('');
+    }
+    return normalized;
+  }
+
+  void addOption() {
+    final controller = TextEditingController()..addListener(onChanged);
+    optionControllers.add(controller);
+  }
+
   void dispose() {
+    titleController.removeListener(onChanged);
     titleController.dispose();
     for (final controller in optionControllers) {
+      controller.removeListener(onChanged);
       controller.dispose();
     }
   }

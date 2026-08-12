@@ -668,7 +668,7 @@ class _BaseDetailPageState<T extends HomeItem>
 
                   final now = DateTime.now();
                   final isExpiredByTime = item.isExpiredAt(now);
-                  final isClosedByStatus = item.status == IConst.closed;
+                  final isClosedByStatus = item.status != IConst.active;
                   final isExpired = isClosedByStatus || isExpiredByTime;
                   return Padding(
                     padding: const EdgeInsets.all(16.0),

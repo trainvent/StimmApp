@@ -16,38 +16,101 @@ import 'package:stimmapp/core/data/services/file_output/file_format_router.dart'
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class FormExportPage extends StatefulWidget {
-  const FormExportPage({super.key});
+  const FormExportPage({super.key, this.auth});
+
+  final AuthService? auth;
 
   @override
   State<FormExportPage> createState() => _FormExportPageState();
 }
 
 class _FormExportPageState extends State<FormExportPage> {
+  AuthService get _auth => widget.auth ?? authService;
+
   Stream<List<Petition>> _expiredPetitionsByMe() {
-    return PetitionRepository.create()
-        .list(query: null, status: IConst.closed)
-        .map((items) {
-          final uid = authService.currentUser?.uid;
-          return items.where((p) => p.createdBy == uid).toList();
-        });
+    return PetitionRepository.create().list(query: null, status: null).map((
+      items,
+    ) {
+      final uid = _auth.currentUser?.uid;
+      return items
+          .where(
+            (p) =>
+                p.createdBy == uid &&
+                (p.status == IConst.closed || p.status == IConst.closing),
+          )
+          .toList();
+    });
   }
 
   Stream<List<Poll>> _expiredPollsByMe() {
-    return PollRepository.create().list(query: null, status: IConst.closed).map(
-      (items) {
-        final uid = authService.currentUser?.uid;
-        return items.where((p) => p.createdBy == uid).toList();
-      },
-    );
+    return PollRepository.create().list(query: null, status: null).map((items) {
+      final uid = _auth.currentUser?.uid;
+      return items
+          .where(
+            (p) =>
+                p.createdBy == uid &&
+                (p.status == IConst.closed || p.status == IConst.closing),
+          )
+          .toList();
+    });
   }
 
   Stream<List<Survey>> _expiredSurveysByMe() {
-    return SurveyRepository.create()
-        .list(query: null, status: IConst.closed)
-        .map((items) {
-          final uid = authService.currentUser?.uid;
-          return items.where((s) => s.createdBy == uid).toList();
-        });
+    return SurveyRepository.create().list(query: null, status: null).map((
+      items,
+    ) {
+      final uid = _auth.currentUser?.uid;
+      return items
+          .where(
+            (s) =>
+                s.createdBy == uid &&
+                (s.status == IConst.closed || s.status == IConst.closing),
+          )
+          .toList();
+    });
+  }
+
+  Future<void> _resumeForm(Future<void> Function() resume) async {
+    try {
+      await resume();
+      if (mounted) showSuccessSnackBar(context.l10n.formResumed);
+    } catch (error) {
+      if (mounted) showErrorSnackBar(error.toString());
+    }
+  }
+
+  String _finishedStatusLabel({
+    required String status,
+    required DateTime? scheduledCloseAt,
+    required DateTime? expiresAt,
+  }) {
+    if (status == IConst.closing && scheduledCloseAt != null) {
+      final date = DateFormat('yyyy-MM-dd HH:mm').format(scheduledCloseAt);
+      return context.l10n.closureFinalizesAt(date);
+    }
+    return expiresAt == null
+        ? context.l10n.closed
+        : DateFormat('yyyy-MM-dd').format(expiresAt);
+  }
+
+  Widget? _resumeButton({
+    required String status,
+    required DateTime? scheduledCloseAt,
+    required DateTime? expiresAt,
+    required VoidCallback onPressed,
+  }) {
+    final now = DateTime.now();
+    if (status != IConst.closing ||
+        scheduledCloseAt == null ||
+        !scheduledCloseAt.isAfter(now) ||
+        (expiresAt != null && !expiresAt.isAfter(now))) {
+      return null;
+    }
+    return IconButton(
+      tooltip: context.l10n.resumeForm,
+      icon: const Icon(Icons.play_circle_outline),
+      onPressed: onPressed,
+    );
   }
 
   Future<void> _handlePetitionTap(Petition petition) async {
@@ -377,9 +440,8 @@ class _FormExportPageState extends State<FormExportPage> {
       stream: _expiredPetitionsByMe().map(
         (list) => list
           ..sort(
-            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
-              a.expiresAt ?? a.createdAt,
-            ),
+            (a, b) => (b.scheduledCloseAt ?? b.expiresAt ?? b.createdAt)
+                .compareTo(a.scheduledCloseAt ?? a.expiresAt ?? a.createdAt),
           ),
       ),
       builder: (context, snap) {
@@ -398,9 +460,18 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(p.title),
               subtitle: Text(
-                p.expiresAt == null
-                    ? context.l10n.closed
-                    : DateFormat('yyyy-MM-dd').format(p.expiresAt!),
+                _finishedStatusLabel(
+                  status: p.status,
+                  scheduledCloseAt: p.scheduledCloseAt,
+                  expiresAt: p.expiresAt,
+                ),
+              ),
+              trailing: _resumeButton(
+                status: p.status,
+                scheduledCloseAt: p.scheduledCloseAt,
+                expiresAt: p.expiresAt,
+                onPressed: () =>
+                    _resumeForm(() => PetitionRepository.create().resume(p.id)),
               ),
               onTap: () => _handlePetitionTap(p),
             );
@@ -415,9 +486,8 @@ class _FormExportPageState extends State<FormExportPage> {
       stream: _expiredPollsByMe().map(
         (list) => list
           ..sort(
-            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
-              a.expiresAt ?? a.createdAt,
-            ),
+            (a, b) => (b.scheduledCloseAt ?? b.expiresAt ?? b.createdAt)
+                .compareTo(a.scheduledCloseAt ?? a.expiresAt ?? a.createdAt),
           ),
       ),
       builder: (context, snap) {
@@ -436,9 +506,18 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(p.title),
               subtitle: Text(
-                p.expiresAt == null
-                    ? context.l10n.closed
-                    : DateFormat('yyyy-MM-dd').format(p.expiresAt!),
+                _finishedStatusLabel(
+                  status: p.status,
+                  scheduledCloseAt: p.scheduledCloseAt,
+                  expiresAt: p.expiresAt,
+                ),
+              ),
+              trailing: _resumeButton(
+                status: p.status,
+                scheduledCloseAt: p.scheduledCloseAt,
+                expiresAt: p.expiresAt,
+                onPressed: () =>
+                    _resumeForm(() => PollRepository.create().resume(p.id)),
               ),
               onTap: () => _handlePollTap(p),
             );
@@ -453,9 +532,8 @@ class _FormExportPageState extends State<FormExportPage> {
       stream: _expiredSurveysByMe().map(
         (list) => list
           ..sort(
-            (a, b) => (b.expiresAt ?? b.createdAt).compareTo(
-              a.expiresAt ?? a.createdAt,
-            ),
+            (a, b) => (b.scheduledCloseAt ?? b.expiresAt ?? b.createdAt)
+                .compareTo(a.scheduledCloseAt ?? a.expiresAt ?? a.createdAt),
           ),
       ),
       builder: (context, snap) {
@@ -474,9 +552,18 @@ class _FormExportPageState extends State<FormExportPage> {
             return ListTile(
               title: Text(s.title),
               subtitle: Text(
-                s.expiresAt == null
-                    ? context.l10n.closed
-                    : DateFormat('yyyy-MM-dd').format(s.expiresAt!),
+                _finishedStatusLabel(
+                  status: s.status,
+                  scheduledCloseAt: s.scheduledCloseAt,
+                  expiresAt: s.expiresAt,
+                ),
+              ),
+              trailing: _resumeButton(
+                status: s.status,
+                scheduledCloseAt: s.scheduledCloseAt,
+                expiresAt: s.expiresAt,
+                onPressed: () =>
+                    _resumeForm(() => SurveyRepository.create().resume(s.id)),
               ),
               onTap: () => _handleSurveyTap(s),
             );

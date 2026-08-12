@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -29,7 +30,7 @@ class SurveyRepository {
   Stream<List<Survey>> list({
     String? query,
     int? limit,
-    required String status,
+    required String? status,
   }) {
     final q = (query ?? '').trim().toLowerCase();
     final queryRef = _col();
@@ -50,7 +51,9 @@ class SurveyRepository {
     }
 
     return stream.map((surveys) {
-      return surveys.where((survey) => survey.status == status).toList();
+      return status == null
+          ? surveys
+          : surveys.where((survey) => survey.status == status).toList();
     });
   }
 
@@ -211,8 +214,34 @@ class SurveyRepository {
     await batch.commit();
   }
 
-  Future<void> close(String id) async {
-    await _col().doc(id).update({'status': 'closed'});
+  Future<void> scheduleClose(String id) async {
+    await _col().doc(id).update({
+      'status': IConst.closing,
+      'scheduledCloseAt': Timestamp.fromDate(
+        DateTime.now().add(AppLimits.formClosureGracePeriod),
+      ),
+    });
+  }
+
+  Future<void> resume(String id) async {
+    final ref = _fs.instance.collection(DatabaseCollections.surveys).doc(id);
+    await _fs.instance.runTransaction((transaction) async {
+      final snap = await transaction.get(ref);
+      final data = snap.data();
+      final scheduledCloseAt = data?['scheduledCloseAt'] as Timestamp?;
+      final expiresAt = data?['expiresAt'] as Timestamp?;
+      final now = DateTime.now();
+      if (data?['status'] != IConst.closing ||
+          scheduledCloseAt == null ||
+          !scheduledCloseAt.toDate().isAfter(now) ||
+          (expiresAt != null && !expiresAt.toDate().isAfter(now))) {
+        throw StateError('form_resume_window_expired');
+      }
+      transaction.update(ref, {
+        'status': IConst.active,
+        'scheduledCloseAt': FieldValue.delete(),
+      });
+    });
   }
 
   Survey _normalizeSurvey(Survey survey) {
