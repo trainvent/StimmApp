@@ -63,11 +63,7 @@ export default function HomePage() {
             className={`page-background-scene${isSplineLoaded ? ' is-loaded' : ''}`}
             scene="https://prod.spline.design/wqR9pdHZ2Tj-IT5l/scene.splinecode"
             onLoad={(spline) => {
-              const camera = spline.findObjectByName('Camera');
-
-              if (camera) {
-                camera.state = 'Base State';
-              }
+              setIsSplineLoaded(true);
             }}
           />
         )}
