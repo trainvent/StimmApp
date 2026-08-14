@@ -68,8 +68,6 @@ export default function HomePage() {
               if (camera) {
                 camera.state = 'Base';
               }
-
-              setIsSplineLoaded(true);
             }}
           />
         )}
