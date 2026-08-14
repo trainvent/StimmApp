@@ -66,7 +66,7 @@ export default function HomePage() {
               const camera = spline.findObjectByName('Camera');
 
               if (camera) {
-                camera.state = 'Base';
+                camera.state = 'Base State';
               }
             }}
           />
