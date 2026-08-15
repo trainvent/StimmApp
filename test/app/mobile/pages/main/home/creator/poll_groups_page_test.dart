@@ -145,7 +145,7 @@ void main() {
     inviteLinkEnabled: true,
   );
 
-  group('GroupEditorPage', () {
+  group('Group editor and invitation pages', () {
     testWidgets('defaults to protected access and shows access description', (
       tester,
     ) async {
