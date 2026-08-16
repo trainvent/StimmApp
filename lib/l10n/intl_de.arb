@@ -757,7 +757,7 @@
 	"adminElectionVotingClosed": "Die Wahl ist beendet. Das Ergebnis wird in Kürze übernommen.",
 	"noActiveAdminElection": "Es gibt keine aktive Admin-Wahl.",
 	"noAdminElectionCandidates": "Es gibt keine wählbaren Kandidaten.",
-	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ verlassen?",
+	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ wirklich verlassen?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
 			"groupName": {

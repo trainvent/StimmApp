@@ -277,24 +277,20 @@ class MemberGroupsPage extends StatelessWidget {
                     child: AppSlidable(
                       key: ValueKey('member_group_${group.id}'),
                       startAction: AppSlidableAction(
-                        onPressed: () => _openDashboard(context, group),
                         icon: Icons.dashboard_outlined,
                         label: context.l10n.openGroupDashboard,
                       ),
-                      confirmStartDismiss: () async {
-                        await _openDashboard(context, group);
-                        return false;
-                      },
+                      onStartSwipe: () => _openDashboard(context, group),
                       endAction: AppSlidableAction(
-                        onPressed: () => _leaveGroup(context, group),
                         icon: Icons.logout,
                         label: context.l10n.leaveGroup,
                         style: AppSlidableActionStyle.secondary,
                       ),
+                      onEndSwipe: () => _leaveGroup(context, group),
                       child: PollGroupSummaryCard(
                         group: group,
                         embedded: true,
-                        onTap: () => _openDashboard(context, group),
+                        onTap: () => showPollGroupInviteQrCode(context, group),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

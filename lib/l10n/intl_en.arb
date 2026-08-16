@@ -753,7 +753,7 @@
 	"adminElectionVotingClosed": "Voting is closed. The result will be applied shortly.",
 	"noActiveAdminElection": "There is no active admin election.",
 	"noAdminElectionCandidates": "There are no eligible candidates.",
-	"doYouWantToLeaveGroup": "Do you want to leave \"{groupName}\"?",
+	"doYouWantToLeaveGroup": "Do you really want to leave \"{groupName}\"?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
 			"groupName": {

@@ -1954,7 +1954,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String doYouWantToLeaveGroup(String groupName) {
-    return 'Do you want to leave \"$groupName\"?';
+    return 'Do you really want to leave \"$groupName\"?';
   }
 
   @override

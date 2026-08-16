@@ -1976,7 +1976,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String doYouWantToLeaveGroup(String groupName) {
-    return 'Möchtest du „$groupName“ verlassen?';
+    return 'Möchtest du „$groupName“ wirklich verlassen?';
   }
 
   @override

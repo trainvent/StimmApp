@@ -3677,7 +3677,7 @@ abstract class AppLocalizations {
   /// No description provided for @doYouWantToLeaveGroup.
   ///
   /// In en, this message translates to:
-  /// **'Do you want to leave \"{groupName}\"?'**
+  /// **'Do you really want to leave \"{groupName}\"?'**
   String doYouWantToLeaveGroup(String groupName);
 
   /// No description provided for @youLeftTheGroup.
