@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/widgets/choice_option_list_editor.dart';
-import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
+import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
@@ -187,7 +187,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 
   Future<void> _openManageGroups() async {
     await Navigator.of(context).push<void>(
-      MaterialPageRoute(builder: (context) => const MemberGroupsPage()),
+      MaterialPageRoute(builder: (context) => const GroupsOverviewPage()),
     );
   }
 

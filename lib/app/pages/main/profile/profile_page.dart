@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/pages/main/admin/admin_dashboard_page.dart';
-import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
+import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/blocked_users_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/inbox_page.dart';
@@ -627,7 +627,7 @@ class ProfilePage extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MemberGroupsPage(),
+                          builder: (context) => const GroupsOverviewPage(),
                         ),
                       );
                     },

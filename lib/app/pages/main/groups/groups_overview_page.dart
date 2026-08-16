@@ -32,8 +32,8 @@ bool groupCreationRequiresPro({
   return createdCount >= 1 && !hasProAccess;
 }
 
-class MemberGroupsPage extends StatelessWidget {
-  const MemberGroupsPage({super.key});
+class GroupsOverviewPage extends StatelessWidget {
+  const GroupsOverviewPage({super.key});
 
   Future<void> _showAdditionalGroupsProDialog(BuildContext context) async {
     final openPaywall = await showDialog<bool>(
@@ -149,7 +149,7 @@ class MemberGroupsPage extends StatelessWidget {
     );
     if (kDebugMode) {
       debugPrint(
-        'MemberGroupsPage._openCreateGroup: uid=$uid '
+        'GroupsOverviewPage._openCreateGroup: uid=$uid '
         'createdCount=$createdCount profileIsPro=${user?.isPro} '
         'profileForcedPro=${UserProfile.shouldForcePro(user?.email)} '
         'authForcedPro=${UserProfile.shouldForcePro(authenticatedUser.email)} '
@@ -162,7 +162,7 @@ class MemberGroupsPage extends StatelessWidget {
     if (requiresPro) {
       if (kDebugMode) {
         debugPrint(
-          'MemberGroupsPage._openCreateGroup: showing Pro explanation',
+          'GroupsOverviewPage._openCreateGroup: showing Pro explanation',
         );
       }
       await _showAdditionalGroupsProDialog(context);
@@ -259,7 +259,6 @@ class MemberGroupsPage extends StatelessWidget {
                 builder: (context, memberSnapshot) {
                   final member = memberSnapshot.data;
                   final isAdmin = member?.role == PollGroupRole.admin;
-                  final inviteLink = buildPollGroupInviteLink(group);
                   final roleLabel = isCreator
                       ? context.l10n.creatorRoleLabel
                       : (isAdmin
@@ -291,26 +290,7 @@ class MemberGroupsPage extends StatelessWidget {
                         group: group,
                         embedded: true,
                         onTap: () => showPollGroupInviteQrCode(context, group),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Chip(label: Text(roleLabel)),
-                            if (inviteLink != null) ...[
-                              IconButton(
-                                tooltip: context.l10n.copyInviteLinkTooltip,
-                                onPressed: () =>
-                                    copyPollGroupInviteLink(context, group),
-                                icon: const Icon(Icons.copy_outlined),
-                              ),
-                              IconButton(
-                                tooltip: context.l10n.displayQrCode,
-                                onPressed: () =>
-                                    showPollGroupInviteQrCode(context, group),
-                                icon: const Icon(Icons.qr_code_2),
-                              ),
-                            ],
-                          ],
-                        ),
+                        trailing: Chip(label: Text(roleLabel)),
                         summary: context.l10n.groupAccessSummary(
                           group.accessMode.localizedTitle(context),
                           group.memberIds.length,
