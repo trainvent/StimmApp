@@ -323,8 +323,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "cannotDeleteSurveyHasResponses": MessageLookupByLibrary.simpleMessage(
       "Kann nicht gelöscht werden: Fragebogen hat Antworten.",
     ),
-    "cannotRemoveGroupCreator": MessageLookupByLibrary.simpleMessage(
-      "Der Ersteller der Gruppe kann nicht entfernt werden.",
+    "cannotRemoveGroupOwner": MessageLookupByLibrary.simpleMessage(
+      "Die Gruppenleitung kann nicht entfernt werden.",
     ),
     "castAdminElectionVote": MessageLookupByLibrary.simpleMessage(
       "Stimme abgeben",
@@ -465,7 +465,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Gruppe wird erstellt …",
     ),
     "creator": MessageLookupByLibrary.simpleMessage("Ersteller"),
-    "creatorRoleLabel": MessageLookupByLibrary.simpleMessage("Ersteller"),
     "csvColumnFormat": MessageLookupByLibrary.simpleMessage(
       "<E-Mail>,<Spitzname>,<Rolle>",
     ),
@@ -790,9 +789,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupAdminFallback": MessageLookupByLibrary.simpleMessage("Gruppenadmin"),
     "groupContentTitle": MessageLookupByLibrary.simpleMessage("Gruppeninhalte"),
     "groupCreated": MessageLookupByLibrary.simpleMessage("Gruppe erstellt."),
-    "groupCreatorMustRemainAdmin": MessageLookupByLibrary.simpleMessage(
-      "Der Ersteller der Gruppe muss Administrator bleiben.",
-    ),
     "groupDeleted": MessageLookupByLibrary.simpleMessage("Gruppe gelöscht."),
     "groupDetailsTemporarilyUnavailable": MessageLookupByLibrary.simpleMessage(
       "Gruppendetails sind vorübergehend nicht verfügbar.",
@@ -830,6 +826,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupOnly": MessageLookupByLibrary.simpleMessage("Nur Gruppe"),
     "groupOnlyUnavailable": MessageLookupByLibrary.simpleMessage(
       "Dieses Formular ist nur für Mitglieder der Gruppe sichtbar.",
+    ),
+    "groupOwnerMustRemainAdmin": MessageLookupByLibrary.simpleMessage(
+      "Die Gruppenleitung muss Administrator bleiben.",
     ),
     "groupUpdated": MessageLookupByLibrary.simpleMessage(
       "Gruppe aktualisiert.",
@@ -1123,6 +1122,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "outsideYourZone": MessageLookupByLibrary.simpleMessage(
       "Außerhalb deines Bereichs",
     ),
+    "ownerRoleLabel": MessageLookupByLibrary.simpleMessage("Leitung"),
     "participants": MessageLookupByLibrary.simpleMessage("Teilnehmer"),
     "participantsList": MessageLookupByLibrary.simpleMessage("Teilnehmerliste"),
     "password": MessageLookupByLibrary.simpleMessage("Passwort"),

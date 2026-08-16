@@ -4916,14 +4916,9 @@ class S {
     );
   }
 
-  /// `Creator`
-  String get creatorRoleLabel {
-    return Intl.message(
-      'Creator',
-      name: 'creatorRoleLabel',
-      desc: '',
-      args: [],
-    );
+  /// `Owner`
+  String get ownerRoleLabel {
+    return Intl.message('Owner', name: 'ownerRoleLabel', desc: '', args: []);
   }
 
   /// `Admin`
@@ -6251,11 +6246,11 @@ class S {
     );
   }
 
-  /// `The group creator must remain an admin.`
-  String get groupCreatorMustRemainAdmin {
+  /// `The group owner must remain an admin.`
+  String get groupOwnerMustRemainAdmin {
     return Intl.message(
-      'The group creator must remain an admin.',
-      name: 'groupCreatorMustRemainAdmin',
+      'The group owner must remain an admin.',
+      name: 'groupOwnerMustRemainAdmin',
       desc: '',
       args: [],
     );
@@ -6682,11 +6677,11 @@ class S {
     );
   }
 
-  /// `The group creator cannot be removed.`
-  String get cannotRemoveGroupCreator {
+  /// `The group owner cannot be removed.`
+  String get cannotRemoveGroupOwner {
     return Intl.message(
-      'The group creator cannot be removed.',
-      name: 'cannotRemoveGroupCreator',
+      'The group owner cannot be removed.',
+      name: 'cannotRemoveGroupOwner',
       desc: '',
       args: [],
     );

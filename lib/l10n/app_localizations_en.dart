@@ -1878,7 +1878,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get creatorRoleLabel => 'Creator';
+  String get ownerRoleLabel => 'Owner';
 
   @override
   String get adminRoleLabel => 'Admin';
@@ -2368,8 +2368,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberUpdated => 'Member updated.';
 
   @override
-  String get groupCreatorMustRemainAdmin =>
-      'The group creator must remain an admin.';
+  String get groupOwnerMustRemainAdmin =>
+      'The group owner must remain an admin.';
 
   @override
   String selectedGroupMembersCount(int count) {
@@ -2551,7 +2551,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberRemoved => 'Member removed from the group.';
 
   @override
-  String get cannotRemoveGroupCreator => 'The group creator cannot be removed.';
+  String get cannotRemoveGroupOwner => 'The group owner cannot be removed.';
 
   @override
   String get youCannotRemoveYourselfHere =>

@@ -260,7 +260,7 @@ class GroupsOverviewPage extends StatelessWidget {
                   final member = memberSnapshot.data;
                   final isAdmin = member?.role == PollGroupRole.admin;
                   final roleLabel = isCreator
-                      ? context.l10n.creatorRoleLabel
+                      ? context.l10n.ownerRoleLabel
                       : (isAdmin
                             ? context.l10n.adminRoleLabel
                             : context.l10n.memberRoleLabel);

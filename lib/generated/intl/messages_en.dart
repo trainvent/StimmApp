@@ -315,8 +315,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "cannotDeleteSurveyHasResponses": MessageLookupByLibrary.simpleMessage(
       "Cannot delete: Survey has responses.",
     ),
-    "cannotRemoveGroupCreator": MessageLookupByLibrary.simpleMessage(
-      "The group creator cannot be removed.",
+    "cannotRemoveGroupOwner": MessageLookupByLibrary.simpleMessage(
+      "The group owner cannot be removed.",
     ),
     "castAdminElectionVote": MessageLookupByLibrary.simpleMessage("Cast vote"),
     "changeAdminElectionVote": MessageLookupByLibrary.simpleMessage(
@@ -437,7 +437,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "createdSurvey": MessageLookupByLibrary.simpleMessage("Survey created"),
     "creatingGroup": MessageLookupByLibrary.simpleMessage("Creating..."),
     "creator": MessageLookupByLibrary.simpleMessage("Creator"),
-    "creatorRoleLabel": MessageLookupByLibrary.simpleMessage("Creator"),
     "csvColumnFormat": MessageLookupByLibrary.simpleMessage(
       "<email>,<nickname>,<role>",
     ),
@@ -744,9 +743,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupAdminFallback": MessageLookupByLibrary.simpleMessage("Group admin"),
     "groupContentTitle": MessageLookupByLibrary.simpleMessage("Group content"),
     "groupCreated": MessageLookupByLibrary.simpleMessage("Group created."),
-    "groupCreatorMustRemainAdmin": MessageLookupByLibrary.simpleMessage(
-      "The group creator must remain an admin.",
-    ),
     "groupDeleted": MessageLookupByLibrary.simpleMessage("Group deleted."),
     "groupDetailsTemporarilyUnavailable": MessageLookupByLibrary.simpleMessage(
       "Group details are temporarily unavailable.",
@@ -784,6 +780,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "groupOnly": MessageLookupByLibrary.simpleMessage("Group-only"),
     "groupOnlyUnavailable": MessageLookupByLibrary.simpleMessage(
       "This form is only visible to members of its group.",
+    ),
+    "groupOwnerMustRemainAdmin": MessageLookupByLibrary.simpleMessage(
+      "The group owner must remain an admin.",
     ),
     "groupUpdated": MessageLookupByLibrary.simpleMessage("Group updated."),
     "groupsLabel": MessageLookupByLibrary.simpleMessage("Groups"),
@@ -1059,6 +1058,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "outsideYourZone": MessageLookupByLibrary.simpleMessage(
       "Outside your zone",
     ),
+    "ownerRoleLabel": MessageLookupByLibrary.simpleMessage("Owner"),
     "participants": MessageLookupByLibrary.simpleMessage("Participants"),
     "participantsList": MessageLookupByLibrary.simpleMessage(
       "Participants List",

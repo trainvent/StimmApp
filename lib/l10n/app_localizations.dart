@@ -3542,11 +3542,11 @@ abstract class AppLocalizations {
   /// **'Expires {date}'**
   String expiresOnDate(String date);
 
-  /// No description provided for @creatorRoleLabel.
+  /// No description provided for @ownerRoleLabel.
   ///
   /// In en, this message translates to:
-  /// **'Creator'**
-  String get creatorRoleLabel;
+  /// **'Owner'**
+  String get ownerRoleLabel;
 
   /// No description provided for @adminRoleLabel.
   ///
@@ -4400,11 +4400,11 @@ abstract class AppLocalizations {
   /// **'Member updated.'**
   String get groupMemberUpdated;
 
-  /// No description provided for @groupCreatorMustRemainAdmin.
+  /// No description provided for @groupOwnerMustRemainAdmin.
   ///
   /// In en, this message translates to:
-  /// **'The group creator must remain an admin.'**
-  String get groupCreatorMustRemainAdmin;
+  /// **'The group owner must remain an admin.'**
+  String get groupOwnerMustRemainAdmin;
 
   /// No description provided for @selectedGroupMembersCount.
   ///
@@ -4658,11 +4658,11 @@ abstract class AppLocalizations {
   /// **'Member removed from the group.'**
   String get groupMemberRemoved;
 
-  /// No description provided for @cannotRemoveGroupCreator.
+  /// No description provided for @cannotRemoveGroupOwner.
   ///
   /// In en, this message translates to:
-  /// **'The group creator cannot be removed.'**
-  String get cannotRemoveGroupCreator;
+  /// **'The group owner cannot be removed.'**
+  String get cannotRemoveGroupOwner;
 
   /// No description provided for @youCannotRemoveYourselfHere.
   ///

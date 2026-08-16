@@ -76,7 +76,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   void _handleMemberLongPress(PollGroupMember member, UserProfile? profile) {
     final currentUid = _auth.currentUser?.uid;
     if (member.uid == widget.group.createdBy) {
-      showErrorSnackBar(context.l10n.cannotRemoveGroupCreator);
+      showErrorSnackBar(context.l10n.cannotRemoveGroupOwner);
       return;
     }
     if (member.uid == currentUid) {
@@ -202,7 +202,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    context.l10n.groupCreatorMustRemainAdmin,
+                    context.l10n.groupOwnerMustRemainAdmin,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -383,7 +383,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                             : Chip(
                                 label: Text(
                                   isCreator
-                                      ? context.l10n.creatorRoleLabel
+                                      ? context.l10n.ownerRoleLabel
                                       : _roleLabel(context, member.role),
                                 ),
                               ),

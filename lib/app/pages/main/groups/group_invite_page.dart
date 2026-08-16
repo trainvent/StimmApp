@@ -729,7 +729,18 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
                 FilledButton.icon(
                   key: const Key('send_group_invitations'),
                   onPressed: _isSending ? null : _sendInvitations,
-                  icon: const Icon(Icons.send_outlined),
+                  icon: _isSending
+                      ? const SizedBox.square(
+                          dimension: 18,
+                          child: Center(
+                            child: TriangleLoadingIndicator(
+                              size: 18,
+                              strokeWidth: 2,
+                              showFill: false,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.send_outlined),
                   label: Text(
                     _isSending
                         ? context.l10n.sendingInvitations
