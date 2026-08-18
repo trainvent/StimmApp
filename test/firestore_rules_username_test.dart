@@ -7,8 +7,8 @@ void main() {
   test('Firestore username minimum mirrors AppLimits', () {
     final rules = File('firestore.rules').readAsStringSync();
 
-    expect(AppLimits.minUsernameLength, 4);
-    expect(rules, contains('request.resource.data.displayName.size() >= 4'));
-    expect(rules, contains('data.displayName.size() >= 4'));
+    expect(AppLimits.minUsernameLength, 6);
+    expect(rules, contains('request.resource.data.displayName.size() >= 6'));
+    expect(rules, contains('data.displayName.size() >= 6'));
   });
 }

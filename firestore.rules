@@ -50,7 +50,7 @@ service cloud.firestore {
     // Must mirror AppLimits.minUsernameLength and maxDisplayNameLength.
     function hasValidDisplayName(data) {
       return hasDisplayName(data) &&
-             data.displayName.size() >= 4 &&
+             data.displayName.size() >= 6 &&
              data.displayName.size() <= 30;
     }
 
@@ -246,13 +246,13 @@ service cloud.firestore {
       allow create: if isAuthenticated() &&
                     request.resource.data.uid == request.auth.uid &&
                     request.resource.data.displayName is string &&
-                    request.resource.data.displayName.size() >= 4 &&
+                    request.resource.data.displayName.size() >= 6 &&
                     request.resource.data.displayName.size() <= 30;
       allow update: if isAuthenticated() &&
                     resource.data.uid == request.auth.uid &&
                     request.resource.data.uid == request.auth.uid &&
                     request.resource.data.displayName is string &&
-                    request.resource.data.displayName.size() >= 4 &&
+                    request.resource.data.displayName.size() >= 6 &&
                     request.resource.data.displayName.size() <= 30;
       allow delete: if isAdmin() ||
                     (isAuthenticated() &&

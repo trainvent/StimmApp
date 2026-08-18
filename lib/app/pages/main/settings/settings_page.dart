@@ -9,7 +9,6 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
-import 'package:stimmapp/core/theme/app_text_styles.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
@@ -325,53 +324,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         return AboutPage();
                       },
                     ),
-                  );
-                },
-              ),
-              ListTile(
-                title: Text(context.l10n.licenses),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text(S.of(context).licenses),
-                        content: Text(
-                          S
-                              .of(context)
-                              .publishedUnderTheGnuGeneralPublicLicenseV30,
-                          style: AppTextStyles.m,
-                        ),
-                        actions: [
-                          FilledButton(
-                            onPressed: () async {
-                              if (!context.mounted) return;
-                              showLicensePage(
-                                context: context,
-                                applicationName: context.localizedAppName,
-                                applicationVersion:
-                                    '1.0.0', // Or fetch dynamically
-                                applicationIcon: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    "assets/images/LeLogo.png",
-                                    width: 48,
-                                    height: 48,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text(context.l10n.viewLicenses),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(context.l10n.close),
-                          ),
-                        ],
-                      );
-                    },
                   );
                 },
               ),
