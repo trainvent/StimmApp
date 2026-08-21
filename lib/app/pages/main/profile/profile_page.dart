@@ -275,12 +275,6 @@ class ProfilePage extends ConsumerWidget {
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
-        if (settingsRouteIsBelow || settingsPageBuilder != null)
-          IconButton(
-            onPressed: () => _openSettings(context),
-            icon: const Icon(Icons.settings),
-            tooltip: context.l10n.settings,
-          ),
         StreamBuilder<List<PollGroupAccessNotification>>(
           stream: currentUser == null
               ? null
@@ -307,6 +301,12 @@ class ProfilePage extends ConsumerWidget {
             );
           },
         ),
+        if (settingsRouteIsBelow || settingsPageBuilder != null)
+          IconButton(
+            onPressed: () => _openSettings(context),
+            icon: const Icon(Icons.settings),
+            tooltip: context.l10n.settings,
+          ),
       ],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
