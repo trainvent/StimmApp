@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -280,6 +281,12 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                 tooltip: context.l10n.remove,
                 onPressed: _removeSelectedMembers,
                 icon: const Icon(Icons.delete_outline),
+              )
+            else
+              InfoDialogButton(
+                key: const Key('group_members_info'),
+                title: context.l10n.manageGroupMembersTitle,
+                content: Text(context.l10n.manageGroupMembersDescription),
               ),
           ],
         ),
@@ -301,20 +308,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
 
             return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: members.length + 1,
+              itemCount: members.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 20),
-                    child: Text(
-                      context.l10n.manageGroupMembersDescription,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  );
-                }
-
-                final member = members[index - 1];
+                final member = members[index];
                 return FutureBuilder<UserProfile?>(
                   future: _profileFutures.putIfAbsent(
                     member.uid,

@@ -1,9 +1,9 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
-import 'package:stimmapp/app/widgets/teaching_lemm_image.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/country_union_memberships.dart';
@@ -323,98 +323,47 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     }
   }
 
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Stack(
-          children: [
-            AlertDialog(
-              title: Text(widget.title), // Use page title as dialog title
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: widget.tutorialSteps.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final step = widget.tutorialSteps[index];
-                          if (step is String) {
-                            // Petition style (simple bullets)
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  '• ',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    step,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            // Poll style (Title + Description object)
-                            // Assuming dynamic access or we define a common interface/type
-                            // For now, let's assume it has title and description properties
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    step.title,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    step.description,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                    ],
+  Widget _buildTutorialContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < widget.tutorialSteps.length; index++) ...[
+          if (index > 0) const SizedBox(height: 8),
+          if (widget.tutorialSteps[index] is String)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    widget.tutorialSteps[index] as String,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(context.l10n.close),
-                ),
               ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.tutorialSteps[index].title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.tutorialSteps[index].description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: IgnorePointer(child: const TeachingLemmImage()),
-            ),
-          ],
-        );
-      },
+        ],
+        const SizedBox(height: 16),
+      ],
     );
   }
 
@@ -669,9 +618,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: _showInfoDialog,
+          InfoDialogButton(
+            title: widget.title,
+            content: _buildTutorialContent(),
+            cornerImagePath: true,
           ),
         ],
       ),
