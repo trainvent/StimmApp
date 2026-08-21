@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,12 +24,10 @@ class ChangeProfilePicturePage extends ConsumerStatefulWidget {
 class _ChangeProfilePicturePageState
     extends ConsumerState<ChangeProfilePicturePage> {
   XFile? _imageFile;
+  bool _removeExisting = false;
   bool _uploading = false;
   double _progress = 0.0;
   final ImagePicker _picker = ImagePicker();
-
-  // subscription so we can cancel listening when disposed
-  StreamSubscription<TaskSnapshot>? _uploadSub;
 
   Future<void> _pickImage(ImageSource source) async {
     final picked = await _picker.pickImage(
@@ -41,11 +37,17 @@ class _ChangeProfilePicturePageState
       imageQuality: 85,
     );
     if (picked == null) return;
-    setState(() => _imageFile = picked);
+    setState(() {
+      _imageFile = picked;
+      _removeExisting = false;
+    });
   }
 
-  Future<void> _removeImage() async {
-    setState(() => _imageFile = null);
+  void _removeImage({required bool hasCurrentImage}) {
+    setState(() {
+      _imageFile = null;
+      _removeExisting = hasCurrentImage;
+    });
   }
 
   Future<void> _uploadAndSave() async {
@@ -59,7 +61,7 @@ class _ChangeProfilePicturePageState
       showErrorSnackBar('Profile pictures are disabled in dev mode');
       return;
     }
-    if (_imageFile == null) {
+    if (_imageFile == null && !_removeExisting) {
       showErrorSnackBar(context.l10n.noImageSelected);
       return;
     }
@@ -78,6 +80,22 @@ class _ChangeProfilePicturePageState
     });
 
     try {
+      if (_removeExisting) {
+        await ProfilePictureService.instance.deleteProfilePicture(uid);
+        await ProfilePictureService.instance.setProfileUrl(uid, null);
+        try {
+          await user.updatePhotoURL(null);
+          await user.reload();
+        } catch (e) {
+          debugPrint('[ChangeProfilePicture] error clearing user photoURL: $e');
+        }
+        ref.read(profilePictureUrlProvider.notifier).clear();
+        if (!mounted) return;
+        showSuccessSnackBar(context.l10n.profilePictureUpdated);
+        Navigator.of(context).pop();
+        return;
+      }
+
       final url = await ProfilePictureService.instance.uploadProfilePicture(
         uid,
         _imageFile!,
@@ -113,13 +131,6 @@ class _ChangeProfilePicturePageState
   }
 
   @override
-  void dispose() {
-    _uploadSub?.cancel();
-    _uploadSub = null;
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final currentUrl =
         ref.watch(profilePictureUrlProvider) ??
@@ -132,7 +143,7 @@ class _ChangeProfilePicturePageState
       } else {
         preview = Image.file(File(_imageFile!.path), fit: BoxFit.cover);
       }
-    } else if (currentUrl != null) {
+    } else if (currentUrl != null && !_removeExisting) {
       preview = Image.network(
         currentUrl,
         fit: BoxFit.cover,
@@ -147,28 +158,35 @@ class _ChangeProfilePicturePageState
       );
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.profile)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Center(
-              child: Stack(
-                alignment: Alignment.center,
+      appBar: AppBar(title: Text(context.l10n.changeProfilePicture)),
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 440),
+              child: Column(
                 children: [
-                  Hero(
-                    tag: 'profile_picture',
-                    child: CircleAvatar(
-                      radius: 64,
-                      backgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      child: ClipOval(
-                        child: SizedBox(
-                          width: 128,
-                          height: 128,
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Hero(
+                        tag: 'profile_picture',
+                        child: Container(
+                          width: 176,
+                          height: 176,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colorScheme.surfaceContainerHighest,
+                            border: Border.all(
+                              color: colorScheme.outlineVariant,
+                            ),
+                          ),
+                          clipBehavior: Clip.antiAlias,
                           child:
                               preview ??
                               Center(
@@ -183,63 +201,106 @@ class _ChangeProfilePicturePageState
                               ),
                         ),
                       ),
-                    ),
+                      if (_uploading)
+                        SizedBox.square(
+                          dimension: 188,
+                          child: CircularProgressIndicator(
+                            value: _progress.clamp(0.0, 1.0),
+                            strokeWidth: 5,
+                            strokeCap: StrokeCap.round,
+                            color: colorScheme.primary,
+                            backgroundColor: colorScheme.primary.withValues(
+                              alpha: 0.16,
+                            ),
+                            semanticsLabel:
+                                context.l10n.uploadingProfilePicture,
+                            semanticsValue: '${(_progress * 100).round()}%',
+                          ),
+                        ),
+                    ],
                   ),
-                  if (_uploading)
-                    SizedBox.square(
-                      dimension: 140,
-                      child: CircularProgressIndicator(
-                        value: _progress.clamp(0.0, 1.0),
-                        strokeWidth: 5,
-                        strokeCap: StrokeCap.round,
-                        color: Theme.of(context).colorScheme.primary,
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.16),
-                        semanticsLabel: context.l10n.uploadingProfilePicture,
-                        semanticsValue: '${(_progress * 100).round()}%',
+                  const SizedBox(height: 36),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    elevation: 0,
+                    color: colorScheme.surfaceContainerLow,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _uploading
+                                ? null
+                                : () => _pickImage(ImageSource.gallery),
+                            icon: const Icon(Icons.photo_library_outlined),
+                            label: Text(context.l10n.selectFromGallery),
+                          ),
+                          if (!kIsWeb) ...[
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: _uploading
+                                  ? null
+                                  : () => _pickImage(ImageSource.camera),
+                              icon: const Icon(Icons.camera_alt_outlined),
+                              label: Text(context.l10n.selectFromCamera),
+                            ),
+                          ],
+                          if (!_removeExisting &&
+                              (_imageFile != null || currentUrl != null)) ...[
+                            const SizedBox(height: 8),
+                            TextButton.icon(
+                              onPressed: _uploading
+                                  ? null
+                                  : () => _removeImage(
+                                      hasCurrentImage: currentUrl != null,
+                                    ),
+                              icon: const Icon(Icons.delete_outline),
+                              label: Text(context.l10n.remove),
+                              style: TextButton.styleFrom(
+                                foregroundColor: colorScheme.error,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
+                  ),
+                  if (_imageFile != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      context.l10n.imagePreviewDescription,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.descriptionText.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _uploading
-                      ? null
-                      : () => _pickImage(ImageSource.gallery),
-                  icon: const Icon(Icons.photo),
-                  label: Text(context.l10n.selectFromGallery),
-                ),
-                if (!kIsWeb)
-                  ElevatedButton.icon(
-                    onPressed: _uploading
-                        ? null
-                        : () => _pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt),
-                    label: Text(context.l10n.selectFromCamera),
-                  ),
-                TextButton(
-                  onPressed: _uploading ? null : _removeImage,
-                  child: Text(context.l10n.remove),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: _uploading ? null : _uploadAndSave,
-              child: Text(context.l10n.confirm),
-            ),
-            const SizedBox(height: 12),
-            if (_imageFile != null)
-              Text(
-                context.l10n.imagePreviewDescription,
-                style: AppTextStyles.m.copyWith(color: Colors.grey),
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: FilledButton.icon(
+                onPressed:
+                    _uploading || (_imageFile == null && !_removeExisting)
+                    ? null
+                    : _uploadAndSave,
+                icon: const Icon(Icons.check),
+                label: Text(context.l10n.save),
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );

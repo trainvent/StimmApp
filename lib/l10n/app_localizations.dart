@@ -1862,6 +1862,12 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profile;
 
+  /// No description provided for @changeProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Change profile picture'**
+  String get changeProfilePicture;
+
   /// No description provided for @profilePictureUpdated.
   ///
   /// In en, this message translates to:

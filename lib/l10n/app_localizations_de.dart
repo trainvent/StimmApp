@@ -966,6 +966,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profile => 'Profil';
 
   @override
+  String get changeProfilePicture => 'Profilbild ändern';
+
+  @override
   String get profilePictureUpdated => 'Profilbild aktualisiert';
 
   @override

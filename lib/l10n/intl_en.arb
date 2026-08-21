@@ -363,6 +363,7 @@
 	"processId": "Process ID",
 	"products": "Products",
 	"profile": "Profile",
+	"changeProfilePicture": "Change profile picture",
 	"profilePictureUpdated": "Profile picture updated",
 	"uploadingProfilePicture": "Uploading profile picture",
 	"purchaseCancelled": "Purchase cancelled.",
