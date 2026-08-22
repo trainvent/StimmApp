@@ -42,6 +42,10 @@
 		],
 		"rewrites": [
 			{
+				"source": "/group-invite",
+				"function": "sharePage"
+			},
+			{
 				"source": "/petition/**",
 				"function": "sharePage"
 			},

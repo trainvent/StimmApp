@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
@@ -67,7 +68,9 @@ class Survey extends HomeItem {
   final String createdBy;
   final DateTime createdAt;
   @override
-  final DateTime expiresAt;
+  final DateTime? expiresAt;
+  @override
+  final DateTime? scheduledCloseAt;
   @override
   final String status;
   @override
@@ -86,7 +89,8 @@ class Survey extends HomeItem {
     this.responseCount = 0,
     required this.createdBy,
     required this.createdAt,
-    required this.expiresAt,
+    this.expiresAt,
+    this.scheduledCloseAt,
     this.status = IConst.active,
     this.scope = const FormScope.global(),
     this.groupId,
@@ -112,6 +116,7 @@ class Survey extends HomeItem {
     String? createdBy,
     DateTime? createdAt,
     DateTime? expiresAt,
+    DateTime? scheduledCloseAt,
     String? status,
     FormScope? scope,
     String? groupId,
@@ -129,6 +134,7 @@ class Survey extends HomeItem {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      scheduledCloseAt: scheduledCloseAt ?? this.scheduledCloseAt,
       status: status ?? this.status,
       scope: scope ?? this.scope,
       groupId: groupId ?? this.groupId,
@@ -162,9 +168,13 @@ class Survey extends HomeItem {
       responseCount: (data['responseCount'] ?? 0) as int,
       createdBy: (data['createdBy'] ?? '') as String,
       createdAt: createdAt,
-      expiresAt:
-          (data['expiresAt'] as Timestamp?)?.toDate() ??
-          createdAt.add(const Duration(days: 7)),
+      expiresAt: data['openUntilClosed'] == true
+          ? null
+          : (data['expiresAt'] as Timestamp?)?.toDate() ??
+                createdAt.add(
+                  const Duration(days: AppLimits.defaultFormDurationDays),
+                ),
+      scheduledCloseAt: (data['scheduledCloseAt'] as Timestamp?)?.toDate(),
       status: (data['status'] ?? IConst.active) as String,
       scope: FormScope.fromFirestore(data),
       groupId: data['groupId'] as String?,
@@ -183,7 +193,13 @@ class Survey extends HomeItem {
       'responseCount': survey.responseCount,
       'createdBy': survey.createdBy,
       'createdAt': Timestamp.fromDate(survey.createdAt),
-      'expiresAt': Timestamp.fromDate(survey.expiresAt),
+      'expiresAt': survey.expiresAt == null
+          ? null
+          : Timestamp.fromDate(survey.expiresAt!),
+      'openUntilClosed': survey.expiresAt == null,
+      'scheduledCloseAt': survey.scheduledCloseAt == null
+          ? null
+          : Timestamp.fromDate(survey.scheduledCloseAt!),
       'status': survey.status,
       'titleLowercase': survey.title.toLowerCase(),
       ...survey.scope.toFirestoreFields(),

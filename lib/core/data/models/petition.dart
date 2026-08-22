@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
@@ -17,7 +18,9 @@ class Petition extends HomeItem {
   final String createdBy;
   final DateTime createdAt;
   @override
-  final DateTime expiresAt;
+  final DateTime? expiresAt;
+  @override
+  final DateTime? scheduledCloseAt;
   @override
   final String status;
   @override
@@ -32,7 +35,8 @@ class Petition extends HomeItem {
     required this.signatureCount,
     required this.createdBy,
     required this.createdAt,
-    required this.expiresAt,
+    this.expiresAt,
+    this.scheduledCloseAt,
     this.status = IConst.active,
     this.scope = const FormScope.global(),
     this.imageUrl,
@@ -50,6 +54,7 @@ class Petition extends HomeItem {
     String? createdBy,
     DateTime? createdAt,
     DateTime? expiresAt,
+    DateTime? scheduledCloseAt,
     String? status,
     FormScope? scope,
     String? imageUrl,
@@ -63,6 +68,7 @@ class Petition extends HomeItem {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
+      scheduledCloseAt: scheduledCloseAt ?? this.scheduledCloseAt,
       status: status ?? this.status,
       scope: scope ?? this.scope,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -85,9 +91,13 @@ class Petition extends HomeItem {
       signatureCount: (data['signatureCount'] ?? 0) as int,
       createdBy: (data['createdBy'] ?? '') as String,
       createdAt: createdAt,
-      expiresAt:
-          (data['expiresAt'] as Timestamp?)?.toDate() ??
-          createdAt.add(const Duration(days: 28)),
+      expiresAt: data['openUntilClosed'] == true
+          ? null
+          : (data['expiresAt'] as Timestamp?)?.toDate() ??
+                createdAt.add(
+                  const Duration(days: AppLimits.defaultFormDurationDays),
+                ),
+      scheduledCloseAt: (data['scheduledCloseAt'] as Timestamp?)?.toDate(),
       status: (data['status'] ?? IConst.active) as String,
       scope: FormScope.fromFirestore(data),
       imageUrl: data['imageUrl'] as String?,
@@ -102,7 +112,13 @@ class Petition extends HomeItem {
       'signatureCount': p.signatureCount,
       'createdBy': p.createdBy,
       'createdAt': Timestamp.fromDate(p.createdAt),
-      'expiresAt': Timestamp.fromDate(p.expiresAt),
+      'expiresAt': p.expiresAt == null
+          ? null
+          : Timestamp.fromDate(p.expiresAt!),
+      'openUntilClosed': p.expiresAt == null,
+      'scheduledCloseAt': p.scheduledCloseAt == null
+          ? null
+          : Timestamp.fromDate(p.scheduledCloseAt!),
       'status': p.status,
       'titleLowercase': p.title.toLowerCase(),
       ...p.scope.toFirestoreFields(),

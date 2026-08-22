@@ -73,7 +73,8 @@ class FormResultPage extends StatelessWidget {
         : 'Final results';
   }
 
-  String _expiresAtLabel(BuildContext context, DateTime expiresAt) {
+  String _expiresAtLabel(BuildContext context, DateTime? expiresAt) {
+    if (expiresAt == null) return context.l10n.closed;
     final date = DateFormat('yyyy-MM-dd').format(expiresAt);
     return Localizations.localeOf(context).languageCode == 'de'
         ? 'Abgeschlossen am $date'

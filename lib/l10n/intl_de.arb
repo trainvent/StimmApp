@@ -167,6 +167,20 @@
 	"googleSyncSucceeded": "Profil synchronisiert",
 	"googleSyncFailed": "Google-Profil konnte nicht synchronisiert werden",
 	"daysLeft": "Verbleibende Tage",
+	"duration": "Laufzeit",
+	"durationDays": "{count, plural, =1{1 Tag} other{{count} Tage}}",
+	"@durationDays": {
+		"placeholders": {"count": {"type": "int"}}
+	},
+	"openUntilClosed": "Offen, bis es beendet wird",
+	"openUntilClosedDescription": "Dieses Formular bleibt offen, bis du es manuell beendest.",
+	"closeForm": "Formular beenden",
+	"closeFormConfirmation": "Dieses Formular jetzt stoppen? Du kannst es innerhalb der nächsten 24 Stunden unter Abgeschlossene Formulare fortsetzen. Danach wird es endgültig beendet.",
+	"formClosureScheduled": "Formular gestoppt. Du kannst es 24 Stunden lang fortsetzen.",
+	"resumeForm": "Formular fortsetzen",
+	"formResumed": "Formular fortgesetzt.",
+	"closureFinalizesAt": "Endgültige Beendigung: {date}",
+	"@closureFinalizesAt": {"placeholders": {"date": {"type": "String"}}},
 	"deleteAccount": "Konto löschen",
 	"deleteAccountButton": "KONTO ENDGÜLTIG LÖSCHEN",
 	"deleteAccountDescription": "Bitte melde dich an, um deine Identität zu bestätigen. Diese Aktion löscht dein Konto und alle zugehörigen Daten unwiderruflich.",
@@ -342,6 +356,7 @@
 	"processId": "Ausweis verarbeiten",
 	"products": "Produkte",
 	"profile": "Profil",
+	"changeProfilePicture": "Profilbild ändern",
 	"profilePictureUpdated": "Profilbild aktualisiert",
 	"uploadingProfilePicture": "Profilbild wird hochgeladen",
 	"purchaseCancelled": "Kauf abgebrochen.",
@@ -707,7 +722,7 @@
 			}
 		}
 	},
-	"creatorRoleLabel": "Ersteller",
+	"ownerRoleLabel": "Leitung",
 	"adminRoleLabel": "Admin",
 	"memberRoleLabel": "Mitglied",
 	"groupAccessSummary": "Zugang: {accessMode} • Mitglieder: {memberCount} • {expiry}",
@@ -743,7 +758,7 @@
 	"adminElectionVotingClosed": "Die Wahl ist beendet. Das Ergebnis wird in Kürze übernommen.",
 	"noActiveAdminElection": "Es gibt keine aktive Admin-Wahl.",
 	"noAdminElectionCandidates": "Es gibt keine wählbaren Kandidaten.",
-	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ verlassen?",
+	"doYouWantToLeaveGroup": "Möchtest du „{groupName}“ wirklich verlassen?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
 			"groupName": {
@@ -936,7 +951,7 @@
 	"manageGroupMembersDescription": "Tippe auf ein Mitglied, um es zu bearbeiten. Halte es gedrückt, um ein oder mehrere Mitglieder zum Entfernen auszuwählen.",
 	"editGroupMemberTitle": "Mitglied bearbeiten",
 	"groupMemberUpdated": "Mitglied aktualisiert.",
-	"groupCreatorMustRemainAdmin": "Der Ersteller der Gruppe muss Administrator bleiben.",
+	"groupOwnerMustRemainAdmin": "Die Gruppenleitung muss Administrator bleiben.",
 	"selectedGroupMembersCount": "{count, plural, =1{1 ausgewählt} other{{count} ausgewählt}}",
 	"@selectedGroupMembersCount": { "placeholders": { "count": { "type": "int" } } },
 	"removeSelectedGroupMembersTitle": "Ausgewählte Mitglieder entfernen?",
@@ -1002,7 +1017,7 @@
 		}
 	},
 	"groupMemberRemoved": "Mitglied aus der Gruppe entfernt.",
-	"cannotRemoveGroupCreator": "Der Ersteller der Gruppe kann nicht entfernt werden.",
+	"cannotRemoveGroupOwner": "Die Gruppenleitung kann nicht entfernt werden.",
 	"youCannotRemoveYourselfHere": "Du kannst dich auf dieser Seite nicht selbst entfernen.",
 	"unknownGroupMember": "Unbekanntes Mitglied",
 	"membersCanChooseTheirOwnNickname": "Mitglieder können ihren Spitznamen selbst wählen",

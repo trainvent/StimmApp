@@ -77,6 +77,30 @@ class AboutPage extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 20),
+          NeonPaddingWidget(
+            child: ListTile(
+              title: Text(context.l10n.licenses),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                showLicensePage(
+                  context: context,
+                  applicationName: context.localizedAppName,
+                  applicationVersion: '1.0.0',
+                  applicationLegalese:
+                      context.l10n.publishedUnderTheGnuGeneralPublicLicenseV30,
+                  applicationIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      'assets/images/LeLogo.png',
+                      width: 48,
+                      height: 48,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           const SizedBox(height: 40),
           Center(
             child: FutureBuilder<PackageInfo>(

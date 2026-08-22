@@ -63,8 +63,13 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
             child: Column(
               children: [
                 const SizedBox(height: 20.0),
-                const Text('✏️', style: AppTextStyles.icons),
-                const SizedBox(height: 50),
+                Image.asset(
+                  'assets/images/Lemm_pen_location.png',
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 32),
                 Form(
                   key: _formKey,
                   child: Center(

@@ -100,15 +100,15 @@ void main() {
       },
     );
 
-    test('isUsernameAvailable rejects usernames shorter than four', () async {
-      expect(await userRepository.isUsernameAvailable('abc'), isFalse);
-      expect(await userRepository.isUsernameAvailable('abcd'), isTrue);
+    test('isUsernameAvailable rejects usernames shorter than six', () async {
+      expect(await userRepository.isUsernameAvailable('abcde'), isFalse);
+      expect(await userRepository.isUsernameAvailable('abcdef'), isTrue);
     });
 
-    test('upsertWithUniqueUsername rejects usernames shorter than four', () {
+    test('upsertWithUniqueUsername rejects usernames shorter than six', () {
       expect(
         () => userRepository.upsertWithUniqueUsername(
-          tUserProfile.copyWith(displayName: 'abc'),
+          tUserProfile.copyWith(displayName: 'abcde'),
         ),
         throwsA(
           isA<DatabaseException>().having(

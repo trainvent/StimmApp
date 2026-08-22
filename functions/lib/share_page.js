@@ -84,7 +84,7 @@ function isWebAppHost(host) {
     const hostname = host.toLowerCase().split(":")[0];
     return hostname === "web.stimmapp.net" || hostname === "web.vivot.net";
 }
-function renderShareShell({ locale, appName, formTitle, title, description, canonicalUrl, imageUrl, robots, route, isVivot, }) {
+function renderShareShell({ locale, appName, formTitle, title, description, canonicalUrl, imageUrl, robots, route, isVivot, contentKind, }) {
     const safeFormTitle = escapeHtml(formTitle);
     const safeTitle = escapeHtml(title);
     const safeDescription = escapeHtml(description);
@@ -103,13 +103,19 @@ function renderShareShell({ locale, appName, formTitle, title, description, cano
     const webUrl = webAppUrl(webOrigin, route);
     const appUrl = route ? `${appScheme}://${route.slice(1)}` : `${appScheme}://`;
     const labels = locale === "de" ? {
-        heading: "Wie möchtest du dieses Formular öffnen?",
-        description: "Öffne es in der App oder fahre direkt im Browser fort.",
+        heading: contentKind === "groupInvite" ?
+            "Wie möchtest du diese Gruppeneinladung öffnen?" :
+            "Wie möchtest du dieses Formular öffnen?",
+        description: contentKind === "groupInvite" ?
+            "Öffne sie in der App oder fahre direkt im Browser fort." :
+            "Öffne es in der App oder fahre direkt im Browser fort.",
         openApp: "In der App öffnen",
         getApp: "App herunterladen",
         continueWeb: "Im Browser fortfahren",
     } : {
-        heading: "How would you like to open this form?",
+        heading: contentKind === "groupInvite" ?
+            "How would you like to open this group invitation?" :
+            "How would you like to open this form?",
         description: "Open it in the app or continue directly in your browser.",
         openApp: "Open in app",
         getApp: "Get the app",
@@ -212,7 +218,12 @@ function renderShareShell({ locale, appName, formTitle, title, description, cano
 </html>`;
 }
 exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
-    const match = request.path.match(/^\/(petition|poll|survey)\/([^/?#]+)\/?$/);
+    const formMatch = request.path.match(/^\/(petition|poll|survey)\/([^/?#]+)\/?$/);
+    const isGroupInvite = /^\/group-invite\/?$/.test(request.path);
+    const rawGroupId = Array.isArray(request.query.groupId) ?
+        request.query.groupId[0] : request.query.groupId;
+    const groupId = typeof rawGroupId === "string" ? rawGroupId : null;
+    const validGroupId = groupId != null && /^[A-Za-z0-9_-]{1,128}$/.test(groupId);
     const host = requestHost(request);
     const isVivot = host.toLowerCase().includes("vivot");
     const webOrigin = isVivot
@@ -222,9 +233,11 @@ exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
     // Hosting rewrites are site-wide. Send it through the non-rewritten root
     // instead of rendering the share chooser on the web-app subdomain.
     if (isWebAppHost(host)) {
-        const route = match
-            ? `/${match[1]}/${encodeURIComponent(match[2])}`
-            : null;
+        const route = formMatch ?
+            `/${formMatch[1]}/${encodeURIComponent(formMatch[2])}` :
+            isGroupInvite && validGroupId ?
+                `/group-invite?groupId=${encodeURIComponent(groupId)}` :
+                null;
         response.set("Cache-Control", "private, no-store");
         response.redirect(302, webAppUrl(webOrigin, route));
         return;
@@ -244,9 +257,10 @@ exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
     let cacheControl = "public, max-age=60, s-maxage=300";
     let robots = "index,follow";
     let route = null;
-    if (match) {
-        const kind = match[1];
-        const id = match[2];
+    let contentKind = "form";
+    if (formMatch) {
+        const kind = formMatch[1];
+        const id = formMatch[2];
         route = `/${kind}/${encodeURIComponent(id)}`;
         canonicalUrl = `${origin}${route}`;
         if (/^[A-Za-z0-9_-]{1,128}$/.test(id)) {
@@ -280,6 +294,20 @@ exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
             robots = "noindex,nofollow";
         }
     }
+    else if (isGroupInvite) {
+        contentKind = "groupInvite";
+        cacheControl = "private, no-store";
+        robots = "noindex,nofollow";
+        formTitle = appName;
+        title = locale === "de" ? "Gruppeneinladung" : "Group invitation";
+        description = locale === "de" ?
+            `Öffne diese Gruppeneinladung mit ${appName}.` :
+            `Open this group invitation with ${appName}.`;
+        if (validGroupId) {
+            route = `/group-invite?groupId=${encodeURIComponent(groupId)}`;
+            canonicalUrl = `${origin}${route}`;
+        }
+    }
     response.set("Content-Type", "text/html; charset=utf-8");
     response.set("Cache-Control", cacheControl);
     response.set("X-Content-Type-Options", "nosniff");
@@ -294,6 +322,7 @@ exports.sharePage = (0, https_1.onRequest)(async (request, response) => {
         robots,
         route,
         isVivot,
+        contentKind,
     }));
 });
 //# sourceMappingURL=share_page.js.map

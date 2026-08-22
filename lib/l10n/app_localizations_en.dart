@@ -398,6 +398,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daysLeft => 'Days Left';
 
   @override
+  String get duration => 'Duration';
+
+  @override
+  String durationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openUntilClosed => 'Open until closed';
+
+  @override
+  String get openUntilClosedDescription =>
+      'Keep this form open until you close it manually.';
+
+  @override
+  String get closeForm => 'Close form';
+
+  @override
+  String get closeFormConfirmation =>
+      'Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.';
+
+  @override
+  String get formClosureScheduled =>
+      'Form stopped. You can resume it for 24 hours.';
+
+  @override
+  String get resumeForm => 'Resume form';
+
+  @override
+  String get formResumed => 'Form resumed.';
+
+  @override
+  String closureFinalizesAt(String date) {
+    return 'Permanent closure: $date';
+  }
+
+  @override
   String get deleteAccount => 'Delete Account';
 
   @override
@@ -913,6 +956,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile => 'Profile';
+
+  @override
+  String get changeProfilePicture => 'Change profile picture';
 
   @override
   String get profilePictureUpdated => 'Profile picture updated';
@@ -1835,7 +1881,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get creatorRoleLabel => 'Creator';
+  String get ownerRoleLabel => 'Owner';
 
   @override
   String get adminRoleLabel => 'Admin';
@@ -1911,7 +1957,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String doYouWantToLeaveGroup(String groupName) {
-    return 'Do you want to leave \"$groupName\"?';
+    return 'Do you really want to leave \"$groupName\"?';
   }
 
   @override
@@ -2325,8 +2371,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberUpdated => 'Member updated.';
 
   @override
-  String get groupCreatorMustRemainAdmin =>
-      'The group creator must remain an admin.';
+  String get groupOwnerMustRemainAdmin =>
+      'The group owner must remain an admin.';
 
   @override
   String selectedGroupMembersCount(int count) {
@@ -2508,7 +2554,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberRemoved => 'Member removed from the group.';
 
   @override
-  String get cannotRemoveGroupCreator => 'The group creator cannot be removed.';
+  String get cannotRemoveGroupOwner => 'The group owner cannot be removed.';
 
   @override
   String get youCannotRemoveYourselfHere =>

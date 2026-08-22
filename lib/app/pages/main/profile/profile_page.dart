@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/pages/main/admin/admin_dashboard_page.dart';
-import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
+import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/blocked_users_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/inbox_page.dart';
@@ -51,6 +51,63 @@ class ProfilePage extends ConsumerWidget {
 
   final WidgetBuilder? settingsPageBuilder;
   final bool settingsRouteIsBelow;
+
+  String _fullName(String? givenName, String? surname) {
+    return [
+      givenName?.trim(),
+      surname?.trim(),
+    ].whereType<String>().where((part) => part.isNotEmpty).join(' ');
+  }
+
+  void _openNameEditor(
+    BuildContext context, {
+    required String? givenName,
+    required String? surname,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text(context.l10n.editGivenName),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => UpdateProfileFieldPage(
+                      field: EditableProfileField.givenName,
+                      initialValue: givenName,
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people_outline),
+              title: Text(context.l10n.editSurname),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => UpdateProfileFieldPage(
+                      field: EditableProfileField.surname,
+                      initialValue: surname,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> _openGoogleProfile(BuildContext context, String? email) async {
     final opened = await openGoogleProfile(email);
@@ -275,12 +332,6 @@ class ProfilePage extends ConsumerWidget {
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
-        if (settingsRouteIsBelow || settingsPageBuilder != null)
-          IconButton(
-            onPressed: () => _openSettings(context),
-            icon: const Icon(Icons.settings),
-            tooltip: context.l10n.settings,
-          ),
         StreamBuilder<List<PollGroupAccessNotification>>(
           stream: currentUser == null
               ? null
@@ -307,6 +358,12 @@ class ProfilePage extends ConsumerWidget {
             );
           },
         ),
+        if (settingsRouteIsBelow || settingsPageBuilder != null)
+          IconButton(
+            onPressed: () => _openSettings(context),
+            icon: const Icon(Icons.settings),
+            tooltip: context.l10n.settings,
+          ),
       ],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -335,82 +392,59 @@ class ProfilePage extends ConsumerWidget {
                       isCentered: true,
                       child: Column(
                         children: [
-                          HeroWidget(
-                            key: keys.profilePage.heroWidget,
-                            nextPage: userProfile.isGoogleSyncActive == true
-                                ? null
-                                : const ChangeProfilePicturePage(),
+                          Theme(
+                            data: Theme.of(
+                              context,
+                            ).copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              controlAffinity: ListTileControlAffinity.leading,
+                              trailing: const SizedBox(width: 24),
+                              title: HeroWidget(
+                                key: keys.profilePage.heroWidget,
+                                nextPage: userProfile.isGoogleSyncActive == true
+                                    ? null
+                                    : const ChangeProfilePicturePage(),
+                              ),
+                              children: [
+                                if (userProfile.supportsStateScope)
+                                  _buildDetailTile(
+                                    context,
+                                    context.l10n.state,
+                                    userProfile.state,
+                                  ),
+                                _buildDetailTile(
+                                  context,
+                                  context.l10n.town,
+                                  userProfile.town,
+                                ),
+                                _buildDetailTile(
+                                  context,
+                                  context.l10n.dateOfBirth,
+                                  userProfile.dateOfBirth != null
+                                      ? dateFormat.format(
+                                          userProfile.dateOfBirth!,
+                                        )
+                                      : null,
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 10),
                           _buildDetailTile(
                             context,
-                            context.l10n.surname,
-                            userProfile.surname,
+                            context.l10n.name,
+                            _fullName(
+                              userProfile.givenName,
+                              userProfile.surname,
+                            ),
                             hideWhenEmpty: false,
                             onTap: userProfile.isGoogleSyncActive == true
                                 ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            UpdateProfileFieldPage(
-                                              field:
-                                                  EditableProfileField.surname,
-                                              initialValue: userProfile.surname,
-                                            ),
-                                      ),
-                                    );
-                                  },
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.givenName,
-                            userProfile.givenName,
-                            hideWhenEmpty: false,
-                            onTap: userProfile.isGoogleSyncActive == true
-                                ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            UpdateProfileFieldPage(
-                                              field: EditableProfileField
-                                                  .givenName,
-                                              initialValue:
-                                                  userProfile.givenName,
-                                            ),
-                                      ),
-                                    );
-                                  },
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.placeOfBirth,
-                            userProfile.placeOfBirth,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.nationality,
-                            userProfile.nationality,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.idNumber,
-                            userProfile.idNumber,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.expiryDate,
-                            userProfile.expiryDate != null
-                                ? dateFormat.format(userProfile.expiryDate!)
-                                : null,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.height,
-                            userProfile.height,
+                                : () => _openNameEditor(
+                                    context,
+                                    givenName: userProfile.givenName,
+                                    surname: userProfile.surname,
+                                  ),
                           ),
                           _buildDetailTile(
                             context,
@@ -427,24 +461,6 @@ class ProfilePage extends ConsumerWidget {
                                       ),
                                     );
                                   },
-                          ),
-                          if (userProfile.supportsStateScope)
-                            _buildDetailTile(
-                              context,
-                              context.l10n.state,
-                              userProfile.state,
-                            ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.town,
-                            userProfile.town,
-                          ),
-                          _buildDetailTile(
-                            context,
-                            context.l10n.dateOfBirth,
-                            userProfile.dateOfBirth != null
-                                ? dateFormat.format(userProfile.dateOfBirth!)
-                                : null,
                           ),
                           _buildDetailTile(
                             key: keys.profilePage.changeUserNameListTile,
@@ -627,7 +643,7 @@ class ProfilePage extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MemberGroupsPage(),
+                          builder: (context) => const GroupsOverviewPage(),
                         ),
                       );
                     },

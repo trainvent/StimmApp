@@ -198,35 +198,54 @@ class _BaseOverviewPageState<T extends HomeItem>
     }
   }
 
+  Stream<E> _restartableStream<E>(Stream<E> Function() createSource) {
+    return Stream<E>.multi((controller) {
+      final subscription = createSource().listen(
+        controller.add,
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+      controller.onPause = subscription.pause;
+      controller.onResume = subscription.resume;
+      controller.onCancel = subscription.cancel;
+    });
+  }
+
   Stream<List<T>> _itemStream(String status) => _itemStreams.putIfAbsent(
     status,
-    () => widget.streamProvider(_query, status),
+    () => _restartableStream(() => widget.streamProvider(_query, status)),
   );
 
   Stream<Set<String>> _blockedIdsStream(String status, String? uid) =>
       _blockedIdsStreams.putIfAbsent(
         status,
-        () => uid == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : ModerationRepository.create().watchBlockedUserIds(uid),
+        () => _restartableStream(
+          () => uid == null
+              ? Stream<Set<String>>.value(const <String>{})
+              : ModerationRepository.create().watchBlockedUserIds(uid),
+        ),
       );
 
   Stream<Set<String>> _memberGroupIdsStream(String status, String? uid) =>
       _memberGroupIdsStreams.putIfAbsent(
         status,
-        () => uid == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : PollGroupRepository.create()
-                  .watchGroupsForUser(uid)
-                  .map((groups) => groups.map((group) => group.id).toSet()),
+        () => _restartableStream(
+          () => uid == null
+              ? Stream<Set<String>>.value(const <String>{})
+              : PollGroupRepository.create()
+                    .watchGroupsForUser(uid)
+                    .map((groups) => groups.map((group) => group.id).toSet()),
+        ),
       );
 
   Stream<Set<String>> _participatedIdsStream(String status, String? uid) =>
       _participatedIdsStreams.putIfAbsent(
         status,
-        () => uid == null || widget.participatedIdsStreamProvider == null
-            ? Stream<Set<String>>.value(const <String>{})
-            : widget.participatedIdsStreamProvider!(uid),
+        () => _restartableStream(
+          () => uid == null || widget.participatedIdsStreamProvider == null
+              ? Stream<Set<String>>.value(const <String>{})
+              : widget.participatedIdsStreamProvider!(uid),
+        ),
       );
 
   void _showFilterDialog() {
@@ -696,8 +715,8 @@ class _BaseOverviewPageState<T extends HomeItem>
                               ),
                               isFinished:
                                   status == IConst.closed ||
-                                  item.status == IConst.closed ||
-                                  !item.expiresAt.isAfter(DateTime.now()),
+                                  item.status != IConst.active ||
+                                  item.isExpiredAt(DateTime.now()),
                               isGroupOnly: _isGroupOnly(item),
                               groupName: _groupName(item),
                             );

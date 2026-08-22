@@ -32,8 +32,8 @@ bool groupCreationRequiresPro({
   return createdCount >= 1 && !hasProAccess;
 }
 
-class MemberGroupsPage extends StatelessWidget {
-  const MemberGroupsPage({super.key});
+class GroupsOverviewPage extends StatelessWidget {
+  const GroupsOverviewPage({super.key});
 
   Future<void> _showAdditionalGroupsProDialog(BuildContext context) async {
     final openPaywall = await showDialog<bool>(
@@ -149,7 +149,7 @@ class MemberGroupsPage extends StatelessWidget {
     );
     if (kDebugMode) {
       debugPrint(
-        'MemberGroupsPage._openCreateGroup: uid=$uid '
+        'GroupsOverviewPage._openCreateGroup: uid=$uid '
         'createdCount=$createdCount profileIsPro=${user?.isPro} '
         'profileForcedPro=${UserProfile.shouldForcePro(user?.email)} '
         'authForcedPro=${UserProfile.shouldForcePro(authenticatedUser.email)} '
@@ -162,7 +162,7 @@ class MemberGroupsPage extends StatelessWidget {
     if (requiresPro) {
       if (kDebugMode) {
         debugPrint(
-          'MemberGroupsPage._openCreateGroup: showing Pro explanation',
+          'GroupsOverviewPage._openCreateGroup: showing Pro explanation',
         );
       }
       await _showAdditionalGroupsProDialog(context);
@@ -259,9 +259,8 @@ class MemberGroupsPage extends StatelessWidget {
                 builder: (context, memberSnapshot) {
                   final member = memberSnapshot.data;
                   final isAdmin = member?.role == PollGroupRole.admin;
-                  final inviteLink = buildPollGroupInviteLink(group);
                   final roleLabel = isCreator
-                      ? context.l10n.creatorRoleLabel
+                      ? context.l10n.ownerRoleLabel
                       : (isAdmin
                             ? context.l10n.adminRoleLabel
                             : context.l10n.memberRoleLabel);
@@ -277,44 +276,21 @@ class MemberGroupsPage extends StatelessWidget {
                     child: AppSlidable(
                       key: ValueKey('member_group_${group.id}'),
                       startAction: AppSlidableAction(
-                        onPressed: () => _openDashboard(context, group),
                         icon: Icons.dashboard_outlined,
                         label: context.l10n.openGroupDashboard,
                       ),
-                      confirmStartDismiss: () async {
-                        await _openDashboard(context, group);
-                        return false;
-                      },
+                      onStartSwipe: () => _openDashboard(context, group),
                       endAction: AppSlidableAction(
-                        onPressed: () => _leaveGroup(context, group),
                         icon: Icons.logout,
                         label: context.l10n.leaveGroup,
                         style: AppSlidableActionStyle.secondary,
                       ),
+                      onEndSwipe: () => _leaveGroup(context, group),
                       child: PollGroupSummaryCard(
                         group: group,
                         embedded: true,
-                        onTap: () => _openDashboard(context, group),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Chip(label: Text(roleLabel)),
-                            if (inviteLink != null) ...[
-                              IconButton(
-                                tooltip: context.l10n.copyInviteLinkTooltip,
-                                onPressed: () =>
-                                    copyPollGroupInviteLink(context, group),
-                                icon: const Icon(Icons.copy_outlined),
-                              ),
-                              IconButton(
-                                tooltip: context.l10n.displayQrCode,
-                                onPressed: () =>
-                                    showPollGroupInviteQrCode(context, group),
-                                icon: const Icon(Icons.qr_code_2),
-                              ),
-                            ],
-                          ],
-                        ),
+                        onTap: () => showPollGroupInviteQrCode(context, group),
+                        trailing: Chip(label: Text(roleLabel)),
                         summary: context.l10n.groupAccessSummary(
                           group.accessMode.localizedTitle(context),
                           group.memberIds.length,

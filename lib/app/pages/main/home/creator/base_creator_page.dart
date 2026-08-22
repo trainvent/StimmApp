@@ -1,9 +1,9 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
-import 'package:stimmapp/app/widgets/teaching_lemm_image.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/country_union_memberships.dart';
@@ -24,6 +24,8 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
+    this.additionalDraftClearer,
+    this.onResetAdditionalFields,
   });
 
   final String title;
@@ -34,12 +36,15 @@ class BaseCreatorPage extends StatefulWidget {
     required List<String> tags,
     required FormScope scope,
     required int durationDays,
+    required bool openUntilClosed,
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
+  final Future<void> Function()? additionalDraftClearer;
+  final VoidCallback? onResetAdditionalFields;
 
   @override
   State<BaseCreatorPage> createState() => _BaseCreatorPageState();
@@ -57,7 +62,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _profileStateOrRegion;
   String? _profileTown;
   bool _isLoading = false;
-  int _durationDays = 28; // Default duration
+  int _durationDays = AppLimits.defaultFormDurationDays;
+  bool _openUntilClosed = false;
 
   Set<CountryUnion> get _availableCountryUnions =>
       countryUnionsForCountry(_profileCountryCode);
@@ -137,6 +143,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     final draftScopeUnion = prefs.getString('${_draftKey}_scopeUnion');
     final draftStateDependent = prefs.getBool('${_draftKey}_stateDependent');
     final draftDuration = prefs.getInt('${_draftKey}_duration');
+    final draftOpenUntilClosed = prefs.getBool('${_draftKey}_openUntilClosed');
 
     if (mounted) {
       setState(() {
@@ -168,6 +175,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           _selectedScope = FormScopeType.country;
         }
         if (draftDuration != null) _durationDays = draftDuration;
+        if (draftOpenUntilClosed != null) {
+          _openUntilClosed = draftOpenUntilClosed;
+        }
       });
     }
   }
@@ -199,6 +209,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.setInt('${_draftKey}_duration', _durationDays);
+    await prefs.setBool('${_draftKey}_openUntilClosed', _openUntilClosed);
   }
 
   Future<void> _clearDraft() async {
@@ -212,6 +223,8 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     await prefs.remove('${_draftKey}_scopeCity');
     await prefs.remove('${_draftKey}_stateDependent');
     await prefs.remove('${_draftKey}_duration');
+    await prefs.remove('${_draftKey}_openUntilClosed');
+    await widget.additionalDraftClearer?.call();
   }
 
   Future<void> _resetForm() async {
@@ -222,8 +235,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
       _selectedCountryUnion = _firstAvailableCountryUnion;
-      _durationDays = 28;
+      _durationDays = AppLimits.defaultFormDurationDays;
+      _openUntilClosed = false;
     });
+    widget.onResetAdditionalFields?.call();
   }
 
   Future<void> _handleSubmit() async {
@@ -273,6 +288,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         tags: _selectedTags,
         scope: scope,
         durationDays: _durationDays,
+        openUntilClosed: _openUntilClosed,
       );
       await _clearDraft(); // Clear draft on successful submission
     } catch (e) {
@@ -307,98 +323,47 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     }
   }
 
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Stack(
-          children: [
-            AlertDialog(
-              title: Text(widget.title), // Use page title as dialog title
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: widget.tutorialSteps.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final step = widget.tutorialSteps[index];
-                          if (step is String) {
-                            // Petition style (simple bullets)
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  '• ',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    step,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            // Poll style (Title + Description object)
-                            // Assuming dynamic access or we define a common interface/type
-                            // For now, let's assume it has title and description properties
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    step.title,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    step.description,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                    ],
+  Widget _buildTutorialContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < widget.tutorialSteps.length; index++) ...[
+          if (index > 0) const SizedBox(height: 8),
+          if (widget.tutorialSteps[index] is String)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    widget.tutorialSteps[index] as String,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(context.l10n.close),
-                ),
               ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.tutorialSteps[index].title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.tutorialSteps[index].description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: IgnorePointer(child: const TeachingLemmImage()),
-            ),
-          ],
-        );
-      },
+        ],
+        const SizedBox(height: 16),
+      ],
     );
   }
 
@@ -653,9 +618,10 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: _showInfoDialog,
+          InfoDialogButton(
+            title: widget.title,
+            content: _buildTutorialContent(),
+            cornerImagePath: "assets/images/Lemm_teaching.png",
           ),
         ],
       ),
@@ -738,23 +704,107 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               ),
               const SizedBox(height: 20),
               Text(
-                context.l10n.daysLeft,
+                context.l10n.duration,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              Slider(
-                value: _durationDays.toDouble(),
-                min: 1,
-                max: 42, // 6 weeks
-                divisions: 41,
-                label: '$_durationDays days',
-                onChanged: (double value) {
-                  setState(() {
-                    _durationDays = value.toInt();
-                  });
-                  _saveDraft();
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: SliderTheme(
+                      key: const Key('durationSliderTheme'),
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: _openUntilClosed
+                            ? SliderComponentShape.noThumb
+                            : SliderTheme.of(context).thumbShape,
+                        overlayShape: _openUntilClosed
+                            ? SliderComponentShape.noOverlay
+                            : SliderTheme.of(context).overlayShape,
+                        activeTrackColor: _openUntilClosed
+                            ? Theme.of(context).colorScheme.outlineVariant
+                            : null,
+                        inactiveTrackColor: _openUntilClosed
+                            ? Theme.of(context).colorScheme.outlineVariant
+                            : null,
+                      ),
+                      child: Slider(
+                        key: const Key('durationSlider'),
+                        value: _durationDays.toDouble(),
+                        min: 1,
+                        max: AppLimits.defaultFormDurationDays.toDouble(),
+                        divisions: AppLimits.defaultFormDurationDays - 1,
+                        label: context.l10n.durationDays(_durationDays),
+                        onChanged: (double value) {
+                          setState(() {
+                            _openUntilClosed = false;
+                            _durationDays = value.round();
+                          });
+                          _saveDraft();
+                        },
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('openUntilClosedButton'),
+                    tooltip: context.l10n.openUntilClosedDescription,
+                    style: IconButton.styleFrom(
+                      backgroundColor: _openUntilClosed
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                      foregroundColor: _openUntilClosed
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: () {
+                      setState(() => _openUntilClosed = true);
+                      _saveDraft();
+                    },
+                    icon: const Icon(Icons.all_inclusive),
+                  ),
+                ],
               ),
-              Center(child: Text('$_durationDays days')),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('1'), Text('42')],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: Container(
+                    key: ValueKey(_openUntilClosed),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: _openUntilClosed
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.all_inclusive, size: 20),
+                              const SizedBox(width: 7),
+                              Text(context.l10n.openUntilClosed),
+                            ],
+                          )
+                        : Text(context.l10n.durationDays(_durationDays)),
+                  ),
+                ),
+              ),
               const SizedBox(height: 10),
               _scopeSelectorCard(),
               if (_selectedScope == FormScopeType.countryUnion) ...[

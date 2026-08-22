@@ -39,7 +39,6 @@ class ProfilePictureService {
   }
 
   Future<void> setProfileUrl(String uid, String? url) async {
-    if (url == null) return;
     await _firestoreService.upsert(
       _firestoreService.docRef(
         'users/$uid',

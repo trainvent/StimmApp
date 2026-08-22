@@ -667,8 +667,8 @@ class _BaseDetailPageState<T extends HomeItem>
                   }
 
                   final now = DateTime.now();
-                  final isExpiredByTime = !item.expiresAt.isAfter(now);
-                  final isClosedByStatus = item.status == IConst.closed;
+                  final isExpiredByTime = item.isExpiredAt(now);
+                  final isClosedByStatus = item.status != IConst.active;
                   final isExpired = isClosedByStatus || isExpiredByTime;
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -719,7 +719,10 @@ class _BaseDetailPageState<T extends HomeItem>
                           ],
                         ),
                         Text(
-                          '${context.l10n.expiresOn}: ${DateFormat('dd.MM.yyyy').format(item.expiresAt)}',
+                          item.expiresAt == null
+                              ? context.l10n.openUntilClosed
+                              : '${context.l10n.expiresOn}: '
+                                    '${DateFormat('dd.MM.yyyy').format(item.expiresAt!)}',
                         ),
                         if (isExpired) ...[
                           const SizedBox(height: 8),

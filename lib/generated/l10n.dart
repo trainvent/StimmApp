@@ -1094,6 +1094,93 @@ class S {
     return Intl.message('Days Left', name: 'daysLeft', desc: '', args: []);
   }
 
+  /// `Duration`
+  String get duration {
+    return Intl.message('Duration', name: 'duration', desc: '', args: []);
+  }
+
+  /// `{count, plural, =1{1 day} other{{count} days}}`
+  String durationDays(int count) {
+    return Intl.plural(
+      count,
+      one: '1 day',
+      other: '$count days',
+      name: 'durationDays',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Open until closed`
+  String get openUntilClosed {
+    return Intl.message(
+      'Open until closed',
+      name: 'openUntilClosed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep this form open until you close it manually.`
+  String get openUntilClosedDescription {
+    return Intl.message(
+      'Keep this form open until you close it manually.',
+      name: 'openUntilClosedDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close form`
+  String get closeForm {
+    return Intl.message('Close form', name: 'closeForm', desc: '', args: []);
+  }
+
+  /// `Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.`
+  String get closeFormConfirmation {
+    return Intl.message(
+      'Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.',
+      name: 'closeFormConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Form stopped. You can resume it for 24 hours.`
+  String get formClosureScheduled {
+    return Intl.message(
+      'Form stopped. You can resume it for 24 hours.',
+      name: 'formClosureScheduled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resume form`
+  String get resumeForm {
+    return Intl.message('Resume form', name: 'resumeForm', desc: '', args: []);
+  }
+
+  /// `Form resumed.`
+  String get formResumed {
+    return Intl.message(
+      'Form resumed.',
+      name: 'formResumed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Permanent closure: {date}`
+  String closureFinalizesAt(String date) {
+    return Intl.message(
+      'Permanent closure: $date',
+      name: 'closureFinalizesAt',
+      desc: '',
+      args: [date],
+    );
+  }
+
   /// `Delete Account`
   String get deleteAccount {
     return Intl.message(
@@ -1277,6 +1364,26 @@ class S {
   /// `Email`
   String get email {
     return Intl.message('Email', name: 'email', desc: '', args: []);
+  }
+
+  /// `Email or username`
+  String get emailOrUsername {
+    return Intl.message(
+      'Email or username',
+      name: 'emailOrUsername',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid email or username for every invited member.`
+  String get pleaseEnterValidEmailOrUsernameForEveryInvitedMember {
+    return Intl.message(
+      'Please enter a valid email or username for every invited member.',
+      name: 'pleaseEnterValidEmailOrUsernameForEveryInvitedMember',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Email verification`
@@ -4809,14 +4916,9 @@ class S {
     );
   }
 
-  /// `Creator`
-  String get creatorRoleLabel {
-    return Intl.message(
-      'Creator',
-      name: 'creatorRoleLabel',
-      desc: '',
-      args: [],
-    );
+  /// `Owner`
+  String get ownerRoleLabel {
+    return Intl.message('Owner', name: 'ownerRoleLabel', desc: '', args: []);
   }
 
   /// `Admin`
@@ -5014,10 +5116,10 @@ class S {
     );
   }
 
-  /// `Do you want to leave "{groupName}"?`
+  /// `Do you really want to leave "{groupName}"?`
   String doYouWantToLeaveGroup(String groupName) {
     return Intl.message(
-      'Do you want to leave "$groupName"?',
+      'Do you really want to leave "$groupName"?',
       name: 'doYouWantToLeaveGroup',
       desc: '',
       args: [groupName],
@@ -6114,13 +6216,89 @@ class S {
     );
   }
 
-  /// `View everyone in this group and remove members when needed.`
+  /// `Tap a member to edit them. Long-press to select one or more members to remove.`
   String get manageGroupMembersDescription {
     return Intl.message(
-      'View everyone in this group and remove members when needed.',
+      'Tap a member to edit them. Long-press to select one or more members to remove.',
       name: 'manageGroupMembersDescription',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Edit member`
+  String get editGroupMemberTitle {
+    return Intl.message(
+      'Edit member',
+      name: 'editGroupMemberTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Member updated.`
+  String get groupMemberUpdated {
+    return Intl.message(
+      'Member updated.',
+      name: 'groupMemberUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The group owner must remain an admin.`
+  String get groupOwnerMustRemainAdmin {
+    return Intl.message(
+      'The group owner must remain an admin.',
+      name: 'groupOwnerMustRemainAdmin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{1 selected} other{{count} selected}}`
+  String selectedGroupMembersCount(int count) {
+    return Intl.plural(
+      count,
+      one: '1 selected',
+      other: '$count selected',
+      name: 'selectedGroupMembersCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Remove selected members?`
+  String get removeSelectedGroupMembersTitle {
+    return Intl.message(
+      'Remove selected members?',
+      name: 'removeSelectedGroupMembersTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{Remove the selected member from this group?} other{Remove all {count} selected members from this group?}}`
+  String removeSelectedGroupMembersConfirmation(int count) {
+    return Intl.plural(
+      count,
+      one: 'Remove the selected member from this group?',
+      other: 'Remove all $count selected members from this group?',
+      name: 'removeSelectedGroupMembersConfirmation',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1{Member removed from the group.} other{{count} members removed from the group.}}`
+  String selectedGroupMembersRemoved(int count) {
+    return Intl.plural(
+      count,
+      one: 'Member removed from the group.',
+      other: '$count members removed from the group.',
+      name: 'selectedGroupMembersRemoved',
+      desc: '',
+      args: [count],
     );
   }
 
@@ -6499,11 +6677,11 @@ class S {
     );
   }
 
-  /// `The group creator cannot be removed.`
-  String get cannotRemoveGroupCreator {
+  /// `The group owner cannot be removed.`
+  String get cannotRemoveGroupOwner {
     return Intl.message(
-      'The group creator cannot be removed.',
-      name: 'cannotRemoveGroupCreator',
+      'The group owner cannot be removed.',
+      name: 'cannotRemoveGroupOwner',
       desc: '',
       args: [],
     );

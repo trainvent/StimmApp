@@ -818,6 +818,66 @@ abstract class AppLocalizations {
   /// **'Days Left'**
   String get daysLeft;
 
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @durationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String durationDays(int count);
+
+  /// No description provided for @openUntilClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Open until closed'**
+  String get openUntilClosed;
+
+  /// No description provided for @openUntilClosedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this form open until you close it manually.'**
+  String get openUntilClosedDescription;
+
+  /// No description provided for @closeForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Close form'**
+  String get closeForm;
+
+  /// No description provided for @closeFormConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.'**
+  String get closeFormConfirmation;
+
+  /// No description provided for @formClosureScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Form stopped. You can resume it for 24 hours.'**
+  String get formClosureScheduled;
+
+  /// No description provided for @resumeForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume form'**
+  String get resumeForm;
+
+  /// No description provided for @formResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Form resumed.'**
+  String get formResumed;
+
+  /// No description provided for @closureFinalizesAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent closure: {date}'**
+  String closureFinalizesAt(String date);
+
   /// No description provided for @deleteAccount.
   ///
   /// In en, this message translates to:
@@ -1801,6 +1861,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @changeProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Change profile picture'**
+  String get changeProfilePicture;
 
   /// No description provided for @profilePictureUpdated.
   ///
@@ -3482,11 +3548,11 @@ abstract class AppLocalizations {
   /// **'Expires {date}'**
   String expiresOnDate(String date);
 
-  /// No description provided for @creatorRoleLabel.
+  /// No description provided for @ownerRoleLabel.
   ///
   /// In en, this message translates to:
-  /// **'Creator'**
-  String get creatorRoleLabel;
+  /// **'Owner'**
+  String get ownerRoleLabel;
 
   /// No description provided for @adminRoleLabel.
   ///
@@ -3617,7 +3683,7 @@ abstract class AppLocalizations {
   /// No description provided for @doYouWantToLeaveGroup.
   ///
   /// In en, this message translates to:
-  /// **'Do you want to leave \"{groupName}\"?'**
+  /// **'Do you really want to leave \"{groupName}\"?'**
   String doYouWantToLeaveGroup(String groupName);
 
   /// No description provided for @youLeftTheGroup.
@@ -4340,11 +4406,11 @@ abstract class AppLocalizations {
   /// **'Member updated.'**
   String get groupMemberUpdated;
 
-  /// No description provided for @groupCreatorMustRemainAdmin.
+  /// No description provided for @groupOwnerMustRemainAdmin.
   ///
   /// In en, this message translates to:
-  /// **'The group creator must remain an admin.'**
-  String get groupCreatorMustRemainAdmin;
+  /// **'The group owner must remain an admin.'**
+  String get groupOwnerMustRemainAdmin;
 
   /// No description provided for @selectedGroupMembersCount.
   ///
@@ -4598,11 +4664,11 @@ abstract class AppLocalizations {
   /// **'Member removed from the group.'**
   String get groupMemberRemoved;
 
-  /// No description provided for @cannotRemoveGroupCreator.
+  /// No description provided for @cannotRemoveGroupOwner.
   ///
   /// In en, this message translates to:
-  /// **'The group creator cannot be removed.'**
-  String get cannotRemoveGroupCreator;
+  /// **'The group owner cannot be removed.'**
+  String get cannotRemoveGroupOwner;
 
   /// No description provided for @youCannotRemoveYourselfHere.
   ///

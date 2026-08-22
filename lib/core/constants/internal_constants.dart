@@ -9,6 +9,7 @@ class IConst {
       'analyticsCollectionEnabled';
   static const String crashLogsEnabledKey = 'sendCrashLogs';
   static const String active = 'active';
+  static const String closing = 'closing';
   static const String closed = 'closed';
 
   static const String adminEmail = String.fromEnvironment(

@@ -63,12 +63,6 @@ export default function HomePage() {
             className={`page-background-scene${isSplineLoaded ? ' is-loaded' : ''}`}
             scene="https://prod.spline.design/wqR9pdHZ2Tj-IT5l/scene.splinecode"
             onLoad={(spline) => {
-              const camera = spline.findObjectByName('Camera');
-
-              if (camera) {
-                camera.state = 'Top';
-              }
-
               setIsSplineLoaded(true);
             }}
           />
@@ -120,8 +114,39 @@ export default function HomePage() {
               <div className="micro-card micro-card-contact">
                 <strong>{copy.contactTitle}</strong>
                 <div className="micro-card-actions">
-                  <a href="mailto:info@trainvent.com">info@trainvent.com</a>
-                  <a href={copy.contactButtonHref}>{copy.contactButton}</a>
+                  <a
+                    className="contact-action contact-action-email"
+                    href="mailto:info@trainvent.com"
+                    aria-label={`${copy.contactEmailAction}: info@trainvent.com`}
+                  >
+                    <span className="contact-action-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M4 6.5h16v11H4z" />
+                        <path d="m5 7.5 7 5 7-5" />
+                      </svg>
+                    </span>
+                    <span className="contact-action-copy">
+                      <span className="contact-action-title">{copy.contactEmailAction}</span>
+                      <span className="contact-action-detail">info@trainvent.com</span>
+                    </span>
+                    <span className="contact-action-arrow" aria-hidden="true">→</span>
+                  </a>
+                  <a
+                    className="contact-action contact-action-form"
+                    href={copy.contactButtonHref}
+                  >
+                    <span className="contact-action-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M7 3.5h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" />
+                        <path d="M8.5 8h7M8.5 12h7M8.5 16h4" />
+                      </svg>
+                    </span>
+                    <span className="contact-action-copy">
+                      <span className="contact-action-title">{copy.contactButton}</span>
+                      <span className="contact-action-detail">{copy.contactFormDetail}</span>
+                    </span>
+                    <span className="contact-action-arrow" aria-hidden="true">↗</span>
+                  </a>
                 </div>
               </div>
             </div>

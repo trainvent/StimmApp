@@ -400,6 +400,49 @@ class AppLocalizationsDe extends AppLocalizations {
   String get daysLeft => 'Verbleibende Tage';
 
   @override
+  String get duration => 'Laufzeit';
+
+  @override
+  String durationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get openUntilClosed => 'Offen, bis es beendet wird';
+
+  @override
+  String get openUntilClosedDescription =>
+      'Dieses Formular bleibt offen, bis du es manuell beendest.';
+
+  @override
+  String get closeForm => 'Formular beenden';
+
+  @override
+  String get closeFormConfirmation =>
+      'Dieses Formular jetzt stoppen? Du kannst es innerhalb der nächsten 24 Stunden unter Abgeschlossene Formulare fortsetzen. Danach wird es endgültig beendet.';
+
+  @override
+  String get formClosureScheduled =>
+      'Formular gestoppt. Du kannst es 24 Stunden lang fortsetzen.';
+
+  @override
+  String get resumeForm => 'Formular fortsetzen';
+
+  @override
+  String get formResumed => 'Formular fortgesetzt.';
+
+  @override
+  String closureFinalizesAt(String date) {
+    return 'Endgültige Beendigung: $date';
+  }
+
+  @override
   String get deleteAccount => 'Konto löschen';
 
   @override
@@ -921,6 +964,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profile => 'Profil';
+
+  @override
+  String get changeProfilePicture => 'Profilbild ändern';
 
   @override
   String get profilePictureUpdated => 'Profilbild aktualisiert';
@@ -1857,7 +1903,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get creatorRoleLabel => 'Ersteller';
+  String get ownerRoleLabel => 'Leitung';
 
   @override
   String get adminRoleLabel => 'Admin';
@@ -1933,7 +1979,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String doYouWantToLeaveGroup(String groupName) {
-    return 'Möchtest du „$groupName“ verlassen?';
+    return 'Möchtest du „$groupName“ wirklich verlassen?';
   }
 
   @override
@@ -2352,8 +2398,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get groupMemberUpdated => 'Mitglied aktualisiert.';
 
   @override
-  String get groupCreatorMustRemainAdmin =>
-      'Der Ersteller der Gruppe muss Administrator bleiben.';
+  String get groupOwnerMustRemainAdmin =>
+      'Die Gruppenleitung muss Administrator bleiben.';
 
   @override
   String selectedGroupMembersCount(int count) {
@@ -2538,8 +2584,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get groupMemberRemoved => 'Mitglied aus der Gruppe entfernt.';
 
   @override
-  String get cannotRemoveGroupCreator =>
-      'Der Ersteller der Gruppe kann nicht entfernt werden.';
+  String get cannotRemoveGroupOwner =>
+      'Die Gruppenleitung kann nicht entfernt werden.';
 
   @override
   String get youCannotRemoveYourselfHere =>

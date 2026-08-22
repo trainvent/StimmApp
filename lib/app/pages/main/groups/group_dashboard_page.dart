@@ -31,7 +31,7 @@ class GroupDashboardPage extends StatelessWidget {
 
   String _roleLabel(BuildContext context, PollGroupRole? role, bool isCreator) {
     if (isCreator) {
-      return context.l10n.creatorRoleLabel;
+      return context.l10n.ownerRoleLabel;
     }
     return switch (role) {
       PollGroupRole.admin => context.l10n.adminRoleLabel,

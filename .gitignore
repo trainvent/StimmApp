@@ -145,3 +145,4 @@ playwright-report/
 
 # api etc
 .env
+mcp.json

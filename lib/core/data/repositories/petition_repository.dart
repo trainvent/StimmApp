@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -30,7 +31,7 @@ class PetitionRepository {
   Stream<List<Petition>> list({
     String? query,
     int? limit,
-    required String status,
+    required String? status,
   }) {
     final q = (query ?? '').trim().toLowerCase();
     final queryRef = _col();
@@ -51,7 +52,9 @@ class PetitionRepository {
     }
 
     return stream.map((petitions) {
-      return petitions.where((p) => p.status == status).toList();
+      return status == null
+          ? petitions
+          : petitions.where((p) => p.status == status).toList();
     });
   }
 
@@ -211,6 +214,36 @@ class PetitionRepository {
       batch.update(doc.reference, {'status': 'closed'});
     }
     await batch.commit();
+  }
+
+  Future<void> scheduleClose(String id) async {
+    await _col().doc(id).update({
+      'status': IConst.closing,
+      'scheduledCloseAt': Timestamp.fromDate(
+        DateTime.now().add(AppLimits.formClosureGracePeriod),
+      ),
+    });
+  }
+
+  Future<void> resume(String id) async {
+    final ref = _fs.instance.collection('petitions').doc(id);
+    await _fs.instance.runTransaction((transaction) async {
+      final snap = await transaction.get(ref);
+      final data = snap.data();
+      final scheduledCloseAt = data?['scheduledCloseAt'] as Timestamp?;
+      final expiresAt = data?['expiresAt'] as Timestamp?;
+      final now = DateTime.now();
+      if (data?['status'] != IConst.closing ||
+          scheduledCloseAt == null ||
+          !scheduledCloseAt.toDate().isAfter(now) ||
+          (expiresAt != null && !expiresAt.toDate().isAfter(now))) {
+        throw StateError('form_resume_window_expired');
+      }
+      transaction.update(ref, {
+        'status': IConst.active,
+        'scheduledCloseAt': FieldValue.delete(),
+      });
+    });
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> watchSignedPetitions(String uid) {

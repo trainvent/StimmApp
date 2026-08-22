@@ -9,9 +9,15 @@ abstract class HomeItem {
   String get createdBy;
   String get status;
   FormScope get scope;
-  DateTime get expiresAt;
+  DateTime? get expiresAt;
+  DateTime? get scheduledCloseAt;
   int get participantCount;
   List<String> get tags;
+
+  bool isExpiredAt(DateTime dateTime) {
+    final expiry = expiresAt;
+    return expiry != null && !expiry.isAfter(dateTime);
+  }
 
   String get scopeType => scope.firestoreType;
   String? get scopeUnionCode => scope.countryUnion?.code;

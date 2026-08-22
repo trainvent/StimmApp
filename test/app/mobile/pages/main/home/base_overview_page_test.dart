@@ -65,4 +65,29 @@ void main() {
     expect(subscriptionsCreated, initialSubscriptions);
     expect(find.text('Loaded petition'), findsOneWidget);
   });
+
+  testWidgets('rapid overview tab switching does not reuse subscriptions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        _RebuildHarness(
+          streamProvider: (_, _) => Stream.value(const <Petition>[]),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tabs = find.byType(Tab);
+    expect(tabs, findsNWidgets(2));
+    for (var index = 0; index < 5; index++) {
+      await tester.tap(tabs.at(1));
+      await tester.pump(const Duration(milliseconds: 20));
+      await tester.tap(tabs.at(0));
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
 }

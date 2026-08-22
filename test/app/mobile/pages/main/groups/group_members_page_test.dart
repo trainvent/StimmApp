@@ -116,6 +116,24 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(
+      find.text(
+        'Tap a member to edit them. Long-press to select one or more members to remove.',
+      ),
+      findsNothing,
+    );
+    await tester.tap(find.byKey(const Key('group_members_info')));
+    await tester.pumpAndSettle();
+    expect(find.text('Manage members'), findsNWidgets(2));
+    expect(
+      find.text(
+        'Tap a member to edit them. Long-press to select one or more members to remove.',
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byKey(const Key('group_member_member')));
     await tester.pumpAndSettle();
     await tester.enterText(

@@ -60,7 +60,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
           final uid = widget.auth.currentUser?.uid;
           final now = DateTime.now();
           return items
-              .where((p) => p.createdBy == uid && p.expiresAt.isAfter(now))
+              .where((p) => p.createdBy == uid && !p.isExpiredAt(now))
               .toList();
         });
   }
@@ -73,7 +73,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
         final uid = widget.auth.currentUser?.uid;
         final now = DateTime.now();
         return items
-            .where((p) => p.createdBy == uid && p.expiresAt.isAfter(now))
+            .where((p) => p.createdBy == uid && !p.isExpiredAt(now))
             .toList();
       },
     );
@@ -88,7 +88,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
           final uid = widget.auth.currentUser?.uid;
           final now = DateTime.now();
           return items
-              .where((s) => s.createdBy == uid && s.expiresAt.isAfter(now))
+              .where((s) => s.createdBy == uid && !s.isExpiredAt(now))
               .toList();
         });
   }
@@ -167,6 +167,54 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
     );
   }
 
+  Future<void> _closeForm(Future<void> Function() scheduleClose) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.closeForm),
+        content: Text(context.l10n.closeFormConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.closeForm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await scheduleClose();
+    if (mounted) showSuccessSnackBar(context.l10n.formClosureScheduled);
+  }
+
+  String _expiryLabel(DateTime? expiresAt) {
+    if (expiresAt == null) return context.l10n.openUntilClosed;
+    return '${context.l10n.expiresOn}: '
+        '${DateFormat('yyyy-MM-dd').format(expiresAt)}';
+  }
+
+  Widget _actions({required VoidCallback onClose, VoidCallback? onDelete}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          tooltip: context.l10n.closeForm,
+          icon: const Icon(Icons.stop_circle_outlined),
+          onPressed: onClose,
+        ),
+        if (onDelete != null)
+          IconButton(
+            tooltip: context.l10n.deleteForm,
+            icon: const Icon(Icons.delete),
+            onPressed: onDelete,
+          ),
+      ],
+    );
+  }
+
   void _openPetitionDetails(Petition petition) {
     Navigator.of(context).pushNamed('/petition/${petition.id}');
   }
@@ -229,16 +277,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
             return ListTile(
               title: Text(p.title),
-              subtitle: Text(
-                'Expires: ${DateFormat('yyyy-MM-dd').format(p.expiresAt)}',
-              ),
+              subtitle: Text(_expiryLabel(p.expiresAt)),
               onTap: () => _openPetitionDetails(p),
-              trailing: hasNoSignatures
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deletePetition(p),
-                    )
-                  : null,
+              trailing: _actions(
+                onClose: () => _closeForm(
+                  () => PetitionRepository.create().scheduleClose(p.id),
+                ),
+                onDelete: hasNoSignatures ? () => _deletePetition(p) : null,
+              ),
             );
           },
         );
@@ -270,16 +316,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
             return ListTile(
               title: Text(p.title),
-              subtitle: Text(
-                'Expires: ${DateFormat('yyyy-MM-dd').format(p.expiresAt)}',
-              ),
+              subtitle: Text(_expiryLabel(p.expiresAt)),
               onTap: () => _openPollDetails(p),
-              trailing: hasNoVotes
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deletePoll(p),
-                    )
-                  : null,
+              trailing: _actions(
+                onClose: () => _closeForm(
+                  () => PollRepository.create().scheduleClose(p.id),
+                ),
+                onDelete: hasNoVotes ? () => _deletePoll(p) : null,
+              ),
             );
           },
         );
@@ -311,16 +355,14 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
 
             return ListTile(
               title: Text(s.title),
-              subtitle: Text(
-                'Expires: ${DateFormat('yyyy-MM-dd').format(s.expiresAt)}',
-              ),
+              subtitle: Text(_expiryLabel(s.expiresAt)),
               onTap: () => _openSurveyDetails(s),
-              trailing: hasNoResponses
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteSurvey(s),
-                    )
-                  : null,
+              trailing: _actions(
+                onClose: () => _closeForm(
+                  () => SurveyRepository.create().scheduleClose(s.id),
+                ),
+                onDelete: hasNoResponses ? () => _deleteSurvey(s) : null,
+              ),
             );
           },
         );

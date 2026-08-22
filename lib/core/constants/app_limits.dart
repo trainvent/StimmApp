@@ -1,4 +1,7 @@
 class AppLimits {
+  static const int defaultFormDurationDays = 42;
+  static const Duration formClosureGracePeriod = Duration(hours: 24);
+
   static const int minTitleLength = 5;
   static const int maxTitleLength = 100;
 
@@ -14,7 +17,7 @@ class AppLimits {
   static const int maxSurveyOptionsPerQuestion = 10;
   static const int maxSurveyOptionLength = maxPollOptionLength;
 
-  static const int minUsernameLength = 4;
+  static const int minUsernameLength = 6;
   static const int maxDisplayNameLength = 30;
   static const int maxPersonNameLength = 40;
   static const int maxGroupNameLength = 80;

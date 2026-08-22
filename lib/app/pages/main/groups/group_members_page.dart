@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -76,7 +77,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   void _handleMemberLongPress(PollGroupMember member, UserProfile? profile) {
     final currentUid = _auth.currentUser?.uid;
     if (member.uid == widget.group.createdBy) {
-      showErrorSnackBar(context.l10n.cannotRemoveGroupCreator);
+      showErrorSnackBar(context.l10n.cannotRemoveGroupOwner);
       return;
     }
     if (member.uid == currentUid) {
@@ -202,7 +203,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    context.l10n.groupCreatorMustRemainAdmin,
+                    context.l10n.groupOwnerMustRemainAdmin,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -280,6 +281,13 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                 tooltip: context.l10n.remove,
                 onPressed: _removeSelectedMembers,
                 icon: const Icon(Icons.delete_outline),
+              )
+            else
+              InfoDialogButton(
+                key: const Key('group_members_info'),
+                title: context.l10n.manageGroupMembersTitle,
+                content: Text(context.l10n.manageGroupMembersDescription),
+                cornerImagePath: "assets/images/Lemm_teaching_technical.png",
               ),
           ],
         ),
@@ -301,20 +309,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
 
             return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: members.length + 1,
+              itemCount: members.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 20),
-                    child: Text(
-                      context.l10n.manageGroupMembersDescription,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  );
-                }
-
-                final member = members[index - 1];
+                final member = members[index];
                 return FutureBuilder<UserProfile?>(
                   future: _profileFutures.putIfAbsent(
                     member.uid,
@@ -383,7 +381,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                             : Chip(
                                 label: Text(
                                   isCreator
-                                      ? context.l10n.creatorRoleLabel
+                                      ? context.l10n.ownerRoleLabel
                                       : _roleLabel(context, member.role),
                                 ),
                               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
-import 'package:stimmapp/app/pages/main/groups/member_groups_page.dart';
+import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/app/pages/onboarding/login_page.dart';
@@ -183,7 +183,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
 
   void _openMemberGroups() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MemberGroupsPage()),
+      MaterialPageRoute(builder: (_) => const GroupsOverviewPage()),
     );
   }
 

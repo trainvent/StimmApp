@@ -97,36 +97,41 @@ exports.closeExpiredForms = (0, scheduler_1.onSchedule)("every 15 minutes", asyn
         { name: 'surveys' },
     ];
     for (const target of targets) {
-        const snap = await db
-            .collection(target.name)
-            .where('status', '==', 'active')
-            .where('expiresAt', '<=', now)
-            .get();
-        if (snap.empty) {
-            console.log(`[closeExpiredForms] No expired active ${target.name}.`);
-            continue;
-        }
-        let batch = db.batch();
-        let opCount = 0;
-        let closedCount = 0;
-        for (const doc of snap.docs) {
-            batch.update(doc.ref, {
-                status: 'closed',
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-            opCount++;
-            closedCount++;
-            // Keep margin below Firestore's 500 writes per batch limit.
-            if (opCount >= 400) {
-                await batch.commit();
-                batch = db.batch();
-                opCount = 0;
+        const closeMatching = async (status, dateField) => {
+            const snap = await db
+                .collection(target.name)
+                .where('status', '==', status)
+                .where(dateField, '<=', now)
+                .get();
+            if (snap.empty) {
+                console.log(`[closeExpiredForms] No ${status} ${target.name} due by ${dateField}.`);
+                return;
             }
-        }
-        if (opCount > 0) {
-            await batch.commit();
-        }
-        console.log(`[closeExpiredForms] Closed ${closedCount} ${target.name}.`);
+            let batch = db.batch();
+            let opCount = 0;
+            let closedCount = 0;
+            for (const doc of snap.docs) {
+                batch.update(doc.ref, {
+                    status: 'closed',
+                    scheduledCloseAt: admin.firestore.FieldValue.delete(),
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+                opCount++;
+                closedCount++;
+                if (opCount >= 400) {
+                    await batch.commit();
+                    batch = db.batch();
+                    opCount = 0;
+                }
+            }
+            if (opCount > 0) {
+                await batch.commit();
+            }
+            console.log(`[closeExpiredForms] Closed ${closedCount} ${target.name} by ${dateField}.`);
+        };
+        await closeMatching('active', 'expiresAt');
+        await closeMatching('closing', 'expiresAt');
+        await closeMatching('closing', 'scheduledCloseAt');
     }
 });
 __exportStar(require("./user_cleanup"), exports);

@@ -166,6 +166,20 @@
 	"googleSyncSucceeded": "Profile synced",
 	"googleSyncFailed": "Couldn’t sync Google profile",
 	"daysLeft": "Days Left",
+	"duration": "Duration",
+	"durationDays": "{count, plural, =1{1 day} other{{count} days}}",
+	"@durationDays": {
+		"placeholders": {"count": {"type": "int"}}
+	},
+	"openUntilClosed": "Open until closed",
+	"openUntilClosedDescription": "Keep this form open until you close it manually.",
+	"closeForm": "Close form",
+	"closeFormConfirmation": "Stop this form now? You can resume it from Finished Forms for the next 24 hours. After that, it closes permanently.",
+	"formClosureScheduled": "Form stopped. You can resume it for 24 hours.",
+	"resumeForm": "Resume form",
+	"formResumed": "Form resumed.",
+	"closureFinalizesAt": "Permanent closure: {date}",
+	"@closureFinalizesAt": {"placeholders": {"date": {"type": "String"}}},
 	"deleteAccount": "Delete Account",
 	"deleteAccountButton": "PERMANENTLY DELETE ACCOUNT",
 	"deleteAccountDescription": "Please sign in to confirm your identity. This action will permanently delete your account and all associated data.",
@@ -349,6 +363,7 @@
 	"processId": "Process ID",
 	"products": "Products",
 	"profile": "Profile",
+	"changeProfilePicture": "Change profile picture",
 	"profilePictureUpdated": "Profile picture updated",
 	"uploadingProfilePicture": "Uploading profile picture",
 	"purchaseCancelled": "Purchase cancelled.",
@@ -703,7 +718,7 @@
 			}
 		}
 	},
-	"creatorRoleLabel": "Creator",
+	"ownerRoleLabel": "Owner",
 	"adminRoleLabel": "Admin",
 	"memberRoleLabel": "Member",
 	"groupAccessSummary": "Access: {accessMode} • Members: {memberCount} • {expiry}",
@@ -739,7 +754,7 @@
 	"adminElectionVotingClosed": "Voting is closed. The result will be applied shortly.",
 	"noActiveAdminElection": "There is no active admin election.",
 	"noAdminElectionCandidates": "There are no eligible candidates.",
-	"doYouWantToLeaveGroup": "Do you want to leave \"{groupName}\"?",
+	"doYouWantToLeaveGroup": "Do you really want to leave \"{groupName}\"?",
 	"@doYouWantToLeaveGroup": {
 		"placeholders": {
 			"groupName": {
@@ -932,7 +947,7 @@
 	"manageGroupMembersDescription": "Tap a member to edit them. Long-press to select one or more members to remove.",
 	"editGroupMemberTitle": "Edit member",
 	"groupMemberUpdated": "Member updated.",
-	"groupCreatorMustRemainAdmin": "The group creator must remain an admin.",
+	"groupOwnerMustRemainAdmin": "The group owner must remain an admin.",
 	"selectedGroupMembersCount": "{count, plural, =1{1 selected} other{{count} selected}}",
 	"@selectedGroupMembersCount": { "placeholders": { "count": { "type": "int" } } },
 	"removeSelectedGroupMembersTitle": "Remove selected members?",
@@ -998,7 +1013,7 @@
 		}
 	},
 	"groupMemberRemoved": "Member removed from the group.",
-	"cannotRemoveGroupCreator": "The group creator cannot be removed.",
+	"cannotRemoveGroupOwner": "The group owner cannot be removed.",
 	"youCannotRemoveYourselfHere": "You cannot remove yourself from this page.",
 	"unknownGroupMember": "Unknown member",
 	"membersCanChooseTheirOwnNickname": "Members can choose their own nickname",
