@@ -287,6 +287,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                 key: const Key('group_members_info'),
                 title: context.l10n.manageGroupMembersTitle,
                 content: Text(context.l10n.manageGroupMembersDescription),
+                cornerImagePath: "assets/images/Lemm_teaching_technical.png",
               ),
           ],
         ),

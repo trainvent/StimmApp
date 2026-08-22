@@ -621,7 +621,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           InfoDialogButton(
             title: widget.title,
             content: _buildTutorialContent(),
-            cornerImagePath: true,
+            cornerImagePath: "assets/images/Lemm_teaching.png",
           ),
         ],
       ),
