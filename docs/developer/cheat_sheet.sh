@@ -64,6 +64,7 @@ firebase functions:secrets:set
 firebase use --add
 
 # firebase: deploy functions per project
+./ci_scripts/preflight_functions_deploy.sh
 firebase deploy --only functions --project stimmapp-dev
 firebase deploy --only functions --project stimmapp-f0141
 firebase deploy --only functions --project vivot-prod
