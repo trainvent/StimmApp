@@ -43,7 +43,7 @@ class BrandConfig {
     supportEmail: 'support@trainvent.com',
     privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
     privacyPolicyCrashDataUrl:
-        'https://www.stimmapp.net/privacy_policy_crashdata.html',
+        'https://www.stimmapp.net/privacy_policy_crashdata',
     privacyPolicyCookiesUrl: 'https://www.stimmapp.net/privacy-policy',
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',
@@ -57,7 +57,7 @@ class BrandConfig {
     supportEmail: 'support@trainvent.com',
     privacyPolicyUrl: 'https://www.stimmapp.net/privacy-policy',
     privacyPolicyCrashDataUrl:
-        'https://www.stimmapp.net/privacy_policy_crashdata.html',
+        'https://www.stimmapp.net/privacy_policy_crashdata',
     privacyPolicyCookiesUrl: 'https://www.stimmapp.net/privacy-policy',
     termsOfServiceUrl: 'https://www.stimmapp.net/terms-of-service',
     faqUrl: 'https://www.stimmapp.net/faq',

@@ -36,8 +36,8 @@ class Environment {
   static String privacyPolicyUrlForLocale(Locale locale) {
     if (!isStimmapp) return privacyPolicyUrl;
     return locale.languageCode.toLowerCase() == 'de'
-        ? 'https://www.stimmapp.net/datenschutzerklaerung.html'
-        : 'https://www.stimmapp.net/privacy_policy.html';
+        ? 'https://www.stimmapp.net/datenschutzerklaerung'
+        : 'https://www.stimmapp.net/privacy_policy';
   }
 
   static String get privacyPolicyCrashDataUrl =>
@@ -47,8 +47,8 @@ class Environment {
   static String termsOfServiceUrlForLocale(Locale locale) {
     if (!isStimmapp) return termsOfServiceUrl;
     return locale.languageCode.toLowerCase() == 'de'
-        ? 'https://www.stimmapp.net/nutzungsbedingungen.html'
-        : 'https://www.stimmapp.net/terms-of-service.html';
+        ? 'https://www.stimmapp.net/nutzungsbedingungen'
+        : 'https://www.stimmapp.net/terms-of-service';
   }
 
   static String get faqUrl => config.faqUrl;

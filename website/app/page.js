@@ -164,10 +164,10 @@ export default function HomePage() {
           </p>
         </div>
         <div className="footer-links">
-          <a href="privacy_policy.html">{copy.footerPrivacy}</a>
-          <a href="terms-of-service.html">{copy.footerTerms}</a>
-          <a href="support.html">{copy.footerSupport}</a>
-          <a href="faq.html">FAQ</a>
+          <a href="/privacy_policy">{copy.footerPrivacy}</a>
+          <a href="/terms-of-service">{copy.footerTerms}</a>
+          <a href="/support">{copy.footerSupport}</a>
+          <a href="/faq">FAQ</a>
         </div>
       </footer>
       </div>
