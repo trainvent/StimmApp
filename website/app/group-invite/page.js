@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SubpageShell from '../../components/subpage-shell';
 
 export default function GroupInvitePage() {
   const [invalidInvite, setInvalidInvite] = useState(false);
@@ -28,7 +29,8 @@ export default function GroupInvitePage() {
   const brand = isVivot ? 'Vivot' : 'StimmApp';
 
   return (
-    <main className="invite-page">
+    <SubpageShell locale={isVivot ? 'en' : 'de'} centered>
+      <div className="invite-page">
       <section className="section-card invite-card">
         <img
           className="invite-logo"
@@ -55,6 +57,7 @@ export default function GroupInvitePage() {
           </a>
         )}
       </section>
-    </main>
+      </div>
+    </SubpageShell>
   );
 }

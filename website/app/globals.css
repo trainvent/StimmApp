@@ -609,11 +609,15 @@ a.micro-card span {
   flex-wrap: wrap;
 }
 
+.footer-links a,
+.footer-subservice a {
+  text-underline-offset: 3px;
+}
+
 .invite-page {
-  min-height: 100vh;
+  width: 100%;
   display: grid;
   place-items: center;
-  padding: 24px;
 }
 
 .invite-card {
@@ -733,6 +737,18 @@ a.micro-card span {
 
   .micro-list {
     width: 100%;
+  }
+
+  .footer {
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .footer-links {
+    width: 100%;
+    gap: 10px 16px;
   }
 }
 

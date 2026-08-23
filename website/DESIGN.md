@@ -1,9 +1,9 @@
 # StimmApp / Vivot Website Design Brief
 
-Status: source of truth for a new Google Stitch website project  
-Primary deliverable: responsive public marketing website  
-Implementation target: the existing Next.js site in `website/`  
-Languages: German and English  
+Status: source of truth for a new Google Stitch website project
+Primary deliverable: responsive public marketing website
+Implementation target: the existing Next.js site in `website/`
+Languages: German and English
 Brands: StimmApp and Vivot
 
 ## 1. Project setup in Stitch
@@ -61,7 +61,7 @@ The home page should help a visitor answer, in order:
 4. Why does the project need partners?
 5. How can my organization make contact?
 
-Primary conversion: open or download the product.  
+Primary conversion: open or download the product.
 Secondary conversion: contact Trainvent about cooperation.
 
 The page should feel credible enough for a public-sector visitor while remaining
@@ -85,7 +85,7 @@ Keep these production links unchanged:
 - App Store: `https://apps.apple.com/app/stimmapp/id6759249651`
 - German contact: `https://next.trainvent.com/de/contact/`
 - English contact: `https://next.trainvent.com/en/contact/`
-- Email: `info@trainvent.com`
+- Email: `support@trainvent.com`
 - Provider: `https://next.trainvent.com/`
 
 Required footer destinations:

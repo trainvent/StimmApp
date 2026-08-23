@@ -1,0 +1,41 @@
+.scroller {
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(22, 79, 43, 0.1), transparent 34rem),
+    linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 48%, #fff 100%);
+}
+
+.frame {
+  display: flex;
+  width: min(calc(100% - 32px), var(--max));
+  min-height: 100%;
+  margin: 0 auto;
+  flex-direction: column;
+}
+
+.main {
+  display: flex;
+  width: 100%;
+  flex: 1 0 auto;
+  align-items: flex-start;
+  padding: clamp(36px, 6vw, 76px) 0;
+}
+
+.centered {
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 620px) {
+  .frame {
+    width: min(calc(100% - 24px), var(--max));
+  }
+
+  .main {
+    padding: 28px 0 36px;
+  }
+}

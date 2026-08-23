@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
+import SiteFooter from '../components/site-footer';
+import SiteHeader from '../components/site-header';
 import de from '../messages/de.json';
 import en from '../messages/en.json';
 
@@ -70,15 +72,7 @@ export default function HomePage() {
       </div>
 
       <div className="shell">
-      <header className="nav">
-        <a className="brand" href="./">
-          <img className="brand-mark" src="icons/Icon-512.png" alt={copy.logoAlt} />
-          <span>{copy.brand}</span>
-        </a>
-        <nav className="nav-links">
-          <a className="button" href={copy.appUrl}>{copy.navOpenApp}</a>
-        </nav>
-      </header>
+      <SiteHeader copy={copy} />
 
       <main>
         <section className="hero">
@@ -154,22 +148,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="footer">
-        <div className="footer-meta">
-          <p className="footer-subservice">
-            {copy.footerSubserviceText}{' '}
-            <a href="https://next.trainvent.com/" target="_blank" rel="noreferrer">
-              {copy.footerSubserviceLink}
-            </a>
-          </p>
-        </div>
-        <div className="footer-links">
-          <a href={isEnglish ? '/privacy-policy' : '/datenschutzerklaerung'}>{copy.footerPrivacy}</a>
-          <a href={isEnglish ? '/terms-of-service' : '/nutzungsbedingungen'}>{copy.footerTerms}</a>
-          <a href="/support">{copy.footerSupport}</a>
-          <a href="/faq">FAQ</a>
-        </div>
-      </footer>
+      <SiteFooter copy={copy} />
       </div>
     </div>
   );

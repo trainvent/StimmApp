@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './content-page.module.css';
+import SubpageShell from './subpage-shell';
 
 const FIREBASE_API_KEY = 'AIzaSyD8neBcTS2fkkRJf_GG-l4hD5dGArstQW8';
 
@@ -91,7 +92,7 @@ function TermsOfService({ copy }) {
       <h2>{copy.licenseHeading}</h2><p>{copy.license}</p>
       <p><Link href="/license">{copy.licenseLink}</Link></p>
       <h2>{copy.contactHeading}</h2>
-      <p>{copy.contact} <a href="mailto:info@trainvent.com">info@trainvent.com</a></p>
+      <p>{copy.contact} <a href="mailto:support@trainvent.com">support@trainvent.com</a></p>
       <p><Link href="/support">{copy.supportLink}</Link></p>
     </article>
   );
@@ -104,7 +105,7 @@ function Faq({ copy, locale }) {
     <article className={`${styles.document} ${styles.card}`}>
       <h1>{copy.heading}</h1>
       <h2>{copy.questionDelete}</h2>
-      <p>{copy.answerDeletePrefix} <Link href="/delete-account">{copy.deleteLink}</Link> {copy.answerDeleteMiddle} <a href="mailto:info@trainvent.com">info@trainvent.com</a>.</p>
+      <p>{copy.answerDeletePrefix} <Link href="/delete-account">{copy.deleteLink}</Link> {copy.answerDeleteMiddle} <a href="mailto:support@trainvent.com">support@trainvent.com</a>.</p>
       <h2>{copy.questionTechnical}</h2>
       <p>{copy.answerTechnical}</p>
       <h2>{copy.questionLegal}</h2>
@@ -255,5 +256,9 @@ export default function ContentPage({ page, explicitLocale, messages }) {
     }
   }, [copy]);
 
-  return <div className={page === 'marketing' ? styles.marketingPage : styles.page}><PageComponent copy={copy} locale={locale} /></div>;
+  return (
+    <SubpageShell locale={locale} centered={page === 'marketing'}>
+      <PageComponent copy={copy} locale={locale} />
+    </SubpageShell>
+  );
 }

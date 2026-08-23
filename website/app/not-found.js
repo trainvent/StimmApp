@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SubpageShell from '../components/subpage-shell';
 
 const formRoutePattern = /^\/(petition|poll|survey)\/[^/]+\/?$/;
 const mobilePattern = /Android|iPhone|iPad|iPod|Mobile/i;
@@ -75,7 +76,8 @@ export default function NotFoundPage() {
   const isNotFound = linkState.status === 'not-found';
 
   return (
-    <main className="invite-page">
+    <SubpageShell locale={isVivot ? 'en' : 'de'} centered>
+      <div className="invite-page">
       <section className="section-card invite-card form-link-card">
         <img
           className="invite-logo"
@@ -121,6 +123,7 @@ export default function NotFoundPage() {
           </a>
         )}
       </section>
-    </main>
+      </div>
+    </SubpageShell>
   );
 }
