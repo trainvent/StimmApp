@@ -141,6 +141,7 @@ __exportStar(require("./data_sync"), exports);
 __exportStar(require("./poll_groups"), exports);
 __exportStar(require("./poll_group_elections"), exports);
 __exportStar(require("./share_page"), exports);
+__exportStar(require("./pid_verification"), exports);
 // Conditionally export test_data_seeder only if NOT in production
 // Replace 'stimmapp-prod' with your actual production project ID if different
 const PROD_PROJECT_ID = 'stimmapp-f0141';

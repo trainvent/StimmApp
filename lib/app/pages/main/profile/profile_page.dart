@@ -10,6 +10,7 @@ import 'package:stimmapp/app/pages/main/profile/list/blocked_users_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/publications_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_living_address_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_email_page.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_settings/change_password_page.dart';
@@ -445,6 +446,30 @@ class ProfilePage extends ConsumerWidget {
                                     givenName: userProfile.givenName,
                                     surname: userProfile.surname,
                                   ),
+                          ),
+                          _buildDetailTile(
+                            key: keys.profilePage.verifiedListTile,
+                            context,
+                            'Verified',
+                            userProfile.isVerified == true ? 'Yes' : 'No',
+                            leading: Icon(
+                              userProfile.isVerified == true
+                                  ? Icons.verified_rounded
+                                  : Icons.verified_outlined,
+                              color: userProfile.isVerified == true
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PidVerificationPage(
+                                    reverify: userProfile.isVerified == true,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           _buildDetailTile(
                             context,

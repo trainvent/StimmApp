@@ -2,6 +2,11 @@
 
 This document serves as a guide for AI agents and developers working on the StimmApp project. It outlines the project structure, key architectural decisions, common workflows, and known gotchas.
 
+## External Resources
+
+*   [EUDI Wallet Developer Guide](https://bmi.usercontent.opencode.de/eudi-wallet/developer-guide) — official developer documentation for the German EUDI Wallet ecosystem, including onboarding, OpenID4VP, PID verification, and RP integration guidance.
+*   For the PID/OpenID4VP implementation path, prefer SD-JWT VC for a web/backend verifier and use mDoc only when the use case specifically requires ISO 18013-style mobile document flows.
+
 ## 1. Project Overview
 
 StimmApp is a Flutter-based mobile application for creating and signing petitions and polls. It uses Firebase for its backend (Auth, Firestore, Storage, Functions).
