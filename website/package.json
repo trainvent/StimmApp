@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/create-clean-urls.mjs"
+    "build": "next build && node scripts/create-route-aliases.mjs"
   },
   "dependencies": {
     "@splinetool/react-spline": "^4.1.0",

@@ -20,7 +20,7 @@ Upload this file as the project's `DESIGN.md`. Upload the following visual asset
 alongside it:
 
 - `public/icons/Icon-512.png`
-- `public/3d_background.png`
+- `public/images/3d-background.png`
 - `public/store-badges/app-store-de.svg`
 - `public/store-badges/app-store-en.svg`
 - `public/store-badges/google-play-de.svg`
@@ -71,8 +71,8 @@ clear and welcoming to an ordinary participant.
 
 Use the existing localized copy in:
 
-- `public/i18n/de.json`
-- `public/i18n/en.json`
+- `messages/de.json`
+- `messages/en.json`
 
 That copy is the factual source of truth. Stitch may improve hierarchy and split
 long passages across sections, but it must not invent partners, testimonials,
@@ -177,7 +177,7 @@ app, but readability comes before visual novelty.
 
 ### Imagery and 3D background
 
-`public/3d_background.png` and the current Spline scene may be used as a hero
+`public/images/3d-background.png` and the current Spline scene may be used as a hero
 atmosphere, but content cannot depend on WebGL. The static image is the required
 fallback and should still produce a complete design.
 
@@ -345,4 +345,3 @@ Use this after uploading the brief and assets:
 > product from the secondary cooperation path. Do not invent screenshots,
 > statistics, partners, testimonials, or capabilities. Stop after the home page
 > so the direction can be reviewed before generating other routes.
-

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
-import de from '../public/i18n/de.json';
-import en from '../public/i18n/en.json';
+import de from '../messages/de.json';
+import en from '../messages/en.json';
 
 const copyByHost = {
   de,
@@ -55,7 +55,7 @@ export default function HomePage() {
       <div className="page-background" aria-hidden="true">
         <img
           className={`page-background-fallback${canUseWebGL === false ? ' is-visible' : ''}`}
-          src="/3d_background.png"
+          src="/images/3d-background.png"
           alt=""
         />
         {canUseWebGL && (
@@ -164,8 +164,8 @@ export default function HomePage() {
           </p>
         </div>
         <div className="footer-links">
-          <a href="/privacy-policy">{copy.footerPrivacy}</a>
-          <a href="/terms-of-service">{copy.footerTerms}</a>
+          <a href={isEnglish ? '/privacy-policy' : '/datenschutzerklaerung'}>{copy.footerPrivacy}</a>
+          <a href={isEnglish ? '/terms-of-service' : '/nutzungsbedingungen'}>{copy.footerTerms}</a>
           <a href="/support">{copy.footerSupport}</a>
           <a href="/faq">FAQ</a>
         </div>
