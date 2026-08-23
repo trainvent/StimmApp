@@ -137,6 +137,7 @@ export * from './data_sync';
 export * from './poll_groups';
 export * from './poll_group_elections';
 export * from './share_page';
+export * from './pid_verification';
 
 // Conditionally export test_data_seeder only if NOT in production
 // Replace 'stimmapp-prod' with your actual production project ID if different
