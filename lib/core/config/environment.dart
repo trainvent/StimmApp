@@ -37,7 +37,7 @@ class Environment {
     if (!isStimmapp) return privacyPolicyUrl;
     return locale.languageCode.toLowerCase() == 'de'
         ? 'https://www.stimmapp.net/datenschutzerklaerung'
-        : 'https://www.stimmapp.net/privacy_policy';
+        : 'https://www.stimmapp.net/privacy-policy';
   }
 
   static String get privacyPolicyCrashDataUrl =>

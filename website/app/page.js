@@ -164,7 +164,7 @@ export default function HomePage() {
           </p>
         </div>
         <div className="footer-links">
-          <a href="/privacy_policy">{copy.footerPrivacy}</a>
+          <a href="/privacy-policy">{copy.footerPrivacy}</a>
           <a href="/terms-of-service">{copy.footerTerms}</a>
           <a href="/support">{copy.footerSupport}</a>
           <a href="/faq">FAQ</a>
