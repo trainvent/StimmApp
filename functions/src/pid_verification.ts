@@ -1,12 +1,17 @@
 import express from 'express';
+import { createHash } from 'node:crypto';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { error as logError, warn as logWarning } from 'firebase-functions/logger';
 
 async function loadCredoDeps() {
-  const [coreModule, nodeModule, askarModule, openidModule] = await Promise.all([
+  const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
     import('@credo-ts/core'),
     import('@credo-ts/node'),
     import('@credo-ts/askar'),
     import('@credo-ts/openid4vc'),
+    // Load the native implementation alongside the Askar adapter. Loading it
+    // later can leave the adapter bound to an unregistered native singleton.
+    import('@openwallet-foundation/askar-nodejs'),
   ]);
 
   return {
@@ -17,7 +22,7 @@ async function loadCredoDeps() {
     TypedArrayEncoder: coreModule.TypedArrayEncoder,
     agentDependencies: nodeModule.agentDependencies,
     AskarModule: askarModule.AskarModule,
-    askar: await import('@openwallet-foundation/askar-nodejs').then((module) => module.askar),
+    askar: nativeAskarModule.askar,
     transformPrivateKeyToPrivateJwk: askarModule.transformPrivateKeyToPrivateJwk,
     OpenId4VcModule: openidModule.OpenId4VcModule,
   };
@@ -27,6 +32,7 @@ const PID_VERIFIER_SECRET = process.env.PID_VERIFIER_SECRET ?? 'stimmapp-pid-ver
 const PID_VERIFIER_BASE_URL = process.env.PID_VERIFIER_BASE_URL ?? 'https://localhost/oid4vp';
 
 const VERIFICATION_SESSION_STATE_INDEX = new Map<string, string>();
+let pidVerifierAgentPromise: ReturnType<typeof initializePidVerifierAgent> | undefined;
 
 type PidVerificationMode = 'registration' | 'reverification';
 
@@ -54,6 +60,9 @@ type VerifiedPidPresentation = {
   verificationSessionId: string;
 };
 
+// Credo's DCQL type is ESM-only while this Functions package is CommonJS.
+// Keep this boundary untyped and validate it by creating a real request in the
+// sandbox smoke test.
 const pidDcql: any = {
   credential_sets: [
     {
@@ -64,16 +73,14 @@ const pidDcql: any = {
   credentials: [
     {
       id: 'pid-sd-jwt',
-      format: 'vc+sd-jwt',
+      format: 'dc+sd-jwt',
       meta: {
-        vct_values: ['eu_eid_pid'],
+        vct_values: ['urn:eudi:pid:de:1'],
       },
       claims: [
         { path: ['given_name'] },
         { path: ['family_name'] },
-        { path: ['birth_date'] },
-        { path: ['date_of_birth'] },
-        { path: ['person_identifier'] },
+        { path: ['birthdate'] },
       ],
     },
   ],
@@ -118,7 +125,16 @@ function decodePidClaimsFromVerifiedResponse(value: Record<string, unknown>): Re
   return found;
 }
 
-async function ensurePidVerifierAgent() {
+/**
+ * Credo expects an Ed25519 seed to contain exactly 32 bytes. Environment
+ * secrets are arbitrary-length strings, so passing their UTF-8 bytes directly
+ * makes Askar fail with "Invalid key data".
+ */
+function deriveVerifierPrivateKey(secret: string): Uint8Array {
+  return new Uint8Array(createHash('sha256').update(secret, 'utf8').digest());
+}
+
+async function initializePidVerifierAgent() {
   const deps = await loadCredoDeps();
   const app = express() as any;
   const config = {
@@ -135,6 +151,13 @@ async function ensurePidVerifierAgent() {
         store: {
           id: 'stimmapp-pid-verifier-store',
           key: 'stimmapp-pid-verifier-key',
+          // Cloud Functions only guarantees that /tmp is writable. An
+          // in-memory store also avoids stale/locked SQLite files between
+          // requests in a warm instance.
+          database: {
+            type: 'sqlite',
+            config: { inMemory: true },
+          },
         },
       }),
       openid4vc: new deps.OpenId4VcModule({
@@ -148,12 +171,19 @@ async function ensurePidVerifierAgent() {
 
   await agent.initialize();
 
+  if (!process.env.PID_VERIFIER_SECRET) {
+    logWarning(
+      'PID_VERIFIER_SECRET is not configured; using the sandbox fallback. ' +
+      'Do not use this verifier identity in production.',
+    );
+  }
+
   const { privateJwk } = deps.transformPrivateKeyToPrivateJwk({
     type: {
       crv: 'Ed25519',
       kty: 'OKP',
     },
-    privateKey: deps.TypedArrayEncoder.fromUtf8String(PID_VERIFIER_SECRET),
+    privateKey: deriveVerifierPrivateKey(PID_VERIFIER_SECRET),
   });
 
   const { keyId } = await agent.kms.importKey({ privateJwk });
@@ -162,7 +192,13 @@ async function ensurePidVerifierAgent() {
     options: { keyId },
   } as any);
 
-  const did = didCreateResult.didState.did as string;
+  const did = didCreateResult.didState.did;
+  if (!did) {
+    throw new HttpsError(
+      'internal',
+      `Unable to create verifier DID: ${JSON.stringify(didCreateResult.didState)}`,
+    );
+  }
   const didKey = deps.DidKey.fromDid(did);
   const kid = `${did}#${didKey.publicJwk.fingerprint}`;
   const verificationMethod = didCreateResult.didState.didDocument?.dereferenceKey(kid, ['authentication']);
@@ -180,6 +216,19 @@ async function ensurePidVerifierAgent() {
     verificationMethod,
     verifierRecord,
   };
+}
+
+function ensurePidVerifierAgent() {
+  if (!pidVerifierAgentPromise) {
+    pidVerifierAgentPromise = initializePidVerifierAgent().catch((error) => {
+      // Permit a later invocation to recover from a transient initialization
+      // failure instead of retaining a rejected promise for the instance.
+      pidVerifierAgentPromise = undefined;
+      throw error;
+    });
+  }
+
+  return pidVerifierAgentPromise;
 }
 
 async function createPidVerificationRequest(options: PidVerificationRequestInput): Promise<CreatePidVerificationRequestResult> {
@@ -242,11 +291,20 @@ export const createPidVerificationRequestCallable = onCall(async (request) => {
       ? 'Periodic identity re-verification'
       : 'Registration verification';
 
-  const result = await createPidVerificationRequest({
-    mode,
-    purpose,
-    returnUrl: typeof request.data?.returnUrl === 'string' ? request.data.returnUrl : undefined,
-  });
+  let result: CreatePidVerificationRequestResult;
+  try {
+    result = await createPidVerificationRequest({
+      mode,
+      purpose,
+      returnUrl: typeof request.data?.returnUrl === 'string' ? request.data.returnUrl : undefined,
+    });
+  } catch (error) {
+    logError('Failed to create PID verification request.', error);
+    throw new HttpsError(
+      'internal',
+      'The PID verifier could not create a request. Check the verifier configuration and retry.',
+    );
+  }
 
   return {
     ok: true,
@@ -289,11 +347,7 @@ export const pidVerificationRequestPreview = {
   mode: 'registration',
   purpose: 'Register a user by verifying their German PID attributes.',
   recommendedFormat: 'SD-JWT VC',
-  attributes: [
-    'given_name',
-    'family_name',
-    'birth_date',
-    'date_of_birth',
-    'person_identifier',
-  ],
+  credentialFormat: 'dc+sd-jwt',
+  credentialType: 'urn:eudi:pid:de:1',
+  attributes: ['given_name', 'family_name', 'birthdate'],
 };

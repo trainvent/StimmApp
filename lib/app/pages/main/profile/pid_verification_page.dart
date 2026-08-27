@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
+import 'package:trainvent_general/trainvent_general.dart';
 
 class PidVerificationPage extends ConsumerStatefulWidget {
   const PidVerificationPage({super.key, this.reverify = false});
@@ -44,6 +46,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
       final response = await pidVerificationService.createRequest(
         reverify: widget.reverify || userProfile?.isVerified == true,
       );
+      if (!mounted) return;
       final expiresAt = DateTime.tryParse(response.expiresAt);
       setState(() {
         _authorizationRequest = response.authorizationRequest;
@@ -51,7 +54,15 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
         _purpose = response.purpose;
         _expiresAt = expiresAt;
       });
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error =
+            error.message ??
+            'The PID verifier is unavailable. Please try again.';
+      });
     } catch (error) {
+      if (!mounted) return;
       setState(() {
         _error = error.toString();
       });
@@ -180,10 +191,16 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
                   child: FilledButton.icon(
                     onPressed: _isLoading ? null : _startVerification,
                     icon: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: TriangleLoadingIndicator(
+                              size: 18,
+                              showFill: false,
+                              strokeColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                            ),
                           )
                         : const Icon(Icons.verified_user_outlined),
                     label: Text(
