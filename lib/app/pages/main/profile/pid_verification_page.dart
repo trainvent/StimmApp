@@ -1,4 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,12 +53,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
         _purpose = response.purpose;
         _expiresAt = expiresAt;
       });
-    } on FirebaseFunctionsException catch (error) {
+    } on PidVerificationException catch (error) {
       if (!mounted) return;
       setState(() {
-        _error =
-            error.message ??
-            'The PID verifier is unavailable. Please try again.';
+        _error = error.message;
       });
     } catch (error) {
       if (!mounted) return;

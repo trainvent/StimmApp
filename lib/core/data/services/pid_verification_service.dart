@@ -1,4 +1,8 @@
-import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
 
 final pidVerificationService = PidVerificationService();
 
@@ -31,64 +35,62 @@ class PidVerificationRequestResponse {
   }
 }
 
-class PidVerificationResult {
-  const PidVerificationResult({
-    required this.verificationSessionId,
-    required this.pidClaims,
-    required this.verified,
-  });
-
-  final String verificationSessionId;
-  final Map<String, dynamic> pidClaims;
-  final Map<String, dynamic> verified;
-
-  factory PidVerificationResult.fromJson(Map<String, dynamic> json) {
-    final data = Map<String, dynamic>.from(json);
-    return PidVerificationResult(
-      verificationSessionId: (data['verificationSessionId'] ?? '').toString(),
-      pidClaims: Map<String, dynamic>.from(data['pidClaims'] ?? const <String, dynamic>{}),
-      verified: Map<String, dynamic>.from(data['verified'] ?? const <String, dynamic>{}),
-    );
-  }
-}
-
 class PidVerificationService {
-  const PidVerificationService({FirebaseFunctions? functions})
-      : _functions = functions;
+  PidVerificationService({FirebaseAuth? auth, http.Client? client})
+    : _auth = auth ?? FirebaseAuth.instance,
+      _client = client ?? http.Client();
 
-  final FirebaseFunctions? _functions;
-
-  FirebaseFunctions get functions => _functions ?? FirebaseFunctions.instance;
+  final FirebaseAuth _auth;
+  final http.Client _client;
 
   Future<PidVerificationRequestResponse> createRequest({
     required bool reverify,
     String? purpose,
     String? returnUrl,
   }) async {
-    final result = await functions
-        .httpsCallable('createPidVerificationRequestCallable')
-        .call<Map<String, dynamic>>({
-          'mode': reverify ? 'reverification' : 'registration',
-          'purpose': purpose,
-          'returnUrl': returnUrl,
-        });
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw const PidVerificationException(
+        'You need to be signed in to verify your identity.',
+      );
+    }
 
-    final payload = Map<String, dynamic>.from(result.data as Map);
+    final projectId = Firebase.app().options.projectId;
+    final response = await _client.post(
+      Uri.parse('https://$projectId.web.app/oid4vp/start'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'mode': reverify ? 'reverification' : 'registration',
+        'purpose': purpose,
+        'returnUrl': returnUrl,
+      }),
+    );
+
+    final decoded = jsonDecode(response.body);
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        decoded is! Map<String, dynamic>) {
+      final message = decoded is Map<String, dynamic>
+          ? decoded['error']?.toString()
+          : null;
+      throw PidVerificationException(
+        message ?? 'The PID verifier is unavailable. Please try again.',
+      );
+    }
+
+    final payload = decoded;
     return PidVerificationRequestResponse.fromJson(payload);
   }
+}
 
-  Future<PidVerificationResult> verifyResponse({
-    required String verificationSessionId,
-    required Map<String, dynamic> authorizationResponse,
-  }) async {
-    final result = await functions
-        .httpsCallable('verifyPidVerificationResponseCallable')
-        .call<Map<String, dynamic>>({
-          'verificationSessionId': verificationSessionId,
-          'authorizationResponse': authorizationResponse,
-        });
+class PidVerificationException implements Exception {
+  const PidVerificationException(this.message);
 
-    final payload = Map<String, dynamic>.from(result.data as Map);
-    return PidVerificationResult.fromJson(payload);
-  }
+  final String message;
+
+  @override
+  String toString() => message;
 }

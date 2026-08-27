@@ -43,6 +43,10 @@
 		],
 		"rewrites": [
 			{
+				"source": "/oid4vp/**",
+				"function": "pidVerifier"
+			},
+			{
 				"source": "/group-invite",
 				"function": "sharePage"
 			},
