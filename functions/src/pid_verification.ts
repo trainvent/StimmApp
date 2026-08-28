@@ -202,9 +202,12 @@ type VerifiedPidClaims = {
   givenName: string | null;
   familyName: string | null;
   birthdate: string | null;
+  streetAddress: string | null;
   postalCode: string | null;
   locality: string | null;
+  region: string | null;
   country: string | null;
+  formattedAddress: string | null;
 };
 
 // Credo's DCQL type is ESM-only while this Functions package is CommonJS.
@@ -228,8 +231,10 @@ const pidDcql: any = {
         { path: ['given_name'] },
         { path: ['family_name'] },
         { path: ['birthdate'] },
+        { path: ['address', 'street_address'] },
         { path: ['address', 'postal_code'] },
         { path: ['address', 'locality'] },
+        { path: ['address', 'region'] },
         { path: ['address', 'country'] },
       ],
     },
@@ -385,13 +390,27 @@ async function getVerifiedPidClaims(agent: any, sessionId: string): Promise<Veri
   const presentation = verified.dcql?.presentations?.['pid-sd-jwt']?.[0];
   const claims = presentation?.prettyClaims;
   const address = claims?.address;
+  const streetAddress = typeof address?.street_address === 'string' ?
+    address.street_address : null;
+  const postalCode = typeof address?.postal_code === 'string' ?
+    address.postal_code : null;
+  const locality = typeof address?.locality === 'string' ? address.locality : null;
+  const region = typeof address?.region === 'string' ? address.region : null;
+  const country = typeof address?.country === 'string' ? address.country : null;
+  const postalLocality = [postalCode, locality].filter(Boolean).join(' ');
+  const formattedAddressParts = [streetAddress, postalLocality || null, country]
+    .filter(Boolean);
   return {
     givenName: typeof claims?.given_name === 'string' ? claims.given_name : null,
     familyName: typeof claims?.family_name === 'string' ? claims.family_name : null,
     birthdate: typeof claims?.birthdate === 'string' ? claims.birthdate : null,
-    postalCode: typeof address?.postal_code === 'string' ? address.postal_code : null,
-    locality: typeof address?.locality === 'string' ? address.locality : null,
-    country: typeof address?.country === 'string' ? address.country : null,
+    streetAddress,
+    postalCode,
+    locality,
+    region,
+    country,
+    formattedAddress: formattedAddressParts.length > 0 ?
+      formattedAddressParts.join(', ') : null,
   };
 }
 
@@ -470,8 +489,12 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
 
     const claims = await getVerifiedPidClaims(agent, sessionId);
     if (!claims.givenName || !claims.familyName ||
-        !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate)) {
-      response.status(422).json({ error: 'The verified PID is missing required identity fields.' });
+        !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate) ||
+        !claims.streetAddress || !claims.postalCode || !claims.locality ||
+        !claims.country || !claims.formattedAddress) {
+      response.status(422).json({
+        error: 'The verified PID is missing identity or full residential address fields.',
+      });
       return;
     }
     const dateOfBirth = new Date(`${claims.birthdate}T12:00:00.000Z`);
@@ -484,8 +507,10 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
       givenName: claims.givenName,
       surname: claims.familyName,
       dateOfBirth: Timestamp.fromDate(dateOfBirth),
-      ...(claims.locality ? { town: claims.locality } : {}),
-      ...(claims.country ? { countryCode: claims.country.toUpperCase() } : {}),
+      address: claims.formattedAddress,
+      town: claims.locality,
+      ...(claims.region ? { state: claims.region } : {}),
+      countryCode: claims.country.toUpperCase(),
       isVerified: true,
       gotVerifiedAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -537,8 +562,10 @@ export const pidVerificationRequestPreview = {
     'given_name',
     'family_name',
     'birthdate',
+    'address.street_address',
     'address.postal_code',
     'address.locality',
+    'address.region',
     'address.country',
   ],
 };

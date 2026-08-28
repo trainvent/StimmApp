@@ -181,8 +181,10 @@ const pidDcql = {
                 { path: ['given_name'] },
                 { path: ['family_name'] },
                 { path: ['birthdate'] },
+                { path: ['address', 'street_address'] },
                 { path: ['address', 'postal_code'] },
                 { path: ['address', 'locality'] },
+                { path: ['address', 'region'] },
                 { path: ['address', 'country'] },
             ],
         },
@@ -317,13 +319,27 @@ async function getVerifiedPidClaims(agent, sessionId) {
     const presentation = (_c = (_b = (_a = verified.dcql) === null || _a === void 0 ? void 0 : _a.presentations) === null || _b === void 0 ? void 0 : _b['pid-sd-jwt']) === null || _c === void 0 ? void 0 : _c[0];
     const claims = presentation === null || presentation === void 0 ? void 0 : presentation.prettyClaims;
     const address = claims === null || claims === void 0 ? void 0 : claims.address;
+    const streetAddress = typeof (address === null || address === void 0 ? void 0 : address.street_address) === 'string' ?
+        address.street_address : null;
+    const postalCode = typeof (address === null || address === void 0 ? void 0 : address.postal_code) === 'string' ?
+        address.postal_code : null;
+    const locality = typeof (address === null || address === void 0 ? void 0 : address.locality) === 'string' ? address.locality : null;
+    const region = typeof (address === null || address === void 0 ? void 0 : address.region) === 'string' ? address.region : null;
+    const country = typeof (address === null || address === void 0 ? void 0 : address.country) === 'string' ? address.country : null;
+    const postalLocality = [postalCode, locality].filter(Boolean).join(' ');
+    const formattedAddressParts = [streetAddress, postalLocality || null, country]
+        .filter(Boolean);
     return {
         givenName: typeof (claims === null || claims === void 0 ? void 0 : claims.given_name) === 'string' ? claims.given_name : null,
         familyName: typeof (claims === null || claims === void 0 ? void 0 : claims.family_name) === 'string' ? claims.family_name : null,
         birthdate: typeof (claims === null || claims === void 0 ? void 0 : claims.birthdate) === 'string' ? claims.birthdate : null,
-        postalCode: typeof (address === null || address === void 0 ? void 0 : address.postal_code) === 'string' ? address.postal_code : null,
-        locality: typeof (address === null || address === void 0 ? void 0 : address.locality) === 'string' ? address.locality : null,
-        country: typeof (address === null || address === void 0 ? void 0 : address.country) === 'string' ? address.country : null,
+        streetAddress,
+        postalCode,
+        locality,
+        region,
+        country,
+        formattedAddress: formattedAddressParts.length > 0 ?
+            formattedAddressParts.join(', ') : null,
     };
 }
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
@@ -400,8 +416,12 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
         }
         const claims = await getVerifiedPidClaims(agent, sessionId);
         if (!claims.givenName || !claims.familyName ||
-            !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate)) {
-            response.status(422).json({ error: 'The verified PID is missing required identity fields.' });
+            !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate) ||
+            !claims.streetAddress || !claims.postalCode || !claims.locality ||
+            !claims.country || !claims.formattedAddress) {
+            response.status(422).json({
+                error: 'The verified PID is missing identity or full residential address fields.',
+            });
             return;
         }
         const dateOfBirth = new Date(`${claims.birthdate}T12:00:00.000Z`);
@@ -409,7 +429,7 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
             response.status(422).json({ error: 'The verified PID contains an invalid birth date.' });
             return;
         }
-        await (0, firestore_1.getFirestore)().collection('users').doc(user.uid).set(Object.assign(Object.assign(Object.assign({ givenName: claims.givenName, surname: claims.familyName, dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth) }, (claims.locality ? { town: claims.locality } : {})), (claims.country ? { countryCode: claims.country.toUpperCase() } : {})), { isVerified: true, gotVerifiedAt: firestore_1.FieldValue.serverTimestamp(), updatedAt: firestore_1.FieldValue.serverTimestamp() }), { merge: true });
+        await (0, firestore_1.getFirestore)().collection('users').doc(user.uid).set(Object.assign(Object.assign({ givenName: claims.givenName, surname: claims.familyName, dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth), address: claims.formattedAddress, town: claims.locality }, (claims.region ? { state: claims.region } : {})), { countryCode: claims.country.toUpperCase(), isVerified: true, gotVerifiedAt: firestore_1.FieldValue.serverTimestamp(), updatedAt: firestore_1.FieldValue.serverTimestamp() }), { merge: true });
         response.json({ ok: true, claims });
     }
     catch (error) {
@@ -450,8 +470,10 @@ exports.pidVerificationRequestPreview = {
         'given_name',
         'family_name',
         'birthdate',
+        'address.street_address',
         'address.postal_code',
         'address.locality',
+        'address.region',
         'address.country',
     ],
 };

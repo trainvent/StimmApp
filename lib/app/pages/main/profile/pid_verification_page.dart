@@ -144,9 +144,14 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
             verifiedValue: _verifiedClaims['birthdate'],
           ),
           _PidFieldComparison(
-            label: 'City',
-            currentValue: profile?.town,
-            verifiedValue: _verifiedClaims['locality'],
+            label: 'Living address',
+            currentValue: profile?.address,
+            verifiedValue: _verifiedClaims['formattedAddress'],
+          ),
+          _PidFieldComparison(
+            label: 'State or region',
+            currentValue: profile?.state,
+            verifiedValue: _verifiedClaims['region'],
           ),
           _PidFieldComparison(
             label: 'Country',
@@ -371,16 +376,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                                         ),
                                       );
                                     }),
-                                    if (_verifiedClaims['postalCode']
-                                            ?.isNotEmpty ==
-                                        true)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: Text(
-                                          'Verified postal code: ${_verifiedClaims['postalCode']} '
-                                          '(shown for review; your street address is not changed)',
-                                        ),
-                                      ),
                                     const SizedBox(height: 16),
                                     if (_acceptedCredentials)
                                       const Row(
