@@ -1,9 +1,9 @@
 import express from 'express';
-import { createPrivateKey, createPublicKey, randomUUID } from 'node:crypto';
+import { createPrivateKey, createPublicKey, randomUUID, verify as verifySignature } from 'node:crypto';
 import { getAuth } from 'firebase-admin/auth';
 import { defineSecret } from 'firebase-functions/params';
 import { HttpsError, onRequest } from 'firebase-functions/v2/https';
-import { error as logError } from 'firebase-functions/logger';
+import { error as logError, warn as logWarning } from 'firebase-functions/logger';
 
 async function loadCredoDeps() {
   const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
@@ -20,6 +20,7 @@ async function loadCredoDeps() {
     Agent: coreModule.Agent,
     ConsoleLogger: coreModule.ConsoleLogger,
     LogLevel: coreModule.LogLevel,
+    X509Module: coreModule.X509Module,
     X509Certificate: coreModule.X509Certificate,
     agentDependencies: nodeModule.agentDependencies,
     AskarModule: askarModule.AskarModule,
@@ -34,12 +35,152 @@ const pidRegistrationCertificateSecret = defineSecret('PID_REGISTRATION_CERTIFIC
 
 const PID_VERIFIER_BASE_URL = process.env.PID_VERIFIER_BASE_URL ??
   'https://stimmapp-dev.web.app/oid4vp';
+const PID_SANDBOX_TRUST_LIST_BASE_URL =
+  'https://bmi.usercontent.opencode.de/eudi-wallet/test-trust-lists';
+
+type PidTrustListCache = {
+  certificates: string[];
+  validUntil: number;
+};
+
+let pidTrustListCache: PidTrustListCache | undefined;
+let pidTrustListPromise: Promise<PidTrustListCache> | undefined;
+
+function decodeBase64UrlJson(value: string): Record<string, any> {
+  return JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as Record<string, any>;
+}
+
+function pemCertificateBody(value: string) {
+  return value
+    .replace(/-----BEGIN CERTIFICATE-----/g, '')
+    .replace(/-----END CERTIFICATE-----/g, '')
+    .replace(/\s/g, '');
+}
+
+async function fetchPidSandboxTrustList(): Promise<PidTrustListCache> {
+  const [trustListResponse, signingCertificateResponse] = await Promise.all([
+    fetch(`${PID_SANDBOX_TRUST_LIST_BASE_URL}/pid-provider.jwt`),
+    fetch(`${PID_SANDBOX_TRUST_LIST_BASE_URL}/certificate.pem`),
+  ]);
+  if (!trustListResponse.ok || !signingCertificateResponse.ok) {
+    throw new Error('The official EUDI sandbox PID trust list could not be downloaded.');
+  }
+
+  const compactJwt = (await trustListResponse.text()).trim();
+  const signingCertificate = (await signingCertificateResponse.text()).trim();
+  const parts = compactJwt.split('.');
+  if (parts.length !== 3) {
+    throw new Error('The official EUDI sandbox PID trust list is not a compact JWT.');
+  }
+
+  const header = decodeBase64UrlJson(parts[0]);
+  if (header.alg !== 'ES256' || header.typ !== 'trustlist+jwt' ||
+      !Array.isArray(header.x5c) || header.x5c[0] !== pemCertificateBody(signingCertificate)) {
+    throw new Error('The official EUDI sandbox PID trust-list signer is invalid.');
+  }
+
+  const signatureValid = verifySignature(
+    'sha256',
+    Buffer.from(`${parts[0]}.${parts[1]}`, 'ascii'),
+    { key: signingCertificate, dsaEncoding: 'ieee-p1363' },
+    Buffer.from(parts[2], 'base64url'),
+  );
+  if (!signatureValid) {
+    throw new Error('The official EUDI sandbox PID trust-list signature is invalid.');
+  }
+
+  const payload = decodeBase64UrlJson(parts[1]);
+  const listInformation = payload.LoTE?.ListAndSchemeInformation;
+  const issueTime = Date.parse(listInformation?.ListIssueDateTime ?? '');
+  const nextUpdate = Date.parse(listInformation?.NextUpdate ?? '');
+  const now = Date.now();
+  if (!Number.isFinite(issueTime) || !Number.isFinite(nextUpdate) ||
+      issueTime > now + 5 * 60 * 1000 || nextUpdate <= now) {
+    throw new Error('The official EUDI sandbox PID trust list is not currently valid.');
+  }
+
+  const entities = payload.LoTE?.TrustedEntitiesList;
+  const certificates = Array.isArray(entities) ? entities.flatMap((entity: any) => {
+    const services = entity?.TrustedEntityServices;
+    if (!Array.isArray(services)) return [];
+    return services.flatMap((service: any) => {
+      const information = service?.ServiceInformation;
+      if (information?.ServiceTypeIdentifier !== 'http://uri.etsi.org/19602/SvcType/PID/Issuance') {
+        return [];
+      }
+      const values = information?.ServiceDigitalIdentity?.X509Certificates;
+      if (!Array.isArray(values)) return [];
+      return values.map((certificate: any) => certificate?.val)
+        .filter((certificate: unknown): certificate is string =>
+          typeof certificate === 'string' && certificate.length > 0);
+    });
+  }) : [];
+  const uniqueCertificates = [...new Set(certificates)];
+  if (uniqueCertificates.length === 0) {
+    throw new Error('The official EUDI sandbox PID trust list contains no PID issuance certificates.');
+  }
+
+  return {
+    certificates: uniqueCertificates,
+    // Refresh before the signed list expires, but avoid downloading it for
+    // each verification handled by a warm Cloud Functions instance.
+    validUntil: Math.min(nextUpdate - 5 * 60 * 1000, now + 60 * 60 * 1000),
+  };
+}
+
+async function getPidSandboxTrustCertificates() {
+  if (pidTrustListCache && pidTrustListCache.validUntil > Date.now()) {
+    return pidTrustListCache.certificates;
+  }
+  if (!pidTrustListPromise) {
+    pidTrustListPromise = fetchPidSandboxTrustList()
+      .then((result) => (pidTrustListCache = result))
+      .finally(() => {
+        pidTrustListPromise = undefined;
+      });
+  }
+  return (await pidTrustListPromise).certificates;
+}
 
 const pidVerifierApp = express();
 pidVerifierApp.use(express.json());
 pidVerifierApp.use(express.urlencoded({ extended: false }));
+pidVerifierApp.use((request, response, next) => {
+  if (!request.path.endsWith('/authorize')) {
+    next();
+    return;
+  }
+
+  let oauthError: { error?: unknown; error_description?: unknown } | undefined;
+  const originalJson = response.json.bind(response);
+  response.json = ((body: unknown) => {
+    if (response.statusCode >= 400 && body && typeof body === 'object') {
+      const value = body as Record<string, unknown>;
+      oauthError = {
+        error: value.error,
+        error_description: value.error_description,
+      };
+    }
+    return originalJson(body);
+  }) as typeof response.json;
+
+  response.on('finish', () => {
+    if (response.statusCode >= 400) {
+      logWarning('EUDI wallet response rejected.', {
+        status: response.statusCode,
+        error: typeof oauthError?.error === 'string' ? oauthError.error : undefined,
+        errorDescription: typeof oauthError?.error_description === 'string' ?
+          oauthError.error_description : undefined,
+        session: typeof request.query.session === 'string' ? request.query.session : undefined,
+      });
+    }
+  });
+
+  next();
+});
 
 let pidVerifierAgentPromise: ReturnType<typeof initializePidVerifierAgent> | undefined;
+const pidVerificationSessionOwners = new Map<string, { uid: string; expiresAt: number }>();
 
 type PidVerificationMode = 'registration' | 'reverification';
 
@@ -95,6 +236,12 @@ async function initializePidVerifierAgent() {
     config,
     dependencies: deps.agentDependencies,
     modules: {
+      x509: new deps.X509Module({
+        getTrustedCertificatesForVerification: async (_agentContext: unknown, context: any) => {
+          if (context?.verification?.type !== 'credential') return undefined;
+          return getPidSandboxTrustCertificates();
+        },
+      }),
       askar: new deps.AskarModule({
         askar: deps.askar,
         store: {
@@ -168,7 +315,10 @@ function ensurePidVerifierAgent() {
   return pidVerifierAgentPromise;
 }
 
-async function createPidVerificationRequest(options: PidVerificationRequestInput): Promise<CreatePidVerificationRequestResult> {
+async function createPidVerificationRequest(
+  options: PidVerificationRequestInput,
+  ownerUid: string,
+): Promise<CreatePidVerificationRequestResult> {
   const { agent, accessCertificate, registrationCertificate, verifierRecord } = await ensurePidVerifierAgent();
 
   const { authorizationRequest, verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
@@ -199,6 +349,10 @@ async function createPidVerificationRequest(options: PidVerificationRequestInput
     sessionInfo.id ?? sessionInfo.verificationSessionId ?? sessionInfo.authorizationRequestId ?? 'unknown-session',
   );
   const state = sessionInfo.authorizationRequestPayload?.state ?? verificationSessionId;
+  pidVerificationSessionOwners.set(verificationSessionId, {
+    uid: ownerUid,
+    expiresAt: verificationSession.expiresAt?.getTime() ?? Date.now() + 5 * 60 * 1000,
+  });
 
   return {
     authorizationRequest,
@@ -218,11 +372,11 @@ async function requireFirebaseUser(request: express.Request) {
 
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
   try {
-    await requireFirebaseUser(request);
+    const user = await requireFirebaseUser(request);
     const mode = request.body?.mode === 'reverification' ? 'reverification' : 'registration';
     const purpose = typeof request.body?.purpose === 'string' ? request.body.purpose :
       mode === 'reverification' ? 'Periodic identity re-verification' : 'Registration verification';
-    const result = await createPidVerificationRequest({ mode, purpose });
+    const result = await createPidVerificationRequest({ mode, purpose }, user.uid);
     response.json({ ok: true, mode, purpose, ...result });
   } catch (error) {
     const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
@@ -231,6 +385,54 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     }
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' : 'The PID verifier could not create a request.',
+    });
+  }
+});
+
+pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
+  try {
+    const user = await requireFirebaseUser(request);
+    const sessionId = request.params.sessionId;
+    const owner = pidVerificationSessionOwners.get(sessionId);
+    if (!owner || owner.uid !== user.uid) {
+      response.status(404).json({ error: 'Verification session not found.' });
+      return;
+    }
+
+    const { agent } = await ensurePidVerifierAgent();
+    const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
+    if (session.state === 'ResponseVerified') {
+      const verified = await agent.openid4vc.verifier.getVerifiedAuthorizationResponse(sessionId);
+      const presentation = (verified as any).dcql?.presentations?.['pid-sd-jwt']?.[0];
+      const claims = presentation?.prettyClaims;
+      const address = claims?.address;
+      response.json({
+        status: 'verified',
+        claims: {
+          givenName: typeof claims?.given_name === 'string' ? claims.given_name : null,
+          familyName: typeof claims?.family_name === 'string' ? claims.family_name : null,
+          birthdate: typeof claims?.birthdate === 'string' ? claims.birthdate : null,
+          postalCode: typeof address?.postal_code === 'string' ? address.postal_code : null,
+          locality: typeof address?.locality === 'string' ? address.locality : null,
+          country: typeof address?.country === 'string' ? address.country : null,
+        },
+      });
+      return;
+    }
+    if (session.state === 'Error') {
+      response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
+      return;
+    }
+    if (owner.expiresAt <= Date.now()) {
+      response.json({ status: 'expired' });
+      return;
+    }
+    response.json({ status: 'pending' });
+  } catch (error) {
+    const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
+    if (status === 500) logError('Failed to read PID verification status.', error);
+    response.status(status).json({
+      error: status === 401 ? 'Authentication is required.' : 'The PID verification status is unavailable.',
     });
   }
 });

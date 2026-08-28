@@ -19,13 +19,36 @@ class PidVerificationPage extends ConsumerStatefulWidget {
       _PidVerificationPageState();
 }
 
-class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
+class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
+    with WidgetsBindingObserver {
   bool _isLoading = false;
+  bool _isCheckingStatus = false;
   String? _authorizationRequest;
   String? _verificationSessionId;
+  String? _verificationStatus;
+  Map<String, String?> _verifiedClaims = const {};
   String? _error;
   String? _purpose;
   DateTime? _expiresAt;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _verificationSessionId != null) {
+      _pollVerificationStatus();
+    }
+  }
 
   Future<void> _startVerification() async {
     final currentUser = ref.read(currentUserProvider);
@@ -40,6 +63,8 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
     setState(() {
       _isLoading = true;
       _error = null;
+      _verificationStatus = null;
+      _verifiedClaims = const {};
     });
 
     try {
@@ -69,6 +94,36 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _pollVerificationStatus() async {
+    final sessionId = _verificationSessionId;
+    if (sessionId == null || _isCheckingStatus) return;
+    _isCheckingStatus = true;
+    if (mounted) setState(() => _verificationStatus = 'pending');
+    try {
+      for (var attempt = 0; attempt < 10; attempt++) {
+        final result = await pidVerificationService.getStatus(sessionId);
+        if (!mounted || sessionId != _verificationSessionId) return;
+        setState(() {
+          _verificationStatus = result.status;
+          _verifiedClaims = result.claims;
+          if (result.status == 'failed') {
+            _error =
+                result.error ?? 'The PID presentation could not be verified.';
+          } else if (result.status == 'expired') {
+            _error =
+                'The PID verification request expired. Please create a new one.';
+          }
+        });
+        if (result.isFinished) return;
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+    } on PidVerificationException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    } finally {
+      _isCheckingStatus = false;
     }
   }
 
@@ -170,6 +225,49 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
               else if (_authorizationRequest == null)
                 const SizedBox.shrink(),
               if (_authorizationRequest != null) ...[
+                if (_verificationStatus != null) ...[
+                  const SizedBox(height: 8),
+                  Card(
+                    color: _verificationStatus == 'verified'
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : null,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                _verificationStatus == 'verified'
+                                    ? Icons.verified_rounded
+                                    : Icons.hourglass_top_rounded,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _verificationStatus == 'verified'
+                                    ? 'PID verified'
+                                    : 'Waiting for wallet response…',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          if (_verificationStatus == 'verified')
+                            ..._verifiedClaims.entries
+                                .where(
+                                  (entry) => entry.value?.isNotEmpty == true,
+                                )
+                                .map(
+                                  (entry) => Padding(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    child: Text('${entry.key}: ${entry.value}'),
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 Text(
                   'Authorization request',

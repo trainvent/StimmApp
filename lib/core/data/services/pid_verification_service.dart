@@ -84,6 +84,63 @@ class PidVerificationService {
     final payload = decoded;
     return PidVerificationRequestResponse.fromJson(payload);
   }
+
+  Future<PidVerificationStatusResponse> getStatus(String sessionId) async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw const PidVerificationException(
+        'You need to be signed in to verify your identity.',
+      );
+    }
+
+    final projectId = Firebase.app().options.projectId;
+    final response = await _client.get(
+      Uri.parse(
+        'https://$projectId.web.app/oid4vp/status/${Uri.encodeComponent(sessionId)}',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    final decoded = jsonDecode(response.body);
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        decoded is! Map<String, dynamic>) {
+      final message = decoded is Map<String, dynamic>
+          ? decoded['error']?.toString()
+          : null;
+      throw PidVerificationException(
+        message ?? 'The PID verification status is unavailable.',
+      );
+    }
+    return PidVerificationStatusResponse.fromJson(decoded);
+  }
+}
+
+class PidVerificationStatusResponse {
+  const PidVerificationStatusResponse({
+    required this.status,
+    required this.claims,
+    this.error,
+  });
+
+  final String status;
+  final Map<String, String?> claims;
+  final String? error;
+
+  bool get isFinished =>
+      status == 'verified' || status == 'failed' || status == 'expired';
+
+  factory PidVerificationStatusResponse.fromJson(Map<String, dynamic> json) {
+    final rawClaims = json['claims'];
+    return PidVerificationStatusResponse(
+      status: (json['status'] ?? 'pending').toString(),
+      claims: rawClaims is Map
+          ? rawClaims.map(
+              (key, value) => MapEntry(key.toString(), value?.toString()),
+            )
+          : const {},
+      error: json['error']?.toString(),
+    );
+  }
 }
 
 class PidVerificationException implements Exception {

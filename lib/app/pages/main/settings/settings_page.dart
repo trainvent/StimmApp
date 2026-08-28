@@ -137,13 +137,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       CircleAvatar(
                         radius: 16,
                         backgroundColor: Colors.transparent,
-                        backgroundImage: const AssetImage(
-                          AppAssets.defaultAvatar,
+                        child: ClipOval(
+                          child: currentUrl != null && currentUrl.isNotEmpty
+                              ? Image.network(
+                                  currentUrl,
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Image.asset(
+                                        AppAssets.defaultAvatar,
+                                        width: 32,
+                                        height: 32,
+                                        fit: BoxFit.cover,
+                                      ),
+                                )
+                              : Image.asset(
+                                  AppAssets.defaultAvatar,
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
-                        foregroundImage:
-                            currentUrl != null && currentUrl.isNotEmpty
-                            ? NetworkImage(currentUrl)
-                            : null,
                       ),
                       const SizedBox(width: 12),
                       const Icon(Icons.arrow_forward_ios_outlined),
