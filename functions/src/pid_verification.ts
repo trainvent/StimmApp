@@ -234,7 +234,6 @@ const pidDcql: any = {
         { path: ['address', 'street_address'] },
         { path: ['address', 'postal_code'] },
         { path: ['address', 'locality'] },
-        { path: ['address', 'region'] },
         { path: ['address', 'country'] },
       ],
     },
