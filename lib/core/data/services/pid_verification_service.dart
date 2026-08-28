@@ -113,6 +113,32 @@ class PidVerificationService {
     }
     return PidVerificationStatusResponse.fromJson(decoded);
   }
+
+  Future<void> acceptVerifiedCredentials(String sessionId) async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw const PidVerificationException(
+        'You need to be signed in to verify your identity.',
+      );
+    }
+
+    final projectId = Firebase.app().options.projectId;
+    final response = await _client.post(
+      Uri.parse(
+        'https://$projectId.web.app/oid4vp/accept/${Uri.encodeComponent(sessionId)}',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    final decoded = jsonDecode(response.body);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final message = decoded is Map<String, dynamic>
+          ? decoded['error']?.toString()
+          : null;
+      throw PidVerificationException(
+        message ?? 'The verified PID could not be saved.',
+      );
+    }
+  }
 }
 
 class PidVerificationStatusResponse {

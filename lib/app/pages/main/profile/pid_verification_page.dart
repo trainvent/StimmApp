@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -23,6 +24,8 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     with WidgetsBindingObserver {
   bool _isLoading = false;
   bool _isCheckingStatus = false;
+  bool _isAcceptingCredentials = false;
+  bool _acceptedCredentials = false;
   String? _authorizationRequest;
   String? _verificationSessionId;
   String? _verificationStatus;
@@ -65,6 +68,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       _error = null;
       _verificationStatus = null;
       _verifiedClaims = const {};
+      _acceptedCredentials = false;
     });
 
     try {
@@ -96,6 +100,67 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       }
     }
   }
+
+  Future<void> _acceptVerifiedCredentials() async {
+    final sessionId = _verificationSessionId;
+    if (sessionId == null || _isAcceptingCredentials) return;
+    setState(() {
+      _isAcceptingCredentials = true;
+      _error = null;
+    });
+    try {
+      await pidVerificationService.acceptVerifiedCredentials(sessionId);
+      if (!mounted) return;
+      setState(() => _acceptedCredentials = true);
+      showSuccessSnackBar('Your profile now uses the verified EUDI details.');
+    } on PidVerificationException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    } finally {
+      if (mounted) setState(() => _isAcceptingCredentials = false);
+    }
+  }
+
+  String _normalizedIdentityValue(String? value) =>
+      value?.trim().replaceAll(RegExp(r'\s+'), ' ').toUpperCase() ?? '';
+
+  List<_PidFieldComparison> _comparisons(UserProfile? profile) {
+    final profileBirthdate = profile?.dateOfBirth == null
+        ? null
+        : DateFormat('yyyy-MM-dd').format(profile!.dateOfBirth!);
+    return [
+          _PidFieldComparison(
+            label: 'Given name',
+            currentValue: profile?.givenName,
+            verifiedValue: _verifiedClaims['givenName'],
+          ),
+          _PidFieldComparison(
+            label: 'Surname',
+            currentValue: profile?.surname,
+            verifiedValue: _verifiedClaims['familyName'],
+          ),
+          _PidFieldComparison(
+            label: 'Date of birth',
+            currentValue: profileBirthdate,
+            verifiedValue: _verifiedClaims['birthdate'],
+          ),
+          _PidFieldComparison(
+            label: 'City',
+            currentValue: profile?.town,
+            verifiedValue: _verifiedClaims['locality'],
+          ),
+          _PidFieldComparison(
+            label: 'Country',
+            currentValue: profile?.countryCode,
+            verifiedValue: _verifiedClaims['country'],
+          ),
+        ]
+        .where((comparison) => comparison.verifiedValue?.isNotEmpty == true)
+        .toList();
+  }
+
+  bool _valuesMatch(_PidFieldComparison comparison) =>
+      _normalizedIdentityValue(comparison.currentValue) ==
+      _normalizedIdentityValue(comparison.verifiedValue);
 
   Future<void> _pollVerificationStatus() async {
     final sessionId = _verificationSessionId;
@@ -252,17 +317,114 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                               ),
                             ],
                           ),
-                          if (_verificationStatus == 'verified')
-                            ..._verifiedClaims.entries
-                                .where(
-                                  (entry) => entry.value?.isNotEmpty == true,
-                                )
-                                .map(
-                                  (entry) => Padding(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    child: Text('${entry.key}: ${entry.value}'),
-                                  ),
-                                ),
+                          if (_verificationStatus == 'verified') ...[
+                            const SizedBox(height: 12),
+                            Builder(
+                              builder: (context) {
+                                final comparisons = _comparisons(userProfile);
+                                final hasMismatch = comparisons.any(
+                                  (comparison) => !_valuesMatch(comparison),
+                                );
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      hasMismatch
+                                          ? 'Some verified details differ from your profile.'
+                                          : 'Your verified details match your profile.',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...comparisons.map((comparison) {
+                                      final matches = _valuesMatch(comparison);
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Icon(
+                                              matches
+                                                  ? Icons.check_circle_outline
+                                                  : Icons.warning_amber_rounded,
+                                              color: matches
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                  : Theme.of(
+                                                      context,
+                                                    ).colorScheme.error,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                '${comparison.label}\n'
+                                                'Profile: ${comparison.currentValue?.isNotEmpty == true ? comparison.currentValue : 'Not provided'}\n'
+                                                'EUDI: ${comparison.verifiedValue}',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                                    if (_verifiedClaims['postalCode']
+                                            ?.isNotEmpty ==
+                                        true)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          'Verified postal code: ${_verifiedClaims['postalCode']} '
+                                          '(shown for review; your street address is not changed)',
+                                        ),
+                                      ),
+                                    const SizedBox(height: 16),
+                                    if (_acceptedCredentials)
+                                      const Row(
+                                        children: [
+                                          Icon(Icons.check_circle_rounded),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Verified EUDI details saved to your profile.',
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    else
+                                      FilledButton.icon(
+                                        onPressed: _isAcceptingCredentials
+                                            ? null
+                                            : _acceptVerifiedCredentials,
+                                        icon: _isAcceptingCredentials
+                                            ? SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child: TriangleLoadingIndicator(
+                                                  size: 18,
+                                                  showFill: false,
+                                                  strokeColor: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onPrimary,
+                                                ),
+                                              )
+                                            : const Icon(
+                                                Icons.person_pin_rounded,
+                                              ),
+                                        label: Text(
+                                          hasMismatch
+                                              ? 'Use verified EUDI details'
+                                              : 'Confirm verified identity',
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -348,4 +510,16 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       ),
     );
   }
+}
+
+class _PidFieldComparison {
+  const _PidFieldComparison({
+    required this.label,
+    required this.currentValue,
+    required this.verifiedValue,
+  });
+
+  final String label;
+  final String? currentValue;
+  final String? verifiedValue;
 }

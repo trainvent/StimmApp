@@ -1,6 +1,7 @@
 import express from 'express';
 import { createPrivateKey, createPublicKey, randomUUID, verify as verifySignature } from 'node:crypto';
 import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import { HttpsError, onRequest } from 'firebase-functions/v2/https';
 import { error as logError, warn as logWarning } from 'firebase-functions/logger';
@@ -197,6 +198,15 @@ type CreatePidVerificationRequestResult = {
   expiresAt: string;
 };
 
+type VerifiedPidClaims = {
+  givenName: string | null;
+  familyName: string | null;
+  birthdate: string | null;
+  postalCode: string | null;
+  locality: string | null;
+  country: string | null;
+};
+
 // Credo's DCQL type is ESM-only while this Functions package is CommonJS.
 // Keep this boundary untyped and validate it by creating a real request in the
 // sandbox smoke test.
@@ -370,6 +380,21 @@ async function requireFirebaseUser(request: express.Request) {
   return getAuth().verifyIdToken(authorization.substring('Bearer '.length));
 }
 
+async function getVerifiedPidClaims(agent: any, sessionId: string): Promise<VerifiedPidClaims> {
+  const verified = await agent.openid4vc.verifier.getVerifiedAuthorizationResponse(sessionId);
+  const presentation = verified.dcql?.presentations?.['pid-sd-jwt']?.[0];
+  const claims = presentation?.prettyClaims;
+  const address = claims?.address;
+  return {
+    givenName: typeof claims?.given_name === 'string' ? claims.given_name : null,
+    familyName: typeof claims?.family_name === 'string' ? claims.family_name : null,
+    birthdate: typeof claims?.birthdate === 'string' ? claims.birthdate : null,
+    postalCode: typeof address?.postal_code === 'string' ? address.postal_code : null,
+    locality: typeof address?.locality === 'string' ? address.locality : null,
+    country: typeof address?.country === 'string' ? address.country : null,
+  };
+}
+
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
   try {
     const user = await requireFirebaseUser(request);
@@ -402,20 +427,9 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     const { agent } = await ensurePidVerifierAgent();
     const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
     if (session.state === 'ResponseVerified') {
-      const verified = await agent.openid4vc.verifier.getVerifiedAuthorizationResponse(sessionId);
-      const presentation = (verified as any).dcql?.presentations?.['pid-sd-jwt']?.[0];
-      const claims = presentation?.prettyClaims;
-      const address = claims?.address;
       response.json({
         status: 'verified',
-        claims: {
-          givenName: typeof claims?.given_name === 'string' ? claims.given_name : null,
-          familyName: typeof claims?.family_name === 'string' ? claims.family_name : null,
-          birthdate: typeof claims?.birthdate === 'string' ? claims.birthdate : null,
-          postalCode: typeof address?.postal_code === 'string' ? address.postal_code : null,
-          locality: typeof address?.locality === 'string' ? address.locality : null,
-          country: typeof address?.country === 'string' ? address.country : null,
-        },
+        claims: await getVerifiedPidClaims(agent, sessionId),
       });
       return;
     }
@@ -433,6 +447,56 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     if (status === 500) logError('Failed to read PID verification status.', error);
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' : 'The PID verification status is unavailable.',
+    });
+  }
+});
+
+pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
+  try {
+    const user = await requireFirebaseUser(request);
+    const sessionId = request.params.sessionId;
+    const owner = pidVerificationSessionOwners.get(sessionId);
+    if (!owner || owner.uid !== user.uid) {
+      response.status(404).json({ error: 'Verification session not found.' });
+      return;
+    }
+
+    const { agent } = await ensurePidVerifierAgent();
+    const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
+    if (session.state !== 'ResponseVerified') {
+      response.status(409).json({ error: 'The PID presentation has not been verified.' });
+      return;
+    }
+
+    const claims = await getVerifiedPidClaims(agent, sessionId);
+    if (!claims.givenName || !claims.familyName ||
+        !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate)) {
+      response.status(422).json({ error: 'The verified PID is missing required identity fields.' });
+      return;
+    }
+    const dateOfBirth = new Date(`${claims.birthdate}T12:00:00.000Z`);
+    if (!Number.isFinite(dateOfBirth.getTime())) {
+      response.status(422).json({ error: 'The verified PID contains an invalid birth date.' });
+      return;
+    }
+
+    await getFirestore().collection('users').doc(user.uid).set({
+      givenName: claims.givenName,
+      surname: claims.familyName,
+      dateOfBirth: Timestamp.fromDate(dateOfBirth),
+      ...(claims.locality ? { town: claims.locality } : {}),
+      ...(claims.country ? { countryCode: claims.country.toUpperCase() } : {}),
+      isVerified: true,
+      gotVerifiedAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    response.json({ ok: true, claims });
+  } catch (error) {
+    const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
+    if (status === 500) logError('Failed to accept verified PID credentials.', error);
+    response.status(status).json({
+      error: status === 401 ? 'Authentication is required.' : 'The verified PID could not be saved.',
     });
   }
 });

@@ -8,6 +8,7 @@ exports.pidVerificationRequestPreview = exports.pidVerifier = void 0;
 const express_1 = __importDefault(require("express"));
 const node_crypto_1 = require("node:crypto");
 const auth_1 = require("firebase-admin/auth");
+const firestore_1 = require("firebase-admin/firestore");
 const params_1 = require("firebase-functions/params");
 const https_1 = require("firebase-functions/v2/https");
 const logger_1 = require("firebase-functions/logger");
@@ -310,6 +311,21 @@ async function requireFirebaseUser(request) {
     }
     return (0, auth_1.getAuth)().verifyIdToken(authorization.substring('Bearer '.length));
 }
+async function getVerifiedPidClaims(agent, sessionId) {
+    var _a, _b, _c;
+    const verified = await agent.openid4vc.verifier.getVerifiedAuthorizationResponse(sessionId);
+    const presentation = (_c = (_b = (_a = verified.dcql) === null || _a === void 0 ? void 0 : _a.presentations) === null || _b === void 0 ? void 0 : _b['pid-sd-jwt']) === null || _c === void 0 ? void 0 : _c[0];
+    const claims = presentation === null || presentation === void 0 ? void 0 : presentation.prettyClaims;
+    const address = claims === null || claims === void 0 ? void 0 : claims.address;
+    return {
+        givenName: typeof (claims === null || claims === void 0 ? void 0 : claims.given_name) === 'string' ? claims.given_name : null,
+        familyName: typeof (claims === null || claims === void 0 ? void 0 : claims.family_name) === 'string' ? claims.family_name : null,
+        birthdate: typeof (claims === null || claims === void 0 ? void 0 : claims.birthdate) === 'string' ? claims.birthdate : null,
+        postalCode: typeof (address === null || address === void 0 ? void 0 : address.postal_code) === 'string' ? address.postal_code : null,
+        locality: typeof (address === null || address === void 0 ? void 0 : address.locality) === 'string' ? address.locality : null,
+        country: typeof (address === null || address === void 0 ? void 0 : address.country) === 'string' ? address.country : null,
+    };
+}
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     var _a, _b;
     try {
@@ -331,7 +347,6 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     }
 });
 pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
-    var _a, _b, _c;
     try {
         const user = await requireFirebaseUser(request);
         const sessionId = request.params.sessionId;
@@ -343,20 +358,9 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
         const { agent } = await ensurePidVerifierAgent();
         const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
         if (session.state === 'ResponseVerified') {
-            const verified = await agent.openid4vc.verifier.getVerifiedAuthorizationResponse(sessionId);
-            const presentation = (_c = (_b = (_a = verified.dcql) === null || _a === void 0 ? void 0 : _a.presentations) === null || _b === void 0 ? void 0 : _b['pid-sd-jwt']) === null || _c === void 0 ? void 0 : _c[0];
-            const claims = presentation === null || presentation === void 0 ? void 0 : presentation.prettyClaims;
-            const address = claims === null || claims === void 0 ? void 0 : claims.address;
             response.json({
                 status: 'verified',
-                claims: {
-                    givenName: typeof (claims === null || claims === void 0 ? void 0 : claims.given_name) === 'string' ? claims.given_name : null,
-                    familyName: typeof (claims === null || claims === void 0 ? void 0 : claims.family_name) === 'string' ? claims.family_name : null,
-                    birthdate: typeof (claims === null || claims === void 0 ? void 0 : claims.birthdate) === 'string' ? claims.birthdate : null,
-                    postalCode: typeof (address === null || address === void 0 ? void 0 : address.postal_code) === 'string' ? address.postal_code : null,
-                    locality: typeof (address === null || address === void 0 ? void 0 : address.locality) === 'string' ? address.locality : null,
-                    country: typeof (address === null || address === void 0 ? void 0 : address.country) === 'string' ? address.country : null,
-                },
+                claims: await getVerifiedPidClaims(agent, sessionId),
             });
             return;
         }
@@ -376,6 +380,44 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
             (0, logger_1.error)('Failed to read PID verification status.', error);
         response.status(status).json({
             error: status === 401 ? 'Authentication is required.' : 'The PID verification status is unavailable.',
+        });
+    }
+});
+pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
+    try {
+        const user = await requireFirebaseUser(request);
+        const sessionId = request.params.sessionId;
+        const owner = pidVerificationSessionOwners.get(sessionId);
+        if (!owner || owner.uid !== user.uid) {
+            response.status(404).json({ error: 'Verification session not found.' });
+            return;
+        }
+        const { agent } = await ensurePidVerifierAgent();
+        const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
+        if (session.state !== 'ResponseVerified') {
+            response.status(409).json({ error: 'The PID presentation has not been verified.' });
+            return;
+        }
+        const claims = await getVerifiedPidClaims(agent, sessionId);
+        if (!claims.givenName || !claims.familyName ||
+            !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate)) {
+            response.status(422).json({ error: 'The verified PID is missing required identity fields.' });
+            return;
+        }
+        const dateOfBirth = new Date(`${claims.birthdate}T12:00:00.000Z`);
+        if (!Number.isFinite(dateOfBirth.getTime())) {
+            response.status(422).json({ error: 'The verified PID contains an invalid birth date.' });
+            return;
+        }
+        await (0, firestore_1.getFirestore)().collection('users').doc(user.uid).set(Object.assign(Object.assign(Object.assign({ givenName: claims.givenName, surname: claims.familyName, dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth) }, (claims.locality ? { town: claims.locality } : {})), (claims.country ? { countryCode: claims.country.toUpperCase() } : {})), { isVerified: true, gotVerifiedAt: firestore_1.FieldValue.serverTimestamp(), updatedAt: firestore_1.FieldValue.serverTimestamp() }), { merge: true });
+        response.json({ ok: true, claims });
+    }
+    catch (error) {
+        const status = error instanceof https_1.HttpsError && error.code === 'unauthenticated' ? 401 : 500;
+        if (status === 500)
+            (0, logger_1.error)('Failed to accept verified PID credentials.', error);
+        response.status(status).json({
+            error: status === 401 ? 'Authentication is required.' : 'The verified PID could not be saved.',
         });
     }
 });
