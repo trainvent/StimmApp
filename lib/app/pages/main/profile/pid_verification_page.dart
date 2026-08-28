@@ -7,6 +7,7 @@ import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:trainvent_general/trainvent_general.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PidVerificationPage extends ConsumerStatefulWidget {
   const PidVerificationPage({super.key, this.reverify = false});
@@ -53,6 +54,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
         _purpose = response.purpose;
         _expiresAt = expiresAt;
       });
+      await _openWallet(response.authorizationRequest);
     } on PidVerificationException catch (error) {
       if (!mounted) return;
       setState(() {
@@ -67,6 +69,34 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _openWallet([String? authorizationRequest]) async {
+    final request = authorizationRequest ?? _authorizationRequest;
+    if (request == null || request.isEmpty) return;
+
+    final uri = Uri.tryParse(request);
+    if (uri == null || uri.scheme != 'openid4vp') {
+      if (mounted) {
+        setState(
+          () => _error = 'The verifier returned an invalid wallet link.',
+        );
+      }
+      return;
+    }
+
+    var opened = false;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on PlatformException {
+      opened = false;
+    }
+    if (!opened && mounted) {
+      setState(() {
+        _error =
+            'No app accepted the OpenID4VP request. Make sure the EUDI Wallet sandbox app is installed.';
+      });
     }
   }
 
@@ -106,7 +136,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'This page is meant for local testing of the OpenID4VP PID flow. It creates a verification request and shows the authorization request payload for the wallet to scan or process.',
+                        'Creates a PID verification request and opens it in the EUDI Wallet sandbox app.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 16),
@@ -162,6 +192,12 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage> {
                 const SizedBox(height: 8),
                 if (_verificationSessionId != null)
                   Text('Session ID: $_verificationSessionId'),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => _openWallet(),
+                  icon: const Icon(Icons.open_in_new_rounded),
+                  label: const Text('Open EUDI Wallet'),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
