@@ -36,6 +36,12 @@ async function startServer() {
 
   const serverApp = express();
   serverApp.disable('x-powered-by');
+  serverApp.use((_request, response, next) => {
+    // Lets smoke tests prove that a response traversed the standalone origin
+    // rather than Firebase's temporary embedded-verifier fallback.
+    response.setHeader('x-stimmapp-verifier-origin', 'server');
+    next();
+  });
   serverApp.get('/healthz', (_request, response) => {
     response.status(200).json({ status: 'ok' });
   });
