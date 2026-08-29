@@ -419,11 +419,8 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                                             ),
                                             const SizedBox(width: 8),
                                             Expanded(
-                                              child: Text(
-                                                '${comparison.label}\n'
-                                                'Profile: ${comparison.currentValue?.isNotEmpty == true ? comparison.currentValue : 'Not provided'}\n'
-                                                'EUDI original: ${comparison.verifiedValue}\n'
-                                                'Compared as: ${comparison.normalizedVerifiedValue}',
+                                              child: _PidComparisonDetails(
+                                                comparison: comparison,
                                               ),
                                             ),
                                           ],
@@ -559,6 +556,46 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       ),
     );
   }
+}
+
+class _PidComparisonDetails extends StatelessWidget {
+  const _PidComparisonDetails({required this.comparison});
+
+  final _PidFieldComparison comparison;
+
+  @override
+  Widget build(BuildContext context) {
+    final profileValue = comparison.currentValue?.isNotEmpty == true
+        ? comparison.currentValue!
+        : 'Not provided';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(comparison.label, style: Theme.of(context).textTheme.bodyLarge),
+        const SizedBox(height: 2),
+        Table(
+          columnWidths: const {0: FixedColumnWidth(112), 1: FlexColumnWidth()},
+          defaultVerticalAlignment: TableCellVerticalAlignment.top,
+          children: [
+            _valueRow('EUDI original:', comparison.verifiedValue ?? ''),
+            _valueRow('Compared as:', comparison.normalizedVerifiedValue ?? ''),
+            _valueRow('Profile:', profileValue),
+          ],
+        ),
+      ],
+    );
+  }
+
+  TableRow _valueRow(String label, String value) => TableRow(
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(right: 8, bottom: 2),
+        child: Text(label),
+      ),
+      Padding(padding: const EdgeInsets.only(bottom: 2), child: Text(value)),
+    ],
+  );
 }
 
 class _PidFieldComparison {
