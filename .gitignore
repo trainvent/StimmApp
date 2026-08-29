@@ -146,3 +146,6 @@ playwright-report/
 # api etc
 .env
 mcp.json
+
+# PID verifier deployment secrets
+/deploy/pid-verifier/secrets/

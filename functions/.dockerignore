@@ -1,0 +1,9 @@
+lib
+node_modules
+npm-debug.log
+firebase-debug.log
+.env*
+**/*.pem
+**/*.crt
+**/*.key
+**/secrets

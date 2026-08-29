@@ -16,6 +16,10 @@ import {
   getOwnedPidVerificationSession,
   transitionPidVerificationSession,
 } from './pid_verification_session.js';
+import {
+  getPidAskarStoreConfig,
+  readRuntimeSecret,
+} from './pid_verifier_runtime_config.js';
 
 async function loadCredoDeps() {
   const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
@@ -44,6 +48,7 @@ async function loadCredoDeps() {
 const pidAccessCertificateSecret = defineSecret('PID_ACCESS_CERTIFICATE');
 const pidAccessPrivateKeySecret = defineSecret('PID_ACCESS_PRIVATE_KEY');
 const pidRegistrationCertificateSecret = defineSecret('PID_REGISTRATION_CERTIFICATE');
+const pidVerifierProxySharedSecret = defineSecret('PID_VERIFIER_PROXY_SHARED_SECRET');
 
 const PID_VERIFIER_BASE_URL = process.env.PID_VERIFIER_BASE_URL ??
   'https://stimmapp-dev.web.app/oid4vp';
@@ -154,7 +159,7 @@ async function getPidSandboxTrustCertificates() {
   return (await pidTrustListPromise).certificates;
 }
 
-const pidVerifierApp = express();
+export const pidVerifierApp = express();
 pidVerifierApp.use(express.json());
 pidVerifierApp.use(express.urlencoded({ extended: false }));
 pidVerifierApp.use((request, response, next) => {
@@ -266,17 +271,7 @@ async function initializePidVerifierAgent() {
       }),
       askar: new deps.AskarModule({
         askar: deps.askar,
-        store: {
-          id: 'stimmapp-pid-verifier-store',
-          key: 'stimmapp-pid-verifier-key',
-          // Keep the schema alive for the lifetime of the Cloud Run instance.
-          // Askar's in-memory SQLite store can lose its tables while Credo's
-          // cached agent survives an idle period.
-          database: {
-            type: 'sqlite',
-            config: { path: '/tmp/stimmapp-pid-verifier/askar.sqlite' },
-          },
-        },
+        store: getPidAskarStoreConfig(),
       }),
       openid4vc: new deps.OpenId4VcModule({
         // Credo currently carries its own Express type copy. Both values are
@@ -291,9 +286,15 @@ async function initializePidVerifierAgent() {
 
   await agent.initialize();
 
-  const accessCertificatePem = pidAccessCertificateSecret.value().trim();
-  const accessPrivateKeyPem = pidAccessPrivateKeySecret.value().trim();
-  const registrationCertificate = pidRegistrationCertificateSecret.value().trim();
+  const accessCertificatePem = readRuntimeSecret({
+    environmentName: 'PID_ACCESS_CERTIFICATE',
+  });
+  const accessPrivateKeyPem = readRuntimeSecret({
+    environmentName: 'PID_ACCESS_PRIVATE_KEY',
+  });
+  const registrationCertificate = readRuntimeSecret({
+    environmentName: 'PID_REGISTRATION_CERTIFICATE',
+  });
   if (!accessCertificatePem || !accessPrivateKeyPem || !registrationCertificate) {
     throw new HttpsError('failed-precondition', 'The EUDI verifier certificates are not configured.');
   }
@@ -326,7 +327,7 @@ async function initializePidVerifierAgent() {
   };
 }
 
-function ensurePidVerifierAgent() {
+export function ensurePidVerifierAgent() {
   if (!pidVerifierAgentPromise) {
     pidVerifierAgentPromise = initializePidVerifierAgent().catch((error) => {
       // Permit a later invocation to recover from a transient initialization
@@ -337,6 +338,13 @@ function ensurePidVerifierAgent() {
   }
 
   return pidVerifierAgentPromise;
+}
+
+export async function shutdownPidVerifierAgent() {
+  if (!pidVerifierAgentPromise) return;
+  const { agent } = await pidVerifierAgentPromise;
+  await agent.shutdown();
+  pidVerifierAgentPromise = undefined;
 }
 
 async function createPidVerificationRequest(
@@ -602,12 +610,75 @@ const pidVerifierSecrets = [
   pidAccessCertificateSecret,
   pidAccessPrivateKeySecret,
   pidRegistrationCertificateSecret,
+  pidVerifierProxySharedSecret,
 ];
+
+const proxyRequestHeadersToSkip = new Set([
+  'connection',
+  'content-length',
+  'host',
+  'transfer-encoding',
+]);
+
+const proxyResponseHeadersToSkip = new Set([
+  'connection',
+  'content-encoding',
+  'content-length',
+  'transfer-encoding',
+]);
+
+async function proxyPidVerifierRequest(
+  request: express.Request & { rawBody?: Buffer },
+  response: express.Response,
+) {
+  const origin = process.env.PID_VERIFIER_ORIGIN_URL?.trim().replace(/\/$/, '');
+  if (!origin) return false;
+
+  const headers = new Headers();
+  for (const [name, value] of Object.entries(request.headers)) {
+    if (proxyRequestHeadersToSkip.has(name.toLowerCase()) || value === undefined) continue;
+    headers.set(name, Array.isArray(value) ? value.join(', ') : value);
+  }
+  headers.set(
+    'x-stimmapp-verifier-proxy',
+    readRuntimeSecret({ environmentName: 'PID_VERIFIER_PROXY_SHARED_SECRET' }),
+  );
+  headers.set('x-forwarded-host', request.hostname);
+  headers.set('x-forwarded-proto', request.protocol);
+
+  const method = request.method.toUpperCase();
+  const abortController = new AbortController();
+  const abortTimer = setTimeout(() => abortController.abort(), 55_000);
+  let upstreamResponse: globalThis.Response;
+  try {
+    upstreamResponse = await fetch(`${origin}${request.originalUrl}`, {
+      method,
+      headers,
+      redirect: 'manual',
+      signal: abortController.signal,
+      body: method === 'GET' || method === 'HEAD' ? undefined :
+        (request.rawBody ?? Buffer.alloc(0)) as unknown as BodyInit,
+    });
+  } finally {
+    clearTimeout(abortTimer);
+  }
+
+  upstreamResponse.headers.forEach((value, name) => {
+    if (!proxyResponseHeadersToSkip.has(name.toLowerCase())) {
+      response.setHeader(name, value);
+    }
+  });
+  response.status(upstreamResponse.status).send(
+    Buffer.from(await upstreamResponse.arrayBuffer()),
+  );
+  return true;
+}
 
 export const pidVerifier = onRequest(
   { secrets: pidVerifierSecrets, maxInstances: 1, memory: '512MiB' },
   async (request, response) => {
     try {
+      if (await proxyPidVerifierRequest(request, response)) return;
       await ensurePidVerifierAgent();
       pidVerifierApp(request, response);
     } catch (error) {

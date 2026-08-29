@@ -37,7 +37,7 @@ This is an engineering readiness record, not a legal or compliance approval.
   Firestore with a random trace ID and without PID claims or wallet payloads.
 - [ ] Verification survives a Cloud Functions/Cloud Run instance replacement.
   Application ownership and lifecycle records are durable, but Credo's Askar
-  protocol records remain instance-local.
+  PostgreSQL/container deployment has not yet completed its server cutover.
 - [ ] Cross-device QR presentation is supported and tested.
 - [ ] The complete failure, replay, expiry, cancellation, and trust test matrix
   has automated evidence.
@@ -125,6 +125,8 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 - [x] Persist session ownership and lifecycle outside process memory.
 - [x] Assign every session a random, non-sensitive trace ID for future logs.
 - [ ] Persist the Credo/Askar protocol store outside Cloud Run `/tmp`.
+  The verifier image and PostgreSQL runtime configuration are implemented; this
+  remains unchecked until the server deployment and restart test pass.
 - [ ] Remove `maxInstances: 1` as a correctness dependency after durable storage
   is implemented.
 - [ ] Make each successful presentation and acceptance single-use.
@@ -282,7 +284,9 @@ downloaded secrets/certificates to this repository.
 
 ### Durable state and lifecycle
 
-- [ ] Select and document a durable Credo/Askar storage architecture.
+- [x] Select and document a durable Credo/Askar storage architecture: an
+  isolated verifier container and Askar PostgreSQL database on the deployment
+  server, reached through a protected Firebase HTTPS proxy.
 - [x] Store an application-level session record with owner, trace ID, mode,
   state, creation/update/expiry timestamps, format/type, and policy version.
 - [x] Implement the states currently used by the flow: `pending`, `verified`,
@@ -339,8 +343,8 @@ downloaded secrets/certificates to this repository.
 ## Recommended implementation order
 
 1. Finalize the use-case, attribute, purpose, mismatch, and re-verification rules.
-2. Add durable Credo storage. Session ownership/lifecycle records are already
-   durable in Firestore.
+2. Deploy and restart-test the prepared durable Credo PostgreSQL storage.
+   Session ownership/lifecycle records are already durable in Firestore.
 3. Make acceptance single-use and idempotent; separate verification evidence
    from the mutable profile.
 4. Audit and negatively test every Credo validation on which StimmApp relies.
