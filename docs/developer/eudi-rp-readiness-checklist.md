@@ -33,7 +33,11 @@ This is an engineering readiness record, not a legal or compliance approval.
 - [x] Profile mutation requires an explicit user action after successful
   verification.
 - [x] Registration and re-verification modes are represented in the UI.
+- [x] Session ownership and lifecycle metadata are persisted privately in
+  Firestore with a random trace ID and without PID claims or wallet payloads.
 - [ ] Verification survives a Cloud Functions/Cloud Run instance replacement.
+  Application ownership and lifecycle records are durable, but Credo's Askar
+  protocol records remain instance-local.
 - [ ] Cross-device QR presentation is supported and tested.
 - [ ] The complete failure, replay, expiry, cancellation, and trust test matrix
   has automated evidence.
@@ -114,10 +118,12 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 - [x] Credo creates the authorization request and protocol session.
 - [x] The response mode is `direct_post.jwt`.
 - [x] Status and accept endpoints require a valid Firebase ID token.
-- [x] The current instance associates a Credo session ID with its Firebase user.
+- [x] A private durable record associates each Credo session with its Firebase
+  user and a non-sensitive trace ID.
 - [ ] Verify with tests that Credo rejects incorrect or reused `nonce`, `state`,
   audience/client ID, timestamps, response URI, and session bindings.
-- [ ] Persist session ownership and lifecycle outside process memory.
+- [x] Persist session ownership and lifecycle outside process memory.
+- [x] Assign every session a random, non-sensitive trace ID for future logs.
 - [ ] Persist the Credo/Askar protocol store outside Cloud Run `/tmp`.
 - [ ] Remove `maxInstances: 1` as a correctness dependency after durable storage
   is implemented.
@@ -194,11 +200,27 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 | Protocol keys and records | Credo + Askar | Replace instance-local SQLite with a durable supported store |
 | Access and Registration Certificates | Firebase secrets + Credo | Add expiry monitoring and rotation runbook |
 | PID issuer trust | StimmApp trust-list loader + Credo X.509 | Test freshness, chain, outage, and untrusted issuer cases |
-| Session-to-user authorization | StimmApp backend | Move the in-memory ownership map to durable storage |
+| Session-to-user authorization | StimmApp backend + Firestore | Durable; add emulator authorization and lifecycle tests |
 | Attribute normalization and profile formatting | StimmApp backend | Expand unit tests; never alter the displayed original values |
 | Profile comparison UX | Flutter app | Localize, improve accessibility, and test all result states |
 | Eligibility/business decision | Not yet formalized | Specify and enforce authoritatively on the backend |
 | Consent to update the profile | Flutter + authenticated backend endpoint | Make acceptance single-use, idempotent, and auditable |
+
+### Durable session record
+
+The server-only `pidVerificationSessions/{sessionId}` record contains:
+
+- Firebase owner UID for authorization, never for logging
+- Random trace ID intended for pseudonymous operational correlation
+- Lifecycle state and state-transition timestamps
+- Creation, update, and expiry timestamps
+- Registration or re-verification mode and fixed server-selected purpose
+- Credential format/type, invocation method, and matching-policy version
+
+It must not contain PID claims, authorization requests or responses, VP tokens,
+wallet identifiers, cryptographic proofs, or private key material. Firestore
+rules deny all client access, including the authenticated application admin;
+Cloud Functions access it through the Admin SDK.
 
 ## Step 3: Test and validate in the sandbox
 
@@ -261,10 +283,12 @@ downloaded secrets/certificates to this repository.
 ### Durable state and lifecycle
 
 - [ ] Select and document a durable Credo/Askar storage architecture.
-- [ ] Store an application-level session record with owner, mode, state,
-  creation/expiry timestamps, review/acceptance timestamps, and policy version.
-- [ ] Implement explicit states such as `created`, `pending`, `verified`,
-  `reviewed`, `accepted`, `rejected`, `expired`, and `failed`.
+- [x] Store an application-level session record with owner, trace ID, mode,
+  state, creation/update/expiry timestamps, format/type, and policy version.
+- [x] Implement the states currently used by the flow: `pending`, `verified`,
+  `accepted`, `expired`, and `failed`.
+- [ ] Add `reviewed` or `rejected` only when the product flow gives those states
+  concrete behavior.
 - [ ] Add TTL cleanup for session records and any temporary verification data.
 - [ ] Define a minimal retention period for verification provenance with
   product/privacy stakeholders.
@@ -315,11 +339,11 @@ downloaded secrets/certificates to this repository.
 ## Recommended implementation order
 
 1. Finalize the use-case, attribute, purpose, mismatch, and re-verification rules.
-2. Add durable Credo storage and durable session ownership/lifecycle records.
+2. Add durable Credo storage. Session ownership/lifecycle records are already
+   durable in Firestore.
 3. Make acceptance single-use and idempotent; separate verification evidence
    from the mutable profile.
 4. Audit and negatively test every Credo validation on which StimmApp relies.
 5. Add the complete sandbox failure and cross-device test matrix.
 6. Add privacy-preserving observability and certificate/trust-list operations.
 7. Complete the production security, privacy, and ecosystem readiness review.
-

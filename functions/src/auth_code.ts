@@ -1,10 +1,11 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from 'firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import * as nodemailer from 'nodemailer';
 import { defineSecret } from "firebase-functions/params";
 import { getBrandRuntimeConfig } from "./brand";
 
-const db = admin.firestore();
+const db = getFirestore();
 
 const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
@@ -250,7 +251,7 @@ async function verifyCodeLogic(uid: string, code: string, email?: string, collec
 
 	if (data.code !== code) {
 		console.warn(`Invalid code entered for ${uid}.`);
-		await docRef.update({ attempts: admin.firestore.FieldValue.increment(1) });
+		await docRef.update({ attempts: FieldValue.increment(1) });
 		throw new HttpsError('invalid-argument', 'Invalid code.');
 	}
 
@@ -267,7 +268,7 @@ function assertValidEmailFormat(email: string) {
 
 async function assertEmailAvailable(email: string, currentUid: string) {
 	try {
-		const userRecord = await admin.auth().getUserByEmail(email);
+		const userRecord = await getAuth().getUserByEmail(email);
 		if (userRecord.uid !== currentUid) {
 			throw new HttpsError('already-exists', 'This email address is already in use.');
 		}
@@ -336,7 +337,7 @@ export const sendLoginCode = onCall({ secrets: [smtpPassword] }, async (request)
 
 	let uid;
 	try {
-		const userRecord = await admin.auth().getUserByEmail(email);
+		const userRecord = await getAuth().getUserByEmail(email);
 		uid = userRecord.uid;
 	} catch (error) {
 		console.error("User lookup failed:", error);
@@ -380,7 +381,7 @@ export const verifyCode = onCall(async (request) => {
 		const normalizedTest = testEmail.trim().toLowerCase();
 
 		if (normalizedInput === normalizedTest && code === testCode) {
-			await admin.auth().updateUser(uid, { emailVerified: true });
+			await getAuth().updateUser(uid, { emailVerified: true });
 			await db.collection('verificationCodes').doc(uid).delete();
 			return { success: true, message: 'Email verified successfully (Test Backdoor).' };
 		}
@@ -388,7 +389,7 @@ export const verifyCode = onCall(async (request) => {
 
 	await verifyCodeLogic(uid, code);
 
-	await admin.auth().updateUser(uid, {
+	await getAuth().updateUser(uid, {
 		emailVerified: true
 	});
 
@@ -413,7 +414,7 @@ export const sendEmailChangeCode = onCall({ secrets: [smtpPassword] }, async (re
 	assertValidEmailFormat(newEmail);
 	await assertEmailNotKicked(newEmail);
 
-	const userRecord = await admin.auth().getUser(request.auth.uid);
+	const userRecord = await getAuth().getUser(request.auth.uid);
 	const currentEmail = userRecord.email ? normalizeEmail(userRecord.email) : undefined;
 	if (currentEmail === newEmail) {
 		throw new HttpsError('invalid-argument', 'Please enter a different email address.');
@@ -455,18 +456,18 @@ export const verifyEmailChangeCode = onCall(async (request) => {
 
 	await verifyCodeLogic(request.auth.uid, code, newEmail, 'emailChangeCodes');
 
-	await admin.auth().updateUser(request.auth.uid, {
+	await getAuth().updateUser(request.auth.uid, {
 		email: newEmail,
 		emailVerified: true,
 	});
 	await db.collection('users').doc(request.auth.uid).set({
 		email: newEmail,
-		updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+		updatedAt: FieldValue.serverTimestamp(),
 	}, { merge: true });
 
 	let token;
 	try {
-		token = await admin.auth().createCustomToken(request.auth.uid);
+		token = await getAuth().createCustomToken(request.auth.uid);
 	} catch (e: any) {
 		console.error("Error creating custom token after email change:", e);
 		if (e.code === 'auth/insufficient-permission' || (e.message && e.message.includes('iam.serviceAccounts.signBlob'))) {
@@ -490,7 +491,7 @@ export const verifyLoginCode = onCall(async (request) => {
 
 	let uid;
 	try {
-		const userRecord = await admin.auth().getUserByEmail(email);
+		const userRecord = await getAuth().getUserByEmail(email);
 		uid = userRecord.uid;
 	} catch (error) {
 		console.error("User lookup failed in verify:", error);
@@ -524,7 +525,7 @@ export const verifyLoginCode = onCall(async (request) => {
 	// Code is valid. Generate custom token.
 	let token;
 	try {
-		token = await admin.auth().createCustomToken(uid);
+		token = await getAuth().createCustomToken(uid);
 	} catch (e: any) {
 		console.error("Error creating custom token:", e);
 		// Check for the specific IAM permission error
@@ -536,7 +537,7 @@ export const verifyLoginCode = onCall(async (request) => {
 
 	// Also mark email as verified since they proved ownership
 	try {
-		await admin.auth().updateUser(uid, {
+		await getAuth().updateUser(uid, {
 			emailVerified: true
 		});
 	} catch (e) {

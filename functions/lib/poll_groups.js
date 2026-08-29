@@ -1,41 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePollGroup = exports.createPollGroup = void 0;
 const https_1 = require("firebase-functions/v2/https");
-const admin = __importStar(require("firebase-admin"));
+const firestore_1 = require("firebase-admin/firestore");
 const poll_group_activity_1 = require("./poll_group_activity");
 const VALID_ROLES = new Set(["admin", "manager", "user"]);
 const VALID_ACCESS_MODES = new Set(["private", "protected", "open"]);
@@ -106,8 +73,8 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
     var _a;
     const uid = requireAuth(request);
     const data = ((_a = request.data) !== null && _a !== void 0 ? _a : {});
-    const db = admin.firestore();
-    const now = admin.firestore.Timestamp.now();
+    const db = (0, firestore_1.getFirestore)();
+    const now = firestore_1.Timestamp.now();
     const name = asTrimmedString(data.name, "name", 120);
     const joinCode = asTrimmedString(data.joinCode, "joinCode", 64);
     if (typeof data.nicknameMode !== "string" || !VALID_NICKNAME_MODES.has(data.nicknameMode)) {
@@ -136,7 +103,7 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
     }
     const expiresAtMillis = data.expiresAtMillis;
     const expiresAt = typeof expiresAtMillis === "number" && Number.isFinite(expiresAtMillis)
-        ? admin.firestore.Timestamp.fromMillis(expiresAtMillis)
+        ? firestore_1.Timestamp.fromMillis(expiresAtMillis)
         : null;
     const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers : [];
     const rawAllowedDomains = Array.isArray(data.allowedDomains) ? data.allowedDomains : [];
@@ -271,8 +238,8 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
     var _a, _b, _c, _d;
     const uid = requireAuth(request);
     const data = ((_a = request.data) !== null && _a !== void 0 ? _a : {});
-    const db = admin.firestore();
-    const now = admin.firestore.Timestamp.now();
+    const db = (0, firestore_1.getFirestore)();
+    const now = firestore_1.Timestamp.now();
     const groupId = asTrimmedString(data.groupId, "groupId", 256);
     const name = asTrimmedString(data.name, "name", 120);
     if (typeof data.nicknameMode !== "string" || !VALID_NICKNAME_MODES.has(data.nicknameMode)) {
@@ -303,7 +270,7 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
     }
     const expiresAtMillis = data.expiresAtMillis;
     const expiresAt = typeof expiresAtMillis === "number" && Number.isFinite(expiresAtMillis)
-        ? admin.firestore.Timestamp.fromMillis(expiresAtMillis)
+        ? firestore_1.Timestamp.fromMillis(expiresAtMillis)
         : null;
     const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers : [];
     const rawAllowedDomains = Array.isArray(data.allowedDomains) ? data.allowedDomains : [];

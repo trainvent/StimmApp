@@ -46,7 +46,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seedTestData = void 0;
 const https_1 = require("firebase-functions/v2/https");
-const admin = __importStar(require("firebase-admin"));
+const firestore_1 = require("firebase-admin/firestore");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 /**
@@ -56,12 +56,12 @@ const path = __importStar(require("path"));
  * Usage from client:
  * await FirebaseFunctions.instance.httpsCallable('seedTestData').call();
  */
-exports.seedTestData = (0, https_1.onCall)(async (request) => {
+exports.seedTestData = (0, https_1.onCall)(async (_request) => {
     // 1. Safety Check: Ensure this only runs in the Dev project
     if (process.env.GCLOUD_PROJECT === 'stimmapp-f0141') {
         throw new https_1.HttpsError('failed-precondition', 'This function can only be run in the development environment.');
     }
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const batchManager = new BatchManager(db);
     try {
         // 2. Load the JSON file
@@ -78,9 +78,9 @@ exports.seedTestData = (0, https_1.onCall)(async (request) => {
             for (const user of testData.users) {
                 // Convert date strings to Timestamps if necessary
                 if (user.createdAt)
-                    user.createdAt = admin.firestore.Timestamp.fromDate(new Date(user.createdAt));
+                    user.createdAt = firestore_1.Timestamp.fromDate(new Date(user.createdAt));
                 if (user.wentProAt)
-                    user.wentProAt = admin.firestore.Timestamp.fromDate(new Date(user.wentProAt));
+                    user.wentProAt = firestore_1.Timestamp.fromDate(new Date(user.wentProAt));
                 await batchManager.set(db.collection('users').doc(user.uid), user);
             }
             console.log(`Seeded ${testData.users.length} users.`);
@@ -89,9 +89,9 @@ exports.seedTestData = (0, https_1.onCall)(async (request) => {
         if (testData.petitions) {
             for (const petition of testData.petitions) {
                 if (petition.createdAt)
-                    petition.createdAt = admin.firestore.Timestamp.fromDate(new Date(petition.createdAt));
+                    petition.createdAt = firestore_1.Timestamp.fromDate(new Date(petition.createdAt));
                 if (petition.expiresAt)
-                    petition.expiresAt = admin.firestore.Timestamp.fromDate(new Date(petition.expiresAt));
+                    petition.expiresAt = firestore_1.Timestamp.fromDate(new Date(petition.expiresAt));
                 const { signatures } = petition, petitionData = __rest(petition, ["signatures"]);
                 const petitionRef = db.collection('petitions').doc(petition.id);
                 await batchManager.set(petitionRef, petitionData);
@@ -99,7 +99,7 @@ exports.seedTestData = (0, https_1.onCall)(async (request) => {
                 if (signatures && Array.isArray(signatures)) {
                     for (const signature of signatures) {
                         if (signature.signedAt)
-                            signature.signedAt = admin.firestore.Timestamp.fromDate(new Date(signature.signedAt));
+                            signature.signedAt = firestore_1.Timestamp.fromDate(new Date(signature.signedAt));
                         await batchManager.set(petitionRef.collection('signatures').doc(signature.uid), signature);
                     }
                 }
@@ -110,9 +110,9 @@ exports.seedTestData = (0, https_1.onCall)(async (request) => {
         if (testData.polls) {
             for (const poll of testData.polls) {
                 if (poll.createdAt)
-                    poll.createdAt = admin.firestore.Timestamp.fromDate(new Date(poll.createdAt));
+                    poll.createdAt = firestore_1.Timestamp.fromDate(new Date(poll.createdAt));
                 if (poll.expiresAt)
-                    poll.expiresAt = admin.firestore.Timestamp.fromDate(new Date(poll.expiresAt));
+                    poll.expiresAt = firestore_1.Timestamp.fromDate(new Date(poll.expiresAt));
                 const { votes } = poll, pollData = __rest(poll, ["votes"]);
                 const pollRef = db.collection('polls').doc(poll.id);
                 await batchManager.set(pollRef, pollData);
@@ -120,7 +120,7 @@ exports.seedTestData = (0, https_1.onCall)(async (request) => {
                 if (votes && Array.isArray(votes)) {
                     for (const vote of votes) {
                         if (vote.votedAt)
-                            vote.votedAt = admin.firestore.Timestamp.fromDate(new Date(vote.votedAt));
+                            vote.votedAt = firestore_1.Timestamp.fromDate(new Date(vote.votedAt));
                         await batchManager.set(pollRef.collection('votes').doc(vote.uid), vote);
                     }
                 }

@@ -10,6 +10,7 @@ class PidVerificationRequestResponse {
   const PidVerificationRequestResponse({
     required this.authorizationRequest,
     required this.verificationSessionId,
+    required this.traceId,
     required this.state,
     required this.expiresAt,
     required this.mode,
@@ -18,6 +19,7 @@ class PidVerificationRequestResponse {
 
   final String authorizationRequest;
   final String verificationSessionId;
+  final String traceId;
   final String state;
   final String expiresAt;
   final String mode;
@@ -27,6 +29,7 @@ class PidVerificationRequestResponse {
     return PidVerificationRequestResponse(
       authorizationRequest: (json['authorizationRequest'] ?? '').toString(),
       verificationSessionId: (json['verificationSessionId'] ?? '').toString(),
+      traceId: (json['traceId'] ?? '').toString(),
       state: (json['state'] ?? '').toString(),
       expiresAt: (json['expiresAt'] ?? '').toString(),
       mode: (json['mode'] ?? 'registration').toString(),
@@ -45,8 +48,6 @@ class PidVerificationService {
 
   Future<PidVerificationRequestResponse> createRequest({
     required bool reverify,
-    String? purpose,
-    String? returnUrl,
   }) async {
     final token = await _auth.currentUser?.getIdToken();
     if (token == null) {
@@ -64,8 +65,6 @@ class PidVerificationService {
       },
       body: jsonEncode({
         'mode': reverify ? 'reverification' : 'registration',
-        'purpose': purpose,
-        'returnUrl': returnUrl,
       }),
     );
 

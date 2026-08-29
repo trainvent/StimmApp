@@ -1,5 +1,13 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import * as admin from 'firebase-admin';
+import { cert, deleteApp, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import {
+    DocumentReference,
+    Firestore,
+    WriteBatch,
+    getFirestore,
+} from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import { defineSecret } from "firebase-functions/params";
 
 // Define the secret that will hold the Production Service Account Key
@@ -32,7 +40,7 @@ export const syncProdToDev = onSchedule({
     timeoutSeconds: 540, // 9 minutes
     memory: "1GiB",
     secrets: [prodServiceAccountKey]
-}, async (event) => {
+}, async (_event) => {
     // Ensure we are NOT running in Production to prevent accidents
     if (process.env.GCLOUD_PROJECT === 'stimmapp-f0141') {
         console.error("CRITICAL: Attempted to run syncProdToDev IN PRODUCTION. Aborting.");
@@ -40,19 +48,19 @@ export const syncProdToDev = onSchedule({
     }
 
     // Initialize access to the local (Dev) environment
-    const devDb = admin.firestore();
-    const devBucket = admin.storage().bucket();
+    const devDb = getFirestore();
+    const devBucket = getStorage().bucket();
 
     // Initialize a separate Firebase app instance for the Production project
     // using the service account key from the secret.
-    const prodApp = admin.initializeApp({
-        credential: admin.credential.cert(JSON.parse(prodServiceAccountKey.value())),
+    const prodApp = initializeApp({
+        credential: cert(JSON.parse(prodServiceAccountKey.value())),
         // IMPORTANT: Replace with your REAL Production project's storage bucket URL
         storageBucket: "stimmapp-f0141.appspot.com" 
     }, "prodApp");
 
-    const prodDb = prodApp.firestore();
-    const prodBucket = prodApp.storage().bucket();
+    const prodDb = getFirestore(prodApp);
+    const prodBucket = getStorage(prodApp).bucket();
 
     console.log("Starting Sync: Production -> Development");
 
@@ -120,7 +128,7 @@ export const syncProdToDev = onSchedule({
     }
 
     // Clean up the temporary prod app instance
-    await prodApp.delete();
+    await deleteApp(prodApp);
 
     // --- 3. Relink Users ---
     console.log("Relinking users...");
@@ -133,16 +141,16 @@ export const syncProdToDev = onSchedule({
  * Helper class to manage Firestore batches, automatically committing when the limit is reached.
  */
 class BatchManager {
-    private batch: admin.firestore.WriteBatch;
+    private batch: WriteBatch;
     private count = 0;
-    private db: admin.firestore.Firestore;
+    private db: Firestore;
 
-    constructor(db: admin.firestore.Firestore) {
+    constructor(db: Firestore) {
         this.db = db;
         this.batch = db.batch();
     }
 
-    async set(ref: admin.firestore.DocumentReference, data: any) {
+    async set(ref: DocumentReference, data: any) {
         this.batch.set(ref, data);
         this.count++;
         if (this.count >= 400) {
@@ -150,7 +158,7 @@ class BatchManager {
         }
     }
 
-    async delete(ref: admin.firestore.DocumentReference) {
+    async delete(ref: DocumentReference) {
         this.batch.delete(ref);
         this.count++;
         if (this.count >= 400) {
@@ -158,7 +166,7 @@ class BatchManager {
         }
     }
 
-    async update(ref: admin.firestore.DocumentReference, data: any) {
+    async update(ref: DocumentReference, data: any) {
         this.batch.update(ref, data);
         this.count++;
         if (this.count >= 400) {
@@ -186,7 +194,7 @@ class BatchManager {
  *   Deletes the old Dev Auth user.
  *   Creates a new Dev Auth user with the Prod UID.
  */
-async function relinkUsers(db: admin.firestore.Firestore) {
+async function relinkUsers(db: Firestore) {
     const usersSnapshot = await db.collection('users').get();
     let relinkedCount = 0;
 
@@ -205,7 +213,7 @@ async function relinkUsers(db: admin.firestore.Firestore) {
         try {
             let devUser;
             try {
-                devUser = await admin.auth().getUserByEmail(email);
+                devUser = await getAuth().getUserByEmail(email);
             } catch (e: any) {
                 if (e.code !== 'auth/user-not-found') throw e;
             }
@@ -213,7 +221,7 @@ async function relinkUsers(db: admin.firestore.Firestore) {
             if (!devUser) {
                 // Case 1: User does not exist in Dev Auth. Create it with Prod UID.
                 console.log(`[Relink] Creating new Dev Auth user for ${email} with UID ${prodUid}`);
-                await admin.auth().createUser({
+                await getAuth().createUser({
                     uid: prodUid,
                     email: email,
                     emailVerified: true, // Auto-verify since it's from Prod
@@ -225,9 +233,9 @@ async function relinkUsers(db: admin.firestore.Firestore) {
                 // Case 2: User exists but UID mismatch. Delete and recreate.
                 console.log(`[Relink] UID mismatch for ${email} (Dev: ${devUser.uid}, Prod: ${prodUid}). Recreating Auth user.`);
                 
-                await admin.auth().deleteUser(devUser.uid);
+                await getAuth().deleteUser(devUser.uid);
                 
-                await admin.auth().createUser({
+                await getAuth().createUser({
                     uid: prodUid,
                     email: email,
                     emailVerified: true,

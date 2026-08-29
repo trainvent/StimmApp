@@ -1,41 +1,11 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.syncProdToDev = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
-const admin = __importStar(require("firebase-admin"));
+const app_1 = require("firebase-admin/app");
+const auth_1 = require("firebase-admin/auth");
+const firestore_1 = require("firebase-admin/firestore");
+const storage_1 = require("firebase-admin/storage");
 const params_1 = require("firebase-functions/params");
 // Define the secret that will hold the Production Service Account Key
 const prodServiceAccountKey = (0, params_1.defineSecret)("PROD_SERVICE_ACCOUNT_KEY");
@@ -60,24 +30,24 @@ exports.syncProdToDev = (0, scheduler_1.onSchedule)({
     timeoutSeconds: 540, // 9 minutes
     memory: "1GiB",
     secrets: [prodServiceAccountKey]
-}, async (event) => {
+}, async (_event) => {
     // Ensure we are NOT running in Production to prevent accidents
     if (process.env.GCLOUD_PROJECT === 'stimmapp-f0141') {
         console.error("CRITICAL: Attempted to run syncProdToDev IN PRODUCTION. Aborting.");
         return;
     }
     // Initialize access to the local (Dev) environment
-    const devDb = admin.firestore();
-    const devBucket = admin.storage().bucket();
+    const devDb = (0, firestore_1.getFirestore)();
+    const devBucket = (0, storage_1.getStorage)().bucket();
     // Initialize a separate Firebase app instance for the Production project
     // using the service account key from the secret.
-    const prodApp = admin.initializeApp({
-        credential: admin.credential.cert(JSON.parse(prodServiceAccountKey.value())),
+    const prodApp = (0, app_1.initializeApp)({
+        credential: (0, app_1.cert)(JSON.parse(prodServiceAccountKey.value())),
         // IMPORTANT: Replace with your REAL Production project's storage bucket URL
         storageBucket: "stimmapp-f0141.appspot.com"
     }, "prodApp");
-    const prodDb = prodApp.firestore();
-    const prodBucket = prodApp.storage().bucket();
+    const prodDb = (0, firestore_1.getFirestore)(prodApp);
+    const prodBucket = (0, storage_1.getStorage)(prodApp).bucket();
     console.log("Starting Sync: Production -> Development");
     // --- 1. Sync Firestore ---
     for (const config of COLLECTIONS_TO_SYNC) {
@@ -133,7 +103,7 @@ exports.syncProdToDev = (0, scheduler_1.onSchedule)({
         console.error("Error syncing storage:", error);
     }
     // Clean up the temporary prod app instance
-    await prodApp.delete();
+    await (0, app_1.deleteApp)(prodApp);
     // --- 3. Relink Users ---
     console.log("Relinking users...");
     await relinkUsers(devDb);
@@ -203,7 +173,7 @@ async function relinkUsers(db) {
         try {
             let devUser;
             try {
-                devUser = await admin.auth().getUserByEmail(email);
+                devUser = await (0, auth_1.getAuth)().getUserByEmail(email);
             }
             catch (e) {
                 if (e.code !== 'auth/user-not-found')
@@ -212,7 +182,7 @@ async function relinkUsers(db) {
             if (!devUser) {
                 // Case 1: User does not exist in Dev Auth. Create it with Prod UID.
                 console.log(`[Relink] Creating new Dev Auth user for ${email} with UID ${prodUid}`);
-                await admin.auth().createUser({
+                await (0, auth_1.getAuth)().createUser({
                     uid: prodUid,
                     email: email,
                     emailVerified: true, // Auto-verify since it's from Prod
@@ -224,8 +194,8 @@ async function relinkUsers(db) {
             else if (devUser.uid !== prodUid) {
                 // Case 2: User exists but UID mismatch. Delete and recreate.
                 console.log(`[Relink] UID mismatch for ${email} (Dev: ${devUser.uid}, Prod: ${prodUid}). Recreating Auth user.`);
-                await admin.auth().deleteUser(devUser.uid);
-                await admin.auth().createUser({
+                await (0, auth_1.getAuth)().deleteUser(devUser.uid);
+                await (0, auth_1.getAuth)().createUser({
                     uid: prodUid,
                     email: email,
                     emailVerified: true,

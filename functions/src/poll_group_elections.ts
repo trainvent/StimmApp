@@ -1,6 +1,12 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import * as admin from "firebase-admin";
+import {
+	DocumentReference,
+	FieldValue,
+	Firestore,
+	Timestamp,
+	getFirestore,
+} from "firebase-admin/firestore";
 import { addPollGroupActivity } from "./poll_group_activity";
 
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
@@ -13,8 +19,8 @@ type ElectionMember = {
 };
 
 async function clearElectionVotes(
-	db: admin.firestore.Firestore,
-	groupRef: admin.firestore.DocumentReference,
+	db: Firestore,
+	groupRef: DocumentReference,
 ) {
 	const votes = await groupRef
 		.collection("adminElections")
@@ -31,8 +37,8 @@ async function clearElectionVotes(
 }
 
 export async function handlePollGroupMemberDeparture(
-	db: admin.firestore.Firestore,
-	groupRef: admin.firestore.DocumentReference,
+	db: Firestore,
+	groupRef: DocumentReference,
 	uid: string,
 ): Promise<DepartureResult> {
 	const groupSnap = await groupRef.get();
@@ -52,7 +58,7 @@ export async function handlePollGroupMemberDeparture(
 	if (group.createdBy !== uid) {
 		const batch = db.batch();
 		batch.update(groupRef, {
-			memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+			memberIds: FieldValue.arrayRemove(uid),
 		});
 		batch.delete(memberRef);
 		addPollGroupActivity(batch, groupRef, {
@@ -73,8 +79,8 @@ export async function handlePollGroupMemberDeparture(
 	const admins = remainingMembers
 		.filter((member) => member.role === "admin")
 		.sort((a, b) => {
-			const aTime = a.joinedAt instanceof admin.firestore.Timestamp ? a.joinedAt.toMillis() : 0;
-			const bTime = b.joinedAt instanceof admin.firestore.Timestamp ? b.joinedAt.toMillis() : 0;
+			const aTime = a.joinedAt instanceof Timestamp ? a.joinedAt.toMillis() : 0;
+			const bTime = b.joinedAt instanceof Timestamp ? b.joinedAt.toMillis() : 0;
 			return aTime - bTime;
 		});
 
@@ -82,7 +88,7 @@ export async function handlePollGroupMemberDeparture(
 		const batch = db.batch();
 		batch.update(groupRef, {
 			createdBy: admins[0].uid,
-			memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+			memberIds: FieldValue.arrayRemove(uid),
 			adminElectionStatus: null,
 			adminElectionEndsAt: null,
 		});
@@ -97,12 +103,12 @@ export async function handlePollGroupMemberDeparture(
 	}
 
 	await clearElectionVotes(db, groupRef);
-	const now = admin.firestore.Timestamp.now();
-	const endsAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + ELECTION_DURATION_MS);
+	const now = Timestamp.now();
+	const endsAt = Timestamp.fromMillis(now.toMillis() + ELECTION_DURATION_MS);
 	const candidateUids = remainingMembers.map((member) => member.uid);
 	const batch = db.batch();
 	batch.update(groupRef, {
-		memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+		memberIds: FieldValue.arrayRemove(uid),
 		adminElectionStatus: "open",
 		adminElectionEndsAt: endsAt,
 	});
@@ -125,7 +131,7 @@ export async function handlePollGroupMemberDeparture(
 }
 
 export async function handleUserPollGroupDepartures(uid: string) {
-	const db = admin.firestore();
+	const db = getFirestore();
 	const groups = await db.collection("pollGroups").where("memberIds", "array-contains", uid).get();
 	for (const group of groups.docs) {
 		try {
@@ -141,7 +147,7 @@ export const leavePollGroup = onCall(async (request) => {
 	if (!uid) throw new HttpsError("unauthenticated", "Sign in before leaving a group.");
 	const groupId = typeof request.data?.groupId === "string" ? request.data.groupId.trim() : "";
 	if (!groupId) throw new HttpsError("invalid-argument", "groupId is required.");
-	const db = admin.firestore();
+	const db = getFirestore();
 	const result = await handlePollGroupMemberDeparture(
 		db,
 		db.collection("pollGroups").doc(groupId),
@@ -161,7 +167,7 @@ export const castPollGroupAdminVote = onCall(async (request) => {
 		throw new HttpsError("invalid-argument", "groupId and candidateUid are required.");
 	}
 
-	const db = admin.firestore();
+	const db = getFirestore();
 	const groupRef = db.collection("pollGroups").doc(groupId);
 	const electionRef = groupRef.collection("adminElections").doc("current");
 	const [groupSnap, electionSnap] = await Promise.all([groupRef.get(), electionRef.get()]);
@@ -176,7 +182,7 @@ export const castPollGroupAdminVote = onCall(async (request) => {
 		throw new HttpsError("permission-denied", "Only group members can vote.");
 	}
 	if (election.status !== "open" ||
-		!(election.endsAt instanceof admin.firestore.Timestamp) ||
+		!(election.endsAt instanceof Timestamp) ||
 		election.endsAt.toMillis() <= Date.now()) {
 		throw new HttpsError("failed-precondition", "This election is closed.");
 	}
@@ -187,14 +193,14 @@ export const castPollGroupAdminVote = onCall(async (request) => {
 	await electionRef.collection("votes").doc(uid).set({
 		voterUid: uid,
 		candidateUid,
-		castAt: admin.firestore.FieldValue.serverTimestamp(),
+		castAt: FieldValue.serverTimestamp(),
 	});
 	return { candidateUid };
 });
 
 export const finalizePollGroupAdminElections = onSchedule("every 15 minutes", async () => {
-	const db = admin.firestore();
-	const now = admin.firestore.Timestamp.now();
+	const db = getFirestore();
+	const now = Timestamp.now();
 	const groups = await db
 		.collection("pollGroups")
 		.where("adminElectionStatus", "==", "open")
@@ -220,8 +226,8 @@ export const finalizePollGroupAdminElections = onSchedule("every 15 minutes", as
 				return { uid: doc.id, role: data.role, joinedAt: data.joinedAt };
 			})
 			.sort((a, b) => {
-				const aTime = a.joinedAt instanceof admin.firestore.Timestamp ? a.joinedAt.toMillis() : 0;
-				const bTime = b.joinedAt instanceof admin.firestore.Timestamp ? b.joinedAt.toMillis() : 0;
+				const aTime = a.joinedAt instanceof Timestamp ? a.joinedAt.toMillis() : 0;
+				const bTime = b.joinedAt instanceof Timestamp ? b.joinedAt.toMillis() : 0;
 				return aTime - bTime;
 			});
 		if (members.length === 0) {

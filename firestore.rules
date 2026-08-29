@@ -189,6 +189,13 @@ service cloud.firestore {
 
     // --- Collection Rules ---
 
+    // Server-only OpenID4VP state. Cloud Functions use the Admin SDK and bypass
+    // these rules; no mobile, web, or Firebase-authenticated admin client may
+    // read session ownership or state.
+    match /pidVerificationSessions/{sessionId} {
+      allow read, write: if false;
+    }
+
     // Users Collection
     match /users/{userId} {
       // Main Profile: Public Read, Owner Write
@@ -449,8 +456,9 @@ service cloud.firestore {
     }
 
     // Default Fallback
-    match /{document=**} {
-      allow read, write: if isAdmin();
+    match /{collection}/{document=**} {
+      allow read, write: if isAdmin() &&
+                         collection != 'pidVerificationSessions';
     }
   }
 }

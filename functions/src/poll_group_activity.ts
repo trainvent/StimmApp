@@ -1,4 +1,8 @@
-import * as admin from "firebase-admin";
+import {
+	DocumentReference,
+	Timestamp,
+	WriteBatch,
+} from "firebase-admin/firestore";
 
 type PollGroupActivityInput = {
 	type: string;
@@ -8,12 +12,12 @@ type PollGroupActivityInput = {
 	subjectDisplayName?: string | null;
 	targetTitle?: string | null;
 	count?: number | null;
-	createdAt?: admin.firestore.Timestamp;
+	createdAt?: Timestamp;
 };
 
 export function addPollGroupActivity(
-	batch: admin.firestore.WriteBatch,
-	groupRef: admin.firestore.DocumentReference,
+	batch: WriteBatch,
+	groupRef: DocumentReference,
 	activity: PollGroupActivityInput,
 ) {
 	const ref = groupRef.collection("activities").doc();
@@ -25,6 +29,6 @@ export function addPollGroupActivity(
 		subjectDisplayName: activity.subjectDisplayName ?? null,
 		targetTitle: activity.targetTitle ?? null,
 		count: activity.count ?? null,
-		createdAt: activity.createdAt ?? admin.firestore.Timestamp.now(),
+		createdAt: activity.createdAt ?? Timestamp.now(),
 	});
 }

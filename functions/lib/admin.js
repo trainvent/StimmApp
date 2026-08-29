@@ -35,7 +35,8 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.moderateReport = exports.backfillFormCountryCode = exports.deleteUserByAdmin = void 0;
 const https_1 = require("firebase-functions/v2/https");
-const admin = __importStar(require("firebase-admin"));
+const auth_1 = require("firebase-admin/auth");
+const firestore_1 = require("firebase-admin/firestore");
 const nodemailer = __importStar(require("nodemailer"));
 const params_1 = require("firebase-functions/params");
 const brand_1 = require("./brand");
@@ -59,7 +60,7 @@ function buildReportResolutionUpdate(params) {
         status: 'resolved',
         resolution: params.action,
         adminMessage: params.adminMessage || null,
-        reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+        reviewedAt: firestore_1.FieldValue.serverTimestamp(),
         reviewedByUid: params.request.auth.uid,
         reviewedByEmail: (_a = params.request.auth.token.email) !== null && _a !== void 0 ? _a : null,
     };
@@ -85,7 +86,7 @@ async function backfillMissingCountryCode(params) {
     while (true) {
         let query = db
             .collection(collection)
-            .orderBy(admin.firestore.FieldPath.documentId())
+            .orderBy(firestore_1.FieldPath.documentId())
             .limit(pageSize);
         if (lastDoc) {
             query = query.startAfter(lastDoc);
@@ -107,7 +108,7 @@ async function backfillMissingCountryCode(params) {
             if (!dryRun) {
                 batch.update(doc.ref, {
                     countryCode,
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firestore_1.FieldValue.serverTimestamp(),
                 });
                 pendingWrites++;
                 if (pendingWrites >= commitChunkSize) {
@@ -267,7 +268,7 @@ async function storeKickedUser(params) {
         contentType: params.contentType,
         reason: params.reason,
         adminMessage: params.adminMessage || null,
-        kickedAt: admin.firestore.FieldValue.serverTimestamp(),
+        kickedAt: firestore_1.FieldValue.serverTimestamp(),
         kickedByUid: params.request.auth.uid,
         kickedByEmail: (_a = params.request.auth.token.email) !== null && _a !== void 0 ? _a : null,
     });
@@ -280,9 +281,9 @@ exports.deleteUserByAdmin = (0, https_1.onCall)(async (request) => {
     }
     try {
         // 3. Delete from Authentication (this triggers onAccountDelete in user_cleanup.ts)
-        await admin.auth().deleteUser(uid);
+        await (0, auth_1.getAuth)().deleteUser(uid);
         // 4. Delete from Firestore immediately so the UI updates instantly
-        await admin.firestore().collection('users').doc(uid).delete();
+        await (0, firestore_1.getFirestore)().collection('users').doc(uid).delete();
         return { success: true };
     }
     catch (error) {
@@ -301,7 +302,7 @@ exports.backfillFormCountryCode = (0, https_1.onCall)(async (request) => {
     if (countryCode.length != 2) {
         throw new https_1.HttpsError('invalid-argument', 'countryCode must be a 2-letter ISO country code.');
     }
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const [petitionsResult, pollsResult, surveysResult] = await Promise.all([
         backfillMissingCountryCode({
             db,
@@ -344,7 +345,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
     if (!reportId || !action || !['keep', 'remove'].includes(action)) {
         throw new https_1.HttpsError('invalid-argument', 'reportId and a valid action are required.');
     }
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const reportRef = db.collection('moderationReports').doc(reportId);
     const reportSnap = await reportRef.get();
     if (!reportSnap.exists) {
@@ -393,7 +394,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
             action: 'missing',
             request,
             adminMessage,
-        })), { contentMissingAt: admin.firestore.FieldValue.serverTimestamp() }));
+        })), { contentMissingAt: firestore_1.FieldValue.serverTimestamp() }));
         if (reporterEmails.length > 0) {
             await Promise.all(reporterEmails.map((email) => sendReporterResolutionEmail({
                 to: email,
@@ -416,7 +417,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
     let creatorEmail = creatorData.email;
     if (!creatorEmail) {
         try {
-            const creatorAuthUser = await admin.auth().getUser(reportedUserId);
+            const creatorAuthUser = await (0, auth_1.getAuth)().getUser(reportedUserId);
             creatorEmail = creatorAuthUser.email;
         }
         catch (error) {
@@ -431,7 +432,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
         contentData,
         reportId,
         reportData: report,
-        removedAt: admin.firestore.FieldValue.serverTimestamp(),
+        removedAt: firestore_1.FieldValue.serverTimestamp(),
         removedByUid: request.auth.uid,
         removedByEmail: (_j = request.auth.token.email) !== null && _j !== void 0 ? _j : null,
         adminMessage: adminMessage || null,
@@ -442,7 +443,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
         contentType,
         reason,
         adminMessage: adminMessage || null,
-        issuedAt: admin.firestore.FieldValue.serverTimestamp(),
+        issuedAt: firestore_1.FieldValue.serverTimestamp(),
         issuedByUid: request.auth.uid,
         issuedByEmail: (_k = request.auth.token.email) !== null && _k !== void 0 ? _k : null,
         action: 'removed_content',
@@ -476,7 +477,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
         });
     }
     try {
-        await admin.auth().deleteUser(reportedUserId);
+        await (0, auth_1.getAuth)().deleteUser(reportedUserId);
     }
     catch (error) {
         console.error(`Failed to delete kicked user ${reportedUserId}:`, error);

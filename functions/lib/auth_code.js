@@ -35,11 +35,12 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assertSignupEligible = exports.verifyLoginCode = exports.verifyEmailChangeCode = exports.sendEmailChangeCode = exports.verifyCode = exports.sendLoginCode = exports.sendVerificationCode = void 0;
 const https_1 = require("firebase-functions/v2/https");
-const admin = __importStar(require("firebase-admin"));
+const auth_1 = require("firebase-admin/auth");
+const firestore_1 = require("firebase-admin/firestore");
 const nodemailer = __importStar(require("nodemailer"));
 const params_1 = require("firebase-functions/params");
 const brand_1 = require("./brand");
-const db = admin.firestore();
+const db = (0, firestore_1.getFirestore)();
 const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
 const smtpUser = process.env.SMTP_USER || smtpMail;
@@ -232,7 +233,7 @@ async function verifyCodeLogic(uid, code, email, collection = 'verificationCodes
     }
     if (data.code !== code) {
         console.warn(`Invalid code entered for ${uid}.`);
-        await docRef.update({ attempts: admin.firestore.FieldValue.increment(1) });
+        await docRef.update({ attempts: firestore_1.FieldValue.increment(1) });
         throw new https_1.HttpsError('invalid-argument', 'Invalid code.');
     }
     // Code is valid. Clean up.
@@ -246,7 +247,7 @@ function assertValidEmailFormat(email) {
 }
 async function assertEmailAvailable(email, currentUid) {
     try {
-        const userRecord = await admin.auth().getUserByEmail(email);
+        const userRecord = await (0, auth_1.getAuth)().getUserByEmail(email);
         if (userRecord.uid !== currentUid) {
             throw new https_1.HttpsError('already-exists', 'This email address is already in use.');
         }
@@ -309,7 +310,7 @@ exports.sendLoginCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, async (
     const countryCodeHint = (_b = request.data) === null || _b === void 0 ? void 0 : _b.countryCode;
     let uid;
     try {
-        const userRecord = await admin.auth().getUserByEmail(email);
+        const userRecord = await (0, auth_1.getAuth)().getUserByEmail(email);
         uid = userRecord.uid;
     }
     catch (error) {
@@ -346,13 +347,13 @@ exports.verifyCode = (0, https_1.onCall)(async (request) => {
         const normalizedInput = email.trim().toLowerCase();
         const normalizedTest = testEmail.trim().toLowerCase();
         if (normalizedInput === normalizedTest && code === testCode) {
-            await admin.auth().updateUser(uid, { emailVerified: true });
+            await (0, auth_1.getAuth)().updateUser(uid, { emailVerified: true });
             await db.collection('verificationCodes').doc(uid).delete();
             return { success: true, message: 'Email verified successfully (Test Backdoor).' };
         }
     }
     await verifyCodeLogic(uid, code);
-    await admin.auth().updateUser(uid, {
+    await (0, auth_1.getAuth)().updateUser(uid, {
         emailVerified: true
     });
     return { success: true, message: 'Email verified successfully.' };
@@ -373,7 +374,7 @@ exports.sendEmailChangeCode = (0, https_1.onCall)({ secrets: [smtpPassword] }, a
     const newEmail = normalizeEmail(rawNewEmail);
     assertValidEmailFormat(newEmail);
     await assertEmailNotKicked(newEmail);
-    const userRecord = await admin.auth().getUser(request.auth.uid);
+    const userRecord = await (0, auth_1.getAuth)().getUser(request.auth.uid);
     const currentEmail = userRecord.email ? normalizeEmail(userRecord.email) : undefined;
     if (currentEmail === newEmail) {
         throw new https_1.HttpsError('invalid-argument', 'Please enter a different email address.');
@@ -408,17 +409,17 @@ exports.verifyEmailChangeCode = (0, https_1.onCall)(async (request) => {
     await assertEmailNotKicked(newEmail);
     await assertEmailAvailable(newEmail, request.auth.uid);
     await verifyCodeLogic(request.auth.uid, code, newEmail, 'emailChangeCodes');
-    await admin.auth().updateUser(request.auth.uid, {
+    await (0, auth_1.getAuth)().updateUser(request.auth.uid, {
         email: newEmail,
         emailVerified: true,
     });
     await db.collection('users').doc(request.auth.uid).set({
         email: newEmail,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firestore_1.FieldValue.serverTimestamp(),
     }, { merge: true });
     let token;
     try {
-        token = await admin.auth().createCustomToken(request.auth.uid);
+        token = await (0, auth_1.getAuth)().createCustomToken(request.auth.uid);
     }
     catch (e) {
         console.error("Error creating custom token after email change:", e);
@@ -440,7 +441,7 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
     await assertEmailNotKicked(email);
     let uid;
     try {
-        const userRecord = await admin.auth().getUserByEmail(email);
+        const userRecord = await (0, auth_1.getAuth)().getUserByEmail(email);
         uid = userRecord.uid;
     }
     catch (error) {
@@ -470,7 +471,7 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
     // Code is valid. Generate custom token.
     let token;
     try {
-        token = await admin.auth().createCustomToken(uid);
+        token = await (0, auth_1.getAuth)().createCustomToken(uid);
     }
     catch (e) {
         console.error("Error creating custom token:", e);
@@ -482,7 +483,7 @@ exports.verifyLoginCode = (0, https_1.onCall)(async (request) => {
     }
     // Also mark email as verified since they proved ownership
     try {
-        await admin.auth().updateUser(uid, {
+        await (0, auth_1.getAuth)().updateUser(uid, {
             emailVerified: true
         });
     }

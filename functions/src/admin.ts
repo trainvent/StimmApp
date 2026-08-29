@@ -1,5 +1,13 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
+import { getAuth } from "firebase-admin/auth";
+import {
+	DocumentData,
+	FieldPath,
+	FieldValue,
+	Firestore,
+	QueryDocumentSnapshot,
+	getFirestore,
+} from "firebase-admin/firestore";
 import * as nodemailer from "nodemailer";
 import { defineSecret } from "firebase-functions/params";
 import { getBrandRuntimeConfig } from "./brand";
@@ -31,7 +39,7 @@ function buildReportResolutionUpdate(params: {
 		status: 'resolved',
 		resolution: params.action,
 		adminMessage: params.adminMessage || null,
-		reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+		reviewedAt: FieldValue.serverTimestamp(),
 		reviewedByUid: params.request.auth!.uid,
 		reviewedByEmail: params.request.auth!.token.email ?? null,
 	};
@@ -55,7 +63,7 @@ type BackfillCollectionResult = {
 };
 
 async function backfillMissingCountryCode(params: {
-	db: admin.firestore.Firestore;
+	db: Firestore;
 	collection: 'petitions' | 'polls' | 'surveys';
 	countryCode: string;
 	dryRun: boolean;
@@ -66,14 +74,14 @@ async function backfillMissingCountryCode(params: {
 
 	let scanned = 0;
 	let updated = 0;
-	let lastDoc: admin.firestore.QueryDocumentSnapshot | null = null;
+	let lastDoc: QueryDocumentSnapshot | null = null;
 	let batch = db.batch();
 	let pendingWrites = 0;
 
 	while (true) {
 		let query = db
 			.collection(collection)
-			.orderBy(admin.firestore.FieldPath.documentId())
+			.orderBy(FieldPath.documentId())
 			.limit(pageSize);
 		if (lastDoc) {
 			query = query.startAfter(lastDoc);
@@ -98,7 +106,7 @@ async function backfillMissingCountryCode(params: {
 			if (!dryRun) {
 				batch.update(doc.ref, {
 					countryCode,
-					updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+					updatedAt: FieldValue.serverTimestamp(),
 				});
 				pendingWrites++;
 				if (pendingWrites >= commitChunkSize) {
@@ -257,8 +265,8 @@ async function sendReporterResolutionEmail(params: {
 }
 
 async function getReporterEmails(
-	db: admin.firestore.Firestore,
-	report: admin.firestore.DocumentData,
+	db: Firestore,
+	report: DocumentData,
 ) {
 	const rawEntries = Array.isArray(report.entries) ? report.entries : [];
 	const reporterIds = [
@@ -285,7 +293,7 @@ async function getReporterEmails(
 }
 
 async function storeKickedUser(params: {
-	db: admin.firestore.Firestore;
+	db: Firestore;
 	uid: string;
 	email: string;
 	removalId: string;
@@ -307,7 +315,7 @@ async function storeKickedUser(params: {
 		contentType: params.contentType,
 		reason: params.reason,
 		adminMessage: params.adminMessage || null,
-		kickedAt: admin.firestore.FieldValue.serverTimestamp(),
+		kickedAt: FieldValue.serverTimestamp(),
 		kickedByUid: params.request.auth!.uid,
 		kickedByEmail: params.request.auth!.token.email ?? null,
 	});
@@ -323,10 +331,10 @@ export const deleteUserByAdmin = onCall(async (request) => {
 
 	try {
 		// 3. Delete from Authentication (this triggers onAccountDelete in user_cleanup.ts)
-		await admin.auth().deleteUser(uid);
+		await getAuth().deleteUser(uid);
 
 		// 4. Delete from Firestore immediately so the UI updates instantly
-		await admin.firestore().collection('users').doc(uid).delete();
+		await getFirestore().collection('users').doc(uid).delete();
 
 		return { success: true };
 	} catch (error) {
@@ -348,7 +356,7 @@ export const backfillFormCountryCode = onCall(async (request) => {
 		throw new HttpsError('invalid-argument', 'countryCode must be a 2-letter ISO country code.');
 	}
 
-	const db = admin.firestore();
+	const db = getFirestore();
 	const [petitionsResult, pollsResult, surveysResult] = await Promise.all([
 		backfillMissingCountryCode({
 			db,
@@ -396,7 +404,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 		throw new HttpsError('invalid-argument', 'reportId and a valid action are required.');
 	}
 
-	const db = admin.firestore();
+	const db = getFirestore();
 	const reportRef = db.collection('moderationReports').doc(reportId);
 	const reportSnap = await reportRef.get();
 	if (!reportSnap.exists) {
@@ -462,7 +470,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 				request,
 				adminMessage,
 			}),
-			contentMissingAt: admin.firestore.FieldValue.serverTimestamp(),
+			contentMissingAt: FieldValue.serverTimestamp(),
 		});
 
 		if (reporterEmails.length > 0) {
@@ -493,7 +501,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 	let creatorEmail = creatorData.email as string | undefined;
 	if (!creatorEmail) {
 		try {
-			const creatorAuthUser = await admin.auth().getUser(reportedUserId);
+			const creatorAuthUser = await getAuth().getUser(reportedUserId);
 			creatorEmail = creatorAuthUser.email;
 		} catch (error) {
 			console.warn(`Unable to load auth user for reported user ${reportedUserId}:`, error);
@@ -508,7 +516,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 		contentData,
 		reportId,
 		reportData: report,
-		removedAt: admin.firestore.FieldValue.serverTimestamp(),
+		removedAt: FieldValue.serverTimestamp(),
 		removedByUid: request.auth!.uid,
 		removedByEmail: request.auth!.token.email ?? null,
 		adminMessage: adminMessage || null,
@@ -520,7 +528,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 		contentType,
 		reason,
 		adminMessage: adminMessage || null,
-		issuedAt: admin.firestore.FieldValue.serverTimestamp(),
+		issuedAt: FieldValue.serverTimestamp(),
 		issuedByUid: request.auth!.uid,
 		issuedByEmail: request.auth!.token.email ?? null,
 		action: 'removed_content',
@@ -561,7 +569,7 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 	}
 
 	try {
-		await admin.auth().deleteUser(reportedUserId);
+		await getAuth().deleteUser(reportedUserId);
 	} catch (error) {
 		console.error(`Failed to delete kicked user ${reportedUserId}:`, error);
 		throw new HttpsError('internal', 'Content was removed, but kicking the user failed.');

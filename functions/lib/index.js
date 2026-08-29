@@ -10,38 +10,17 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeExpiredForms = exports.checkSubscriptions = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
-const admin = __importStar(require("firebase-admin"));
-admin.initializeApp();
-exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", async (event) => {
-    const db = admin.firestore();
+const app_1 = require("firebase-admin/app");
+const firestore_1 = require("firebase-admin/firestore");
+(0, app_1.initializeApp)();
+exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", async (_event) => {
+    const db = (0, firestore_1.getFirestore)();
     const now = new Date();
     // Query all users who are currently Pro
     const snapshot = await db.collection('users').where('isPro', '==', true).get();
@@ -71,7 +50,7 @@ exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", asyn
             batch.update(doc.ref, {
                 isPro: false,
                 wentProAt: null,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firestore_1.FieldValue.serverTimestamp(),
             });
             operationCount++;
             revokedCount++;
@@ -89,7 +68,7 @@ exports.checkSubscriptions = (0, scheduler_1.onSchedule)("every day 00:00", asyn
     console.log(`Subscription check complete. Revoked ${revokedCount} memberships.`);
 });
 exports.closeExpiredForms = (0, scheduler_1.onSchedule)("every 15 minutes", async () => {
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const now = new Date();
     const targets = [
         { name: 'petitions' },
@@ -113,8 +92,8 @@ exports.closeExpiredForms = (0, scheduler_1.onSchedule)("every 15 minutes", asyn
             for (const doc of snap.docs) {
                 batch.update(doc.ref, {
                     status: 'closed',
-                    scheduledCloseAt: admin.firestore.FieldValue.delete(),
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    scheduledCloseAt: firestore_1.FieldValue.delete(),
+                    updatedAt: firestore_1.FieldValue.serverTimestamp(),
                 });
                 opCount++;
                 closedCount++;

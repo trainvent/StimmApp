@@ -1,44 +1,11 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.finalizePollGroupAdminElections = exports.castPollGroupAdminVote = exports.leavePollGroup = void 0;
 exports.handlePollGroupMemberDeparture = handlePollGroupMemberDeparture;
 exports.handleUserPollGroupDepartures = handleUserPollGroupDepartures;
 const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
-const admin = __importStar(require("firebase-admin"));
+const firestore_1 = require("firebase-admin/firestore");
 const poll_group_activity_1 = require("./poll_group_activity");
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
 async function clearElectionVotes(db, groupRef) {
@@ -74,7 +41,7 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
     if (group.createdBy !== uid) {
         const batch = db.batch();
         batch.update(groupRef, {
-            memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+            memberIds: firestore_1.FieldValue.arrayRemove(uid),
         });
         batch.delete(memberRef);
         (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
@@ -94,15 +61,15 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
     const admins = remainingMembers
         .filter((member) => member.role === "admin")
         .sort((a, b) => {
-        const aTime = a.joinedAt instanceof admin.firestore.Timestamp ? a.joinedAt.toMillis() : 0;
-        const bTime = b.joinedAt instanceof admin.firestore.Timestamp ? b.joinedAt.toMillis() : 0;
+        const aTime = a.joinedAt instanceof firestore_1.Timestamp ? a.joinedAt.toMillis() : 0;
+        const bTime = b.joinedAt instanceof firestore_1.Timestamp ? b.joinedAt.toMillis() : 0;
         return aTime - bTime;
     });
     if (admins.length > 0) {
         const batch = db.batch();
         batch.update(groupRef, {
             createdBy: admins[0].uid,
-            memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+            memberIds: firestore_1.FieldValue.arrayRemove(uid),
             adminElectionStatus: null,
             adminElectionEndsAt: null,
         });
@@ -116,12 +83,12 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
         return "ownershipTransferred";
     }
     await clearElectionVotes(db, groupRef);
-    const now = admin.firestore.Timestamp.now();
-    const endsAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + ELECTION_DURATION_MS);
+    const now = firestore_1.Timestamp.now();
+    const endsAt = firestore_1.Timestamp.fromMillis(now.toMillis() + ELECTION_DURATION_MS);
     const candidateUids = remainingMembers.map((member) => member.uid);
     const batch = db.batch();
     batch.update(groupRef, {
-        memberIds: admin.firestore.FieldValue.arrayRemove(uid),
+        memberIds: firestore_1.FieldValue.arrayRemove(uid),
         adminElectionStatus: "open",
         adminElectionEndsAt: endsAt,
     });
@@ -143,7 +110,7 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
     return "electionStarted";
 }
 async function handleUserPollGroupDepartures(uid) {
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const groups = await db.collection("pollGroups").where("memberIds", "array-contains", uid).get();
     for (const group of groups.docs) {
         try {
@@ -162,7 +129,7 @@ exports.leavePollGroup = (0, https_1.onCall)(async (request) => {
     const groupId = typeof ((_b = request.data) === null || _b === void 0 ? void 0 : _b.groupId) === "string" ? request.data.groupId.trim() : "";
     if (!groupId)
         throw new https_1.HttpsError("invalid-argument", "groupId is required.");
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const result = await handlePollGroupMemberDeparture(db, db.collection("pollGroups").doc(groupId), uid);
     return { result };
 });
@@ -178,7 +145,7 @@ exports.castPollGroupAdminVote = (0, https_1.onCall)(async (request) => {
     if (!groupId || !candidateUid) {
         throw new https_1.HttpsError("invalid-argument", "groupId and candidateUid are required.");
     }
-    const db = admin.firestore();
+    const db = (0, firestore_1.getFirestore)();
     const groupRef = db.collection("pollGroups").doc(groupId);
     const electionRef = groupRef.collection("adminElections").doc("current");
     const [groupSnap, electionSnap] = await Promise.all([groupRef.get(), electionRef.get()]);
@@ -193,7 +160,7 @@ exports.castPollGroupAdminVote = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("permission-denied", "Only group members can vote.");
     }
     if (election.status !== "open" ||
-        !(election.endsAt instanceof admin.firestore.Timestamp) ||
+        !(election.endsAt instanceof firestore_1.Timestamp) ||
         election.endsAt.toMillis() <= Date.now()) {
         throw new https_1.HttpsError("failed-precondition", "This election is closed.");
     }
@@ -203,14 +170,14 @@ exports.castPollGroupAdminVote = (0, https_1.onCall)(async (request) => {
     await electionRef.collection("votes").doc(uid).set({
         voterUid: uid,
         candidateUid,
-        castAt: admin.firestore.FieldValue.serverTimestamp(),
+        castAt: firestore_1.FieldValue.serverTimestamp(),
     });
     return { candidateUid };
 });
 exports.finalizePollGroupAdminElections = (0, scheduler_1.onSchedule)("every 15 minutes", async () => {
     var _a, _b, _c, _d;
-    const db = admin.firestore();
-    const now = admin.firestore.Timestamp.now();
+    const db = (0, firestore_1.getFirestore)();
+    const now = firestore_1.Timestamp.now();
     const groups = await db
         .collection("pollGroups")
         .where("adminElectionStatus", "==", "open")
@@ -234,8 +201,8 @@ exports.finalizePollGroupAdminElections = (0, scheduler_1.onSchedule)("every 15 
             return { uid: doc.id, role: data.role, joinedAt: data.joinedAt };
         })
             .sort((a, b) => {
-            const aTime = a.joinedAt instanceof admin.firestore.Timestamp ? a.joinedAt.toMillis() : 0;
-            const bTime = b.joinedAt instanceof admin.firestore.Timestamp ? b.joinedAt.toMillis() : 0;
+            const aTime = a.joinedAt instanceof firestore_1.Timestamp ? a.joinedAt.toMillis() : 0;
+            const bTime = b.joinedAt instanceof firestore_1.Timestamp ? b.joinedAt.toMillis() : 0;
             return aTime - bTime;
         });
         if (members.length === 0) {

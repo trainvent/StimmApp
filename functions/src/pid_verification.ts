@@ -10,6 +10,12 @@ import {
   normalizePidDisplayText,
   normalizePidPostalCode,
 } from './pid_claim_normalization.js';
+import {
+  PidVerificationMode,
+  createPidVerificationSession,
+  getOwnedPidVerificationSession,
+  transitionPidVerificationSession,
+} from './pid_verification_session.js';
 
 async function loadCredoDeps() {
   const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
@@ -186,19 +192,16 @@ pidVerifierApp.use((request, response, next) => {
 });
 
 let pidVerifierAgentPromise: ReturnType<typeof initializePidVerifierAgent> | undefined;
-const pidVerificationSessionOwners = new Map<string, { uid: string; expiresAt: number }>();
-
-type PidVerificationMode = 'registration' | 'reverification';
 
 type PidVerificationRequestInput = {
-  mode?: PidVerificationMode;
-  purpose?: string;
-  returnUrl?: string;
+  mode: PidVerificationMode;
+  purpose: string;
 };
 
 type CreatePidVerificationRequestResult = {
   authorizationRequest: string;
   verificationSessionId: string;
+  traceId: string;
   state: string;
   expiresAt: string;
 };
@@ -361,7 +364,7 @@ async function createPidVerificationRequest(
       query: pidDcql,
     },
     responseMode: 'direct_post.jwt',
-    authorizationResponseRedirectUri: options.returnUrl ??
+    authorizationResponseRedirectUri:
       `${PID_VERIFIER_BASE_URL}/result/${randomUUID()}`,
   });
 
@@ -370,16 +373,22 @@ async function createPidVerificationRequest(
     sessionInfo.id ?? sessionInfo.verificationSessionId ?? sessionInfo.authorizationRequestId ?? 'unknown-session',
   );
   const state = sessionInfo.authorizationRequestPayload?.state ?? verificationSessionId;
-  pidVerificationSessionOwners.set(verificationSessionId, {
-    uid: ownerUid,
-    expiresAt: verificationSession.expiresAt?.getTime() ?? Date.now() + 5 * 60 * 1000,
+  const expiresAt = verificationSession.expiresAt ??
+    new Date(Date.now() + 5 * 60 * 1000);
+  const traceId = await createPidVerificationSession({
+    sessionId: verificationSessionId,
+    ownerUid,
+    mode: options.mode,
+    purpose: options.purpose,
+    expiresAt,
   });
 
   return {
     authorizationRequest,
     verificationSessionId,
+    traceId,
     state,
-    expiresAt: verificationSession.expiresAt ? verificationSession.expiresAt.toISOString() : new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    expiresAt: expiresAt.toISOString(),
   };
 }
 
@@ -447,8 +456,9 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
   try {
     const user = await requireFirebaseUser(request);
     const mode = request.body?.mode === 'reverification' ? 'reverification' : 'registration';
-    const purpose = typeof request.body?.purpose === 'string' ? request.body.purpose :
-      mode === 'reverification' ? 'Periodic identity re-verification' : 'Registration verification';
+    const purpose = mode === 'reverification' ?
+      'Periodic identity re-verification' :
+      'Registration verification';
     const result = await createPidVerificationRequest({ mode, purpose }, user.uid);
     response.json({ ok: true, mode, purpose, ...result });
   } catch (error) {
@@ -466,15 +476,30 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
   try {
     const user = await requireFirebaseUser(request);
     const sessionId = request.params.sessionId;
-    const owner = pidVerificationSessionOwners.get(sessionId);
-    if (!owner || owner.uid !== user.uid) {
+    const persistedSession = await getOwnedPidVerificationSession(
+      sessionId,
+      user.uid,
+    );
+    if (!persistedSession) {
       response.status(404).json({ error: 'Verification session not found.' });
+      return;
+    }
+
+    if (persistedSession.state === 'failed') {
+      response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
+      return;
+    }
+    if (persistedSession.state === 'expired' ||
+        persistedSession.expiresAt.toMillis() <= Date.now()) {
+      await transitionPidVerificationSession(sessionId, 'expired');
+      response.json({ status: 'expired' });
       return;
     }
 
     const { agent } = await ensurePidVerifierAgent();
     const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
     if (session.state === 'ResponseVerified') {
+      await transitionPidVerificationSession(sessionId, 'verified');
       const claims = await getVerifiedPidClaims(agent, sessionId);
       response.json({
         status: 'verified',
@@ -484,11 +509,8 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
       return;
     }
     if (session.state === 'Error') {
+      await transitionPidVerificationSession(sessionId, 'failed');
       response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
-      return;
-    }
-    if (owner.expiresAt <= Date.now()) {
-      response.json({ status: 'expired' });
       return;
     }
     response.json({ status: 'pending' });
@@ -505,9 +527,17 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
   try {
     const user = await requireFirebaseUser(request);
     const sessionId = request.params.sessionId;
-    const owner = pidVerificationSessionOwners.get(sessionId);
-    if (!owner || owner.uid !== user.uid) {
+    const persistedSession = await getOwnedPidVerificationSession(
+      sessionId,
+      user.uid,
+    );
+    if (!persistedSession) {
       response.status(404).json({ error: 'Verification session not found.' });
+      return;
+    }
+    if (persistedSession.expiresAt.toMillis() <= Date.now()) {
+      await transitionPidVerificationSession(sessionId, 'expired');
+      response.status(409).json({ error: 'The PID verification request expired.' });
       return;
     }
 
@@ -517,6 +547,7 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
       response.status(409).json({ error: 'The PID presentation has not been verified.' });
       return;
     }
+    await transitionPidVerificationSession(sessionId, 'verified');
 
     const claims = normalizeVerifiedPidClaimsForProfile(
       await getVerifiedPidClaims(agent, sessionId),
@@ -548,6 +579,7 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
       gotVerifiedAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
+    await transitionPidVerificationSession(sessionId, 'accepted');
 
     response.json({ ok: true, claims });
   } catch (error) {

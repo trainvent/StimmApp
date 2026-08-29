@@ -1,5 +1,9 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
+import {
+	DocumentData,
+	Timestamp,
+	getFirestore,
+} from "firebase-admin/firestore";
 import { addPollGroupActivity } from "./poll_group_activity";
 
 type CreatePollGroupPayload = {
@@ -107,8 +111,8 @@ function chunk<T>(items: T[], size: number) {
 export const createPollGroup = onCall(async (request) => {
 	const uid = requireAuth(request);
 	const data = (request.data ?? {}) as CreatePollGroupPayload;
-	const db = admin.firestore();
-	const now = admin.firestore.Timestamp.now();
+	const db = getFirestore();
+	const now = Timestamp.now();
 
 	const name = asTrimmedString(data.name, "name", 120);
 	const joinCode = asTrimmedString(data.joinCode, "joinCode", 64);
@@ -142,7 +146,7 @@ export const createPollGroup = onCall(async (request) => {
 
 	const expiresAtMillis = data.expiresAtMillis;
 	const expiresAt = typeof expiresAtMillis === "number" && Number.isFinite(expiresAtMillis)
-		? admin.firestore.Timestamp.fromMillis(expiresAtMillis)
+		? Timestamp.fromMillis(expiresAtMillis)
 		: null;
 
 	const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers as AllowedMemberInput[] : [];
@@ -152,7 +156,7 @@ export const createPollGroup = onCall(async (request) => {
 		email: string;
 		nickname: string | null;
 		role: string;
-		createdAt: admin.firestore.Timestamp;
+		createdAt: Timestamp;
 		createdBy: string;
 		emailLowercase: string;
 	}>();
@@ -171,7 +175,7 @@ export const createPollGroup = onCall(async (request) => {
 	const allowedDomainsByDomain = new Map<string, {
 		domain: string;
 		role: string;
-		createdAt: admin.firestore.Timestamp;
+		createdAt: Timestamp;
 		createdBy: string;
 	}>();
 	for (const domain of rawAllowedDomains) {
@@ -303,8 +307,8 @@ export const createPollGroup = onCall(async (request) => {
 export const updatePollGroup = onCall(async (request) => {
 	const uid = requireAuth(request);
 	const data = (request.data ?? {}) as UpdatePollGroupPayload;
-	const db = admin.firestore();
-	const now = admin.firestore.Timestamp.now();
+	const db = getFirestore();
+	const now = Timestamp.now();
 
 	const groupId = asTrimmedString(data.groupId, "groupId", 256);
 	const name = asTrimmedString(data.name, "name", 120);
@@ -338,7 +342,7 @@ export const updatePollGroup = onCall(async (request) => {
 
 	const expiresAtMillis = data.expiresAtMillis;
 	const expiresAt = typeof expiresAtMillis === "number" && Number.isFinite(expiresAtMillis)
-		? admin.firestore.Timestamp.fromMillis(expiresAtMillis)
+		? Timestamp.fromMillis(expiresAtMillis)
 		: null;
 	const rawAllowedMembers = Array.isArray(data.allowedMembers) ? data.allowedMembers as AllowedMemberInput[] : [];
 	const rawAllowedDomains = Array.isArray(data.allowedDomains) ? data.allowedDomains as AllowedDomainInput[] : [];
@@ -351,7 +355,7 @@ export const updatePollGroup = onCall(async (request) => {
 		emailLowercase: string;
 		nickname: string | null;
 		role: string;
-		createdAt: admin.firestore.Timestamp;
+		createdAt: Timestamp;
 		createdBy: string;
 	}>();
 	for (const member of rawAllowedMembers) {
@@ -369,7 +373,7 @@ export const updatePollGroup = onCall(async (request) => {
 	const allowedDomainsByDomain = new Map<string, {
 		domain: string;
 		role: string;
-		createdAt: admin.firestore.Timestamp;
+		createdAt: Timestamp;
 		createdBy: string;
 	}>();
 	for (const domain of rawAllowedDomains) {
@@ -404,7 +408,7 @@ export const updatePollGroup = onCall(async (request) => {
 			}
 		}
 	}
-	const existingInvitesByUid = new Map<string, admin.firestore.DocumentData[]>();
+	const existingInvitesByUid = new Map<string, DocumentData[]>();
 	await Promise.all(matchingProfiles.map(async (profile) => {
 		const snap = await db
 			.collection("users")

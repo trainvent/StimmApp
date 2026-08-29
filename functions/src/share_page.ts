@@ -1,5 +1,5 @@
 import {onRequest, type Request} from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
+import {getFirestore} from "firebase-admin/firestore";
 
 type ShareKind = "petition" | "poll" | "survey";
 type ShareContentKind = "form" | "groupInvite";
@@ -270,8 +270,7 @@ export const sharePage = onRequest(async (request, response) => {
 
     if (/^[A-Za-z0-9_-]{1,128}$/.test(id)) {
       try {
-        const snapshot = await admin
-          .firestore()
+        const snapshot = await getFirestore()
           .collection(COLLECTIONS[kind])
           .doc(id)
           .get();

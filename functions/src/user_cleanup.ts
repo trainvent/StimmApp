@@ -1,15 +1,23 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import * as admin from "firebase-admin";
+import { getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import {
+	FieldValue,
+	Firestore,
+	Query,
+	getFirestore,
+} from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { handleUserPollGroupDepartures } from "./poll_group_elections";
 
-if (admin.apps.length === 0) {
-	admin.initializeApp();
+if (getApps().length === 0) {
+	initializeApp();
 }
 
 /**
  * Helper function to delete a collection or subcollection in batches.
  */
-async function deleteCollection(db: admin.firestore.Firestore, collectionPath: string, batchSize: number) {
+async function deleteCollection(db: Firestore, collectionPath: string, batchSize: number) {
 	const collectionRef = db.collection(collectionPath);
 	const query = collectionRef.orderBy('__name__').limit(batchSize);
 
@@ -18,7 +26,7 @@ async function deleteCollection(db: admin.firestore.Firestore, collectionPath: s
 	});
 }
 
-async function deleteQueryBatch(db: admin.firestore.Firestore, query: admin.firestore.Query, resolve: (value?: unknown) => void) {
+async function deleteQueryBatch(db: Firestore, query: Query, resolve: (value?: unknown) => void) {
 	const snapshot = await query.get();
 
 	const batchSize = snapshot.size;
@@ -47,7 +55,7 @@ function getFilePathFromUrl(url: string): string | null {
 		if (parts.length < 2) return null;
 		const path = parts[1].split("?")[0];
 		return decodeURIComponent(path);
-	} catch (e) {
+	} catch (_e) {
 		return null;
 	}
 }
@@ -56,8 +64,8 @@ function getFilePathFromUrl(url: string): string | null {
  * Reusable function to clean up all data associated with a user.
  */
 export async function cleanupUserData(uid: string) {
-	const db = admin.firestore();
-	const bucket = admin.storage().bucket();
+	const db = getFirestore();
+	const bucket = getStorage().bucket();
 
 	console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
 
@@ -141,12 +149,12 @@ export async function cleanupUserData(uid: string) {
 			const data = responseDoc.data();
 			const answers = data.answers || {};
 			await db.runTransaction(async (txn) => {
-				const update: Record<string, admin.firestore.FieldValue> = {
-					responseCount: admin.firestore.FieldValue.increment(-1),
+				const update: Record<string, FieldValue> = {
+					responseCount: FieldValue.increment(-1),
 				};
 				for (const [questionId, optionId] of Object.entries(answers)) {
 					if (typeof optionId === "string") {
-						update[`questionVotes.${questionId}.${optionId}`] = admin.firestore.FieldValue.increment(-1);
+						update[`questionVotes.${questionId}.${optionId}`] = FieldValue.increment(-1);
 					}
 				}
 				txn.update(surveyRef, update);
@@ -179,8 +187,8 @@ export const cleanupOrphanedUsers = onSchedule({
     schedule: "every day 14:00",
     timeoutSeconds: 540,
     memory: "1GiB",
-}, async (event) => {
-    const db = admin.firestore();
+}, async (_event) => {
+    const db = getFirestore();
     console.log("Starting cleanup of orphaned users...");
 
     // Get all user IDs from Firestore
@@ -198,7 +206,7 @@ export const cleanupOrphanedUsers = onSchedule({
         const identifiers = batchIds.map(uid => ({ uid }));
 
         try {
-            const authResult = await admin.auth().getUsers(identifiers);
+            const authResult = await getAuth().getUsers(identifiers);
             const foundUids = new Set(authResult.users.map(u => u.uid));
             
             const missingUids = batchIds.filter(uid => !foundUids.has(uid));

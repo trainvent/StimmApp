@@ -1,10 +1,11 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import * as admin from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 
-admin.initializeApp();
+initializeApp();
 
-export const checkSubscriptions = onSchedule("every day 00:00", async (event) => {
-	const db = admin.firestore();
+export const checkSubscriptions = onSchedule("every day 00:00", async (_event) => {
+	const db = getFirestore();
 	const now = new Date();
 
 	// Query all users who are currently Pro
@@ -19,7 +20,7 @@ export const checkSubscriptions = onSchedule("every day 00:00", async (event) =>
 	for (const doc of snapshot.docs) {
 		const data = doc.data();
 		// In Firestore, dates are stored as Timestamps
-		const wentProAt = data.wentProAt as admin.firestore.Timestamp | undefined;
+		const wentProAt = data.wentProAt as Timestamp | undefined;
 
 		let shouldRevoke = false;
 
@@ -41,7 +42,7 @@ export const checkSubscriptions = onSchedule("every day 00:00", async (event) =>
 			batch.update(doc.ref, {
 				isPro: false,
 				wentProAt: null,
-				updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+				updatedAt: FieldValue.serverTimestamp(),
 			});
 
 			operationCount++;
@@ -64,7 +65,7 @@ export const checkSubscriptions = onSchedule("every day 00:00", async (event) =>
 });
 
 export const closeExpiredForms = onSchedule("every 15 minutes", async () => {
-	const db = admin.firestore();
+	const db = getFirestore();
 	const now = new Date();
 
 	type CollectionTarget = {
@@ -102,8 +103,8 @@ export const closeExpiredForms = onSchedule("every 15 minutes", async () => {
 			for (const doc of snap.docs) {
 				batch.update(doc.ref, {
 					status: 'closed',
-					scheduledCloseAt: admin.firestore.FieldValue.delete(),
-					updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+					scheduledCloseAt: FieldValue.delete(),
+					updatedAt: FieldValue.serverTimestamp(),
 				});
 				opCount++;
 				closedCount++;

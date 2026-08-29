@@ -36,10 +36,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.cleanupOrphanedUsers = exports.onAccountDelete = void 0;
 exports.cleanupUserData = cleanupUserData;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
-const admin = __importStar(require("firebase-admin"));
+const app_1 = require("firebase-admin/app");
+const auth_1 = require("firebase-admin/auth");
+const firestore_1 = require("firebase-admin/firestore");
+const storage_1 = require("firebase-admin/storage");
 const poll_group_elections_1 = require("./poll_group_elections");
-if (admin.apps.length === 0) {
-    admin.initializeApp();
+if ((0, app_1.getApps)().length === 0) {
+    (0, app_1.initializeApp)();
 }
 /**
  * Helper function to delete a collection or subcollection in batches.
@@ -78,7 +81,7 @@ function getFilePathFromUrl(url) {
         const path = parts[1].split("?")[0];
         return decodeURIComponent(path);
     }
-    catch (e) {
+    catch (_e) {
         return null;
     }
 }
@@ -87,8 +90,8 @@ function getFilePathFromUrl(url) {
  */
 async function cleanupUserData(uid) {
     var _a;
-    const db = admin.firestore();
-    const bucket = admin.storage().bucket();
+    const db = (0, firestore_1.getFirestore)();
+    const bucket = (0, storage_1.getStorage)().bucket();
     console.log(`[cleanupUserData] Cleaning up data for user: ${uid}`);
     try {
         await (0, poll_group_elections_1.handleUserPollGroupDepartures)(uid);
@@ -164,11 +167,11 @@ async function cleanupUserData(uid) {
             const answers = data.answers || {};
             await db.runTransaction(async (txn) => {
                 const update = {
-                    responseCount: admin.firestore.FieldValue.increment(-1),
+                    responseCount: firestore_1.FieldValue.increment(-1),
                 };
                 for (const [questionId, optionId] of Object.entries(answers)) {
                     if (typeof optionId === "string") {
-                        update[`questionVotes.${questionId}.${optionId}`] = admin.firestore.FieldValue.increment(-1);
+                        update[`questionVotes.${questionId}.${optionId}`] = firestore_1.FieldValue.increment(-1);
                     }
                 }
                 txn.update(surveyRef, update);
@@ -198,8 +201,8 @@ exports.cleanupOrphanedUsers = (0, scheduler_1.onSchedule)({
     schedule: "every day 14:00",
     timeoutSeconds: 540,
     memory: "1GiB",
-}, async (event) => {
-    const db = admin.firestore();
+}, async (_event) => {
+    const db = (0, firestore_1.getFirestore)();
     console.log("Starting cleanup of orphaned users...");
     // Get all user IDs from Firestore
     // Using select() to fetch only document references (IDs) to save memory
@@ -212,7 +215,7 @@ exports.cleanupOrphanedUsers = (0, scheduler_1.onSchedule)({
         const batchIds = allUserIds.slice(i, i + BATCH_SIZE);
         const identifiers = batchIds.map(uid => ({ uid }));
         try {
-            const authResult = await admin.auth().getUsers(identifiers);
+            const authResult = await (0, auth_1.getAuth)().getUsers(identifiers);
             const foundUids = new Set(authResult.users.map(u => u.uid));
             const missingUids = batchIds.filter(uid => !foundUids.has(uid));
             for (const missingUid of missingUids) {
