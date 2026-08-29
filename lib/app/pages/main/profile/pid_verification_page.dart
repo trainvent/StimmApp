@@ -297,7 +297,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     return AppBarScaffold(
       title: 'PID verification',
       child: SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

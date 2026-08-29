@@ -191,6 +191,7 @@ const pidDcql = {
     ],
 };
 async function initializePidVerifierAgent() {
+    var _a;
     const deps = await loadCredoDeps();
     const config = {
         logger: new deps.ConsoleLogger(deps.LogLevel.Off),
@@ -212,12 +213,12 @@ async function initializePidVerifierAgent() {
                 store: {
                     id: 'stimmapp-pid-verifier-store',
                     key: 'stimmapp-pid-verifier-key',
-                    // Cloud Functions only guarantees that /tmp is writable. An
-                    // in-memory store also avoids stale/locked SQLite files between
-                    // requests in a warm instance.
+                    // Keep the schema alive for the lifetime of the Cloud Run instance.
+                    // Askar's in-memory SQLite store can lose its tables while Credo's
+                    // cached agent survives an idle period.
                     database: {
                         type: 'sqlite',
-                        config: { inMemory: true },
+                        config: { path: '/tmp/stimmapp-pid-verifier/askar.sqlite' },
                     },
                 },
             }),
@@ -247,9 +248,9 @@ async function initializePidVerifierAgent() {
     const { keyId } = await agent.kms.importKey({ privateJwk: privateJwk });
     const accessCertificate = deps.X509Certificate.fromEncodedCertificate(accessCertificatePem);
     accessCertificate.keyId = keyId;
-    const verifierRecord = await agent.openid4vc.verifier.createVerifier({
-        verifierId: 'stimmapp-pid-verifier',
-    });
+    const verifierId = 'stimmapp-pid-verifier';
+    const existingVerifiers = await agent.openid4vc.verifier.getAllVerifiers();
+    const verifierRecord = (_a = existingVerifiers.find((record) => record.verifierId === verifierId)) !== null && _a !== void 0 ? _a : await agent.openid4vc.verifier.createVerifier({ verifierId });
     return {
         agent,
         accessCertificate,
