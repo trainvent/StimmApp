@@ -448,30 +448,6 @@ class ProfilePage extends ConsumerWidget {
                                   ),
                           ),
                           _buildDetailTile(
-                            key: keys.profilePage.verifiedListTile,
-                            context,
-                            'Verified',
-                            userProfile.isVerified == true ? 'Yes' : 'No',
-                            leading: Icon(
-                              userProfile.isVerified == true
-                                  ? Icons.verified_rounded
-                                  : Icons.verified_outlined,
-                              color: userProfile.isVerified == true
-                                  ? Colors.green
-                                  : Colors.orange,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PidVerificationPage(
-                                    reverify: userProfile.isVerified == true,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildDetailTile(
                             context,
                             context.l10n.address,
                             userProfile.address,
@@ -616,6 +592,30 @@ class ProfilePage extends ConsumerWidget {
                             onTap: hasAppleProvider
                                 ? null
                                 : () => _connectApple(context, ref),
+                          ),
+                          _buildDetailTile(
+                            key: keys.profilePage.verifiedListTile,
+                            context,
+                            'Verified',
+                            userProfile.isVerified == true ? 'Yes' : 'No',
+                            leading: Icon(
+                              userProfile.isVerified == true
+                                  ? Icons.verified_rounded
+                                  : Icons.verified_outlined,
+                              color: userProfile.isVerified == true
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PidVerificationPage(
+                                    reverify: userProfile.isVerified == true,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
