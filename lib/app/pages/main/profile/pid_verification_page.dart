@@ -30,6 +30,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   String? _verificationSessionId;
   String? _verificationStatus;
   Map<String, String?> _verifiedClaims = const {};
+  Map<String, String?> _normalizedVerifiedClaims = const {};
   String? _error;
   String? _purpose;
   DateTime? _expiresAt;
@@ -68,6 +69,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       _error = null;
       _verificationStatus = null;
       _verifiedClaims = const {};
+      _normalizedVerifiedClaims = const {};
       _acceptedCredentials = false;
     });
 
@@ -121,7 +123,15 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   }
 
   String _normalizedIdentityValue(String? value) =>
-      value?.trim().replaceAll(RegExp(r'\s+'), ' ').toUpperCase() ?? '';
+      value
+          ?.trim()
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .toUpperCase()
+          .replaceAll('ẞ', 'SS') ??
+      '';
+
+  String? _claimForComparison(String key) =>
+      _normalizedVerifiedClaims[key] ?? _verifiedClaims[key];
 
   List<_PidFieldComparison> _comparisons(UserProfile? profile) {
     final profileBirthdate = profile?.dateOfBirth == null
@@ -132,31 +142,38 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
             label: 'Given name',
             currentValue: profile?.givenName,
             verifiedValue: _verifiedClaims['givenName'],
+            normalizedVerifiedValue: _claimForComparison('givenName'),
           ),
           _PidFieldComparison(
             label: 'Surname',
             currentValue: profile?.surname,
             verifiedValue: _verifiedClaims['familyName'],
+            normalizedVerifiedValue: _claimForComparison('familyName'),
           ),
           _PidFieldComparison(
             label: 'Date of birth',
             currentValue: profileBirthdate,
             verifiedValue: _verifiedClaims['birthdate'],
+            normalizedVerifiedValue: _claimForComparison('birthdate'),
           ),
           _PidFieldComparison(
             label: 'Living address',
             currentValue: profile?.address,
             verifiedValue: _verifiedClaims['formattedAddress'],
+            normalizedVerifiedValue: _claimForComparison('formattedAddress'),
+            matchesOverride: _addressMatchesProfile(profile),
           ),
           _PidFieldComparison(
             label: 'State or region',
             currentValue: profile?.state,
             verifiedValue: _verifiedClaims['region'],
+            normalizedVerifiedValue: _claimForComparison('region'),
           ),
           _PidFieldComparison(
             label: 'Country',
             currentValue: profile?.countryCode,
             verifiedValue: _verifiedClaims['country'],
+            normalizedVerifiedValue: _claimForComparison('country'),
           ),
         ]
         .where((comparison) => comparison.verifiedValue?.isNotEmpty == true)
@@ -164,8 +181,43 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   }
 
   bool _valuesMatch(_PidFieldComparison comparison) =>
+      comparison.matchesOverride ??
       _normalizedIdentityValue(comparison.currentValue) ==
-      _normalizedIdentityValue(comparison.verifiedValue);
+          _normalizedIdentityValue(comparison.normalizedVerifiedValue);
+
+  String _normalizedAddressPart(String? value) =>
+      _normalizedIdentityValue(value).replaceAll(RegExp(r'[\s,.;]+'), '');
+
+  bool _addressMatchesProfile(UserProfile? profile) {
+    final profileAddress = _normalizedAddressPart(profile?.address);
+    final verifiedStreet = _normalizedAddressPart(
+      _claimForComparison('streetAddress'),
+    );
+    final verifiedPostalCode = _normalizedAddressPart(
+      _claimForComparison('postalCode'),
+    );
+    if (profileAddress.isEmpty ||
+        verifiedStreet.isEmpty ||
+        verifiedPostalCode.isEmpty) {
+      return false;
+    }
+
+    final profileCountry = _normalizedIdentityValue(profile?.countryCode);
+    final verifiedCountry = _normalizedIdentityValue(
+      _claimForComparison('country'),
+    );
+    final countryMatches =
+        profileCountry.isEmpty ||
+        verifiedCountry.isEmpty ||
+        profileCountry == verifiedCountry;
+
+    // The PID and the address provider can use different localized city names
+    // (for example, Koln/Köln versus Cologne). Street, postal code, and country
+    // identify the same practical address without creating that false mismatch.
+    return countryMatches &&
+        profileAddress.contains(verifiedStreet) &&
+        profileAddress.contains(verifiedPostalCode);
+  }
 
   Future<void> _pollVerificationStatus() async {
     final sessionId = _verificationSessionId;
@@ -179,6 +231,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
         setState(() {
           _verificationStatus = result.status;
           _verifiedClaims = result.claims;
+          _normalizedVerifiedClaims = result.normalizedClaims;
           if (result.status == 'failed') {
             _error =
                 result.error ?? 'The PID presentation could not be verified.';
@@ -369,7 +422,8 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                                               child: Text(
                                                 '${comparison.label}\n'
                                                 'Profile: ${comparison.currentValue?.isNotEmpty == true ? comparison.currentValue : 'Not provided'}\n'
-                                                'EUDI: ${comparison.verifiedValue}',
+                                                'EUDI original: ${comparison.verifiedValue}\n'
+                                                'Compared as: ${comparison.normalizedVerifiedValue}',
                                               ),
                                             ),
                                           ],
@@ -512,9 +566,13 @@ class _PidFieldComparison {
     required this.label,
     required this.currentValue,
     required this.verifiedValue,
+    required this.normalizedVerifiedValue,
+    this.matchesOverride,
   });
 
   final String label;
   final String? currentValue;
   final String? verifiedValue;
+  final String? normalizedVerifiedValue;
+  final bool? matchesOverride;
 }

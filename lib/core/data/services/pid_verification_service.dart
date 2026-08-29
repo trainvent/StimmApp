@@ -145,11 +145,13 @@ class PidVerificationStatusResponse {
   const PidVerificationStatusResponse({
     required this.status,
     required this.claims,
+    required this.normalizedClaims,
     this.error,
   });
 
   final String status;
   final Map<String, String?> claims;
+  final Map<String, String?> normalizedClaims;
   final String? error;
 
   bool get isFinished =>
@@ -157,10 +159,16 @@ class PidVerificationStatusResponse {
 
   factory PidVerificationStatusResponse.fromJson(Map<String, dynamic> json) {
     final rawClaims = json['claims'];
+    final rawNormalizedClaims = json['normalizedClaims'];
     return PidVerificationStatusResponse(
       status: (json['status'] ?? 'pending').toString(),
       claims: rawClaims is Map
           ? rawClaims.map(
+              (key, value) => MapEntry(key.toString(), value?.toString()),
+            )
+          : const {},
+      normalizedClaims: rawNormalizedClaims is Map
+          ? rawNormalizedClaims.map(
               (key, value) => MapEntry(key.toString(), value?.toString()),
             )
           : const {},

@@ -12,6 +12,7 @@ const firestore_1 = require("firebase-admin/firestore");
 const params_1 = require("firebase-functions/params");
 const https_1 = require("firebase-functions/v2/https");
 const logger_1 = require("firebase-functions/logger");
+const pid_claim_normalization_js_1 = require("./pid_claim_normalization.js");
 async function loadCredoDeps() {
     const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
         import('@credo-ts/core'),
@@ -341,6 +342,27 @@ async function getVerifiedPidClaims(agent, sessionId) {
             formattedAddressParts.join(', ') : null,
     };
 }
+function normalizeVerifiedPidClaimsForProfile(claims) {
+    var _a, _b;
+    const streetAddress = (0, pid_claim_normalization_js_1.normalizePidDisplayText)(claims.streetAddress);
+    const postalCode = (0, pid_claim_normalization_js_1.normalizePidPostalCode)(claims.postalCode);
+    const locality = (0, pid_claim_normalization_js_1.normalizePidDisplayText)(claims.locality);
+    return {
+        givenName: (0, pid_claim_normalization_js_1.normalizePidDisplayText)(claims.givenName),
+        familyName: (0, pid_claim_normalization_js_1.normalizePidDisplayText)(claims.familyName),
+        birthdate: claims.birthdate,
+        streetAddress,
+        postalCode,
+        locality,
+        region: (0, pid_claim_normalization_js_1.normalizePidDisplayText)(claims.region),
+        country: (_b = (_a = claims.country) === null || _a === void 0 ? void 0 : _a.trim().toUpperCase()) !== null && _b !== void 0 ? _b : null,
+        formattedAddress: (0, pid_claim_normalization_js_1.formatPidProfileAddress)({
+            streetAddress,
+            postalCode,
+            locality,
+        }),
+    };
+}
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     var _a, _b;
     try {
@@ -373,9 +395,11 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
         const { agent } = await ensurePidVerifierAgent();
         const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
         if (session.state === 'ResponseVerified') {
+            const claims = await getVerifiedPidClaims(agent, sessionId);
             response.json({
                 status: 'verified',
-                claims: await getVerifiedPidClaims(agent, sessionId),
+                claims,
+                normalizedClaims: normalizeVerifiedPidClaimsForProfile(claims),
             });
             return;
         }
@@ -413,7 +437,7 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
             response.status(409).json({ error: 'The PID presentation has not been verified.' });
             return;
         }
-        const claims = await getVerifiedPidClaims(agent, sessionId);
+        const claims = normalizeVerifiedPidClaimsForProfile(await getVerifiedPidClaims(agent, sessionId));
         if (!claims.givenName || !claims.familyName ||
             !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate) ||
             !claims.streetAddress || !claims.postalCode || !claims.locality ||
