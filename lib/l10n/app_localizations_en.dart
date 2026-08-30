@@ -1387,6 +1387,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verificationFailed => 'Verification failed';
 
   @override
+  String get pidVerificationRequired => 'Identity verification required';
+
+  @override
+  String get pidVerificationRequiredToPublishPetition =>
+      'A current EUDI PID verification is required to publish a petition. Verify your identity, then try publishing again.';
+
+  @override
+  String get pidVerificationRequiredToSignPetition =>
+      'A current EUDI PID verification is required to sign a petition. Verify your identity, then try signing again.';
+
+  @override
   String get verificationCodeResent => 'Verification code resent!';
 
   @override

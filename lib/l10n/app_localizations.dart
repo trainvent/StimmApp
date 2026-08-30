@@ -2678,6 +2678,24 @@ abstract class AppLocalizations {
   /// **'Verification failed'**
   String get verificationFailed;
 
+  /// No description provided for @pidVerificationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verification required'**
+  String get pidVerificationRequired;
+
+  /// No description provided for @pidVerificationRequiredToPublishPetition.
+  ///
+  /// In en, this message translates to:
+  /// **'A current EUDI PID verification is required to publish a petition. Verify your identity, then try publishing again.'**
+  String get pidVerificationRequiredToPublishPetition;
+
+  /// No description provided for @pidVerificationRequiredToSignPetition.
+  ///
+  /// In en, this message translates to:
+  /// **'A current EUDI PID verification is required to sign a petition. Verify your identity, then try signing again.'**
+  String get pidVerificationRequiredToSignPetition;
+
   /// No description provided for @verificationCodeResent.
   ///
   /// In en, this message translates to:

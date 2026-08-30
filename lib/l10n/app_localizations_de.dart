@@ -1402,6 +1402,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get verificationFailed => 'Verifizierung fehlgeschlagen';
 
   @override
+  String get pidVerificationRequired => 'Identitätsprüfung erforderlich';
+
+  @override
+  String get pidVerificationRequiredToPublishPetition =>
+      'Zum Veröffentlichen einer Petition ist eine aktuelle EUDI-PID-Verifizierung erforderlich. Verifiziere deine Identität und versuche es anschließend erneut.';
+
+  @override
+  String get pidVerificationRequiredToSignPetition =>
+      'Zum Unterzeichnen einer Petition ist eine aktuelle EUDI-PID-Verifizierung erforderlich. Verifiziere deine Identität und versuche es anschließend erneut.';
+
+  @override
   String get verificationCodeResent => 'Verifizierungscode erneut gesendet!';
 
   @override

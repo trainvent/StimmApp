@@ -103,9 +103,10 @@ it does not imply broader certification.
   re-verification flow.
 - [x] Same-device remote presentation is implemented.
 - [ ] Document whether cross-device presentation is a product requirement.
-- [ ] Document which petition publication or signing actions require a current
-  PID verification. Browsing, drafting, and ordinary profile use remain
-  available without one.
+- [x] Publishing or signing a petition requires current PID verification.
+  Browsing, composing the unpublished form, and ordinary profile use remain
+  available without one. Firestore rules are authoritative and the Flutter UI
+  provides a verification preflight.
 - [x] Define the re-verification trigger and validity period: verification is
   current for 12 calendar months and becomes non-current immediately when a
   verified identity field changes or the policy version changes.
@@ -457,14 +458,12 @@ downloaded secrets/certificates to this repository.
 
 ## Recommended implementation order
 
-1. Decide exactly which petition publication/signing actions require current
-   PID verification, then enforce that decision in the authoritative backend.
-2. Restart-test an active verification against the deployed PostgreSQL store,
+1. Restart-test an active verification against the deployed PostgreSQL store,
    then implement and restore-test encrypted database backups.
-3. Fix repeatable verifier image rebuilds and add health/availability alerts.
-4. Add endpoint/concurrency evidence for idempotent acceptance, then separate
+2. Fix repeatable verifier image rebuilds and add health/availability alerts.
+3. Add endpoint/concurrency evidence for idempotent acceptance, then separate
    verification evidence from the mutable profile.
-5. Audit and negatively test every Credo validation on which StimmApp relies.
-6. Add the complete sandbox failure and cross-device test matrix.
-7. Add privacy-preserving observability and certificate/trust-list operations.
-8. Complete the production security, privacy, and ecosystem readiness review.
+4. Audit and negatively test every Credo validation on which StimmApp relies.
+5. Add the complete sandbox failure and cross-device test matrix.
+6. Add privacy-preserving observability and certificate/trust-list operations.
+7. Complete the production security, privacy, and ecosystem readiness review.

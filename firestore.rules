@@ -137,6 +137,20 @@ service cloud.firestore {
           ]);
     }
 
+    // Petition publication and signing are authoritative PID-gated actions.
+    // Keep this predicate aligned with pid-profile-v1 in the backend and app.
+    function hasCurrentPidVerification() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isVerified == true &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.identityVerificationPolicyVersion == 'pid-profile-v1' &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.identityVerificationValidUntil is timestamp &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.identityVerificationValidUntil > request.time &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.identityRevision is int &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.verifiedIdentityRevision ==
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.identityRevision;
+    }
+
     function requesterSupportsStateScope() {
       return isAuthenticated() &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -297,7 +311,9 @@ service cloud.firestore {
 
       // Explicitly handle subcollections for history
       match /signedPetitions/{docId} {
-        allow read, write: if isOwner(userId) || isAdmin();
+        allow read, delete: if isOwner(userId) || isAdmin();
+        allow create, update: if isAdmin() ||
+                              (isOwner(userId) && hasCurrentPidVerification());
       }
 
       match /votedPolls/{docId} {
@@ -310,7 +326,14 @@ service cloud.firestore {
 
       // Catch-all for other subcollections (if any)
       match /{subcollection}/{document=**} {
-        allow read, write: if isOwner(userId) || isAdmin();
+        allow read, write: if (isOwner(userId) || isAdmin()) &&
+                          !(subcollection in [
+                            'signedPetitions',
+                            'votedPolls',
+                            'completedSurveys',
+                            'blockedUsers',
+                            'groupAccessNotifications'
+                          ]);
       }
     }
 
@@ -337,10 +360,50 @@ service cloud.firestore {
     }
 
     // Petitions & Polls
-    match /petitions/{document=**} {
+    match /petitions/{petitionId} {
       allow read: if true;
-      allow write: if isAdmin() ||
-                    (isAuthenticated() && hasValidContentState(request.resource.data));
+      allow create: if isAdmin() ||
+                    (hasCurrentPidVerification() &&
+                     request.resource.data.createdBy == request.auth.uid &&
+                     hasValidContentState(request.resource.data));
+      allow update: if isAdmin() ||
+                    (isAuthenticated() &&
+                     hasValidContentState(request.resource.data) &&
+                     (
+                       (
+                         resource.data.createdBy == request.auth.uid &&
+                         !request.resource.data.diff(resource.data).affectedKeys()
+                           .hasAny(['signatureCount'])
+                       ) ||
+                       (
+                         hasCurrentPidVerification() &&
+                         request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['signatureCount']) &&
+                         request.resource.data.signatureCount == resource.data.signatureCount + 1 &&
+                         !exists(/databases/$(database)/documents/petitions/$(petitionId)/signatures/$(request.auth.uid)) &&
+                         existsAfter(/databases/$(database)/documents/petitions/$(petitionId)/signatures/$(request.auth.uid))
+                       ) ||
+                       (
+                         request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['signatureCount']) &&
+                         request.resource.data.signatureCount == resource.data.signatureCount - 1 &&
+                         exists(/databases/$(database)/documents/petitions/$(petitionId)/signatures/$(request.auth.uid)) &&
+                         !existsAfter(/databases/$(database)/documents/petitions/$(petitionId)/signatures/$(request.auth.uid))
+                       )
+                     ));
+      allow delete: if isAdmin() ||
+                    (isAuthenticated() &&
+                     resource.data.createdBy == request.auth.uid);
+
+      match /signatures/{signerId} {
+        allow read: if true;
+        allow create: if isAdmin() ||
+                      (isOwner(signerId) &&
+                       hasCurrentPidVerification() &&
+                       request.resource.data.uid == request.auth.uid);
+        allow update: if false;
+        allow delete: if isAdmin() || isOwner(signerId);
+      }
     }
 
     match /polls/{document=**} {

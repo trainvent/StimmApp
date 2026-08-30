@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_gate.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/buttons/sign_action_button.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
@@ -88,6 +89,10 @@ class PetitionDetailPage extends StatelessWidget {
         label: context.l10n.sign,
         participantIdsStream: participantIdsStream,
         askForReason: true,
+        preflight: () => ensureCurrentPidVerification(
+          context,
+          action: PidVerificationGateAction.signPetition,
+        ),
         onAction: ({String? reason}) async {
           final user = authService.currentUser!;
           await repo.sign(id, user.uid, reason: reason);

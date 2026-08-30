@@ -19,6 +19,7 @@ class SignActionButton extends ConsumerWidget {
     required this.participantIdsStream,
     required this.onAction,
     required this.successMessage,
+    this.preflight,
     this.askForReason = false,
   });
 
@@ -26,6 +27,7 @@ class SignActionButton extends ConsumerWidget {
   final String label;
   final Stream<Set<String>> participantIdsStream;
   final Future<void> Function({String? reason}) onAction;
+  final Future<bool> Function()? preflight;
   final String successMessage;
   final bool askForReason;
 
@@ -100,6 +102,9 @@ class SignActionButton extends ConsumerWidget {
     WidgetRef ref,
     bool showPetitionReason,
   ) async {
+    if (preflight != null && !await preflight!()) return;
+    if (!context.mounted) return;
+
     String? reason;
     if (askForReason && showPetitionReason) {
       reason = await showDialog<String>(

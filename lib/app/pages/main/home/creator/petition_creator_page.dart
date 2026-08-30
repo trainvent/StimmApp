@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_gate.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -98,6 +99,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
+
+    if (!await ensureCurrentPidVerification(
+      context,
+      action: PidVerificationGateAction.publishPetition,
+    )) {
+      return;
+    }
+    if (!mounted) return;
 
     if (ContentModerationService.instance.containsObjectionableContent(
       <String?>[title, description],
