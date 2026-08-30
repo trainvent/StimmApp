@@ -230,8 +230,12 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
   profile update occurs.
 - [ ] Reject unexpected extra credentials and ignore over-disclosed attributes.
 - [ ] Add a test for a valid PID missing each required claim individually.
-- [ ] Reconcile `pidVerificationRequestPreview`: it currently lists
-  `address.region`, while the actual DCQL request does not request that claim.
+- [x] `pidVerificationRequestPreview` matches the DCQL request and does not
+  claim that `address.region` is disclosed. For German PID addresses, the
+  After acceptance, Flutter best-effort derives the Bundesland from the
+  verified address through the same TomTom resolver used during onboarding.
+  `state` is ordinary derived profile metadata, not a PID-disclosed or
+  PID-verified field, and enrichment failure does not affect PID acceptance.
 - [ ] Review the requested claim set whenever petition eligibility rules change.
 
 ### Layer 6: StimmApp business rules

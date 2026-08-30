@@ -517,7 +517,6 @@ exports.pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, respons
         const profileReference = firestore.collection('users').doc(user.uid);
         let alreadyAccepted = false;
         await firestore.runTransaction(async (transaction) => {
-            var _a;
             const sessionReference = firestore
                 .collection('pidVerificationSessions')
                 .doc(sessionId);
@@ -542,7 +541,6 @@ exports.pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, respons
                 dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth),
                 address: claims.formattedAddress,
                 town: claims.locality,
-                state: (_a = claims.region) !== null && _a !== void 0 ? _a : firestore_1.FieldValue.delete(),
                 countryCode: claims.country.toUpperCase(),
                 isVerified: true,
                 gotVerifiedAt: firestore_1.Timestamp.fromDate(verifiedAt),
@@ -656,7 +654,6 @@ exports.pidVerificationRequestPreview = {
         'address.street_address',
         'address.postal_code',
         'address.locality',
-        'address.region',
         'address.country',
     ],
 };

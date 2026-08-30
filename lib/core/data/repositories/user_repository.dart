@@ -18,7 +18,6 @@ const _verifiedIdentityFieldNames = <String>{
   'dateOfBirth',
   'address',
   'town',
-  'state',
   'countryCode',
 };
 
@@ -96,7 +95,6 @@ class UserRepository implements UserInterface {
         before.dateOfBirth != after.dateOfBirth ||
         before.address != after.address ||
         before.town != after.town ||
-        before.state != after.state ||
         before.countryCode?.toUpperCase() != after.countryCode?.toUpperCase();
   }
 

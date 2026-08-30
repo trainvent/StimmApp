@@ -2,11 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Timestamp } from 'firebase-admin/firestore';
 import {
+  PID_IDENTITY_VERIFIED_FIELDS,
   PID_IDENTITY_VERIFICATION_POLICY_VERSION,
   hasCurrentPidIdentityVerification,
   pidIdentityVerificationValidUntil,
   pidVerificationModeForProfile,
 } from '../lib/pid_identity_verification_policy.js';
+
+test('derived state is not represented as a PID-disclosed field', () => {
+  assert.equal(PID_IDENTITY_VERIFIED_FIELDS.includes('state'), false);
+  assert.equal(PID_IDENTITY_VERIFIED_FIELDS.includes('address'), true);
+  assert.equal(PID_IDENTITY_VERIFIED_FIELDS.includes('countryCode'), true);
+});
 
 test('uses registration only before the first successful verification', () => {
   assert.equal(pidVerificationModeForProfile(undefined), 'registration');

@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
+import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
+import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -145,6 +148,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     });
     try {
       await pidVerificationService.acceptVerifiedCredentials(sessionId);
+      await _syncStateFromVerifiedAddress();
       if (!mounted) return;
       setState(() {
         _acceptedCredentials = true;
@@ -155,6 +159,28 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       if (mounted) setState(() => _error = error.message);
     } finally {
       if (mounted) setState(() => _isAcceptingCredentials = false);
+    }
+  }
+
+  Future<void> _syncStateFromVerifiedAddress() async {
+    final country = _claimForComparison('country')?.trim().toUpperCase();
+    final address = _claimForComparison('formattedAddress')?.trim();
+    final uid = ref.read(currentUserProvider)?.uid;
+    if (country != 'DE' || address?.isNotEmpty != true || uid == null) return;
+
+    try {
+      final resolvedAddress = await TomTomSearchService(
+        IConst.tomTomSearchApiKey,
+      ).resolveAddress(address!, countries: const ['DE']);
+      final state = resolvedAddress.state?.trim();
+      if (resolvedAddress.countryCode?.toUpperCase() == 'DE' &&
+          state?.isNotEmpty == true) {
+        await UserRepository.create().update(uid, {'state': state});
+      }
+    } catch (error) {
+      // State is derived profile metadata, not a PID-disclosed attribute.
+      // Its enrichment must never turn an accepted PID into a failed flow.
+      debugPrint('[PidVerificationPage] State enrichment failed: $error');
     }
   }
 

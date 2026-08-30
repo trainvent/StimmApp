@@ -645,7 +645,6 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
         dateOfBirth: Timestamp.fromDate(dateOfBirth),
         address: claims.formattedAddress,
         town: claims.locality,
-        state: claims.region ?? FieldValue.delete(),
         countryCode: claims.country!.toUpperCase(),
         isVerified: true,
         gotVerifiedAt: Timestamp.fromDate(verifiedAt),
@@ -778,7 +777,6 @@ export const pidVerificationRequestPreview = {
     'address.street_address',
     'address.postal_code',
     'address.locality',
-    'address.region',
     'address.country',
   ],
 };

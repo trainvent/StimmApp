@@ -85,7 +85,6 @@ service cloud.firestore {
         'dateOfBirth',
         'address',
         'town',
-        'state',
         'countryCode'
       ]);
     }

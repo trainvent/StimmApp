@@ -14,7 +14,6 @@ exports.PID_IDENTITY_VERIFIED_FIELDS = [
     'dateOfBirth',
     'address',
     'town',
-    'state',
     'countryCode',
 ];
 function pidIdentityVerificationValidUntil(now) {

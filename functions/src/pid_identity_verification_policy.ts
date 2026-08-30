@@ -8,7 +8,6 @@ export const PID_IDENTITY_VERIFIED_FIELDS = [
   'dateOfBirth',
   'address',
   'town',
-  'state',
   'countryCode',
 ] as const;
 
