@@ -37,6 +37,7 @@ it does not imply broader certification.
 | Credo protocol state uses durable PostgreSQL | **Asserted** | Askar initialized its schema in `stimmapp_pid_verifier`; running container is healthy |
 | Verifier origin is not directly usable without Firebase proxying | **Asserted** | Origin returns `403` without the shared secret and `401` without Firebase authentication |
 | Versioned 12-month re-verification policy is active in dev | **Asserted** | Standalone verifier, Firebase function, and Firestore rules deployed and smoke-tested on 2026-08-30 |
+| Editing a verified identity field requires re-verification | **Asserted** | Manually confirmed in the Flutter dev app on 2026-08-30; a fresh PID presentation completed after resetting and re-enrolling the sandbox wallet |
 | An active transaction survives verifier restart | **Not yet asserted** | Mid-flow restart test remains open |
 | Replay and repeated acceptance are safe | **Not yet asserted** | Negative replay and idempotency tests remain open |
 | Database data is recoverable after loss | **Not yet asserted** | Backup destination, retention, automation, and restore drill remain open |
@@ -83,6 +84,8 @@ it does not imply broader certification.
   `stimmapp-dev-internal` and `proxy` networks, and publishes no host port.
 - [x] The public Firebase route was proven to traverse the standalone origin,
   and a complete same-device sandbox flow succeeded after the cutover.
+- [x] Manually confirmed that changing a verified identity field makes the
+  profile require re-verification and that a fresh PID can satisfy it.
 - [ ] Verification survives a verifier-container replacement during an active
   transaction. Durable storage is deployed, but the documented mid-flow
   restart test has not yet been executed.
@@ -315,6 +318,13 @@ Cloud Functions access it through the Admin SDK.
   PostgreSQL-backed standalone verifier after Firebase cutover (2026-08-30).
 - [x] Manually receive, display, compare, and explicitly accept verified PID
   details in StimmApp.
+- [x] Manually edit a verified identity field, observe re-verification become
+  required, and successfully complete the re-verification flow (2026-08-30).
+- [x] Recover from exhausted sandbox one-time PID credentials by resetting and
+  re-enrolling the sandbox wallet, then complete a fresh presentation. Wallet
+  logs showed the catalog button looping back to the pending presentation after
+  failed automatic reissuance; this is recorded as a sandbox-wallet limitation,
+  not a StimmApp verifier failure.
 - [ ] Repeat the happy path on each supported Android version/device class.
 - [ ] Test cross-device invocation with a QR code.
 - [ ] Test wallet cancellation and user denial.
