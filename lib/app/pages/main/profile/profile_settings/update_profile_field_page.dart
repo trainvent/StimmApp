@@ -106,9 +106,9 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
           }
           await updateUsername(value);
         case EditableProfileField.givenName:
-          await repository.upsert(profile.copyWith(givenName: value));
+          await repository.update(currentUser.uid, {'givenName': value});
         case EditableProfileField.surname:
-          await repository.upsert(profile.copyWith(surname: value));
+          await repository.update(currentUser.uid, {'surname': value});
       }
 
       if (!mounted) return;
@@ -119,13 +119,20 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       );
       Navigator.of(context).pop();
     } on DatabaseException catch (e) {
+      debugPrint(
+        '[UpdateProfileFieldPage] ${widget.field.name} save failed: '
+        '${e.code} ${e.message}',
+      );
       if (!mounted) return;
       showErrorSnackBar(
         e.code == 'already-exists'
             ? context.l10n.usernameUnavailable
             : context.l10n.profileSaveFailed,
       );
-    } catch (_) {
+    } catch (error) {
+      debugPrint(
+        '[UpdateProfileFieldPage] ${widget.field.name} save failed: $error',
+      );
       if (!mounted) return;
       showErrorSnackBar(context.l10n.profileSaveFailed);
     } finally {

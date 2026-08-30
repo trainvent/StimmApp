@@ -35,9 +35,14 @@ service cloud.firestore {
 
     function hasValidUserStateCountry(data) {
       // DE users (and legacy users with existing state but no countryCode)
-      // may keep a non-empty state. Others must keep state empty/null/absent.
+      // may keep a non-empty state, but PID profiles are also valid without
+      // one because the requested German PID address has no region claim.
+      // Other countries must keep state empty/null/absent.
       return supportsStateScope(data)
-        ? hasStateValue(data)
+        ? (!data.keys().hasAny(['state']) ||
+           data.state == null ||
+           data.state == '' ||
+           hasStateValue(data))
         : (!data.keys().hasAny(['state']) || data.state == null || data.state == '');
     }
 
