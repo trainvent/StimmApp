@@ -2,10 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPidVerificationSession = createPidVerificationSession;
 exports.getOwnedPidVerificationSession = getOwnedPidVerificationSession;
+exports.selectLatestResumablePidVerificationSession = selectLatestResumablePidVerificationSession;
+exports.pidVerificationSessionResumableUntil = pidVerificationSessionResumableUntil;
+exports.getLatestResumablePidVerificationSession = getLatestResumablePidVerificationSession;
 exports.transitionPidVerificationSession = transitionPidVerificationSession;
 const firestore_1 = require("firebase-admin/firestore");
 const node_crypto_1 = require("node:crypto");
 const PID_VERIFICATION_SESSIONS_COLLECTION = 'pidVerificationSessions';
+const PID_VERIFICATION_REVIEW_WINDOW_MS = 30 * 60 * 1000;
 const allowedTransitions = {
     pending: ['verified', 'failed', 'expired'],
     verified: ['accepted', 'failed', 'expired'],
@@ -48,6 +52,7 @@ function parseSession(sessionId, value) {
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
         expiresAt: value.expiresAt,
+        verifiedAt: value.verifiedAt instanceof firestore_1.Timestamp ? value.verifiedAt : undefined,
     };
 }
 async function createPidVerificationSession({ sessionId, ownerUid, mode, purpose, expiresAt, }) {
@@ -73,6 +78,36 @@ async function getOwnedPidVerificationSession(sessionId, ownerUid) {
     const snapshot = await sessionReference(sessionId).get();
     const session = parseSession(sessionId, snapshot.data());
     return (session === null || session === void 0 ? void 0 : session.ownerUid) === ownerUid ? session : null;
+}
+function selectLatestResumablePidVerificationSession(sessions, now) {
+    var _a;
+    return (_a = sessions
+        .filter((session) => (session.state === 'verified' || session.state === 'pending') &&
+        pidVerificationSessionResumableUntil(session).getTime() > now.getTime())
+        .sort((left, right) => {
+        // A completed presentation awaiting explicit consent is more valuable
+        // than a newer request that has not received a wallet response yet.
+        const leftPriority = left.state === 'verified' ? 1 : 0;
+        const rightPriority = right.state === 'verified' ? 1 : 0;
+        return rightPriority - leftPriority ||
+            right.createdAt.toMillis() - left.createdAt.toMillis();
+    })[0]) !== null && _a !== void 0 ? _a : null;
+}
+function pidVerificationSessionResumableUntil(session) {
+    if (session.state === 'verified' && session.verifiedAt) {
+        return new Date(session.verifiedAt.toMillis() + PID_VERIFICATION_REVIEW_WINDOW_MS);
+    }
+    return session.expiresAt.toDate();
+}
+async function getLatestResumablePidVerificationSession(ownerUid) {
+    const snapshot = await (0, firestore_1.getFirestore)()
+        .collection(PID_VERIFICATION_SESSIONS_COLLECTION)
+        .where('ownerUid', '==', ownerUid)
+        .get();
+    const sessions = snapshot.docs
+        .map((document) => parseSession(document.id, document.data()))
+        .filter((session) => session != null);
+    return selectLatestResumablePidVerificationSession(sessions, new Date());
 }
 async function transitionPidVerificationSession(sessionId, nextState) {
     const reference = sessionReference(sessionId);

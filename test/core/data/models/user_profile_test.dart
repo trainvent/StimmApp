@@ -41,6 +41,11 @@ void main() {
       'subscribedToPro': null,
       'isVerified': false,
       'gotVerifiedAt': null,
+      'identityVerificationValidUntil': null,
+      'identityVerificationPolicyVersion': null,
+      'identityRevision': 0,
+      'verifiedIdentityRevision': null,
+      'identityVerificationVerifiedFields': <String>[],
       'sendCrashLogs': true,
       'analyticsCollectionEnabled': null,
       'acceptedCommunityRulesAt': null,
@@ -86,6 +91,42 @@ void main() {
       expect(updated.sendCrashLogs, false);
       expect(updated.email, userProfile.email); // Should remain unchanged
     });
+
+    test(
+      'identity verification requires current policy, time, and revision',
+      () {
+        final now = DateTime.utc(2026, 8, 30);
+        final verified = userProfile.copyWith(
+          isVerified: true,
+          gotVerifiedAt: now.subtract(const Duration(days: 1)),
+          identityVerificationValidUntil: now.add(const Duration(days: 364)),
+          identityVerificationPolicyVersion:
+              currentIdentityVerificationPolicyVersion,
+          identityRevision: 4,
+          verifiedIdentityRevision: 4,
+        );
+
+        expect(verified.hasValidIdentityVerificationAt(now), true);
+        expect(
+          verified
+              .copyWith(identityRevision: 5)
+              .hasValidIdentityVerificationAt(now),
+          false,
+        );
+        expect(
+          verified
+              .copyWith(identityVerificationValidUntil: now)
+              .hasValidIdentityVerificationAt(now),
+          false,
+        );
+        expect(
+          verified
+              .copyWith(identityVerificationPolicyVersion: 'pid-profile-v0')
+              .hasValidIdentityVerificationAt(now),
+          false,
+        );
+      },
+    );
 
     test('subscriptionEndsAt returns correct date', () {
       final proUser = userProfile.copyWith(wentProAt: DateTime(2023, 1, 1));

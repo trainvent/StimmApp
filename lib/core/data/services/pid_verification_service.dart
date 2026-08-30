@@ -46,9 +46,37 @@ class PidVerificationService {
   final FirebaseAuth _auth;
   final http.Client _client;
 
-  Future<PidVerificationRequestResponse> createRequest({
-    required bool reverify,
-  }) async {
+  Future<PidResumableSession?> getResumableSession() async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw const PidVerificationException(
+        'You need to be signed in to verify your identity.',
+      );
+    }
+
+    final projectId = Firebase.app().options.projectId;
+    final response = await _client.get(
+      Uri.parse('https://$projectId.web.app/oid4vp/resumable'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    final decoded = jsonDecode(response.body);
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        decoded is! Map<String, dynamic>) {
+      final message = decoded is Map<String, dynamic>
+          ? decoded['error']?.toString()
+          : null;
+      throw PidVerificationException(
+        message ?? 'The previous PID verification could not be restored.',
+      );
+    }
+    final session = decoded['session'];
+    return session is Map<String, dynamic>
+        ? PidResumableSession.fromJson(session)
+        : null;
+  }
+
+  Future<PidVerificationRequestResponse> createRequest() async {
     final token = await _auth.currentUser?.getIdToken();
     if (token == null) {
       throw const PidVerificationException(
@@ -63,9 +91,7 @@ class PidVerificationService {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({
-        'mode': reverify ? 'reverification' : 'registration',
-      }),
+      body: jsonEncode(const <String, Object?>{}),
     );
 
     final decoded = jsonDecode(response.body);
@@ -154,7 +180,10 @@ class PidVerificationStatusResponse {
   final String? error;
 
   bool get isFinished =>
-      status == 'verified' || status == 'failed' || status == 'expired';
+      status == 'verified' ||
+      status == 'accepted' ||
+      status == 'failed' ||
+      status == 'expired';
 
   factory PidVerificationStatusResponse.fromJson(Map<String, dynamic> json) {
     final rawClaims = json['claims'];
@@ -172,6 +201,32 @@ class PidVerificationStatusResponse {
             )
           : const {},
       error: json['error']?.toString(),
+    );
+  }
+}
+
+class PidResumableSession {
+  const PidResumableSession({
+    required this.sessionId,
+    required this.status,
+    required this.mode,
+    required this.purpose,
+    required this.expiresAt,
+  });
+
+  final String sessionId;
+  final String status;
+  final String mode;
+  final String purpose;
+  final String expiresAt;
+
+  factory PidResumableSession.fromJson(Map<String, dynamic> json) {
+    return PidResumableSession(
+      sessionId: (json['sessionId'] ?? '').toString(),
+      status: (json['status'] ?? 'pending').toString(),
+      mode: (json['mode'] ?? 'registration').toString(),
+      purpose: (json['purpose'] ?? 'Registration verification').toString(),
+      expiresAt: (json['expiresAt'] ?? '').toString(),
     );
   }
 }

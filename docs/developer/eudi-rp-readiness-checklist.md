@@ -1,6 +1,6 @@
 # EUDI Wallet Relying Party Readiness Checklist
 
-Last reviewed: 2026-08-29
+Last reviewed: 2026-08-30
 
 This document tracks StimmApp's German EUDI Wallet relying-party integration
 from sandbox prototype to an operationally safe implementation. It follows the
@@ -8,6 +8,40 @@ official German EUDI Wallet RP integration sequence and the validation layers
 described by the German PID presentation guide.
 
 This is an engineering readiness record, not a legal or compliance approval.
+
+## Readiness assessment
+
+**Current verdict: sandbox happy path operational; production readiness not
+yet asserted.**
+
+The same-device German sandbox PID flow has completed successfully through the
+deployed path:
+
+`Flutter app -> Firebase Hosting/Function proxy -> verifier.aiomvp.com ->`
+`Credo/Askar -> PostgreSQL`
+
+The infrastructure and one end-to-end application run provide positive-path
+evidence. They do not yet prove restart recovery during an active transaction,
+replay resistance, idempotent acceptance, the negative trust/protocol matrix,
+cross-device interoperability, backup recovery, production operations, or
+legal/privacy approval. A checked item below means evidence exists in code,
+deployment inspection, a smoke test, or the 2026-08-30 sandbox application run;
+it does not imply broader certification.
+
+### Assertion gates
+
+| Assertion | Status | Evidence or blocker |
+| --- | --- | --- |
+| Sandbox same-device PID happy path works | **Asserted** | Completed in the Flutter dev app on 2026-08-30 after server cutover |
+| Public requests traverse Firebase to the protected verifier | **Asserted** | Public route returned expected `401` with `x-stimmapp-verifier-origin: server` |
+| Credo protocol state uses durable PostgreSQL | **Asserted** | Askar initialized its schema in `stimmapp_pid_verifier`; running container is healthy |
+| Verifier origin is not directly usable without Firebase proxying | **Asserted** | Origin returns `403` without the shared secret and `401` without Firebase authentication |
+| Versioned 12-month re-verification policy is active in dev | **Asserted** | Standalone verifier, Firebase function, and Firestore rules deployed and smoke-tested on 2026-08-30 |
+| An active transaction survives verifier restart | **Not yet asserted** | Mid-flow restart test remains open |
+| Replay and repeated acceptance are safe | **Not yet asserted** | Negative replay and idempotency tests remain open |
+| Database data is recoverable after loss | **Not yet asserted** | Backup destination, retention, automation, and restore drill remain open |
+| Operational monitoring is sufficient | **Not yet asserted** | Structured events, metrics, alerts, and certificate monitoring remain open |
+| Production RP readiness | **Not asserted** | Production certificates, conformance, privacy, security, and operations remain open |
 
 ## Primary references
 
@@ -33,11 +67,25 @@ This is an engineering readiness record, not a legal or compliance approval.
 - [x] Profile mutation requires an explicit user action after successful
   verification.
 - [x] Registration and re-verification modes are represented in the UI.
+- [x] The backend, rather than the client, selects registration versus
+  re-verification mode from server-held verification history.
+- [x] Successful PID verification is valid for 12 calendar months under the
+  versioned `pid-profile-v1` policy.
+- [x] Changes to verified identity fields atomically invalidate verification
+  and advance the identity revision; unrelated profile changes do not.
 - [x] Session ownership and lifecycle metadata are persisted privately in
   Firestore with a random trace ID and without PID claims or wallet payloads.
-- [ ] Verification survives a Cloud Functions/Cloud Run instance replacement.
-  Application ownership and lifecycle records are durable, but Credo's Askar
-  PostgreSQL/container deployment has not yet completed its server cutover.
+- [x] Credo/Askar protocol state is stored in PostgreSQL on the deployment
+  server rather than Firebase or container-local `/tmp` storage.
+- [x] Firebase proxies public `/oid4vp` traffic to the protected standalone
+  verifier origin using a Secret Manager shared secret.
+- [x] The standalone verifier runs as a non-root container, joins only the
+  `stimmapp-dev-internal` and `proxy` networks, and publishes no host port.
+- [x] The public Firebase route was proven to traverse the standalone origin,
+  and a complete same-device sandbox flow succeeded after the cutover.
+- [ ] Verification survives a verifier-container replacement during an active
+  transaction. Durable storage is deployed, but the documented mid-flow
+  restart test has not yet been executed.
 - [ ] Cross-device QR presentation is supported and tested.
 - [ ] The complete failure, replay, expiry, cancellation, and trust test matrix
   has automated evidence.
@@ -52,8 +100,12 @@ This is an engineering readiness record, not a legal or compliance approval.
   re-verification flow.
 - [x] Same-device remote presentation is implemented.
 - [ ] Document whether cross-device presentation is a product requirement.
-- [ ] Document when verification is mandatory versus optional.
-- [ ] Define the re-verification trigger and validity period.
+- [ ] Document which petition publication or signing actions require a current
+  PID verification. Browsing, drafting, and ordinary profile use remain
+  available without one.
+- [x] Define the re-verification trigger and validity period: verification is
+  current for 12 calendar months and becomes non-current immediately when a
+  verified identity field changes or the policy version changes.
 - [ ] Define whether a verified mismatch blocks an action, offers a profile
   correction, or requires manual review.
 - [ ] Define user-visible behavior for cancellation, timeout, wallet absence,
@@ -94,8 +146,11 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 ### Layer 1: Trust and transport
 
 - [x] Public verifier endpoints are exposed over Firebase Hosting HTTPS.
-- [x] Access Certificate and matching P-256 private key are stored as Firebase
-  function secrets rather than in source control.
+- [x] `verifier.aiomvp.com` serves the standalone verifier over HTTPS; its
+  non-health routes reject requests without the proxy secret.
+- [x] Access Certificate and matching P-256 private key are stored as mounted
+  server secrets and retained in Firebase Secret Manager for the temporary
+  embedded fallback, never in source control.
 - [x] Backend checks that the private key matches the Access Certificate.
 - [x] Registration Certificate is supplied to Credo as `registration_cert`.
 - [x] Official sandbox PID trust-list JWT signature is verified.
@@ -124,14 +179,16 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
   audience/client ID, timestamps, response URI, and session bindings.
 - [x] Persist session ownership and lifecycle outside process memory.
 - [x] Assign every session a random, non-sensitive trace ID for future logs.
-- [ ] Persist the Credo/Askar protocol store outside Cloud Run `/tmp`.
-  The verifier image and PostgreSQL runtime configuration are implemented; this
-  remains unchecked until the server deployment and restart test pass.
-- [ ] Remove `maxInstances: 1` as a correctness dependency after durable storage
-  is implemented.
-- [ ] Make each successful presentation and acceptance single-use.
-- [ ] Make acceptance idempotent without refreshing verification timestamps on
-  repeated requests.
+- [x] Persist the Credo/Askar protocol store outside Cloud Run `/tmp` in the
+  isolated `stimmapp_pid_verifier` PostgreSQL database.
+- [ ] Remove the Firebase proxy's `maxInstances: 1` limit after load and
+  concurrency testing. PostgreSQL means the limit is no longer the protocol
+  store's durability mechanism, but it remains configured.
+- [x] Make acceptance single-use and idempotent: the accepted session and
+  profile evidence are written atomically, and retries do not refresh the
+  verification timestamp or identity revision.
+- [x] Keep verified-but-unaccepted presentations resumable for a 30-minute
+  review window and prefer them over newer pending retries.
 - [ ] Expire sessions server-side and automatically delete stale ownership and
   protocol records.
 - [ ] Remove client-configurable return URLs or enforce an exact allowlist if
@@ -179,6 +236,12 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 - [x] A separately normalized representation is used for comparison and profile
   formatting.
 - [x] Profile data changes only after explicit user acceptance.
+- [x] The acceptance endpoint records server-issued, versioned verification
+  evidence: verified time, valid-until time, verified fields, and the identity
+  revision to which the evidence applies.
+- [x] Client profile writes cannot mint or extend verification evidence.
+- [x] Editing a verified identity field makes the profile unverified in the
+  same transaction and increments its identity revision.
 - [x] Address comparison tolerates casing, punctuation, and localized locality
   differences when street, postal code, and country identify the same address.
 - [ ] Move matching and eligibility rules into a backend/domain component so a
@@ -189,8 +252,12 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 - [ ] Define behavior for a changed legal name, birth date conflict, or address
   change during re-verification.
 - [ ] Separate the immutable verification result from the mutable user profile.
-- [ ] Store only necessary provenance, such as verification time, issuer,
-  credential type, verified fields, and policy/version used.
+  The current implementation stores tamper-protected evidence on the profile,
+  but does not yet retain an independent append-only verification record.
+- [x] Store the minimal profile-level provenance needed by the current policy:
+  verification and expiry times, verified fields, policy version, and matching
+  identity revision. Issuer and credential type remain available at the
+  verifier/session layer and are not copied into the public profile document.
 - [ ] Define which profile fields may be overwritten and preserve unrelated
   user-entered data.
 
@@ -199,14 +266,14 @@ after trust, protocol, cryptographic, and disclosure validation succeeds.
 | Concern | Current owner | Readiness action |
 | --- | --- | --- |
 | OpenID4VP request and response processing | Credo | Document and negatively test each relied-on validation |
-| Protocol keys and records | Credo + Askar | Replace instance-local SQLite with a durable supported store |
-| Access and Registration Certificates | Firebase secrets + Credo | Add expiry monitoring and rotation runbook |
+| Protocol keys and records | Credo + Askar PostgreSQL | Restart-test active sessions; add backup and restore operations |
+| Access and Registration Certificates | Mounted server secrets + Credo; Firebase secrets retained for fallback | Add expiry monitoring and rotation runbook; remove duplicate fallback after stabilization |
 | PID issuer trust | StimmApp trust-list loader + Credo X.509 | Test freshness, chain, outage, and untrusted issuer cases |
 | Session-to-user authorization | StimmApp backend + Firestore | Durable; add emulator authorization and lifecycle tests |
 | Attribute normalization and profile formatting | StimmApp backend | Expand unit tests; never alter the displayed original values |
 | Profile comparison UX | Flutter app | Localize, improve accessibility, and test all result states |
 | Eligibility/business decision | Not yet formalized | Specify and enforce authoritatively on the backend |
-| Consent to update the profile | Flutter + authenticated backend endpoint | Make acceptance single-use, idempotent, and auditable |
+| Consent to update the profile | Flutter + authenticated backend endpoint | Single-use and idempotent; add structured audit events |
 
 ### Durable session record
 
@@ -232,6 +299,10 @@ Cloud Functions access it through the Admin SDK.
 - [ ] Add unit tests for display normalization and postal/address formatting.
 - [ ] Add table-driven tests for semantic name and address matching.
 - [ ] Add authenticated endpoint tests for start, status, and accept.
+- [x] Add unit tests for the 12-calendar-month validity calculation, backend
+  mode selection, policy version, expiry, and identity-revision checks.
+- [x] Compile the verification-evidence Firestore rules with the emulator and
+  add a source-level regression test for their protected-field contract.
 - [ ] Test that another Firebase user cannot read or accept a session.
 - [ ] Test repeated acceptance, expired sessions, and deleted users.
 - [ ] Test a simulated function restart between start, wallet response, status,
@@ -240,7 +311,8 @@ Cloud Functions access it through the Admin SDK.
 
 ### Wallet interoperability tests
 
-- [x] Manually complete one same-device SD-JWT PID happy path.
+- [x] Manually complete one same-device SD-JWT PID happy path through the
+  PostgreSQL-backed standalone verifier after Firebase cutover (2026-08-30).
 - [x] Manually receive, display, compare, and explicitly accept verified PID
   details in StimmApp.
 - [ ] Repeat the happy path on each supported Android version/device class.
@@ -257,6 +329,8 @@ Cloud Functions access it through the Admin SDK.
 
 - [x] User can see the EUDI original, normalized comparison, and profile value.
 - [x] User explicitly decides whether verified details update the profile.
+- [x] Leaving and reopening the PID screen restores the latest verified,
+  unaccepted presentation so explicit consent is not lost.
 - [ ] Localize every PID verification string through `AppLocalizations`.
 - [ ] Explain which attributes are requested and why before opening the wallet.
 - [ ] Add an automatic verified App Link/deep-link return to StimmApp, with a
@@ -291,6 +365,14 @@ downloaded secrets/certificates to this repository.
   state, creation/update/expiry timestamps, format/type, and policy version.
 - [x] Implement the states currently used by the flow: `pending`, `verified`,
   `accepted`, `expired`, and `failed`.
+- [x] Deploy PostgreSQL without a published host port and attach the verifier
+  only to the external `stimmapp-dev-internal` and `proxy` Docker networks.
+- [x] Run the verifier as the non-root `node` user with mounted secret files.
+- [x] Verify origin health, `403` without the proxy secret, `401` with the proxy
+  secret but without Firebase authentication, and `401` plus the standalone
+  origin marker through the public Firebase route.
+- [ ] Run the documented restart test during an active PID transaction, both
+  before wallet approval and before profile acceptance.
 - [ ] Add `reviewed` or `rejected` only when the product flow gives those states
   concrete behavior.
 - [ ] Add TTL cleanup for session records and any temporary verification data.
@@ -314,12 +396,35 @@ downloaded secrets/certificates to this repository.
   stale trust lists, and certificates nearing expiry.
 - [ ] Maintain a certificate renewal, replacement, and revocation runbook.
 
+### Deployment and recovery operations
+
+- [x] Standalone verifier and PostgreSQL containers report healthy after the
+  Firebase cutover and successful application flow.
+- [x] PostgreSQL is isolated from public host ports.
+- [x] The dedicated Firebase service account is restricted to
+  `roles/datastore.user`; service-account key creation is disabled again at the
+  project policy level.
+- [x] Remove the stale `docker-credential-desktop` helper setting on the
+  deployment server and prove a fresh verifier image pull/rebuild succeeds. A
+  pre-change backup remains at
+  `~/.docker/config.json.before-stimmapp-verifier`.
+- [ ] Select an encrypted database backup destination.
+- [ ] Define backup frequency, retention, access, deletion, and ownership.
+- [ ] Automate PostgreSQL backups and alert on failed or stale backups.
+- [ ] Perform and record a restore drill into an isolated database before
+  relying on backups operationally.
+- [ ] Document verifier image rollback, secret rotation, database migration,
+  and disaster-recovery procedures.
+
 ### Security and privacy review
 
 - [ ] Threat-model the same-device and cross-device flows.
 - [ ] Review endpoint authentication, authorization, replay resistance, rate
   limiting, Firebase App Check, and denial-of-service controls.
-- [ ] Verify Firestore rules do not expose verification sessions or provenance.
+- [x] Firestore rules deny all client reads and writes to
+  `pidVerificationSessions`, including the authenticated application admin.
+- [x] Firestore rules prevent ordinary clients from creating, extending, or
+  preserving a verified state across a verified identity-field edit.
 - [ ] Complete the applicable GDPR privacy assessment and retention decisions
   before real PID data is processed.
 - [ ] Document incident ownership and the Orchestrator notification path.
@@ -342,12 +447,14 @@ downloaded secrets/certificates to this repository.
 
 ## Recommended implementation order
 
-1. Finalize the use-case, attribute, purpose, mismatch, and re-verification rules.
-2. Deploy and restart-test the prepared durable Credo PostgreSQL storage.
-   Session ownership/lifecycle records are already durable in Firestore.
-3. Make acceptance single-use and idempotent; separate verification evidence
-   from the mutable profile.
-4. Audit and negatively test every Credo validation on which StimmApp relies.
-5. Add the complete sandbox failure and cross-device test matrix.
-6. Add privacy-preserving observability and certificate/trust-list operations.
-7. Complete the production security, privacy, and ecosystem readiness review.
+1. Decide exactly which petition publication/signing actions require current
+   PID verification, then enforce that decision in the authoritative backend.
+2. Restart-test an active verification against the deployed PostgreSQL store,
+   then implement and restore-test encrypted database backups.
+3. Fix repeatable verifier image rebuilds and add health/availability alerts.
+4. Add endpoint/concurrency evidence for idempotent acceptance, then separate
+   verification evidence from the mutable profile.
+5. Audit and negatively test every Credo validation on which StimmApp relies.
+6. Add the complete sandbox failure and cross-device test matrix.
+7. Add privacy-preserving observability and certificate/trust-list operations.
+8. Complete the production security, privacy, and ecosystem readiness review.

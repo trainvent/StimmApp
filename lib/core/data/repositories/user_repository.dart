@@ -12,6 +12,26 @@ import 'poll_repository.dart';
 import 'survey_repository.dart';
 import 'user_interface.dart';
 
+const _verifiedIdentityFieldNames = <String>{
+  'givenName',
+  'surname',
+  'dateOfBirth',
+  'address',
+  'town',
+  'state',
+  'countryCode',
+};
+
+const _serverVerificationFieldNames = <String>{
+  'isVerified',
+  'gotVerifiedAt',
+  'identityVerificationValidUntil',
+  'identityVerificationPolicyVersion',
+  'identityRevision',
+  'verifiedIdentityRevision',
+  'identityVerificationVerifiedFields',
+};
+
 class UserRepository implements UserInterface {
   UserRepository(this._fs);
 
@@ -55,9 +75,58 @@ class UserRepository implements UserInterface {
 
   @override
   Future<void> upsert(UserProfile profile) async {
-    await _fs.upsert(
-      _doc(profile.uid),
-      profile.copyWith(updatedAt: DateTime.now()),
+    final profileRef = _doc(profile.uid);
+    try {
+      await _fs.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(profileRef);
+        final nextProfile = _profileForClientWrite(
+          snapshot.data(),
+          profile,
+        ).copyWith(updatedAt: DateTime.now());
+        transaction.set(profileRef, nextProfile, SetOptions(merge: true));
+      });
+    } on FirebaseException catch (error) {
+      throw DatabaseException(error);
+    }
+  }
+
+  bool _identityChanged(UserProfile before, UserProfile after) {
+    return before.givenName != after.givenName ||
+        before.surname != after.surname ||
+        before.dateOfBirth != after.dateOfBirth ||
+        before.address != after.address ||
+        before.town != after.town ||
+        before.state != after.state ||
+        before.countryCode?.toUpperCase() != after.countryCode?.toUpperCase();
+  }
+
+  UserProfile _profileForClientWrite(
+    UserProfile? existing,
+    UserProfile requested,
+  ) {
+    if (existing == null) {
+      return requested.copyWith(
+        isVerified: false,
+        gotVerifiedAt: null,
+        identityVerificationValidUntil: null,
+        identityVerificationPolicyVersion: null,
+        identityRevision: 0,
+        verifiedIdentityRevision: null,
+        identityVerificationVerifiedFields: const [],
+      );
+    }
+
+    final identityChanged = _identityChanged(existing, requested);
+    return requested.copyWith(
+      isVerified: identityChanged ? false : existing.isVerified,
+      gotVerifiedAt: existing.gotVerifiedAt,
+      identityVerificationValidUntil: existing.identityVerificationValidUntil,
+      identityVerificationPolicyVersion:
+          existing.identityVerificationPolicyVersion,
+      identityRevision: existing.identityRevision + (identityChanged ? 1 : 0),
+      verifiedIdentityRevision: existing.verifiedIdentityRevision,
+      identityVerificationVerifiedFields:
+          existing.identityVerificationVerifiedFields,
     );
   }
 
@@ -139,11 +208,12 @@ class UserRepository implements UserInterface {
           );
         }
 
-        final updatedProfile = profile.copyWith(
-          displayName: displayName,
-          usernameKey: usernameKey,
-          updatedAt: DateTime.now(),
-        );
+        final updatedProfile = _profileForClientWrite(existingProfile, profile)
+            .copyWith(
+              displayName: displayName,
+              usernameKey: usernameKey,
+              updatedAt: DateTime.now(),
+            );
         transaction.set(profileRef, updatedProfile, SetOptions(merge: true));
         transaction.set(usernameRef, <String, Object?>{
           'uid': profile.uid,
@@ -157,10 +227,32 @@ class UserRepository implements UserInterface {
   }
 
   Future<void> update(String uid, Map<String, dynamic> data) async {
-    await _fs.instance
+    final reference = _fs.instance
         .collection(DatabaseCollections.users)
-        .doc(uid)
-        .update(data);
+        .doc(uid);
+    final sanitized = Map<String, dynamic>.from(data)
+      ..removeWhere((key, _) => _serverVerificationFieldNames.contains(key));
+
+    try {
+      await _fs.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(reference);
+        final existing = snapshot.data() ?? const <String, dynamic>{};
+        final identityChanged = sanitized.entries.any(
+          (entry) =>
+              _verifiedIdentityFieldNames.contains(entry.key) &&
+              existing[entry.key] != entry.value,
+        );
+        if (identityChanged) {
+          final currentRevision = existing['identityRevision'] as int? ?? 0;
+          sanitized
+            ..['isVerified'] = false
+            ..['identityRevision'] = currentRevision + 1;
+        }
+        transaction.update(reference, sanitized);
+      });
+    } on FirebaseException catch (error) {
+      throw DatabaseException(error);
+    }
   }
 
   @override

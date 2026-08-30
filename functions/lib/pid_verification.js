@@ -15,6 +15,7 @@ const params_1 = require("firebase-functions/params");
 const https_1 = require("firebase-functions/v2/https");
 const logger_1 = require("firebase-functions/logger");
 const pid_claim_normalization_js_1 = require("./pid_claim_normalization.js");
+const pid_identity_verification_policy_js_1 = require("./pid_identity_verification_policy.js");
 const pid_verification_session_js_1 = require("./pid_verification_session.js");
 const pid_verifier_runtime_config_js_1 = require("./pid_verifier_runtime_config.js");
 async function loadCredoDeps() {
@@ -377,10 +378,10 @@ function normalizeVerifiedPidClaimsForProfile(claims) {
     };
 }
 exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
-    var _a;
     try {
         const user = await requireFirebaseUser(request);
-        const mode = ((_a = request.body) === null || _a === void 0 ? void 0 : _a.mode) === 'reverification' ? 'reverification' : 'registration';
+        const profileSnapshot = await (0, firestore_1.getFirestore)().collection('users').doc(user.uid).get();
+        const mode = (0, pid_identity_verification_policy_js_1.pidVerificationModeForProfile)(profileSnapshot.data());
         const purpose = mode === 'reverification' ?
             'Periodic identity re-verification' :
             'Registration verification';
@@ -397,6 +398,30 @@ exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
         });
     }
 });
+exports.pidVerifierApp.get('/oid4vp/resumable', async (request, response) => {
+    try {
+        const user = await requireFirebaseUser(request);
+        const session = await (0, pid_verification_session_js_1.getLatestResumablePidVerificationSession)(user.uid);
+        response.json({
+            session: session ? {
+                sessionId: session.sessionId,
+                status: session.state,
+                mode: session.mode,
+                purpose: session.purpose,
+                expiresAt: (0, pid_verification_session_js_1.pidVerificationSessionResumableUntil)(session).toISOString(),
+            } : null,
+        });
+    }
+    catch (error) {
+        const status = error instanceof https_1.HttpsError && error.code === 'unauthenticated' ? 401 : 500;
+        if (status === 500)
+            (0, logger_1.error)('Failed to restore PID verification session.', error);
+        response.status(status).json({
+            error: status === 401 ? 'Authentication is required.' :
+                'The PID verification session could not be restored.',
+        });
+    }
+});
 exports.pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     try {
         const user = await requireFirebaseUser(request);
@@ -410,8 +435,12 @@ exports.pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response
             response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
             return;
         }
+        if (persistedSession.state === 'accepted') {
+            response.json({ status: 'accepted' });
+            return;
+        }
         if (persistedSession.state === 'expired' ||
-            persistedSession.expiresAt.toMillis() <= Date.now()) {
+            (0, pid_verification_session_js_1.pidVerificationSessionResumableUntil)(persistedSession).getTime() <= Date.now()) {
             await (0, pid_verification_session_js_1.transitionPidVerificationSession)(sessionId, 'expired');
             response.json({ status: 'expired' });
             return;
@@ -453,7 +482,11 @@ exports.pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, respons
             response.status(404).json({ error: 'Verification session not found.' });
             return;
         }
-        if (persistedSession.expiresAt.toMillis() <= Date.now()) {
+        if (persistedSession.state === 'accepted') {
+            response.json({ ok: true, alreadyAccepted: true });
+            return;
+        }
+        if ((0, pid_verification_session_js_1.pidVerificationSessionResumableUntil)(persistedSession).getTime() <= Date.now()) {
             await (0, pid_verification_session_js_1.transitionPidVerificationSession)(sessionId, 'expired');
             response.status(409).json({ error: 'The PID verification request expired.' });
             return;
@@ -480,9 +513,53 @@ exports.pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, respons
             response.status(422).json({ error: 'The verified PID contains an invalid birth date.' });
             return;
         }
-        await (0, firestore_1.getFirestore)().collection('users').doc(user.uid).set(Object.assign(Object.assign({ givenName: claims.givenName, surname: claims.familyName, dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth), address: claims.formattedAddress, town: claims.locality }, (claims.region ? { state: claims.region } : {})), { countryCode: claims.country.toUpperCase(), isVerified: true, gotVerifiedAt: firestore_1.FieldValue.serverTimestamp(), updatedAt: firestore_1.FieldValue.serverTimestamp() }), { merge: true });
-        await (0, pid_verification_session_js_1.transitionPidVerificationSession)(sessionId, 'accepted');
-        response.json({ ok: true, claims });
+        const firestore = (0, firestore_1.getFirestore)();
+        const profileReference = firestore.collection('users').doc(user.uid);
+        let alreadyAccepted = false;
+        await firestore.runTransaction(async (transaction) => {
+            var _a;
+            const sessionReference = firestore
+                .collection('pidVerificationSessions')
+                .doc(sessionId);
+            const sessionSnapshot = await transaction.get(sessionReference);
+            const sessionData = sessionSnapshot.data();
+            if ((sessionData === null || sessionData === void 0 ? void 0 : sessionData.ownerUid) !== user.uid) {
+                throw new Error('PID verification session ownership changed.');
+            }
+            if (sessionData.state === 'accepted') {
+                alreadyAccepted = true;
+                return;
+            }
+            if (sessionData.state !== 'verified') {
+                throw new Error('PID verification session is not ready for acceptance.');
+            }
+            const profileSnapshot = await transaction.get(profileReference);
+            const nextIdentityRevision = (0, pid_identity_verification_policy_js_1.pidIdentityRevision)(profileSnapshot.data()) + 1;
+            const verifiedAt = new Date();
+            transaction.set(profileReference, {
+                givenName: claims.givenName,
+                surname: claims.familyName,
+                dateOfBirth: firestore_1.Timestamp.fromDate(dateOfBirth),
+                address: claims.formattedAddress,
+                town: claims.locality,
+                state: (_a = claims.region) !== null && _a !== void 0 ? _a : firestore_1.FieldValue.delete(),
+                countryCode: claims.country.toUpperCase(),
+                isVerified: true,
+                gotVerifiedAt: firestore_1.Timestamp.fromDate(verifiedAt),
+                identityVerificationValidUntil: firestore_1.Timestamp.fromDate((0, pid_identity_verification_policy_js_1.pidIdentityVerificationValidUntil)(verifiedAt)),
+                identityVerificationPolicyVersion: pid_identity_verification_policy_js_1.PID_IDENTITY_VERIFICATION_POLICY_VERSION,
+                identityRevision: nextIdentityRevision,
+                verifiedIdentityRevision: nextIdentityRevision,
+                identityVerificationVerifiedFields: pid_identity_verification_policy_js_1.PID_IDENTITY_VERIFIED_FIELDS,
+                updatedAt: firestore_1.FieldValue.serverTimestamp(),
+            }, { merge: true });
+            transaction.update(sessionReference, {
+                state: 'accepted',
+                updatedAt: firestore_1.FieldValue.serverTimestamp(),
+                acceptedAt: firestore_1.FieldValue.serverTimestamp(),
+            });
+        });
+        response.json({ ok: true, alreadyAccepted, claims });
     }
     catch (error) {
         const status = error instanceof https_1.HttpsError && error.code === 'unauthenticated' ? 401 : 500;

@@ -73,6 +73,70 @@ service cloud.firestore {
              hasValidUsernameOnCreate(userId);
     }
 
+    function verifiedIdentityFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'givenName',
+        'surname',
+        'dateOfBirth',
+        'address',
+        'town',
+        'state',
+        'countryCode'
+      ]);
+    }
+
+    function currentIdentityRevision() {
+      return resource.data.keys().hasAny(['identityRevision']) &&
+             resource.data.identityRevision is int
+        ? resource.data.identityRevision
+        : 0;
+    }
+
+    function serverVerificationEvidenceUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'gotVerifiedAt',
+        'identityVerificationValidUntil',
+        'identityVerificationPolicyVersion',
+        'verifiedIdentityRevision',
+        'identityVerificationVerifiedFields'
+      ]);
+    }
+
+    function hasSafeVerificationOnCreate() {
+      return (!request.resource.data.keys().hasAny(['isVerified']) ||
+              request.resource.data.isVerified == null ||
+              request.resource.data.isVerified == false) &&
+             (!request.resource.data.keys().hasAny(['gotVerifiedAt']) ||
+              request.resource.data.gotVerifiedAt == null) &&
+             (!request.resource.data.keys().hasAny(['identityVerificationValidUntil']) ||
+              request.resource.data.identityVerificationValidUntil == null) &&
+             (!request.resource.data.keys().hasAny(['identityVerificationPolicyVersion']) ||
+              request.resource.data.identityVerificationPolicyVersion == null) &&
+             (!request.resource.data.keys().hasAny(['identityRevision']) ||
+              request.resource.data.identityRevision == 0) &&
+             (!request.resource.data.keys().hasAny(['verifiedIdentityRevision']) ||
+              request.resource.data.verifiedIdentityRevision == null) &&
+             (!request.resource.data.keys().hasAny(['identityVerificationVerifiedFields']) ||
+              (request.resource.data.identityVerificationVerifiedFields is list &&
+               request.resource.data.identityVerificationVerifiedFields.size() == 0));
+    }
+
+    function hasValidOwnerVerificationUpdate() {
+      return verifiedIdentityFieldsChanged()
+        ? request.resource.data.isVerified == false &&
+          request.resource.data.identityRevision == currentIdentityRevision() + 1 &&
+          serverVerificationEvidenceUnchanged()
+        : !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'isVerified',
+            'gotVerifiedAt',
+            'identityVerificationValidUntil',
+            'identityVerificationPolicyVersion',
+            'identityRevision',
+            'verifiedIdentityRevision',
+            'identityVerificationVerifiedFields'
+          ]);
+    }
+
     function requesterSupportsStateScope() {
       return isAuthenticated() &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -203,11 +267,13 @@ service cloud.firestore {
       allow create: if isAdmin() ||
                     (isOwner(userId) &&
                      hasValidUserStateCountry(request.resource.data) &&
-                     hasValidUsernameOnCreate(userId));
+                     hasValidUsernameOnCreate(userId) &&
+                     hasSafeVerificationOnCreate());
       allow update: if isAdmin() ||
                     (isOwner(userId) &&
                      hasValidUserStateCountry(request.resource.data) &&
-                     hasValidUsernameOnUpdate(userId));
+                     hasValidUsernameOnUpdate(userId) &&
+                     hasValidOwnerVerificationUpdate());
       allow delete: if isAdmin() || isOwner(userId);
 
       match /blockedUsers/{blockedUserId} {

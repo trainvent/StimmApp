@@ -23,6 +23,7 @@ class PidVerificationPage extends ConsumerStatefulWidget {
 class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     with WidgetsBindingObserver {
   bool _isLoading = false;
+  bool _isRestoringSession = true;
   bool _isCheckingStatus = false;
   bool _isAcceptingCredentials = false;
   bool _acceptedCredentials = false;
@@ -33,12 +34,16 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   Map<String, String?> _normalizedVerifiedClaims = const {};
   String? _error;
   String? _purpose;
+  String? _mode;
   DateTime? _expiresAt;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreResumableVerification();
+    });
   }
 
   @override
@@ -54,6 +59,36 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     }
   }
 
+  Future<void> _restoreResumableVerification() async {
+    if (ref.read(currentUserProvider) == null) {
+      if (mounted) setState(() => _isRestoringSession = false);
+      return;
+    }
+    try {
+      final session = await pidVerificationService.getResumableSession();
+      if (!mounted) return;
+      if (session == null || session.sessionId.isEmpty) {
+        setState(() => _isRestoringSession = false);
+        return;
+      }
+      setState(() {
+        _isRestoringSession = false;
+        _verificationSessionId = session.sessionId;
+        _verificationStatus = session.status;
+        _mode = session.mode;
+        _purpose = session.purpose;
+        _expiresAt = DateTime.tryParse(session.expiresAt);
+      });
+      await _pollVerificationStatus();
+    } on PidVerificationException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isRestoringSession = false;
+        _error = error.message;
+      });
+    }
+  }
+
   Future<void> _startVerification() async {
     final currentUser = ref.read(currentUserProvider);
     if (currentUser == null) {
@@ -63,7 +98,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       return;
     }
 
-    final userProfile = ref.read(userProfileProvider).asData?.value;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -74,15 +108,14 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     });
 
     try {
-      final response = await pidVerificationService.createRequest(
-        reverify: widget.reverify || userProfile?.isVerified == true,
-      );
+      final response = await pidVerificationService.createRequest();
       if (!mounted) return;
       final expiresAt = DateTime.tryParse(response.expiresAt);
       setState(() {
         _authorizationRequest = response.authorizationRequest;
         _verificationSessionId = response.verificationSessionId;
         _purpose = response.purpose;
+        _mode = response.mode;
         _expiresAt = expiresAt;
       });
       await _openWallet(response.authorizationRequest);
@@ -113,7 +146,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     try {
       await pidVerificationService.acceptVerifiedCredentials(sessionId);
       if (!mounted) return;
-      setState(() => _acceptedCredentials = true);
+      setState(() {
+        _acceptedCredentials = true;
+        _verificationStatus = 'accepted';
+      });
       showSuccessSnackBar('Your profile now uses the verified EUDI details.');
     } on PidVerificationException catch (error) {
       if (mounted) setState(() => _error = error.message);
@@ -238,6 +274,8 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
           } else if (result.status == 'expired') {
             _error =
                 'The PID verification request expired. Please create a new one.';
+          } else if (result.status == 'accepted') {
+            _acceptedCredentials = true;
           }
         });
         if (result.isFinished) return;
@@ -291,8 +329,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   @override
   Widget build(BuildContext context) {
     final userProfile = ref.watch(userProfileProvider).asData?.value;
-    final isVerified = widget.reverify || userProfile?.isVerified == true;
-    final requestedMode = isVerified ? 'reverification' : 'registration';
+    final hasVerificationHistory =
+        widget.reverify || userProfile?.hasIdentityVerificationHistory == true;
+    final requestedMode =
+        _mode ?? (hasVerificationHistory ? 'reverification' : 'registration');
 
     return AppBarScaffold(
       title: 'PID verification',
@@ -345,13 +385,15 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                   ),
                   child: Text(_error!),
                 )
-              else if (_authorizationRequest == null)
+              else if (_verificationSessionId == null)
                 const SizedBox.shrink(),
-              if (_authorizationRequest != null) ...[
+              if (_verificationSessionId != null) ...[
                 if (_verificationStatus != null) ...[
                   const SizedBox(height: 8),
                   Card(
-                    color: _verificationStatus == 'verified'
+                    color:
+                        _verificationStatus == 'verified' ||
+                            _verificationStatus == 'accepted'
                         ? Theme.of(context).colorScheme.primaryContainer
                         : null,
                     child: Padding(
@@ -362,14 +404,17 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                           Row(
                             children: [
                               Icon(
-                                _verificationStatus == 'verified'
+                                _verificationStatus == 'verified' ||
+                                        _verificationStatus == 'accepted'
                                     ? Icons.verified_rounded
                                     : Icons.hourglass_top_rounded,
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                _verificationStatus == 'verified'
-                                    ? 'PID verified'
+                                _verificationStatus == 'accepted'
+                                    ? 'PID verified and saved'
+                                    : _verificationStatus == 'verified'
+                                    ? 'PID verified — confirmation required'
                                     : 'Waiting for wallet response…',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
@@ -471,65 +516,82 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                               },
                             ),
                           ],
+                          if (_verificationStatus == 'accepted') ...[
+                            const SizedBox(height: 12),
+                            const Text(
+                              'The verified EUDI details were saved to your profile.',
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 8),
-                Text(
-                  'Authorization request',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
+                if (_authorizationRequest != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Authorization request',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  child: SelectableText(
-                    _authorizationRequest!,
-                    style: Theme.of(context).textTheme.bodySmall,
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SelectableText(
+                      _authorizationRequest!,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 8),
                 if (_verificationSessionId != null)
                   Text('Session ID: $_verificationSessionId'),
                 const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: () => _openWallet(),
-                  icon: const Icon(Icons.open_in_new_rounded),
-                  label: const Text('Open EUDI Wallet'),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: _copyRequest,
-                        icon: const Icon(Icons.copy_all_rounded),
-                        label: const Text('Copy request'),
-                      ),
+                if (_verificationStatus != 'verified' &&
+                    _verificationStatus != 'accepted') ...[
+                  if (_authorizationRequest != null) ...[
+                    FilledButton.icon(
+                      onPressed: () => _openWallet(),
+                      icon: const Icon(Icons.open_in_new_rounded),
+                      label: const Text('Open EUDI Wallet'),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _startVerification,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh'),
-                      ),
-                    ),
+                    const SizedBox(height: 12),
                   ],
-                ),
+                  Row(
+                    children: [
+                      if (_authorizationRequest != null) ...[
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: _copyRequest,
+                            icon: const Icon(Icons.copy_all_rounded),
+                            label: const Text('Copy request'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _startVerification,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Create new request'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ] else ...[
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: _isLoading ? null : _startVerification,
-                    icon: _isLoading
+                    onPressed: _isLoading || _isRestoringSession
+                        ? null
+                        : _startVerification,
+                    icon: _isLoading || _isRestoringSession
                         ? SizedBox(
                             width: 18,
                             height: 18,
@@ -543,7 +605,9 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                           )
                         : const Icon(Icons.verified_user_outlined),
                     label: Text(
-                      _isLoading
+                      _isRestoringSession
+                          ? 'Checking for a completed verification…'
+                          : _isLoading
                           ? 'Generating request…'
                           : 'Start PID verification',
                     ),

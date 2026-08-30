@@ -593,27 +593,43 @@ class ProfilePage extends ConsumerWidget {
                                 ? null
                                 : () => _connectApple(context, ref),
                           ),
-                          _buildDetailTile(
-                            key: keys.profilePage.verifiedListTile,
-                            context,
-                            'Verified',
-                            userProfile.isVerified == true ? 'Yes' : 'No',
-                            leading: Icon(
-                              userProfile.isVerified == true
-                                  ? Icons.verified_rounded
-                                  : Icons.verified_outlined,
-                              color: userProfile.isVerified == true
-                                  ? Colors.green
-                                  : Colors.orange,
-                            ),
-                            onTap: () {
-                              Navigator.push(
+                          Builder(
+                            builder: (context) {
+                              final isCurrentlyVerified =
+                                  userProfile.hasValidIdentityVerification;
+                              final validUntil =
+                                  userProfile.identityVerificationValidUntil;
+                              final verificationLabel = isCurrentlyVerified
+                                  ? validUntil == null
+                                        ? 'Yes'
+                                        : 'Yes · until ${DateFormat('yyyy-MM-dd').format(validUntil)}'
+                                  : userProfile.hasIdentityVerificationHistory
+                                  ? 'Re-verification required'
+                                  : 'No';
+                              return _buildDetailTile(
+                                key: keys.profilePage.verifiedListTile,
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => PidVerificationPage(
-                                    reverify: userProfile.isVerified == true,
-                                  ),
+                                'Verified',
+                                verificationLabel,
+                                leading: Icon(
+                                  isCurrentlyVerified
+                                      ? Icons.verified_rounded
+                                      : Icons.verified_outlined,
+                                  color: isCurrentlyVerified
+                                      ? Colors.green
+                                      : Colors.orange,
                                 ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PidVerificationPage(
+                                        reverify: userProfile
+                                            .hasIdentityVerificationHistory,
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                             },
                           ),

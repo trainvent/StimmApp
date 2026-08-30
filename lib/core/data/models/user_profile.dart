@@ -3,6 +3,8 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 
 const Object _unset = Object();
 
+const currentIdentityVerificationPolicyVersion = 'pid-profile-v1';
+
 class UserProfile {
   final String uid;
   final String? displayName;
@@ -17,6 +19,11 @@ class UserProfile {
   final bool? subscribedToPro;
   final bool? isVerified;
   final DateTime? gotVerifiedAt;
+  final DateTime? identityVerificationValidUntil;
+  final String? identityVerificationPolicyVersion;
+  final int identityRevision;
+  final int? verifiedIdentityRevision;
+  final List<String> identityVerificationVerifiedFields;
   final bool? sendCrashLogs;
   final bool? analyticsCollectionEnabled;
   final DateTime? acceptedCommunityRulesAt;
@@ -89,6 +96,11 @@ class UserProfile {
     this.subscribedToPro,
     this.isVerified,
     this.gotVerifiedAt,
+    this.identityVerificationValidUntil,
+    this.identityVerificationPolicyVersion,
+    this.identityRevision = 0,
+    this.verifiedIdentityRevision,
+    this.identityVerificationVerifiedFields = const [],
     this.sendCrashLogs,
     this.analyticsCollectionEnabled,
     this.acceptedCommunityRulesAt,
@@ -125,8 +137,13 @@ class UserProfile {
     bool? isPro,
     DateTime? wentProAt,
     bool? subscribedToPro,
-    bool? isVerified,
-    DateTime? gotVerifiedAt,
+    Object? isVerified = _unset,
+    Object? gotVerifiedAt = _unset,
+    Object? identityVerificationValidUntil = _unset,
+    Object? identityVerificationPolicyVersion = _unset,
+    int? identityRevision,
+    Object? verifiedIdentityRevision = _unset,
+    List<String>? identityVerificationVerifiedFields,
     bool? sendCrashLogs,
     bool? analyticsCollectionEnabled,
     DateTime? acceptedCommunityRulesAt,
@@ -164,8 +181,27 @@ class UserProfile {
       isPro: forcedPro ? true : (isPro ?? this.isPro),
       wentProAt: wentProAt ?? this.wentProAt,
       subscribedToPro: subscribedToPro ?? this.subscribedToPro,
-      isVerified: isVerified ?? this.isVerified,
-      gotVerifiedAt: gotVerifiedAt ?? this.gotVerifiedAt,
+      isVerified: identical(isVerified, _unset)
+          ? this.isVerified
+          : isVerified as bool?,
+      gotVerifiedAt: identical(gotVerifiedAt, _unset)
+          ? this.gotVerifiedAt
+          : gotVerifiedAt as DateTime?,
+      identityVerificationValidUntil:
+          identical(identityVerificationValidUntil, _unset)
+          ? this.identityVerificationValidUntil
+          : identityVerificationValidUntil as DateTime?,
+      identityVerificationPolicyVersion:
+          identical(identityVerificationPolicyVersion, _unset)
+          ? this.identityVerificationPolicyVersion
+          : identityVerificationPolicyVersion as String?,
+      identityRevision: identityRevision ?? this.identityRevision,
+      verifiedIdentityRevision: identical(verifiedIdentityRevision, _unset)
+          ? this.verifiedIdentityRevision
+          : verifiedIdentityRevision as int?,
+      identityVerificationVerifiedFields:
+          identityVerificationVerifiedFields ??
+          this.identityVerificationVerifiedFields,
       sendCrashLogs: sendCrashLogs ?? this.sendCrashLogs,
       analyticsCollectionEnabled:
           analyticsCollectionEnabled ?? this.analyticsCollectionEnabled,
@@ -209,6 +245,17 @@ class UserProfile {
       subscribedToPro: json['subscribedToPro'] as bool?,
       isVerified: json['isVerified'] as bool?,
       gotVerifiedAt: (json['gotVerifiedAt'] as Timestamp?)?.toDate(),
+      identityVerificationValidUntil:
+          (json['identityVerificationValidUntil'] as Timestamp?)?.toDate(),
+      identityVerificationPolicyVersion:
+          json['identityVerificationPolicyVersion'] as String?,
+      identityRevision: json['identityRevision'] as int? ?? 0,
+      verifiedIdentityRevision: json['verifiedIdentityRevision'] as int?,
+      identityVerificationVerifiedFields:
+          (json['identityVerificationVerifiedFields'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList(growable: false) ??
+          const [],
       sendCrashLogs: json['sendCrashLogs'] as bool?,
       analyticsCollectionEnabled: json['analyticsCollectionEnabled'] as bool?,
       acceptedCommunityRulesAt: (json['acceptedCommunityRulesAt'] as Timestamp?)
@@ -248,6 +295,11 @@ class UserProfile {
       'subscribedToPro': subscribedToPro,
       'isVerified': isVerified,
       'gotVerifiedAt': gotVerifiedAt,
+      'identityVerificationValidUntil': identityVerificationValidUntil,
+      'identityVerificationPolicyVersion': identityVerificationPolicyVersion,
+      'identityRevision': identityRevision,
+      'verifiedIdentityRevision': verifiedIdentityRevision,
+      'identityVerificationVerifiedFields': identityVerificationVerifiedFields,
       'sendCrashLogs': sendCrashLogs,
       'analyticsCollectionEnabled': analyticsCollectionEnabled,
       'acceptedCommunityRulesAt': acceptedCommunityRulesAt != null
@@ -263,4 +315,21 @@ class UserProfile {
       'locale': locale,
     };
   }
+
+  bool hasValidIdentityVerificationAt(DateTime now) {
+    final validUntil = identityVerificationValidUntil;
+    return isVerified == true &&
+        identityVerificationPolicyVersion ==
+            currentIdentityVerificationPolicyVersion &&
+        validUntil != null &&
+        validUntil.isAfter(now) &&
+        verifiedIdentityRevision != null &&
+        verifiedIdentityRevision == identityRevision;
+  }
+
+  bool get hasValidIdentityVerification =>
+      hasValidIdentityVerificationAt(DateTime.now());
+
+  bool get hasIdentityVerificationHistory =>
+      isVerified == true || gotVerifiedAt != null;
 }
