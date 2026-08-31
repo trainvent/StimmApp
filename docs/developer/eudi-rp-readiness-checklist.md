@@ -1,6 +1,6 @@
 # EUDI Wallet Relying Party Readiness Checklist
 
-Last reviewed: 2026-08-30
+Last reviewed: 2026-08-31
 
 This document tracks StimmApp's German EUDI Wallet relying-party integration
 from sandbox prototype to an operationally safe implementation. It follows the
@@ -38,9 +38,9 @@ it does not imply broader certification.
 | Verifier origin is not directly usable without Firebase proxying | **Asserted** | Origin returns `403` without the shared secret and `401` without Firebase authentication |
 | Versioned 12-month re-verification policy is active in dev | **Asserted** | Standalone verifier, Firebase function, and Firestore rules deployed and smoke-tested on 2026-08-30 |
 | Editing a verified identity field requires re-verification | **Asserted** | Manually confirmed in the Flutter dev app on 2026-08-30; a fresh PID presentation completed after resetting and re-enrolling the sandbox wallet |
-| An active transaction survives verifier restart | **Not yet asserted** | Mid-flow restart test remains open |
+| An active transaction survives verifier restart | **Asserted** | Sandbox restart test completed on 2026-08-31 before wallet approval and again before profile acceptance |
 | Replay and repeated acceptance are safe | **Not yet asserted** | Negative replay and idempotency tests remain open |
-| Database data is recoverable after loss | **Not yet asserted** | Backup destination, retention, automation, and restore drill remain open |
+| Database data is recoverable after loss | **Not yet asserted** | Server-local database backups exist, but an independent backup destination and a recorded restore drill remain open |
 | Operational monitoring is sufficient | **Not yet asserted** | Structured events, metrics, alerts, and certificate monitoring remain open |
 | Production RP readiness | **Not asserted** | Production certificates, conformance, privacy, security, and operations remain open |
 
@@ -386,8 +386,9 @@ downloaded secrets/certificates to this repository.
 - [x] Verify origin health, `403` without the proxy secret, `401` with the proxy
   secret but without Firebase authentication, and `401` plus the standalone
   origin marker through the public Firebase route.
-- [ ] Run the documented restart test during an active PID transaction, both
-  before wallet approval and before profile acceptance.
+- [x] Run the documented restart test during an active PID transaction, both
+  before wallet approval and before profile acceptance. Completed successfully
+  against the sandbox verifier on 2026-08-31.
 - [ ] Add `reviewed` or `rejected` only when the product flow gives those states
   concrete behavior.
 - [ ] Add TTL cleanup for session records and any temporary verification data.
@@ -398,10 +399,13 @@ downloaded secrets/certificates to this repository.
 
 ### Logging and monitoring
 
-- [ ] Emit structured JSON events with timestamp, pseudonymous transaction ID,
-  transition, invocation method, status, validation stage, and latency.
-- [ ] Do not log names, addresses, birth dates, wallet identifiers, tokens,
-  credentials, proofs, or complete authorization messages.
+- [x] Emit structured JSON events with timestamp, pseudonymous transaction ID,
+  transition, invocation method, status, validation stage, and latency. The
+  verifier uses a strict allowlist and random trace ID; sandbox adds only a
+  safe protocol-stage enum, while production omits it.
+- [x] Do not log names, addresses, birth dates, wallet identifiers, tokens,
+  credentials, proofs, or complete authorization messages. The logger discards
+  unallowlisted inputs and has automated coverage for that boundary.
 - [ ] Categorize failures as transport, trust, protocol, cryptographic,
   disclosure, business-rule, or user cancellation.
 - [ ] Define log access controls, rotation, retention, and automatic deletion.
@@ -423,7 +427,11 @@ downloaded secrets/certificates to this repository.
   deployment server and prove a fresh verifier image pull/rebuild succeeds. A
   pre-change backup remains at
   `~/.docker/config.json.before-stimmapp-verifier`.
-- [ ] Select an encrypted database backup destination.
+- [x] Maintain a server-local PostgreSQL backup mechanism. This provides a
+  recovery point for database-level incidents, but is not independent disaster
+  recovery because the backups remain on the verifier server.
+- [ ] Select an encrypted, access-controlled backup destination independent of
+  the verifier server, then replicate the local backups to it.
 - [ ] Define backup frequency, retention, access, deletion, and ownership.
 - [ ] Automate PostgreSQL backups and alert on failed or stale backups.
 - [ ] Perform and record a restore drill into an isolated database before
@@ -462,12 +470,16 @@ downloaded secrets/certificates to this repository.
 
 ## Recommended implementation order
 
-1. Restart-test an active verification against the deployed PostgreSQL store,
-   then implement and restore-test encrypted database backups.
-2. Fix repeatable verifier image rebuilds and add health/availability alerts.
-3. Add endpoint/concurrency evidence for idempotent acceptance, then separate
-   verification evidence from the mutable profile.
-4. Audit and negatively test every Credo validation on which StimmApp relies.
-5. Add the complete sandbox failure and cross-device test matrix.
-6. Add privacy-preserving observability and certificate/trust-list operations.
-7. Complete the production security, privacy, and ecosystem readiness review.
+1. Restore a server-local backup into an isolated PostgreSQL database and
+   record the result. Then add encrypted replication to an independent backup
+   destination to cover loss of the verifier server.
+2. Add authenticated endpoint and concurrency tests for repeated acceptance,
+   expiry, and cross-user access; use their results as the replay/idempotency
+   evidence.
+3. Add TTL cleanup for temporary session data after agreeing the minimum
+   retention period for verification provenance.
+4. Audit and negatively test every Credo validation on which StimmApp relies,
+   then add the complete sandbox failure and cross-device test matrix.
+5. Add privacy-preserving monitoring, alerting, and certificate/trust-list
+   operations.
+6. Complete the production security, privacy, and ecosystem readiness review.
