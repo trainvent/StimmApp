@@ -1,0 +1,56 @@
+name: stimmapp-pid-verifier
+
+services:
+  verifier:
+    image: stimmapp-pid-verifier:latest
+    build:
+      context: ../../functions
+      dockerfile: Dockerfile.pid-verifier
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      GCLOUD_PROJECT: stimmapp-dev
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase_service_account
+      PID_VERIFIER_BASE_URL: https://stimmapp-dev.web.app/oid4vp
+      PID_ACCESS_CERTIFICATE_FILE: /run/secrets/pid_access_certificate
+      PID_ACCESS_PRIVATE_KEY_FILE: /run/secrets/pid_access_private_key
+      PID_REGISTRATION_CERTIFICATE_FILE: /run/secrets/pid_registration_certificate
+      PID_ASKAR_STORE_KEY_FILE: /run/secrets/askar_store_key
+      PID_ASKAR_POSTGRES_HOST: postgres:5432
+      PID_ASKAR_POSTGRES_ACCOUNT: stimmapp_pid_verifier
+      PID_ASKAR_POSTGRES_DATABASE: stimmapp_pid_verifier
+      PID_ASKAR_POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      PID_VERIFIER_PROXY_SHARED_SECRET_FILE: /run/secrets/proxy_shared_secret
+    secrets:
+      - askar_store_key
+      - firebase_service_account
+      - pid_access_certificate
+      - pid_access_private_key
+      - pid_registration_certificate
+      - postgres_password
+      - proxy_shared_secret
+    networks:
+      - stimmapp-dev-internal
+      - proxy
+
+secrets:
+  askar_store_key:
+    file: ./secrets/pid-verifier-askar-store-key
+  firebase_service_account:
+    file: ./secrets/firebase-service-account.json
+  pid_access_certificate:
+    file: ./secrets/pid-access-certificate.pem
+  pid_access_private_key:
+    file: ./secrets/pid-access-private-key.pem
+  pid_registration_certificate:
+    file: ./secrets/pid-registration-certificate.json
+  postgres_password:
+    file: /opt/homeserver/secrets/pid-verifier-postgres-password
+  proxy_shared_secret:
+    file: ./secrets/pid-verifier-proxy-shared-secret
+
+networks:
+  stimmapp-dev-internal:
+    external: true
+  proxy:
+    external: true
