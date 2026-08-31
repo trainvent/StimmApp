@@ -1800,7 +1800,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.';
 
   @override
-  String get saving => 'Wird gespeichert …';
+  String get saving => 'Wird gespeichert';
 
   @override
   String get removeAbusiveLanguageFromPublicName =>

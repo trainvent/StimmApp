@@ -1779,7 +1779,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appleSignInFailed => 'Apple sign-in failed. Please try again.';
 
   @override
-  String get saving => 'Saving...';
+  String get saving => 'Saving';
 
   @override
   String get removeAbusiveLanguageFromPublicName =>

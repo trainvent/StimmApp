@@ -84,6 +84,7 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
               SizedBox(
                 width: double.infinity,
                 child: ButtonWidget(
+                  isLoading: _saving,
                   label: _saving
                       ? context.l10n.saving
                       : context.l10n.continueText,

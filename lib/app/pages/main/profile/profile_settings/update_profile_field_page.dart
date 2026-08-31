@@ -206,12 +206,15 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       buttons: [
         ButtonWidget(
           isFilled: true,
+          isLoading: _isSaving,
           label: _isSaving ? context.l10n.saving : title,
-          callback: () async {
-            if (_formKey.currentState!.validate()) {
-              await _save();
-            }
-          },
+          callback: _isSaving
+              ? null
+              : () async {
+                  if (_formKey.currentState!.validate()) {
+                    await _save();
+                  }
+                },
         ),
       ],
     );

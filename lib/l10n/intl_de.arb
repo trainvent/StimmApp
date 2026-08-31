@@ -640,7 +640,7 @@
 	"orSeparator": "oder direkt weiter mit",
 	"googleSignInFailed": "Die Google-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
 	"appleSignInFailed": "Die Apple-Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
-	"saving": "Wird gespeichert …",
+	"saving": "Wird gespeichert",
 	"removeAbusiveLanguageFromPublicName": "Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.",
 	"newUser": "Neuer Benutzer",
 	"databaseError": "Datenbankfehler ({code}): {message}",

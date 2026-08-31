@@ -3383,7 +3383,7 @@ abstract class AppLocalizations {
   /// No description provided for @saving.
   ///
   /// In en, this message translates to:
-  /// **'Saving...'**
+  /// **'Saving'**
   String get saving;
 
   /// No description provided for @removeAbusiveLanguageFromPublicName.

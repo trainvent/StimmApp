@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
+import 'package:stimmapp/app/widgets/loading_info.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -10,7 +11,6 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
 import 'package:stimmapp/core/data/services/tomtom_search_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
-import 'package:trainvent_general/trainvent_general.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PidVerificationPage extends ConsumerStatefulWidget {
@@ -512,30 +512,34 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                                         ],
                                       )
                                     else
-                                      FilledButton.icon(
+                                      FilledButton(
                                         onPressed: _isAcceptingCredentials
                                             ? null
                                             : _acceptVerifiedCredentials,
-                                        icon: _isAcceptingCredentials
-                                            ? SizedBox(
-                                                width: 18,
-                                                height: 18,
-                                                child: TriangleLoadingIndicator(
-                                                  size: 18,
-                                                  showFill: false,
-                                                  strokeColor: Theme.of(
-                                                    context,
-                                                  ).colorScheme.onPrimary,
-                                                ),
+                                        child: _isAcceptingCredentials
+                                            ? LoadingInfo(
+                                                text: hasMismatch
+                                                    ? 'Use verified EUDI details'
+                                                    : 'Confirm verified identity',
+                                                indicatorColor: Theme.of(
+                                                  context,
+                                                ).colorScheme.onPrimary,
+                                                size: 18,
                                               )
-                                            : const Icon(
-                                                Icons.person_pin_rounded,
+                                            : Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.person_pin_rounded,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    hasMismatch
+                                                        ? 'Use verified EUDI details'
+                                                        : 'Confirm verified identity',
+                                                  ),
+                                                ],
                                               ),
-                                        label: Text(
-                                          hasMismatch
-                                              ? 'Use verified EUDI details'
-                                              : 'Confirm verified identity',
-                                        ),
                                       ),
                                   ],
                                 );
@@ -613,30 +617,28 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
               ] else ...[
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton.icon(
+                  child: FilledButton(
                     onPressed: _isLoading || _isRestoringSession
                         ? null
                         : _startVerification,
-                    icon: _isLoading || _isRestoringSession
-                        ? SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: TriangleLoadingIndicator(
-                              size: 18,
-                              showFill: false,
-                              strokeColor: Theme.of(
-                                context,
-                              ).colorScheme.onSurface,
-                            ),
+                    child: _isLoading || _isRestoringSession
+                        ? LoadingInfo(
+                            text: _isRestoringSession
+                                ? 'Checking for a completed verification'
+                                : 'Generating request',
+                            indicatorColor: Theme.of(
+                              context,
+                            ).colorScheme.onSurface,
+                            size: 18,
                           )
-                        : const Icon(Icons.verified_user_outlined),
-                    label: Text(
-                      _isRestoringSession
-                          ? 'Checking for a completed verification…'
-                          : _isLoading
-                          ? 'Generating request…'
-                          : 'Start PID verification',
-                    ),
+                        : const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.verified_user_outlined),
+                              SizedBox(width: 8),
+                              Text('Start PID verification'),
+                            ],
+                          ),
                   ),
                 ),
               ],

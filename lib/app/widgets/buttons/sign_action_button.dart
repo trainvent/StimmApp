@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/onboarding/login_page.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart';
+import 'package:stimmapp/app/widgets/loading_info.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -9,7 +10,6 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
 import 'package:stimmapp/generated/l10n.dart';
-import 'package:trainvent_general/trainvent_general.dart';
 
 class SignActionButton extends ConsumerWidget {
   const SignActionButton({
@@ -76,20 +76,11 @@ class SignActionButton extends ConsumerWidget {
                   await _queueSubmission(context, ref, showPetitionReason);
                 },
           child: isPending || isCommitting
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TriangleLoadingIndicator(
-                      size: 20,
-                      showFill: false,
-                      strokeColor: Theme.of(context).colorScheme.onPrimary,
-                      iterationDuration:
-                          DeferredSubmissionController.undoDuration,
-                      iterations: 1,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(isPending ? context.l10n.undo : label),
-                  ],
+              ? LoadingInfo(
+                  text: isPending ? context.l10n.undo : label,
+                  indicatorColor: Theme.of(context).colorScheme.onPrimary,
+                  iterationDuration: DeferredSubmissionController.undoDuration,
+                  iterations: 1,
                 )
               : Text(alreadySigned ? '⛔ $label ⛔' : label),
         );

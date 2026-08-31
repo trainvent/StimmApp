@@ -638,7 +638,7 @@
 	"orSeparator": "or continue directly with",
 	"googleSignInFailed": "Google sign-in failed. Please try again.",
 	"appleSignInFailed": "Apple sign-in failed. Please try again.",
-	"saving": "Saving...",
+	"saving": "Saving",
 	"removeAbusiveLanguageFromPublicName": "Please remove abusive or objectionable language from your public name.",
 	"newUser": "New User",
 	"databaseError": "Database error ({code}): {message}",

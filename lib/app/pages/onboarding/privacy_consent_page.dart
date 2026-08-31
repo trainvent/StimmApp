@@ -132,6 +132,7 @@ class _PrivacyConsentPageState extends ConsumerState<PrivacyConsentPage> {
                 width: double.infinity,
                 child: ButtonWidget(
                   isFilled: true,
+                  isLoading: _saving,
                   label: _saving ? context.l10n.saving : context.l10n.allowAll,
                   callback: _saving
                       ? null
@@ -146,7 +147,10 @@ class _PrivacyConsentPageState extends ConsumerState<PrivacyConsentPage> {
               SizedBox(
                 width: double.infinity,
                 child: ButtonWidget(
-                  label: context.l10n.saveSelection,
+                  isLoading: _saving,
+                  label: _saving
+                      ? context.l10n.saving
+                      : context.l10n.saveSelection,
                   callback: _saving ? null : _saveConsent,
                 ),
               ),
