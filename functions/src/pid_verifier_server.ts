@@ -7,6 +7,10 @@ import {
   shutdownPidVerifierAgent,
 } from './pid_verification.js';
 import { readRuntimeSecret } from './pid_verifier_runtime_config.js';
+import {
+  logPidVerifierEvent,
+  pidVerifierErrorCategory,
+} from './pid_verifier_logging.js';
 
 if (getApps().length === 0) {
   initializeApp({
@@ -58,7 +62,10 @@ async function startServer() {
   serverApp.use(pidVerifierApp);
 
   const server = serverApp.listen(portValue, '0.0.0.0', () => {
-    console.log(`PID verifier listening on port ${portValue}.`);
+    logPidVerifierEvent({
+      event: 'verifier_started', outcome: 'success', status: 200,
+      validationOutcome: 'not_applicable', protocolStage: 'initialization',
+    });
   });
 
   let shuttingDown = false;
@@ -79,9 +86,10 @@ async function startServer() {
 }
 
 startServer().catch((error: unknown) => {
-  console.error(
-    'PID verifier failed to start.',
-    error instanceof Error ? { name: error.name } : { name: 'UnknownError' },
-  );
+  logPidVerifierEvent({
+    event: 'verifier_start_failed', outcome: 'failure', status: 500,
+    errorCategory: pidVerifierErrorCategory(error), errorCode: 'verifier_start_failed',
+    protocolStage: 'initialization',
+  });
   process.exitCode = 1;
 });

@@ -17,6 +17,21 @@ is reachable by Traefik over the external `proxy` network.
   `https://stimmapp-dev.web.app/oid4vp`; `verifier.aiomvp.com` is only the
   protected origin reached by Firebase.
 
+## Privacy-preserving logging
+
+The verifier emits one JSON record per lifecycle event. Its strict allowlist
+is timestamp, random trace ID, event/outcome, invocation method, HTTP status,
+latency, stable error category/code, and cryptographic validation outcome.
+It never logs PID claims, authorization or VP messages, tokens, wallet or
+session identifiers, certificates, request/response bodies, or raw errors.
+
+Set `PID_VERIFIER_LOG_ENV=sandbox` for development (the default outside the
+production Firebase project) or `PID_VERIFIER_LOG_ENV=production` in the
+production deployment. Sandbox adds the safe `protocolStage` enum; production
+omits it. Configure log rotation and automatic purge in the deployment:
+sandbox logs must be purged after 14–30 days, while production retention and
+access must follow the approved operational/compliance policy.
+
 ## Required server files
 
 Create `deploy/pid-verifier/secrets/` on the server. This directory is ignored

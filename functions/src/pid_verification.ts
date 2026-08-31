@@ -4,7 +4,6 @@ import { getAuth } from 'firebase-admin/auth';
 import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import { HttpsError, onRequest } from 'firebase-functions/v2/https';
-import { error as logError, warn as logWarning } from 'firebase-functions/logger';
 import {
   formatPidProfileAddress,
   normalizePidDisplayText,
@@ -29,6 +28,10 @@ import {
   getPidAskarStoreConfig,
   readRuntimeSecret,
 } from './pid_verifier_runtime_config.js';
+import {
+  logPidVerifierEvent,
+  pidVerifierErrorCategory,
+} from './pid_verifier_logging.js';
 
 async function loadCredoDeps() {
   const [coreModule, nodeModule, askarModule, openidModule, nativeAskarModule] = await Promise.all([
@@ -177,27 +180,16 @@ pidVerifierApp.use((request, response, next) => {
     return;
   }
 
-  let oauthError: { error?: unknown; error_description?: unknown } | undefined;
-  const originalJson = response.json.bind(response);
-  response.json = ((body: unknown) => {
-    if (response.statusCode >= 400 && body && typeof body === 'object') {
-      const value = body as Record<string, unknown>;
-      oauthError = {
-        error: value.error,
-        error_description: value.error_description,
-      };
-    }
-    return originalJson(body);
-  }) as typeof response.json;
-
   response.on('finish', () => {
     if (response.statusCode >= 400) {
-      logWarning('EUDI wallet response rejected.', {
+      logPidVerifierEvent({
+        event: 'wallet_response_rejected',
+        outcome: 'rejected',
         status: response.statusCode,
-        error: typeof oauthError?.error === 'string' ? oauthError.error : undefined,
-        errorDescription: typeof oauthError?.error_description === 'string' ?
-          oauthError.error_description : undefined,
-        session: typeof request.query.session === 'string' ? request.query.session : undefined,
+        errorCategory: 'validation',
+        errorCode: 'wallet_response_rejected',
+        validationOutcome: 'failure',
+        protocolStage: 'wallet_response',
       });
     }
   });
@@ -470,6 +462,7 @@ function normalizeVerifiedPidClaimsForProfile(
 }
 
 pidVerifierApp.post('/oid4vp/start', async (request, response) => {
+  const startedAt = Date.now();
   try {
     const user = await requireFirebaseUser(request);
     const profileSnapshot = await getFirestore().collection('users').doc(user.uid).get();
@@ -478,11 +471,24 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
       'Periodic identity re-verification' :
       'Registration verification';
     const result = await createPidVerificationRequest({ mode, purpose }, user.uid);
+    logPidVerifierEvent({
+      traceId: result.traceId,
+      event: 'request_created',
+      outcome: 'success',
+      latencyMs: Date.now() - startedAt,
+      status: 200,
+      validationOutcome: 'not_applicable',
+      protocolStage: 'request_creation',
+    });
     response.json({ ok: true, mode, purpose, ...result });
   } catch (error) {
     const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
     if (status === 500) {
-      logError('Failed to create hosted PID verification request.', error);
+      logPidVerifierEvent({
+        event: 'operation_failed', outcome: 'failure', status,
+        latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
+        errorCode: 'request_creation_failed', protocolStage: 'request_creation',
+      });
     }
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' : 'The PID verifier could not create a request.',
@@ -491,6 +497,7 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
 });
 
 pidVerifierApp.get('/oid4vp/resumable', async (request, response) => {
+  const startedAt = Date.now();
   try {
     const user = await requireFirebaseUser(request);
     const session = await getLatestResumablePidVerificationSession(user.uid);
@@ -505,7 +512,11 @@ pidVerifierApp.get('/oid4vp/resumable', async (request, response) => {
     });
   } catch (error) {
     const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logError('Failed to restore PID verification session.', error);
+    if (status === 500) logPidVerifierEvent({
+      event: 'operation_failed', outcome: 'failure', status,
+      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
+      errorCode: 'resumable_session_failed', protocolStage: 'status_check',
+    });
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' :
         'The PID verification session could not be restored.',
@@ -514,6 +525,7 @@ pidVerifierApp.get('/oid4vp/resumable', async (request, response) => {
 });
 
 pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
+  const startedAt = Date.now();
   try {
     const user = await requireFirebaseUser(request);
     const sessionId = request.params.sessionId;
@@ -527,6 +539,7 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     }
 
     if (persistedSession.state === 'failed') {
+      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_failed', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'previously_failed', validationOutcome: 'failure', protocolStage: 'status_check' });
       response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
       return;
     }
@@ -537,6 +550,7 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     if (persistedSession.state === 'expired' ||
         pidVerificationSessionResumableUntil(persistedSession).getTime() <= Date.now()) {
       await transitionPidVerificationSession(sessionId, 'expired');
+      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_expired', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'session_expired', validationOutcome: 'not_applicable', protocolStage: 'status_check' });
       response.json({ status: 'expired' });
       return;
     }
@@ -545,6 +559,7 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
     if (session.state === 'ResponseVerified') {
       await transitionPidVerificationSession(sessionId, 'verified');
+      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_verified', outcome: 'success', status: 200, latencyMs: Date.now() - startedAt, validationOutcome: 'success', protocolStage: 'status_check' });
       const claims = await getVerifiedPidClaims(agent, sessionId);
       response.json({
         status: 'verified',
@@ -555,13 +570,18 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
     }
     if (session.state === 'Error') {
       await transitionPidVerificationSession(sessionId, 'failed');
+      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_failed', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'presentation_verification_failed', validationOutcome: 'failure', protocolStage: 'status_check' });
       response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
       return;
     }
     response.json({ status: 'pending' });
   } catch (error) {
     const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logError('Failed to read PID verification status.', error);
+    if (status === 500) logPidVerifierEvent({
+      event: 'operation_failed', outcome: 'failure', status,
+      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
+      errorCode: 'status_read_failed', protocolStage: 'status_check',
+    });
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' : 'The PID verification status is unavailable.',
     });
@@ -569,6 +589,7 @@ pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
 });
 
 pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
+  const startedAt = Date.now();
   try {
     const user = await requireFirebaseUser(request);
     const sessionId = request.params.sessionId;
@@ -666,9 +687,14 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
     });
 
     response.json({ ok: true, alreadyAccepted, claims });
+    logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_accepted', outcome: 'success', status: 200, latencyMs: Date.now() - startedAt, validationOutcome: 'success', protocolStage: 'acceptance' });
   } catch (error) {
     const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logError('Failed to accept verified PID credentials.', error);
+    if (status === 500) logPidVerifierEvent({
+      event: 'operation_failed', outcome: 'failure', status,
+      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
+      errorCode: 'acceptance_failed', protocolStage: 'acceptance',
+    });
     response.status(status).json({
       error: status === 401 ? 'Authentication is required.' : 'The verified PID could not be saved.',
     });
@@ -753,12 +779,17 @@ async function proxyPidVerifierRequest(
 export const pidVerifier = onRequest(
   { secrets: pidVerifierSecrets, maxInstances: 1, memory: '512MiB' },
   async (request, response) => {
+    const startedAt = Date.now();
     try {
       if (await proxyPidVerifierRequest(request, response)) return;
       await ensurePidVerifierAgent();
       pidVerifierApp(request, response);
     } catch (error) {
-      logError('Failed to initialize hosted PID verifier.', error);
+      logPidVerifierEvent({
+        event: 'operation_failed', outcome: 'failure', status: 500,
+        latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
+        errorCode: 'verifier_initialization_failed', protocolStage: 'initialization',
+      });
       response.status(500).json({ error: 'The PID verifier is not configured.' });
     }
   },

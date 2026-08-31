@@ -9,6 +9,7 @@ const app_1 = require("firebase-admin/app");
 const node_crypto_1 = require("node:crypto");
 const pid_verification_js_1 = require("./pid_verification.js");
 const pid_verifier_runtime_config_js_1 = require("./pid_verifier_runtime_config.js");
+const pid_verifier_logging_js_1 = require("./pid_verifier_logging.js");
 if ((0, app_1.getApps)().length === 0) {
     (0, app_1.initializeApp)({
         credential: (0, app_1.applicationDefault)(),
@@ -53,7 +54,10 @@ async function startServer() {
     });
     serverApp.use(pid_verification_js_1.pidVerifierApp);
     const server = serverApp.listen(portValue, '0.0.0.0', () => {
-        console.log(`PID verifier listening on port ${portValue}.`);
+        (0, pid_verifier_logging_js_1.logPidVerifierEvent)({
+            event: 'verifier_started', outcome: 'success', status: 200,
+            validationOutcome: 'not_applicable', protocolStage: 'initialization',
+        });
     });
     let shuttingDown = false;
     const shutdown = () => {
@@ -75,7 +79,11 @@ async function startServer() {
     process.once('SIGTERM', shutdown);
 }
 startServer().catch((error) => {
-    console.error('PID verifier failed to start.', error instanceof Error ? { name: error.name } : { name: 'UnknownError' });
+    (0, pid_verifier_logging_js_1.logPidVerifierEvent)({
+        event: 'verifier_start_failed', outcome: 'failure', status: 500,
+        errorCategory: (0, pid_verifier_logging_js_1.pidVerifierErrorCategory)(error), errorCode: 'verifier_start_failed',
+        protocolStage: 'initialization',
+    });
     process.exitCode = 1;
 });
 //# sourceMappingURL=pid_verifier_server.js.map
