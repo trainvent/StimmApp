@@ -45,14 +45,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    if (kIsWeb) {
-      // OpenID4VP handoff is not supported by the web app yet. Do not leave
-      // mobile-browser users waiting for a session that cannot be completed.
-      _isRestoringSession = false;
-      _error =
-          'PID verification is not available in the web app yet. Please use the mobile app.';
-      return;
-    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _restoreResumableVerification();
     });
@@ -353,7 +345,15 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
 
     var opened = false;
     try {
-      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      opened = await launchUrl(
+        uri,
+        // A phone browser must be allowed to hand the custom scheme to the
+        // installed wallet. Native builds continue to explicitly leave the
+        // app for the wallet.
+        mode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
     } on PlatformException {
       opened = false;
     }
@@ -406,6 +406,13 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                         'Creates a PID verification request and opens it in the EUDI Wallet sandbox app.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                      if (kIsWeb) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'On a phone browser, this opens the installed EUDI Wallet app. Return here afterwards and check the verification status.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Text(
                         'Mode: ${requestedMode == 'reverification' ? 'Re-verification' : 'Registration'}',
@@ -615,6 +622,25 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                     ),
                     const SizedBox(height: 12),
                   ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _isCheckingStatus
+                          ? null
+                          : _pollVerificationStatus,
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: _isCheckingStatus
+                          ? LoadingInfo(
+                              text: 'Checking status',
+                              indicatorColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                              size: 18,
+                            )
+                          : const Text('Check status'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       if (_authorizationRequest != null) ...[
@@ -641,7 +667,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: kIsWeb || _isLoading || _isRestoringSession
+                    onPressed: _isLoading || _isRestoringSession
                         ? null
                         : _startVerification,
                     child: _isLoading || _isRestoringSession
@@ -654,16 +680,12 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                             ).colorScheme.onSurface,
                             size: 18,
                           )
-                        : Row(
+                        : const Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
+                            children: [
                               Icon(Icons.verified_user_outlined),
                               SizedBox(width: 8),
-                              Text(
-                                kIsWeb
-                                    ? 'PID unavailable on web'
-                                    : 'Start PID verification',
-                              ),
+                              Text('Start PID verification'),
                             ],
                           ),
                   ),
