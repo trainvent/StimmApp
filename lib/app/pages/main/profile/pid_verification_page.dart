@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,6 +45,14 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (kIsWeb) {
+      // OpenID4VP handoff is not supported by the web app yet. Do not leave
+      // mobile-browser users waiting for a session that cannot be completed.
+      _isRestoringSession = false;
+      _error =
+          'PID verification is not available in the web app yet. Please use the mobile app.';
+      return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _restoreResumableVerification();
     });
@@ -86,9 +95,15 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     } on PidVerificationException catch (error) {
       if (!mounted) return;
       setState(() {
-        _isRestoringSession = false;
         _error = error.message;
       });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'The previous PID verification could not be restored.';
+      });
+    } finally {
+      if (mounted) setState(() => _isRestoringSession = false);
     }
   }
 
@@ -157,6 +172,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       showSuccessSnackBar('Your profile now uses the verified EUDI details.');
     } on PidVerificationException catch (error) {
       if (mounted) setState(() => _error = error.message);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = 'The verified PID could not be saved.');
+      }
     } finally {
       if (mounted) setState(() => _isAcceptingCredentials = false);
     }
@@ -309,6 +328,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       }
     } on PidVerificationException catch (error) {
       if (mounted) setState(() => _error = error.message);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = 'The PID verification status is unavailable.');
+      }
     } finally {
       _isCheckingStatus = false;
     }
@@ -618,7 +641,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: _isLoading || _isRestoringSession
+                    onPressed: kIsWeb || _isLoading || _isRestoringSession
                         ? null
                         : _startVerification,
                     child: _isLoading || _isRestoringSession
@@ -631,12 +654,16 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
                             ).colorScheme.onSurface,
                             size: 18,
                           )
-                        : const Row(
+                        : Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
+                            children: const [
                               Icon(Icons.verified_user_outlined),
                               SizedBox(width: 8),
-                              Text('Start PID verification'),
+                              Text(
+                                kIsWeb
+                                    ? 'PID unavailable on web'
+                                    : 'Start PID verification',
+                              ),
                             ],
                           ),
                   ),

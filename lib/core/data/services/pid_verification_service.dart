@@ -39,6 +39,8 @@ class PidVerificationRequestResponse {
 }
 
 class PidVerificationService {
+  static const _requestTimeout = Duration(seconds: 15);
+
   PidVerificationService({FirebaseAuth? auth, http.Client? client})
     : _auth = auth ?? FirebaseAuth.instance,
       _client = client ?? http.Client();
@@ -55,11 +57,16 @@ class PidVerificationService {
     }
 
     final projectId = Firebase.app().options.projectId;
-    final response = await _client.get(
+    final response = await _get(
       Uri.parse('https://$projectId.web.app/oid4vp/resumable'),
       headers: {'Authorization': 'Bearer $token'},
+      unavailableMessage:
+          'The previous PID verification could not be restored.',
     );
-    final decoded = jsonDecode(response.body);
+    final decoded = _decodeResponse(
+      response,
+      'The previous PID verification could not be restored.',
+    );
     if (response.statusCode < 200 ||
         response.statusCode >= 300 ||
         decoded is! Map<String, dynamic>) {
@@ -85,16 +92,20 @@ class PidVerificationService {
     }
 
     final projectId = Firebase.app().options.projectId;
-    final response = await _client.post(
+    final response = await _post(
       Uri.parse('https://$projectId.web.app/oid4vp/start'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: jsonEncode(const <String, Object?>{}),
+      unavailableMessage: 'The PID verifier is unavailable. Please try again.',
     );
 
-    final decoded = jsonDecode(response.body);
+    final decoded = _decodeResponse(
+      response,
+      'The PID verifier is unavailable. Please try again.',
+    );
     if (response.statusCode < 200 ||
         response.statusCode >= 300 ||
         decoded is! Map<String, dynamic>) {
@@ -119,13 +130,17 @@ class PidVerificationService {
     }
 
     final projectId = Firebase.app().options.projectId;
-    final response = await _client.get(
+    final response = await _get(
       Uri.parse(
         'https://$projectId.web.app/oid4vp/status/${Uri.encodeComponent(sessionId)}',
       ),
       headers: {'Authorization': 'Bearer $token'},
+      unavailableMessage: 'The PID verification status is unavailable.',
     );
-    final decoded = jsonDecode(response.body);
+    final decoded = _decodeResponse(
+      response,
+      'The PID verification status is unavailable.',
+    );
     if (response.statusCode < 200 ||
         response.statusCode >= 300 ||
         decoded is! Map<String, dynamic>) {
@@ -148,13 +163,17 @@ class PidVerificationService {
     }
 
     final projectId = Firebase.app().options.projectId;
-    final response = await _client.post(
+    final response = await _post(
       Uri.parse(
         'https://$projectId.web.app/oid4vp/accept/${Uri.encodeComponent(sessionId)}',
       ),
       headers: {'Authorization': 'Bearer $token'},
+      unavailableMessage: 'The verified PID could not be saved.',
     );
-    final decoded = jsonDecode(response.body);
+    final decoded = _decodeResponse(
+      response,
+      'The verified PID could not be saved.',
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final message = decoded is Map<String, dynamic>
           ? decoded['error']?.toString()
@@ -162,6 +181,43 @@ class PidVerificationService {
       throw PidVerificationException(
         message ?? 'The verified PID could not be saved.',
       );
+    }
+  }
+
+  Future<http.Response> _get(
+    Uri uri, {
+    required Map<String, String> headers,
+    required String unavailableMessage,
+  }) => _withTimeout(_client.get(uri, headers: headers), unavailableMessage);
+
+  Future<http.Response> _post(
+    Uri uri, {
+    required Map<String, String> headers,
+    Object? body,
+    required String unavailableMessage,
+  }) => _withTimeout(
+    _client.post(uri, headers: headers, body: body),
+    unavailableMessage,
+  );
+
+  Future<http.Response> _withTimeout(
+    Future<http.Response> request,
+    String unavailableMessage,
+  ) async {
+    try {
+      return await request.timeout(_requestTimeout);
+    } on PidVerificationException {
+      rethrow;
+    } catch (_) {
+      throw PidVerificationException(unavailableMessage);
+    }
+  }
+
+  dynamic _decodeResponse(http.Response response, String unavailableMessage) {
+    try {
+      return jsonDecode(response.body);
+    } catch (_) {
+      throw PidVerificationException(unavailableMessage);
     }
   }
 }
