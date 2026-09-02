@@ -729,6 +729,44 @@ const proxyResponseHeadersToSkip = new Set([
   'transfer-encoding',
 ]);
 
+/**
+ * The Flutter web app can be served from either Firebase Hosting domain. It
+ * calls the verifier through the other domain so that the OpenID4VP callback
+ * URI is stable; therefore browser requests with an Authorization header need
+ * an explicit preflight response before they reach the verifier or proxy.
+ */
+function applyPidVerifierCors(request: express.Request, response: express.Response) {
+  const projectId = process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT;
+  const configuredOrigins = process.env.PID_VERIFIER_ALLOWED_ORIGINS
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? [];
+  const allowedOrigins = new Set([
+    ...(projectId ? [
+      `https://${projectId}.web.app`,
+      `https://${projectId}.firebaseapp.com`,
+    ] : []),
+    ...configuredOrigins,
+  ]);
+  const requestOrigin = request.header('origin');
+
+  if (requestOrigin && allowedOrigins.has(requestOrigin)) {
+    response.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    response.setHeader('Access-Control-Allow-Credentials', 'true');
+    response.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.setHeader('Vary', 'Origin');
+  }
+
+  if (request.method !== 'OPTIONS') return false;
+  if (requestOrigin && !allowedOrigins.has(requestOrigin)) {
+    response.status(403).end();
+    return true;
+  }
+  response.status(204).end();
+  return true;
+}
+
 async function proxyPidVerifierRequest(
   request: express.Request & { rawBody?: Buffer },
   response: express.Response,
@@ -781,6 +819,7 @@ export const pidVerifier = onRequest(
   async (request, response) => {
     const startedAt = Date.now();
     try {
+      if (applyPidVerifierCors(request, response)) return;
       if (await proxyPidVerifierRequest(request, response)) return;
       await ensurePidVerifierAgent();
       pidVerifierApp(request, response);

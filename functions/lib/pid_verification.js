@@ -614,6 +614,40 @@ const proxyResponseHeadersToSkip = new Set([
     'content-length',
     'transfer-encoding',
 ]);
+/**
+ * The Flutter web app can be served from either Firebase Hosting domain. It
+ * calls the verifier through the other domain so that the OpenID4VP callback
+ * URI is stable; therefore browser requests with an Authorization header need
+ * an explicit preflight response before they reach the verifier or proxy.
+ */
+function applyPidVerifierCors(request, response) {
+    var _a, _b, _c;
+    const projectId = (_a = process.env.GCLOUD_PROJECT) !== null && _a !== void 0 ? _a : process.env.GCP_PROJECT;
+    const configuredOrigins = (_c = (_b = process.env.PID_VERIFIER_ALLOWED_ORIGINS) === null || _b === void 0 ? void 0 : _b.split(',').map((origin) => origin.trim()).filter(Boolean)) !== null && _c !== void 0 ? _c : [];
+    const allowedOrigins = new Set([
+        ...(projectId ? [
+            `https://${projectId}.web.app`,
+            `https://${projectId}.firebaseapp.com`,
+        ] : []),
+        ...configuredOrigins,
+    ]);
+    const requestOrigin = request.header('origin');
+    if (requestOrigin && allowedOrigins.has(requestOrigin)) {
+        response.setHeader('Access-Control-Allow-Origin', requestOrigin);
+        response.setHeader('Access-Control-Allow-Credentials', 'true');
+        response.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        response.setHeader('Vary', 'Origin');
+    }
+    if (request.method !== 'OPTIONS')
+        return false;
+    if (requestOrigin && !allowedOrigins.has(requestOrigin)) {
+        response.status(403).end();
+        return true;
+    }
+    response.status(204).end();
+    return true;
+}
 async function proxyPidVerifierRequest(request, response) {
     var _a, _b;
     const origin = (_a = process.env.PID_VERIFIER_ORIGIN_URL) === null || _a === void 0 ? void 0 : _a.trim().replace(/\/$/, '');
@@ -656,6 +690,8 @@ async function proxyPidVerifierRequest(request, response) {
 exports.pidVerifier = (0, https_1.onRequest)({ secrets: pidVerifierSecrets, maxInstances: 1, memory: '512MiB' }, async (request, response) => {
     const startedAt = Date.now();
     try {
+        if (applyPidVerifierCors(request, response))
+            return;
         if (await proxyPidVerifierRequest(request, response))
             return;
         await ensurePidVerifierAgent();

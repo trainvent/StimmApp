@@ -86,6 +86,7 @@ function:
 
 ```dotenv
 PID_VERIFIER_ORIGIN_URL=https://verifier.aiomvp.com
+PID_VERIFIER_ALLOWED_ORIGINS=https://stimmapp-dev.web.app,https://stimmapp-dev.firebaseapp.com
 ```
 
 Until `PID_VERIFIER_ORIGIN_URL` is set, the Firebase function continues to run
