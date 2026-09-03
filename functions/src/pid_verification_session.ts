@@ -10,6 +10,7 @@ const PID_VERIFICATION_SESSIONS_COLLECTION = 'pidVerificationSessions';
 const PID_VERIFICATION_REVIEW_WINDOW_MS = 30 * 60 * 1000;
 
 export type PidVerificationMode = 'registration' | 'reverification';
+export type PidVerificationReturnTarget = 'native' | 'web';
 
 export type PidVerificationSessionState =
   | 'pending'
@@ -29,6 +30,9 @@ export type PidVerificationSession = {
   credentialType: 'urn:eudi:pid:de:1';
   invocationMethod: 'same-device';
   policyVersion: 'pid-profile-v1';
+  resultNonce: string;
+  returnTarget: PidVerificationReturnTarget;
+  returnOrigin?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   expiresAt: Timestamp;
@@ -66,6 +70,9 @@ function parseSession(
       value.credentialType !== 'urn:eudi:pid:de:1' ||
       value.invocationMethod !== 'same-device' ||
       value.policyVersion !== 'pid-profile-v1' ||
+      typeof value.resultNonce !== 'string' ||
+      (value.returnTarget !== 'native' && value.returnTarget !== 'web') ||
+      (value.returnOrigin !== undefined && typeof value.returnOrigin !== 'string') ||
       !(value.createdAt instanceof Timestamp) ||
       !(value.updatedAt instanceof Timestamp) ||
       !(value.expiresAt instanceof Timestamp)) {
@@ -83,6 +90,9 @@ function parseSession(
     credentialType: value.credentialType,
     invocationMethod: value.invocationMethod,
     policyVersion: value.policyVersion,
+    resultNonce: value.resultNonce,
+    returnTarget: value.returnTarget,
+    returnOrigin: value.returnOrigin,
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
     expiresAt: value.expiresAt,
@@ -96,12 +106,18 @@ export async function createPidVerificationSession({
   mode,
   purpose,
   expiresAt,
+  resultNonce,
+  returnTarget,
+  returnOrigin,
 }: {
   sessionId: string;
   ownerUid: string;
   mode: PidVerificationMode;
   purpose: string;
   expiresAt: Date;
+  resultNonce: string;
+  returnTarget: PidVerificationReturnTarget;
+  returnOrigin?: string;
 }) {
   const traceId = randomUUID();
   const now = Timestamp.now();
@@ -116,12 +132,27 @@ export async function createPidVerificationSession({
     credentialType: 'urn:eudi:pid:de:1',
     invocationMethod: 'same-device',
     policyVersion: 'pid-profile-v1',
+    resultNonce,
+    returnTarget,
+    ...(returnOrigin ? { returnOrigin } : {}),
     createdAt: now,
     updatedAt: now,
     expiresAt: Timestamp.fromDate(expiresAt),
   });
 
   return traceId;
+}
+
+export async function getPidVerificationSessionByResultNonce(
+  resultNonce: string,
+) {
+  const snapshot = await getFirestore()
+    .collection(PID_VERIFICATION_SESSIONS_COLLECTION)
+    .where('resultNonce', '==', resultNonce)
+    .limit(1)
+    .get();
+  const document = snapshot.docs[0];
+  return document ? parseSession(document.id, document.data()) : null;
 }
 
 export async function getOwnedPidVerificationSession(

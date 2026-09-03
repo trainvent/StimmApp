@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
@@ -98,7 +99,11 @@ class PidVerificationService {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(const <String, Object?>{}),
+      body: jsonEncode(<String, Object?>{
+        // The verifier persists this constrained source choice and only ever
+        // returns to a server-approved destination.
+        'returnTarget': kIsWeb ? 'web' : 'native',
+      }),
       unavailableMessage: 'The PID verifier is unavailable. Please try again.',
     );
 
@@ -130,11 +135,20 @@ class PidVerificationService {
     }
 
     final projectId = Firebase.app().options.projectId;
+    // A PID session can change from pending to verified between two polls.
+    // Make every read a fresh one: some browser/Hosting combinations otherwise
+    // revalidate an earlier response as 304, which has no JSON body to parse.
+    final statusUri =
+        Uri.parse(
+          'https://$projectId.web.app/oid4vp/status/${Uri.encodeComponent(sessionId)}',
+        ).replace(
+          queryParameters: {
+            '_': DateTime.now().microsecondsSinceEpoch.toString(),
+          },
+        );
     final response = await _get(
-      Uri.parse(
-        'https://$projectId.web.app/oid4vp/status/${Uri.encodeComponent(sessionId)}',
-      ),
-      headers: {'Authorization': 'Bearer $token'},
+      statusUri,
+      headers: {'Authorization': 'Bearer $token', 'Cache-Control': 'no-store'},
       unavailableMessage: 'The PID verification status is unavailable.',
     );
     final decoded = _decodeResponse(

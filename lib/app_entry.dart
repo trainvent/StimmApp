@@ -17,6 +17,7 @@ import 'package:stimmapp/app/pages/main/home/petitions/petition_detail_page.dart
 import 'package:stimmapp/app/pages/main/home/polls/poll_detail_page.dart';
 import 'package:stimmapp/app/pages/main/home/polls/survey_detail_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/delete_account_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
@@ -237,6 +238,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     if (pathSegments.isEmpty) {
       return null;
+    }
+
+    if (pathSegments.length == 1 && pathSegments.first == 'pid-verification') {
+      return const PidVerificationPage();
     }
 
     if (pathSegments.length != 2) return null;

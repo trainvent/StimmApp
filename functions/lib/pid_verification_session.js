@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPidVerificationSession = createPidVerificationSession;
+exports.getPidVerificationSessionByResultNonce = getPidVerificationSessionByResultNonce;
 exports.getOwnedPidVerificationSession = getOwnedPidVerificationSession;
 exports.selectLatestResumablePidVerificationSession = selectLatestResumablePidVerificationSession;
 exports.pidVerificationSessionResumableUntil = pidVerificationSessionResumableUntil;
@@ -33,6 +34,9 @@ function parseSession(sessionId, value) {
         value.credentialType !== 'urn:eudi:pid:de:1' ||
         value.invocationMethod !== 'same-device' ||
         value.policyVersion !== 'pid-profile-v1' ||
+        typeof value.resultNonce !== 'string' ||
+        (value.returnTarget !== 'native' && value.returnTarget !== 'web') ||
+        (value.returnOrigin !== undefined && typeof value.returnOrigin !== 'string') ||
         !(value.createdAt instanceof firestore_1.Timestamp) ||
         !(value.updatedAt instanceof firestore_1.Timestamp) ||
         !(value.expiresAt instanceof firestore_1.Timestamp)) {
@@ -49,30 +53,33 @@ function parseSession(sessionId, value) {
         credentialType: value.credentialType,
         invocationMethod: value.invocationMethod,
         policyVersion: value.policyVersion,
+        resultNonce: value.resultNonce,
+        returnTarget: value.returnTarget,
+        returnOrigin: value.returnOrigin,
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
         expiresAt: value.expiresAt,
         verifiedAt: value.verifiedAt instanceof firestore_1.Timestamp ? value.verifiedAt : undefined,
     };
 }
-async function createPidVerificationSession({ sessionId, ownerUid, mode, purpose, expiresAt, }) {
+async function createPidVerificationSession({ sessionId, ownerUid, mode, purpose, expiresAt, resultNonce, returnTarget, returnOrigin, }) {
     const traceId = (0, node_crypto_1.randomUUID)();
     const now = firestore_1.Timestamp.now();
-    await sessionReference(sessionId).create({
-        ownerUid,
+    await sessionReference(sessionId).create(Object.assign(Object.assign({ ownerUid,
         traceId,
         mode,
-        purpose,
-        state: 'pending',
-        credentialFormat: 'dc+sd-jwt',
-        credentialType: 'urn:eudi:pid:de:1',
-        invocationMethod: 'same-device',
-        policyVersion: 'pid-profile-v1',
-        createdAt: now,
-        updatedAt: now,
-        expiresAt: firestore_1.Timestamp.fromDate(expiresAt),
-    });
+        purpose, state: 'pending', credentialFormat: 'dc+sd-jwt', credentialType: 'urn:eudi:pid:de:1', invocationMethod: 'same-device', policyVersion: 'pid-profile-v1', resultNonce,
+        returnTarget }, (returnOrigin ? { returnOrigin } : {})), { createdAt: now, updatedAt: now, expiresAt: firestore_1.Timestamp.fromDate(expiresAt) }));
     return traceId;
+}
+async function getPidVerificationSessionByResultNonce(resultNonce) {
+    const snapshot = await (0, firestore_1.getFirestore)()
+        .collection(PID_VERIFICATION_SESSIONS_COLLECTION)
+        .where('resultNonce', '==', resultNonce)
+        .limit(1)
+        .get();
+    const document = snapshot.docs[0];
+    return document ? parseSession(document.id, document.data()) : null;
 }
 async function getOwnedPidVerificationSession(sessionId, ownerUid) {
     const snapshot = await sessionReference(sessionId).get();

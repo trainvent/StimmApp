@@ -133,6 +133,13 @@ async function getPidSandboxTrustCertificates() {
     return (await pidTrustListPromise).certificates;
 }
 exports.pidVerifierApp = (0, express_1.default)();
+// Every OpenID4VP endpoint is session- and user-specific. In particular, a
+// status response must never be revalidated as 304 because the Flutter HTTP
+// client receives an empty body and cannot deserialize the verification state.
+exports.pidVerifierApp.use((_request, response, next) => {
+    response.setHeader('Cache-Control', 'no-store');
+    next();
+});
 exports.pidVerifierApp.use(express_1.default.json());
 exports.pidVerifierApp.use(express_1.default.urlencoded({ extended: false }));
 exports.pidVerifierApp.use((request, response, next) => {
@@ -270,6 +277,7 @@ async function shutdownPidVerifierAgent() {
 async function createPidVerificationRequest(options, ownerUid) {
     var _a, _b, _c, _d, _e, _f;
     const { agent, accessCertificate, registrationCertificate, verifierRecord } = await ensurePidVerifierAgent();
+    const resultNonce = (0, node_crypto_1.randomUUID)();
     const { authorizationRequest, verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
         requestSigner: {
             method: 'x5c',
@@ -289,7 +297,7 @@ async function createPidVerificationRequest(options, ownerUid) {
             query: pidDcql,
         },
         responseMode: 'direct_post.jwt',
-        authorizationResponseRedirectUri: `${PID_VERIFIER_BASE_URL}/result/${(0, node_crypto_1.randomUUID)()}`,
+        authorizationResponseRedirectUri: `${PID_VERIFIER_BASE_URL}/result/${resultNonce}`,
     });
     const sessionInfo = verificationSession;
     const verificationSessionId = String((_c = (_b = (_a = sessionInfo.id) !== null && _a !== void 0 ? _a : sessionInfo.verificationSessionId) !== null && _b !== void 0 ? _b : sessionInfo.authorizationRequestId) !== null && _c !== void 0 ? _c : 'unknown-session');
@@ -301,6 +309,9 @@ async function createPidVerificationRequest(options, ownerUid) {
         mode: options.mode,
         purpose: options.purpose,
         expiresAt,
+        resultNonce,
+        returnTarget: options.returnTarget,
+        returnOrigin: options.returnOrigin,
     });
     return {
         authorizationRequest,
@@ -368,6 +379,7 @@ function normalizeVerifiedPidClaimsForProfile(claims) {
     };
 }
 exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
+    var _a;
     const startedAt = Date.now();
     try {
         const user = await requireFirebaseUser(request);
@@ -376,7 +388,9 @@ exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
         const purpose = mode === 'reverification' ?
             'Periodic identity re-verification' :
             'Registration verification';
-        const result = await createPidVerificationRequest({ mode, purpose }, user.uid);
+        const returnTarget = ((_a = request.body) === null || _a === void 0 ? void 0 : _a.returnTarget) === 'web' ? 'web' : 'native';
+        const returnOrigin = returnTarget === 'web' ? allowedWebReturnOrigin(request) : undefined;
+        const result = await createPidVerificationRequest({ mode, purpose, returnTarget, returnOrigin }, user.uid);
         (0, pid_verifier_logging_js_1.logPidVerifierEvent)({
             traceId: result.traceId,
             event: 'request_created',
@@ -592,9 +606,36 @@ exports.pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, respons
         });
     }
 });
-exports.pidVerifierApp.get('/oid4vp/result/:nonce', (_request, response) => {
-    response.status(200).type('html').send('<!doctype html><html><body><h1>PID presentation received</h1>' +
-        '<p>You can return to StimmApp.</p></body></html>');
+function allowedWebReturnOrigin(request) {
+    var _a, _b, _c;
+    const origin = request.header('origin');
+    if (!origin)
+        return undefined;
+    const projectId = (_a = process.env.GCLOUD_PROJECT) !== null && _a !== void 0 ? _a : process.env.GCP_PROJECT;
+    const allowedOrigins = new Set([
+        ...(projectId ? [
+            `https://${projectId}.web.app`,
+            `https://${projectId}.firebaseapp.com`,
+        ] : []),
+        ...((_c = (_b = process.env.PID_VERIFIER_ALLOWED_ORIGINS) === null || _b === void 0 ? void 0 : _b.split(',').map((value) => value.trim()).filter(Boolean)) !== null && _c !== void 0 ? _c : []),
+    ]);
+    return allowedOrigins.has(origin) ? origin : undefined;
+}
+function pidResultReturnUrl(session) {
+    var _a;
+    if (session.returnTarget === 'native')
+        return 'stimmapp://pid-verification';
+    const origin = (_a = session.returnOrigin) !== null && _a !== void 0 ? _a : PID_VERIFIER_BASE_URL.replace(/\/oid4vp$/, '');
+    return `${origin}/pid-verification`;
+}
+function pidResultPage(returnUrl) {
+    const serializedUrl = JSON.stringify(returnUrl).replace(/</g, '\\u003c');
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verification received</title></head><body><main><h1>Verification received</h1><p>Your wallet has sent the presentation successfully.</p><p id="countdown">Returning to StimmApp in 5 seconds…</p><p><a id="return-link" href="${returnUrl}">Return to StimmApp now</a></p></main><script>const returnUrl=${serializedUrl};let seconds=5;const countdown=document.getElementById('countdown');const timer=setInterval(()=>{seconds-=1;countdown.textContent=seconds>0?\`Returning to StimmApp in \${seconds} second\${seconds===1?'':'s'}…\`:'Opening StimmApp…';if(seconds===0){clearInterval(timer);window.location.assign(returnUrl);}},1000);</script></body></html>`;
+}
+exports.pidVerifierApp.get('/oid4vp/result/:nonce', async (request, response) => {
+    const session = await (0, pid_verification_session_js_1.getPidVerificationSessionByResultNonce)(request.params.nonce);
+    const returnUrl = session ? pidResultReturnUrl(session) : 'stimmapp://pid-verification';
+    response.status(200).type('html').send(pidResultPage(returnUrl));
 });
 const pidVerifierSecrets = [
     pidAccessCertificateSecret,
@@ -609,6 +650,9 @@ const proxyRequestHeadersToSkip = new Set([
     'transfer-encoding',
 ]);
 const proxyResponseHeadersToSkip = new Set([
+    // The Firebase function owns caching rules so the external verifier cannot
+    // re-enable HTTP validation for a session-specific response.
+    'cache-control',
     'connection',
     'content-encoding',
     'content-length',
@@ -690,6 +734,7 @@ async function proxyPidVerifierRequest(request, response) {
 exports.pidVerifier = (0, https_1.onRequest)({ secrets: pidVerifierSecrets, maxInstances: 1, memory: '512MiB' }, async (request, response) => {
     const startedAt = Date.now();
     try {
+        response.setHeader('Cache-Control', 'no-store');
         if (applyPidVerifierCors(request, response))
             return;
         if (await proxyPidVerifierRequest(request, response))

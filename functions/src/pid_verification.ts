@@ -18,7 +18,9 @@ import {
 } from './pid_identity_verification_policy.js';
 import {
   PidVerificationMode,
+  PidVerificationReturnTarget,
   createPidVerificationSession,
+  getPidVerificationSessionByResultNonce,
   getLatestResumablePidVerificationSession,
   getOwnedPidVerificationSession,
   pidVerificationSessionResumableUntil,
@@ -172,6 +174,13 @@ async function getPidSandboxTrustCertificates() {
 }
 
 export const pidVerifierApp = express();
+// Every OpenID4VP endpoint is session- and user-specific. In particular, a
+// status response must never be revalidated as 304 because the Flutter HTTP
+// client receives an empty body and cannot deserialize the verification state.
+pidVerifierApp.use((_request, response, next) => {
+  response.setHeader('Cache-Control', 'no-store');
+  next();
+});
 pidVerifierApp.use(express.json());
 pidVerifierApp.use(express.urlencoded({ extended: false }));
 pidVerifierApp.use((request, response, next) => {
@@ -202,6 +211,8 @@ let pidVerifierAgentPromise: ReturnType<typeof initializePidVerifierAgent> | und
 type PidVerificationRequestInput = {
   mode: PidVerificationMode;
   purpose: string;
+  returnTarget: PidVerificationReturnTarget;
+  returnOrigin?: string;
 };
 
 type CreatePidVerificationRequestResult = {
@@ -353,6 +364,7 @@ async function createPidVerificationRequest(
   ownerUid: string,
 ): Promise<CreatePidVerificationRequestResult> {
   const { agent, accessCertificate, registrationCertificate, verifierRecord } = await ensurePidVerifierAgent();
+  const resultNonce = randomUUID();
 
   const { authorizationRequest, verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
     requestSigner: {
@@ -374,7 +386,7 @@ async function createPidVerificationRequest(
     },
     responseMode: 'direct_post.jwt',
     authorizationResponseRedirectUri:
-      `${PID_VERIFIER_BASE_URL}/result/${randomUUID()}`,
+      `${PID_VERIFIER_BASE_URL}/result/${resultNonce}`,
   });
 
   const sessionInfo = verificationSession as any;
@@ -390,6 +402,9 @@ async function createPidVerificationRequest(
     mode: options.mode,
     purpose: options.purpose,
     expiresAt,
+    resultNonce,
+    returnTarget: options.returnTarget,
+    returnOrigin: options.returnOrigin,
   });
 
   return {
@@ -470,7 +485,12 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     const purpose = mode === 'reverification' ?
       'Periodic identity re-verification' :
       'Registration verification';
-    const result = await createPidVerificationRequest({ mode, purpose }, user.uid);
+    const returnTarget = request.body?.returnTarget === 'web' ? 'web' : 'native';
+    const returnOrigin = returnTarget === 'web' ? allowedWebReturnOrigin(request) : undefined;
+    const result = await createPidVerificationRequest(
+      { mode, purpose, returnTarget, returnOrigin },
+      user.uid,
+    );
     logPidVerifierEvent({
       traceId: result.traceId,
       event: 'request_created',
@@ -701,11 +721,40 @@ pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
   }
 });
 
-pidVerifierApp.get('/oid4vp/result/:nonce', (_request, response) => {
-  response.status(200).type('html').send(
-    '<!doctype html><html><body><h1>PID presentation received</h1>' +
-    '<p>You can return to StimmApp.</p></body></html>',
-  );
+function allowedWebReturnOrigin(request: express.Request) {
+  const origin = request.header('origin');
+  if (!origin) return undefined;
+  const projectId = process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT;
+  const allowedOrigins = new Set([
+    ...(projectId ? [
+      `https://${projectId}.web.app`,
+      `https://${projectId}.firebaseapp.com`,
+    ] : []),
+    ...(process.env.PID_VERIFIER_ALLOWED_ORIGINS?.split(',')
+      .map((value) => value.trim())
+      .filter(Boolean) ?? []),
+  ]);
+  return allowedOrigins.has(origin) ? origin : undefined;
+}
+
+function pidResultReturnUrl(session: {
+  returnTarget: PidVerificationReturnTarget;
+  returnOrigin?: string;
+}) {
+  if (session.returnTarget === 'native') return 'stimmapp://pid-verification';
+  const origin = session.returnOrigin ?? PID_VERIFIER_BASE_URL.replace(/\/oid4vp$/, '');
+  return `${origin}/pid-verification`;
+}
+
+function pidResultPage(returnUrl: string) {
+  const serializedUrl = JSON.stringify(returnUrl).replace(/</g, '\\u003c');
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verification received</title></head><body><main><h1>Verification received</h1><p>Your wallet has sent the presentation successfully.</p><p id="countdown">Returning to StimmApp in 5 seconds…</p><p><a id="return-link" href="${returnUrl}">Return to StimmApp now</a></p></main><script>const returnUrl=${serializedUrl};let seconds=5;const countdown=document.getElementById('countdown');const timer=setInterval(()=>{seconds-=1;countdown.textContent=seconds>0?\`Returning to StimmApp in \${seconds} second\${seconds===1?'':'s'}…\`:'Opening StimmApp…';if(seconds===0){clearInterval(timer);window.location.assign(returnUrl);}},1000);</script></body></html>`;
+}
+
+pidVerifierApp.get('/oid4vp/result/:nonce', async (request, response) => {
+  const session = await getPidVerificationSessionByResultNonce(request.params.nonce);
+  const returnUrl = session ? pidResultReturnUrl(session) : 'stimmapp://pid-verification';
+  response.status(200).type('html').send(pidResultPage(returnUrl));
 });
 
 const pidVerifierSecrets = [
@@ -723,6 +772,9 @@ const proxyRequestHeadersToSkip = new Set([
 ]);
 
 const proxyResponseHeadersToSkip = new Set([
+  // The Firebase function owns caching rules so the external verifier cannot
+  // re-enable HTTP validation for a session-specific response.
+  'cache-control',
   'connection',
   'content-encoding',
   'content-length',
@@ -819,6 +871,7 @@ export const pidVerifier = onRequest(
   async (request, response) => {
     const startedAt = Date.now();
     try {
+      response.setHeader('Cache-Control', 'no-store');
       if (applyPidVerifierCors(request, response)) return;
       if (await proxyPidVerifierRequest(request, response)) return;
       await ensurePidVerifierAgent();
