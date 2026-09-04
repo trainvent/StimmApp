@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +27,10 @@ class PidVerificationPage extends ConsumerStatefulWidget {
 
 class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     with WidgetsBindingObserver {
+  late final ProviderSubscription<User?> _currentUserSubscription;
   bool _isLoading = false;
   bool _isRestoringSession = true;
+  bool _hasRequestedSessionRestore = false;
   bool _isCheckingStatus = false;
   bool _isAcceptingCredentials = false;
   bool _acceptedCredentials = false;
@@ -45,13 +48,22 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // A web wallet callback cold-loads the app. Firebase Auth can still be
+    // restoring its persisted session when this page first appears, so wait
+    // for a signed-in user instead of treating the transient null as final.
+    _currentUserSubscription = ref.listenManual<User?>(currentUserProvider, (
+      _,
+      user,
+    ) {
+      if (user == null || _hasRequestedSessionRestore) return;
+      _hasRequestedSessionRestore = true;
       _restoreResumableVerification();
-    });
+    }, fireImmediately: true);
   }
 
   @override
   void dispose() {
+    _currentUserSubscription.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -64,10 +76,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   }
 
   Future<void> _restoreResumableVerification() async {
-    if (ref.read(currentUserProvider) == null) {
-      if (mounted) setState(() => _isRestoringSession = false);
-      return;
-    }
     try {
       final session = await pidVerificationService.getResumableSession();
       if (!mounted) return;

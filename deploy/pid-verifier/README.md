@@ -81,7 +81,7 @@ firebase functions:secrets:set PID_VERIFIER_PROXY_SHARED_SECRET \
   --project stimmapp-dev
 ```
 
-Add this non-secret value to `functions/.env.dev` before deploying the dev
+Add this non-secret value to `functions/.env.stimmapp-dev` before deploying the dev
 function:
 
 ```dotenv
