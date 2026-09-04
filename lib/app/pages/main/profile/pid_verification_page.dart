@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/app/widgets/loading_info.dart';
-import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -169,7 +168,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
         _acceptedCredentials = true;
         _verificationStatus = 'accepted';
       });
-      showSuccessSnackBar('Your profile now uses the verified EUDI details.');
     } on PidVerificationException catch (error) {
       if (mounted) setState(() => _error = error.message);
     } catch (_) {
@@ -378,9 +376,6 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       return;
     }
     await Clipboard.setData(ClipboardData(text: _authorizationRequest!));
-    if (mounted) {
-      showSuccessSnackBar('OpenID4VP request copied to clipboard.');
-    }
   }
 
   @override
