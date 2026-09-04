@@ -866,6 +866,13 @@ async function proxyPidVerifierRequest(
   return true;
 }
 
+function isPidResultCallback(request: express.Request) {
+  // This endpoint only reads the persisted callback session and renders the
+  // return-to-app page. Keeping it at Firebase means an external verifier
+  // image rollout cannot leave wallets on an obsolete result page.
+  return request.method === 'GET' && /^\/oid4vp\/result\/[^/]+\/?$/.test(request.path);
+}
+
 export const pidVerifier = onRequest(
   { secrets: pidVerifierSecrets, maxInstances: 1, memory: '512MiB' },
   async (request, response) => {
@@ -873,6 +880,12 @@ export const pidVerifier = onRequest(
     try {
       response.setHeader('Cache-Control', 'no-store');
       if (applyPidVerifierCors(request, response)) return;
+      if (isPidResultCallback(request)) {
+        // Do not proxy or initialize Credo: the callback is deliberately
+        // served by the Firebase edge from the Firestore-backed session.
+        pidVerifierApp(request, response);
+        return;
+      }
       if (await proxyPidVerifierRequest(request, response)) return;
       await ensurePidVerifierAgent();
       pidVerifierApp(request, response);
