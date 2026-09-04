@@ -2393,7 +2393,7 @@ abstract class AppLocalizations {
   /// No description provided for @userProfileVerified.
   ///
   /// In en, this message translates to:
-  /// **'Userprofile Verified'**
+  /// **'Identity verification'**
   String get userProfileVerified;
 
   /// No description provided for @usernameChangeFailed.
@@ -2423,8 +2423,14 @@ abstract class AppLocalizations {
   /// No description provided for @validUntil.
   ///
   /// In en, this message translates to:
-  /// **'Valid until: {date}'**
+  /// **'Valid until {date}'**
   String validUntil(String date);
+
+  /// No description provided for @reverificationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-verification required'**
+  String get reverificationRequired;
 
   /// No description provided for @verificationEmailSent.
   ///

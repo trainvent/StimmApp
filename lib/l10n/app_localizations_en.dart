@@ -1232,7 +1232,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNotFound => 'User not found';
 
   @override
-  String get userProfileVerified => 'Userprofile Verified';
+  String get userProfileVerified => 'Identity verification';
 
   @override
   String get usernameChangeFailed => 'Username change failed';
@@ -1248,8 +1248,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String validUntil(String date) {
-    return 'Valid until: $date';
+    return 'Valid until $date';
   }
+
+  @override
+  String get reverificationRequired => 'Re-verification required';
 
   @override
   String get verificationEmailSent => 'Verification email sent';

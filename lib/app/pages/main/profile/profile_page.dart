@@ -601,15 +601,15 @@ class ProfilePage extends ConsumerWidget {
                                   userProfile.identityVerificationValidUntil;
                               final verificationLabel = isCurrentlyVerified
                                   ? validUntil == null
-                                        ? 'Yes'
-                                        : 'Yes · until ${DateFormat('yyyy-MM-dd').format(validUntil)}'
+                                        ? context.l10n.yes
+                                        : '${context.l10n.yes} · ${context.l10n.validUntil(DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(validUntil))}'
                                   : userProfile.hasIdentityVerificationHistory
-                                  ? 'Re-verification required'
-                                  : 'No';
+                                  ? context.l10n.reverificationRequired
+                                  : context.l10n.no;
                               return _buildDetailTile(
                                 key: keys.profilePage.verifiedListTile,
                                 context,
-                                'Verified',
+                                context.l10n.userProfileVerified,
                                 verificationLabel,
                                 leading: Icon(
                                   isCurrentlyVerified

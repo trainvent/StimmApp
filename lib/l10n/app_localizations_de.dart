@@ -1241,7 +1241,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get userNotFound => 'Benutzer nicht gefunden';
 
   @override
-  String get userProfileVerified => 'Konto verifiziert';
+  String get userProfileVerified => 'Identitätsprüfung';
 
   @override
   String get usernameChangeFailed =>
@@ -1258,8 +1258,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String validUntil(String date) {
-    return 'Gültig bis';
+    return 'Gültig bis $date';
   }
+
+  @override
+  String get reverificationRequired => 'Erneute Überprüfung erforderlich';
 
   @override
   String get verificationEmailSent => 'Bestätigungs-E-Mail gesendet';
