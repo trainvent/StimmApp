@@ -8,6 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:stimmapp/app/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,6 +33,20 @@ enum EntitlementStatus { none, active, expired, unknown }
 enum EntitlementTier { free, basic, pro }
 
 enum _WebPaymentOption { webBilling, googlePlay }
+
+@visibleForTesting
+bool shouldSkipDevAppleTestStore({
+  required String apiKey,
+  required bool isDev,
+  required bool isDebug,
+  required bool isWeb,
+  required TargetPlatform platform,
+}) =>
+    isDev &&
+    !isDebug &&
+    !isWeb &&
+    (platform == TargetPlatform.iOS || platform == TargetPlatform.macOS) &&
+    apiKey.startsWith('test_');
 
 class PurchasesService {
   PurchasesService._internal();
@@ -64,6 +79,24 @@ class PurchasesService {
     }
     if (apiKey.isEmpty) {
       log('PurchasesService.init skipped: RevenueCat API key is empty.');
+      return;
+    }
+    // CocoaPods builds RevenueCat in release mode for Flutter profile builds.
+    // Its Test Store safeguard calls Swift fatalError, which Dart cannot catch.
+    // Keep dev device testing available without enabling simulated billing in
+    // a release-built SDK. An Apple SDK key still enables sandbox purchases.
+    if (shouldSkipDevAppleTestStore(
+      apiKey: apiKey,
+      isDev: Environment.isDev,
+      isDebug: kDebugMode,
+      isWeb: kIsWeb,
+      platform: defaultTargetPlatform,
+    )) {
+      debugPrint(
+        '[PurchasesService] Purchases disabled: Apple dev profile/release '
+        'builds cannot use a RevenueCat Test Store key. Use Debug for Test '
+        'Store purchases, or configure the dev Apple SDK key.',
+      );
       return;
     }
     try {

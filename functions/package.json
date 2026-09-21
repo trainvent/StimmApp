@@ -3,6 +3,7 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.ts .",
 		"build": "tsc",
+		"test": "npm run build && node --test test/*.test.mjs",
 		"build:watch": "tsc --watch",
 		"serve": "npm run build && firebase emulators:start --only functions",
 		"start:pid-verifier": "node lib/pid_verifier_server.js",
@@ -17,10 +18,10 @@
 	},
 	"main": "lib/index.js",
 	"dependencies": {
-		"@credo-ts/askar": "^0.7.0",
-		"@credo-ts/core": "^0.7.0",
-		"@credo-ts/node": "^0.7.0",
-		"@credo-ts/openid4vc": "^0.7.0",
+		"@credo-ts/askar": "0.7.1",
+		"@credo-ts/core": "0.7.1",
+		"@credo-ts/node": "0.7.1",
+		"@credo-ts/openid4vc": "0.7.1",
 		"@openwallet-foundation/askar-nodejs": "^0.6.0",
 		"firebase-admin": "^14.3.0",
 		"firebase-functions": "^7.3.2",

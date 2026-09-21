@@ -46,6 +46,28 @@ flutter run --profile --flavor dev -t lib/main_dev.dart --dart-define-from-file=
 Detach with `d` in the terminal after installation to leave the app running
 without the Flutter tool attached.
 
+If the dev RevenueCat key is a Test Store key (`test_`), Apple profile/release
+builds skip purchase initialization so RevenueCat's native release safeguard
+cannot terminate the app. EUDI remains available; purchases are unavailable
+in that configuration. Use the debug launch for Test Store purchases, or set
+`REVENUECAT_API_KEY_DEV_IOS` to the Apple SDK key for the **dev** RevenueCat app
+to test Apple sandbox purchases in profile mode. Do not substitute the
+production app's key.
+
+### Mac launch prerequisites
+
+- Enable **System Settings → Privacy & Security → Local Network → Visual
+  Studio Code** (and Terminal if launching there), then restart that app.
+  A UDP port 5353 `No route to host` error blocks Dart VM discovery even when
+  the iPhone is connected by USB.
+- On Apple Silicon, Flutter's Intel-only `iproxy` helper requires Rosetta.
+  Install it with `softwareupdate --install-rosetta --agree-to-license` after
+  reviewing Apple's license. A `bad CPU type in executable` error means that
+  helper cannot run yet.
+
+References: [Flutter launch troubleshooting](https://docs.flutter.dev/install/troubleshoot)
+and [RevenueCat Test Store](https://www.revenuecat.com/docs/test-and-launch/sandbox/test-store).
+
 All three dev configurations (`Debug-dev`, `Profile-dev`, `Release-dev`) use
 the dev entrypoint, bundle ID, URL hosts, and Google sign-in configuration.
 The app connects to Firebase project `stimmapp-dev` and its public

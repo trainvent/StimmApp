@@ -321,6 +321,11 @@ Cloud Functions access it through the Admin SDK.
 
 Apple setup and test procedure: [Apple EUDI sandbox testing](eudi-apple-sandbox.md).
 
+The 2026-09-21 iOS attempt reached the wallet but failed request audience
+validation. The upstream dependency fix and its rollout gates are tracked in
+[EUDI iOS request audience fix](eudi-ios-audience-fix.md); local tests pass,
+but deployment and physical-wallet acceptance remain open.
+
 - [ ] Complete the physical-iPhone TestFlight wallet flow, including native
   callback, restored session, and explicit profile acceptance. Apple build and
   simulator checks alone do not assert wallet interoperability.
