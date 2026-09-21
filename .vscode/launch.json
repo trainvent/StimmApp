@@ -37,6 +37,20 @@
 			]
 		},
 		{
+			"name": "Flutter: StimmApp Dev (Profile iOS / EUDI)",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main_dev.dart",
+			"flutterMode": "profile",
+			"toolArgs": [
+				"--dart-define-from-file=.env"
+			],
+			"args": [
+				"--flavor",
+				"dev"
+			]
+		},
+		{
 			"name": "Flutter: StimmApp Prod (Debug Android)",
 			"request": "launch",
 			"type": "dart",

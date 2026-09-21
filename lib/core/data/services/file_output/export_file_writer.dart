@@ -31,17 +31,17 @@ class ExportFileWriter {
     await _disableNetwork();
 
     try {
-      final uri = await FilePicker.saveFile(
+      final path = await FilePicker.saveFile(
         dialogTitle: 'Save export',
         fileName: fileName,
         type: FileType.custom,
         allowedExtensions: [contentService.format.extension],
         bytes: contentService.bytes(content),
       );
-      if (uri == null) {
+      if (path == null) {
         throw const CsvExportCanceledException();
       }
-      return uri.scheme == 'file' ? uri.toFilePath() : uri.toString();
+      return path;
     } finally {
       await _enableNetwork();
     }

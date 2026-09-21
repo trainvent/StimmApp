@@ -165,18 +165,18 @@ void main() {
     test('watchAll returns a stream of list of UserProfile', () async {
       final stream = userRepository.watchAll();
 
-      expect(stream, emits(isEmpty));
+      final expectation = expectLater(
+        stream,
+        emitsInOrder([
+          isEmpty,
+          predicate<List<UserProfile>>(
+            (list) => list.length == 1 && list.single.uid == '1',
+          ),
+        ]),
+      );
 
       await userRepository.upsert(tUserProfile);
-
-      expect(
-        stream,
-        emits(
-          predicate<List<UserProfile>>(
-            (list) => list.isNotEmpty && list.first.uid == '1',
-          ),
-        ),
-      );
+      await expectation;
     });
 
     test('isAdmin is true for service@trainvent.com', () {
