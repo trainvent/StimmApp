@@ -94,12 +94,39 @@ for this request-generation change. Start fresh sessions after either rollout.
   upstream releases: pin the four Credo packages to 0.7.1, whose locked
   OpenID4VP dependency is 0.5.6. No custom patch or audience override is needed.
 - [x] Validate clean installation and backend checks locally on Node 22.
-- [ ] Deploy to the standalone dev verifier and inspect a fresh request.
+- [x] Deploy to the standalone dev verifier and inspect a fresh request.
 - [ ] Complete physical-iPhone and Android acceptance tests.
 
 Deployment currently requires access to the verifier host; the local Firebase
 CLI was also unauthenticated during diagnosis. Resolve access before rollout,
 without copying secrets into the repository.
+
+### Dev deployment — 2026-09-22
+
+- Deployed checkout `2482249f` to the standalone dev verifier at
+  `verifier.aiomvp.com`; runtime image `41a4ea4bd489`, Credo 0.7.1.
+- Built with the updated lockfile and Dockerfile. Used
+  `DOCKER_BUILDKIT=0 docker compose build verifier` because the host's Buildx
+  plugin was missing. All 11 backend tests passed during the build.
+- Replaced only the verifier with `docker compose up -d --no-deps verifier`.
+  Existing secrets and PostgreSQL storage were preserved; no manual database
+  changes or Firebase Functions deployment were performed.
+- Container healthy; origin health returned 200. Origin without the proxy
+  secret returned 403; with the proxy secret but no Firebase token returned
+  401. The public Firebase proxy also returned 401 with the standalone-origin
+  marker.
+- Generated a fresh request through the deployed Credo API using the deployed
+  request options and existing signing configuration, then fetched it through
+  the public Firebase proxy. HTTP 200, standalone-origin marker present,
+  `aud` exactly `https://self-issued.me/v2`, signature verified, request unexpired,
+  and response mode `direct_post.jwt`. This probe did not exercise signed-in
+  app request creation or wallet completion; no user profile was changed.
+- Retained the previous image `2efa3e638fd9` as
+  `stimmapp-pid-verifier:rollback-pre-ios-audience-20260922`. To roll back, tag
+  that image as `stimmapp-pid-verifier:latest`, then run
+  `docker compose up -d --no-deps verifier` from the deployment directory.
+- Physical iPhone and Android acceptance remain pending. Start a new app
+  verification request for these tests.
 
 ### Evidence and limits
 
@@ -116,5 +143,5 @@ without copying secrets into the repository.
   verifies the signature and audience of the record read back from storage.
 - This Mac has no Docker executable, so the Docker build gate must also run on
   the deployment host. Local native tests are not PostgreSQL rollout evidence.
-- No live deployment, wallet success, or Android regression result is claimed
-  until the unchecked rollout steps above have been completed.
+- Live deployment and a fresh signed-request check are recorded above; wallet
+  success and Android regression results remain unverified.
