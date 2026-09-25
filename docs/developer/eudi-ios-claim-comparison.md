@@ -1,5 +1,40 @@
 # iOS PID claim comparison — 2026-09-22
 
+## Follow-up: reissuance passes claim matching
+
+The user deleted and recreated the wallet identity. The new screenshot and
+`eudi-ios-wallet-logs 4.txt` show that all seven requested fields now match and
+the wallet reaches consent and response submission. The prior missing-name
+failure is resolved for this fresh credential. This supports a stored-credential
+problem but does not retrospectively prove expiry or the precise exclusion guard.
+
+The next failure is verifier-side: the first presentation POST receives HTTP 400
+at 2026-09-22 08:24:43 UTC (10:24:43 CEST), followed by the wallet error at
+08:24:44 UTC. Lines 5925–5935 report `invalid_request` with description
+`One or more presentations failed verification.` The response includes
+`x-stimmapp-verifier-origin: server`, locating the rejection at the standalone
+verifier behind the Firebase proxy.
+
+Correlation trace: `4f1088164cac2b1b79894a961838f74e`.
+Later attempts at 08:25:11 and 08:26:09 UTC receive `Invalid session`; diagnose
+the first verification failure before these retries. Use a fresh StimmApp
+verification session for the next controlled attempt.
+
+Server handoff: inspect the verifier container logs around 08:24:40–08:24:50 UTC
+and the failed Credo verification-session record for the underlying validation
+error. From the deployment's Compose directory, the initial read-only log check is:
+
+```sh
+docker compose logs --no-color --since '2026-09-22T08:24:35Z' --until '2026-09-22T08:24:55Z' verifier
+```
+
+Do not share raw presentation tokens, identity claims, or secrets. Return the
+validation stage and sanitized error code/message only. Credo logging is disabled
+in the repository configuration, so generic HTTP logs may be insufficient; a
+targeted read-only inspection of the stored verification result may be needed.
+The wallet export alone does not identify a signature, trust, nonce, disclosure,
+or holder-binding root cause. No further certificate rotation is justified yet.
+
 ## Investigation result
 
 The best-supported diagnosis is a wallet-side presentation eligibility/indexing
