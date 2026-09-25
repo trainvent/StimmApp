@@ -18,7 +18,12 @@ Dadurch können aussagekräftige Standpunkte entstehen und verlässliche Umfrage
 Dieses Projekt ist unter der **GNU General Public License v3.0** lizenziert.
 Siehe `LICENSE`.
 
+## iOS Builds
+
+For iOS development and CI, see [iOS builds with Swift Package Manager](docs/developer/ios-builds.md) and the [Firebase migration checklist](docs/developer/firebase-spm-migration.md).
+
 ## Website Deployment
+
 Die statische Website liegt im Ordner `website` und wird per GitHub Pages aus GitHub Actions veröffentlicht.
 
 ### Deployment Workflow

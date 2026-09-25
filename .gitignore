@@ -41,6 +41,7 @@ analysis_benchmark.json
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+/.xcode-cloud/
 **/generated_plugin_registrant.dart
 .packages
 .pub-preload-cache/

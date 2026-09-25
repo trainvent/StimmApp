@@ -1,6 +1,5 @@
 #include "Generated.xcconfig"
 FLUTTER_TARGET=lib/main_dev.dart
-ONLY_ACTIVE_ARCH=YES
 DEEP_LINK_HOST=stimmapp-dev.web.app
 SECONDARY_DEEP_LINK_HOST=vivot-dev.web.app
 WEB_DEEP_LINK_HOST=stimmapp-dev.web.app

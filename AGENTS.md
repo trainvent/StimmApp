@@ -141,12 +141,9 @@ patrol test -t integration_test/simple_flow_test.dart
 *   `prod` -> `stimmapp-f0141`
 
 # CI / iOS build hints:
-# - Ensure CI runs: `flutter pub get` before any `pod install`.
-# - To reproduce failing archive locally:
-#     flutter pub get
-#     flutter build ios --no-codesign
-#     cd ios && pod install --repo-update
-#     (then run the exact xcodebuild command from your CI to see detailed logs)
-# - Use the included debug helper: ios/ci_debug.sh
-#   make it executable: chmod +x ios/ci_debug.sh
-#   run locally or as an extra Xcode Cloud step to collect xcresult and logs.
+# - Use the Flutter version in .flutter-version and Xcode 27.0.
+# - iOS uses Flutter-managed Swift Package Manager, enabled in pubspec.yaml.
+# - Run flutter pub get --enforce-lockfile before building; do not run pod install.
+# - Build prod with --flavor prod -t lib/main.dart; dev uses lib/main_dev.dart.
+# - See docs/developer/ios-builds.md for simulator and archive commands.
+# - Use bash ios/ci_debug.sh for archive logs and xcresult bundles.
