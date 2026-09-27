@@ -19,6 +19,20 @@ test('diagnostic summarizes known errors without exposing stored protocol data',
   });
 });
 
+test('diagnostic identifies the observed issuer-chain rejection inside the OpenID4VP wrapper', () => {
+  assert.deepEqual(summarizePidSession({
+    state: 'Error',
+    errorMessage: 'One or more presentations failed verification.\n' +
+      '\t- pid-sd-jwt[0]: Error occurred during verification of presentation. ' +
+      'No trusted certificate was found while validating the X.509 chain, private-token',
+  }), { state: 'Error', failureCode: 'issuer_chain_untrusted' });
+  // The SDK wraps status-chain failures separately. Preserve the distinction.
+  assert.deepEqual(summarizePidSession({
+    state: 'Error',
+    errorMessage: 'The status list certificate chain could not be validated against the trusted status certificates.',
+  }), { state: 'Error', failureCode: 'status_list_trust_failed' });
+});
+
 test('diagnostic reads an existing native Askar request without changing its record', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'pid-diagnose-'));
   const path = join(directory, 'store.sqlite');

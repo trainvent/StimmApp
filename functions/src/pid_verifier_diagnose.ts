@@ -5,6 +5,7 @@ import { getPidAskarStoreConfig } from './pid_verifier_runtime_config.js';
 export function pidPresentationFailureCode(message: unknown): string {
   if (typeof message !== 'string' || !message) return 'no_stored_error';
   const knownErrors = [
+    ['No trusted certificate was found while validating the X.509 chain', 'issuer_chain_untrusted'],
     ['The status list certificate chain could not be validated against the trusted status certificates.', 'status_list_trust_failed'],
     ['The status list signer chain does not match the credential issuer chain, and no dedicated trusted status certificates were configured for the trusted issuer.', 'status_list_dedicated_trust_missing'],
     ['The key binding JWT does not contain the expected audience', 'holder_audience_mismatch'],

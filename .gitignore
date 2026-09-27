@@ -156,3 +156,6 @@ mcp.json
 .env
 .env.local
 .env.test
+
+# Wallet diagnostic exports contain credentials and personal disclosures.
+/docs/eudi-ios-wallet-logs*.txt
