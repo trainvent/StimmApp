@@ -17,7 +17,7 @@ license: GPL-3.0
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.2.14+51
+version: 1.2.15+52
 environment:
   sdk: ^3.10.1
 
@@ -105,6 +105,8 @@ dev_dependencies:
   enough_mail: ^2.1.7
   meta: ^1.18.0
 flutter:
+  config:
+    enable-swift-package-manager: true
   generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -151,13 +153,6 @@ flutter:
 flutter_intl:
   enabled: true
 
-# CI / iOS build hints:
-# - Ensure CI runs: `flutter pub get` before any `pod install`.
-# - To reproduce failing archive locally:
-#     flutter pub get
-#     flutter build ios --no-codesign
-#     cd ios && pod install --repo-update
-#     (then run the exact xcodebuild command from your CI to see detailed logs)
-# - Use the included debug helper: ios/ci_debug.sh
-#   make it executable: chmod +x ios/ci_debug.sh
-#   run locally or as an extra Xcode Cloud step to collect xcresult and logs.
+# iOS builds use Flutter-managed Swift Package Manager.
+# Use the Flutter version in .flutter-version, then flutter pub get --enforce-lockfile.
+# See docs/developer/ios-builds.md for flavor, archive, and troubleshooting commands.

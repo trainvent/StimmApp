@@ -12,6 +12,10 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    # SwiftPM stages plugin packages (including their examples/tests) here.
+    - "build/**"
+    - "ios/Flutter/ephemeral/**"
+    - "macos/Flutter/ephemeral/**"
     - "lib/generated/intl/**" # this hides the bug of missing type in generated files
     - "tmp/**" # not important anyways
     # Patrol is intentionally not part of the production app's dependency graph.

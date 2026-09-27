@@ -81,7 +81,7 @@ class PurchasesService {
       log('PurchasesService.init skipped: RevenueCat API key is empty.');
       return;
     }
-    // CocoaPods builds RevenueCat in release mode for Flutter profile builds.
+    // Non-debug Apple builds must not use RevenueCat Test Store keys.
     // Its Test Store safeguard calls Swift fatalError, which Dart cannot catch.
     // Keep dev device testing available without enabling simulated billing in
     // a release-built SDK. An Apple SDK key still enables sandbox purchases.
