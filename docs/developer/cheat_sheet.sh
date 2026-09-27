@@ -85,16 +85,10 @@ gcloud scheduler jobs run firebase-schedule-syncProdToDev-us-central1 --project=
 # clean up job
 gcloud scheduler jobs run firebase-schedule-cleanupOrphanedUsers-us-central1 --location=us-central1 --project=stimmapp-dev
 
-# ios complete reset
+# iOS: regenerate Flutter build configuration (stop active builds/debug runs first)
 flutter clean
-cd ios
-rm -rf Pods/ Podfile.lock .symlinks
-pod deintegrate
-cd ..
-flutter pub get
-cd ios
-pod install --repo-update
-cd ..
+flutter pub get --enforce-lockfile
+flutter build ios --release --no-codesign --config-only --flavor prod -t lib/main.dart --dart-define-from-file=.env
 
 # How to set up a dev channel
 ## Setting up i did not like for emailservice

@@ -95,7 +95,7 @@ Complete this section only when all required plugins work without CocoaPods.
 - CI wrapper checks with stubbed tools passed for pinned SDK selection, locked restore, flavor routing, and invalid/mismatched-flavor failures. Diagnostic-helper checks passed for preserving archive failure status and skipping redundant builds after success.
 - Initial migration hit stale GoogleUtilities/GoogleAppMeasurement cache tags and insufficient disk space. Refreshing the project-local caches and removing disposable project build outputs resolved these blockers.
 - Pre-migration working changes, including the Pod lockfile, are preserved under `tmp/firebase-spm-baseline/`. Logs and screenshots referenced below are local ignored artifacts in the same directory.
-- iOS is the current scope. The shared SwiftPM flag also applies to future macOS builds; the macOS project remains separately unvalidated.
+- Follow-up cleanup (2026-09-27): all native macOS plugins were audited for SwiftPM support. Flutter's macOS `--config-only` migration passed; its Podfile and Pod configuration includes were removed, and the generated SwiftPM project/scheme integration and package lockfile are retained. Full macOS build/runtime validation remains separate.
 - The existing Patrol suite is excluded from the production dependency graph. The 24 selected Dart tests and temporary native-plugin smoke checks do not replace full account/device acceptance testing.
 
 ## Validation record

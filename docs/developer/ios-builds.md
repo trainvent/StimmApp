@@ -79,3 +79,7 @@ flutter build ipa --no-pub --release --flavor prod -t lib/main.dart --dart-defin
 The first command prepares configuration only; the second performs the signed archive/export. Do not edit the generated `Package.swift` or change dependency versions to address this file-change error.
 
 Track outstanding build, CI, and runtime verification in [the migration checklist](firebase-spm-migration.md).
+
+## macOS configuration cleanup
+
+The macOS target also uses Flutter-managed SwiftPM. Its native plugins were audited and `flutter build macos --config-only --debug -t lib/main.dart --dart-define-from-file=.env` passed after CocoaPods cleanup. This verifies configuration and package resolution; a full desktop build and runtime checks remain unverified.
