@@ -67,4 +67,15 @@ The helper writes logs and xcresult bundles under `tmp/ci_debug_out/`, attempts 
 
 If SwiftPM reports that an upstream version does not exist, first inspect the upstream tag and the local repository cache; the initial migration encountered stale GoogleUtilities and GoogleAppMeasurement tags. Refresh or reset the affected package cache using Xcode, then resolve again. Do not work around stale caches by changing published dependency constraints.
 
+### Generated package changed during resolution
+
+If Xcode reports that `FlutterGeneratedPluginSwiftPackage/Package.swift` was modified during the build, stop the active Flutter debug session and let any Xcode package resolution finish. Keep Flutter builds and `pub get` sequential in the same checkout. Prepare the production configuration, then archive without repeating pub restore:
+
+```bash
+flutter build ios --release --no-codesign --config-only --flavor prod -t lib/main.dart --dart-define-from-file=.env
+flutter build ipa --no-pub --release --flavor prod -t lib/main.dart --dart-define-from-file=.env --export-options-plist=ios/ExportOptions.plist
+```
+
+The first command prepares configuration only; the second performs the signed archive/export. Do not edit the generated `Package.swift` or change dependency versions to address this file-change error.
+
 Track outstanding build, CI, and runtime verification in [the migration checklist](firebase-spm-migration.md).
