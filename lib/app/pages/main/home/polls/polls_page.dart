@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/base_overview_page.dart';
 import 'package:stimmapp/app/widgets/form_list_tile_widget.dart';
-import 'package:stimmapp/app/widgets/lemm_image.dart';
+import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
@@ -194,7 +194,11 @@ class _PollsPageState extends State<PollsPage> {
             children: [
               Flexible(child: Text(context.l10n.showSurveys)),
               const SizedBox(width: 4),
-              const _ShowSurveysInfoButton(),
+              InfoDialogButton(
+                title: context.l10n.showSurveys,
+                content: Text(context.l10n.showSurveysInfo),
+                cornerImagePath: 'assets/images/Lemm_teaching.png',
+              ),
             ],
           ),
           controlAffinity: ListTileControlAffinity.leading,
@@ -308,139 +312,6 @@ class _PollsPageState extends State<PollsPage> {
           },
         );
       },
-    );
-  }
-}
-
-class _ShowSurveysInfoButton extends StatefulWidget {
-  const _ShowSurveysInfoButton();
-
-  @override
-  State<_ShowSurveysInfoButton> createState() => _ShowSurveysInfoButtonState();
-}
-
-class _ShowSurveysInfoButtonState extends State<_ShowSurveysInfoButton> {
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
-
-  @override
-  void dispose() {
-    _hideBubble();
-    super.dispose();
-  }
-
-  void _toggleBubble() {
-    if (_overlayEntry == null) {
-      _showBubble();
-    } else {
-      _hideBubble();
-    }
-  }
-
-  void _showBubble() {
-    final overlay = Overlay.of(context);
-    _overlayEntry = OverlayEntry(
-      builder: (context) {
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: _hideBubble,
-              ),
-            ),
-            CompositedTransformFollower(
-              link: _layerLink,
-              showWhenUnlinked: false,
-              targetAnchor: Alignment.topRight,
-              followerAnchor: Alignment.bottomRight,
-              offset: const Offset(8, -8),
-              child: Material(
-                color: Colors.transparent,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 260,
-                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: colorScheme.outlineVariant),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colorScheme.shadow.withValues(alpha: 0.16),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const LemmImage(),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              context.l10n.showSurveysInfo,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Transform.rotate(
-                        angle: 0.785398,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            border: Border(
-                              right: BorderSide(
-                                color: colorScheme.outlineVariant,
-                              ),
-                              bottom: BorderSide(
-                                color: colorScheme.outlineVariant,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-    overlay.insert(_overlayEntry!);
-  }
-
-  void _hideBubble() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: IconButton(
-        visualDensity: VisualDensity.compact,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints.tightFor(width: 32, height: 32),
-        tooltip: context.l10n.info,
-        icon: const Icon(Icons.info_outline, size: 20),
-        onPressed: _toggleBubble,
-      ),
     );
   }
 }
