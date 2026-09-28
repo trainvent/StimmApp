@@ -37,10 +37,9 @@ Firebase documents the npm installation and standalone update methods in its
 [CLI reference](https://firebase.google.com/docs/cli).
 Do not remove the predeploy build to work around a toolchain failure.
 
-For the EUDI audience fix, Firebase Functions act as a proxy to the standalone
-verifier. A Functions deployment alone does not update that verifier. Follow
-[the verifier rollout plan](eudi-ios-audience-fix.md) to rebuild the dev
-verifier container while retaining its database and secrets.
+Firebase Functions act as a proxy to the standalone EUDI verifier. A Functions
+deployment alone does not update that verifier. Verifier changes require
+rebuilding its container while retaining its database and secrets.
 
 ## Problem this prevents
 
