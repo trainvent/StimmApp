@@ -21,6 +21,7 @@ class BaseCreatorPage extends StatefulWidget {
     required this.tutorialSteps,
     required this.onSubmit,
     this.additionalTopFields,
+    this.contentActionsBuilder,
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
@@ -40,6 +41,11 @@ class BaseCreatorPage extends StatefulWidget {
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
+  final Widget Function(
+    TextEditingController title,
+    TextEditingController description,
+  )?
+  contentActionsBuilder;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
@@ -632,6 +638,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           child: ListView(
             children: [
               const SizedBox(height: 30),
+              if (widget.contentActionsBuilder != null)
+                widget.contentActionsBuilder!(
+                  _titleController,
+                  _descriptionController,
+                ),
               if (widget.additionalTopFields != null)
                 ...widget.additionalTopFields!,
               TextFormField(

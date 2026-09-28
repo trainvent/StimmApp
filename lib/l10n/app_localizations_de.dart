@@ -2683,4 +2683,112 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileDetailsUpdated => 'Dein Profil wurde aktualisiert.';
+
+  @override
+  String get pollTemplates => 'Abstimmungsvorlagen';
+
+  @override
+  String get savePollTemplate => 'Als Vorlage speichern';
+
+  @override
+  String get pollTemplateName => 'Name der Vorlage';
+
+  @override
+  String get pollTemplatesLocal =>
+      'Für dein Konto auf diesem Gerät gespeichert. Vorlagen enthalten Titel, Beschreibung, Fragen und Antworten.';
+
+  @override
+  String get pollTemplatesEmpty => 'Noch keine Vorlagen gespeichert.';
+
+  @override
+  String get pollTemplateSaved => 'Vorlage gespeichert.';
+
+  @override
+  String get pollTemplateError =>
+      'Vorlagen konnten nicht gespeichert oder geladen werden. Bitte versuche es erneut.';
+
+  @override
+  String get pollTemplateReplace =>
+      'Aktuellen Titel, Beschreibung, Fragen und Antworten ersetzen?';
+
+  @override
+  String get pollTemplateDelete => 'Diese gespeicherte Vorlage löschen?';
+
+  @override
+  String get pollTemplateDeleteAction => 'Vorlage löschen';
+
+  @override
+  String get answerPresets => 'Antwortvorlagen';
+
+  @override
+  String get answerPresetReplace => 'Antworten für diese Frage ersetzen?';
+
+  @override
+  String get presetConsent => 'Konsent: Ja / Unentschieden / Nein / Veto';
+
+  @override
+  String get presetBinary => 'Ja / Nein';
+
+  @override
+  String get presetAgreement => 'Zustimmungsskala';
+
+  @override
+  String get presetSatisfaction => 'Zufriedenheitsskala';
+
+  @override
+  String get presetFrequency => 'Häufigkeit';
+
+  @override
+  String get presetYes => 'Ja';
+
+  @override
+  String get presetNo => 'Nein';
+
+  @override
+  String get presetUndecided => 'Unentschieden';
+
+  @override
+  String get presetVeto => 'Veto';
+
+  @override
+  String get presetStronglyAgree => 'Stimme voll zu';
+
+  @override
+  String get presetAgree => 'Stimme zu';
+
+  @override
+  String get presetNeutral => 'Neutral';
+
+  @override
+  String get presetDisagree => 'Stimme nicht zu';
+
+  @override
+  String get presetStronglyDisagree => 'Stimme überhaupt nicht zu';
+
+  @override
+  String get presetVerySatisfied => 'Sehr zufrieden';
+
+  @override
+  String get presetSatisfied => 'Zufrieden';
+
+  @override
+  String get presetDissatisfied => 'Unzufrieden';
+
+  @override
+  String get presetVeryDissatisfied => 'Sehr unzufrieden';
+
+  @override
+  String get presetAlways => 'Immer';
+
+  @override
+  String get presetOften => 'Oft';
+
+  @override
+  String get presetSometimes => 'Manchmal';
+
+  @override
+  String get presetRarely => 'Selten';
+
+  @override
+  String get presetNever => 'Nie';
 }

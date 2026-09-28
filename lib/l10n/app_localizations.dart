@@ -4837,6 +4837,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your profile has been updated.'**
   String get profileDetailsUpdated;
+
+  /// No description provided for @pollTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll templates'**
+  String get pollTemplates;
+
+  /// No description provided for @savePollTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as template'**
+  String get savePollTemplate;
+
+  /// No description provided for @pollTemplateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Template name'**
+  String get pollTemplateName;
+
+  /// No description provided for @pollTemplatesLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this device for your account. Templates include the title, description, questions and answers.'**
+  String get pollTemplatesLocal;
+
+  /// No description provided for @pollTemplatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved templates yet.'**
+  String get pollTemplatesEmpty;
+
+  /// No description provided for @pollTemplateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template saved.'**
+  String get pollTemplateSaved;
+
+  /// No description provided for @pollTemplateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save or load templates. Please try again.'**
+  String get pollTemplateError;
+
+  /// No description provided for @pollTemplateReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the current title, description, questions and answers?'**
+  String get pollTemplateReplace;
+
+  /// No description provided for @pollTemplateDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this saved template?'**
+  String get pollTemplateDelete;
+
+  /// No description provided for @pollTemplateDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete template'**
+  String get pollTemplateDeleteAction;
+
+  /// No description provided for @answerPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer presets'**
+  String get answerPresets;
+
+  /// No description provided for @answerPresetReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the answers for this question?'**
+  String get answerPresetReplace;
+
+  /// No description provided for @presetConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent: Yes / Undecided / No / Veto'**
+  String get presetConsent;
+
+  /// No description provided for @presetBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes / No'**
+  String get presetBinary;
+
+  /// No description provided for @presetAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement scale'**
+  String get presetAgreement;
+
+  /// No description provided for @presetSatisfaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Satisfaction scale'**
+  String get presetSatisfaction;
+
+  /// No description provided for @presetFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get presetFrequency;
+
+  /// No description provided for @presetYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get presetYes;
+
+  /// No description provided for @presetNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get presetNo;
+
+  /// No description provided for @presetUndecided.
+  ///
+  /// In en, this message translates to:
+  /// **'Undecided'**
+  String get presetUndecided;
+
+  /// No description provided for @presetVeto.
+  ///
+  /// In en, this message translates to:
+  /// **'Veto'**
+  String get presetVeto;
+
+  /// No description provided for @presetStronglyAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongly agree'**
+  String get presetStronglyAgree;
+
+  /// No description provided for @presetAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree'**
+  String get presetAgree;
+
+  /// No description provided for @presetNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get presetNeutral;
+
+  /// No description provided for @presetDisagree.
+  ///
+  /// In en, this message translates to:
+  /// **'Disagree'**
+  String get presetDisagree;
+
+  /// No description provided for @presetStronglyDisagree.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongly disagree'**
+  String get presetStronglyDisagree;
+
+  /// No description provided for @presetVerySatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Very satisfied'**
+  String get presetVerySatisfied;
+
+  /// No description provided for @presetSatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Satisfied'**
+  String get presetSatisfied;
+
+  /// No description provided for @presetDissatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Dissatisfied'**
+  String get presetDissatisfied;
+
+  /// No description provided for @presetVeryDissatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Very dissatisfied'**
+  String get presetVeryDissatisfied;
+
+  /// No description provided for @presetAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get presetAlways;
+
+  /// No description provided for @presetOften.
+  ///
+  /// In en, this message translates to:
+  /// **'Often'**
+  String get presetOften;
+
+  /// No description provided for @presetSometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes'**
+  String get presetSometimes;
+
+  /// No description provided for @presetRarely.
+  ///
+  /// In en, this message translates to:
+  /// **'Rarely'**
+  String get presetRarely;
+
+  /// No description provided for @presetNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get presetNever;
 }
 
 class _AppLocalizationsDelegate

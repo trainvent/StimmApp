@@ -2650,4 +2650,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileDetailsUpdated => 'Your profile has been updated.';
+
+  @override
+  String get pollTemplates => 'Poll templates';
+
+  @override
+  String get savePollTemplate => 'Save as template';
+
+  @override
+  String get pollTemplateName => 'Template name';
+
+  @override
+  String get pollTemplatesLocal =>
+      'Saved on this device for your account. Templates include the title, description, questions and answers.';
+
+  @override
+  String get pollTemplatesEmpty => 'No saved templates yet.';
+
+  @override
+  String get pollTemplateSaved => 'Template saved.';
+
+  @override
+  String get pollTemplateError =>
+      'Could not save or load templates. Please try again.';
+
+  @override
+  String get pollTemplateReplace =>
+      'Replace the current title, description, questions and answers?';
+
+  @override
+  String get pollTemplateDelete => 'Delete this saved template?';
+
+  @override
+  String get pollTemplateDeleteAction => 'Delete template';
+
+  @override
+  String get answerPresets => 'Answer presets';
+
+  @override
+  String get answerPresetReplace => 'Replace the answers for this question?';
+
+  @override
+  String get presetConsent => 'Consent: Yes / Undecided / No / Veto';
+
+  @override
+  String get presetBinary => 'Yes / No';
+
+  @override
+  String get presetAgreement => 'Agreement scale';
+
+  @override
+  String get presetSatisfaction => 'Satisfaction scale';
+
+  @override
+  String get presetFrequency => 'Frequency';
+
+  @override
+  String get presetYes => 'Yes';
+
+  @override
+  String get presetNo => 'No';
+
+  @override
+  String get presetUndecided => 'Undecided';
+
+  @override
+  String get presetVeto => 'Veto';
+
+  @override
+  String get presetStronglyAgree => 'Strongly agree';
+
+  @override
+  String get presetAgree => 'Agree';
+
+  @override
+  String get presetNeutral => 'Neutral';
+
+  @override
+  String get presetDisagree => 'Disagree';
+
+  @override
+  String get presetStronglyDisagree => 'Strongly disagree';
+
+  @override
+  String get presetVerySatisfied => 'Very satisfied';
+
+  @override
+  String get presetSatisfied => 'Satisfied';
+
+  @override
+  String get presetDissatisfied => 'Dissatisfied';
+
+  @override
+  String get presetVeryDissatisfied => 'Very dissatisfied';
+
+  @override
+  String get presetAlways => 'Always';
+
+  @override
+  String get presetOften => 'Often';
+
+  @override
+  String get presetSometimes => 'Sometimes';
+
+  @override
+  String get presetRarely => 'Rarely';
+
+  @override
+  String get presetNever => 'Never';
 }

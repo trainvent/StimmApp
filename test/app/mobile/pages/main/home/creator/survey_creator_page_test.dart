@@ -4,6 +4,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -80,12 +81,18 @@ void main() {
       }),
     });
 
+    tester.view.physicalSize = const Size(1000, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       createTestWidget(
-        SurveyCreatorPage(
-          presentAsPoll: true,
-          auth: _FakeAuthService(_FakeUser()),
-          groupRepository: _FakeGroupRepository([group]),
+        ProviderScope(
+          child: SurveyCreatorPage(
+            presentAsPoll: true,
+            auth: _FakeAuthService(_FakeUser()),
+            groupRepository: _FakeGroupRepository([group]),
+          ),
         ),
       ),
     );
@@ -110,12 +117,18 @@ void main() {
   testWidgets('writes question and option edits to the specific draft', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(1000, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       createTestWidget(
-        SurveyCreatorPage(
-          presentAsPoll: true,
-          auth: _FakeAuthService(_FakeUser()),
-          groupRepository: _FakeGroupRepository([group]),
+        ProviderScope(
+          child: SurveyCreatorPage(
+            presentAsPoll: true,
+            auth: _FakeAuthService(_FakeUser()),
+            groupRepository: _FakeGroupRepository([group]),
+          ),
         ),
       ),
     );
@@ -142,5 +155,103 @@ void main() {
       'title': 'Cached question',
       'options': ['Cached A', 'Cached B'],
     });
+  });
+  testWidgets(
+    'consent preset replaces blank options and persists the ordered answers',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 2600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        createTestWidget(
+          ProviderScope(
+            child: SurveyCreatorPage(
+              presentAsPoll: true,
+              auth: _FakeAuthService(_FakeUser()),
+              groupRepository: _FakeGroupRepository([]),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final preset = find.text('Answer presets');
+      await tester.ensureVisible(preset);
+      await tester.tap(preset);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Consent: Yes / Undecided / No / Veto'));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      final draft =
+          jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
+      expect((draft['questions'] as List).single['options'], [
+        'Yes',
+        'Undecided',
+        'No',
+        'Veto',
+      ]);
+      await tester.tap(find.text('Answer presets'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Frequency'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      final unchanged =
+          jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
+      expect((unchanged['questions'] as List).single['options'], [
+        'Yes',
+        'Undecided',
+        'No',
+        'Veto',
+      ]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('save and reuse a template restores content after confirmation', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      createTestWidget(
+        ProviderScope(
+          child: SurveyCreatorPage(
+            presentAsPoll: true,
+            auth: _FakeAuthService(_FakeUser()),
+            groupRepository: _FakeGroupRepository([]),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Weekly meeting');
+    await tester.enterText(fields.at(1), 'Our recurring agenda');
+    await tester.enterText(fields.at(2), 'Shall we proceed?');
+    await tester.enterText(fields.at(3), 'Yes');
+    await tester.enterText(fields.at(4), 'No');
+    await tester.ensureVisible(find.byTooltip('Save as template'));
+    await tester.tap(find.byTooltip('Save as template'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
+    await tester.enterText(fields.at(0), 'Changed title');
+    await tester.ensureVisible(find.byTooltip('Poll templates'));
+    await tester.tap(find.byTooltip('Poll templates'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Weekly meeting'));
+    await tester.pumpAndSettle();
+    expect(find.text('Changed title'), findsOneWidget);
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+    expect(find.text('Weekly meeting'), findsOneWidget);
+    expect(find.text('Our recurring agenda'), findsOneWidget);
+    expect(find.text('Shall we proceed?'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
