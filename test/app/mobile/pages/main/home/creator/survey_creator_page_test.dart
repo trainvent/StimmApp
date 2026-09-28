@@ -175,7 +175,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final preset = find.text('Answer presets');
+      final preset = find.byTooltip('Answer presets');
       await tester.ensureVisible(preset);
       await tester.tap(preset);
       await tester.pumpAndSettle();
@@ -190,7 +190,7 @@ void main() {
         'No',
         'Veto',
       ]);
-      await tester.tap(find.text('Answer presets'));
+      await tester.tap(find.byTooltip('Answer presets'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Frequency'));
       await tester.pumpAndSettle();

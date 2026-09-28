@@ -620,6 +620,14 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           content: SizedBox(
             width: double.maxFinite,
             child: SingleChildScrollView(
+              // Outlined floating labels extend above the field's bounds.
+              // Keep them inside the scroll viewport, even with the keyboard open.
+              padding: EdgeInsets.fromLTRB(
+                4,
+                MediaQuery.textScalerOf(context).scale(12),
+                4,
+                8,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -874,6 +882,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
   Widget _buildAnswerPresets(_QuestionDraft question) {
     final l = context.l10n;
+    final colors = Theme.of(context).colorScheme;
     final presets = <String, List<String>>{
       l.presetConsent: [
         l.presetYes,
@@ -904,47 +913,44 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         l.presetNever,
       ],
     };
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: PopupMenuButton<String>(
-        tooltip: l.answerPresets,
-        itemBuilder: (_) => [
-          for (final name in presets.keys)
-            PopupMenuItem(value: name, child: Text(name)),
-        ],
-        onSelected: (name) async {
-          if (question.optionControllers.any(
-            (option) => option.text.trim().isNotEmpty,
-          )) {
-            if (!await _confirmReplacement(l.answerPresetReplace)) return;
-          }
-          if (!mounted || !_questions.contains(question)) return;
-          setState(() {
-            for (final option in question.optionControllers) {
-              option.dispose();
-            }
-            question.optionControllers.clear();
-            for (final label in presets[name]!) {
-              question.optionControllers.add(
-                TextEditingController(text: label)
-                  ..addListener(_saveSpecificDraft),
-              );
-            }
-          });
-          await _saveSpecificDraft();
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.playlist_add),
-              const SizedBox(width: 8),
-              Text(l.answerPresets),
-              const Icon(Icons.arrow_drop_down),
-            ],
+    return PopupMenuButton<String>(
+      tooltip: l.answerPresets,
+      color: colors.primary,
+      surfaceTintColor: Colors.transparent,
+      iconColor: colors.onPrimary,
+      itemBuilder: (_) => [
+        for (final name in presets.keys)
+          PopupMenuItem(
+            value: name,
+            child: Text(name, style: TextStyle(color: colors.onPrimary)),
           ),
-        ),
+      ],
+      onSelected: (name) async {
+        if (question.optionControllers.any(
+          (option) => option.text.trim().isNotEmpty,
+        )) {
+          if (!await _confirmReplacement(l.answerPresetReplace)) return;
+        }
+        if (!mounted || !_questions.contains(question)) return;
+        setState(() {
+          for (final option in question.optionControllers) {
+            option.dispose();
+          }
+          question.optionControllers.clear();
+          for (final label in presets[name]!) {
+            question.optionControllers.add(
+              TextEditingController(text: label)
+                ..addListener(_saveSpecificDraft),
+            );
+          }
+        });
+        await _saveSpecificDraft();
+      },
+      icon: const Icon(Icons.list_alt_rounded),
+      style: IconButton.styleFrom(
+        foregroundColor: colors.onPrimary,
+        backgroundColor: colors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -992,11 +998,21 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   : null,
             ),
             const SizedBox(height: 8),
-            Text(
-              context.l10n.options,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    context.l10n.options,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _buildAnswerPresets(question),
+              ],
             ),
-            _buildAnswerPresets(question),
             ChoiceOptionListEditor(
               controllers: question.optionControllers,
               maxOptionLength: AppLimits.maxSurveyOptionLength,
