@@ -321,9 +321,9 @@ Cloud Functions access it through the Admin SDK.
 
 Apple setup and test procedure: [Apple EUDI sandbox testing](eudi-apple-sandbox.md).
 
-- [ ] Complete the physical-iPhone TestFlight wallet flow, including native
-  callback, restored session, and explicit profile acceptance. Apple build and
-  simulator checks alone do not assert wallet interoperability.
+- [x] Complete the physical-iPhone TestFlight wallet flow, including native
+  callback, restored session, and explicit profile acceptance. Completion
+  confirmed by the project owner on 2026-09-28.
 
 - [x] Manually complete one same-device SD-JWT PID happy path through the
   PostgreSQL-backed standalone verifier after Firebase cutover (2026-08-30).
