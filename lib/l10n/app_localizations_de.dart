@@ -2791,4 +2791,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get presetNever => 'Nie';
+
+  @override
+  String get resetCreatorDraft => 'Entwurf zurücksetzen';
+
+  @override
+  String get creatorHelp => 'Hilfe';
 }

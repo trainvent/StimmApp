@@ -2758,4 +2758,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get presetNever => 'Never';
+
+  @override
+  String get resetCreatorDraft => 'Reset draft';
+
+  @override
+  String get creatorHelp => 'Help';
 }

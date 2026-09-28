@@ -1088,5 +1088,7 @@
   "presetOften": "Often",
   "presetSometimes": "Sometimes",
   "presetRarely": "Rarely",
-  "presetNever": "Never"
+  "presetNever": "Never",
+  "resetCreatorDraft": "Reset draft",
+  "creatorHelp": "Help"
 }

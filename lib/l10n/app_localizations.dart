@@ -5047,6 +5047,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Never'**
   String get presetNever;
+
+  /// No description provided for @resetCreatorDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset draft'**
+  String get resetCreatorDraft;
+
+  /// No description provided for @creatorHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get creatorHelp;
 }
 
 class _AppLocalizationsDelegate

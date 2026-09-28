@@ -14,7 +14,7 @@ class InfoDialogButton extends StatelessWidget {
   final Widget content;
   final String cornerImagePath;
 
-  Future<void> _showInfoDialog(BuildContext context) {
+  Future<void> showInfoDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -67,7 +67,7 @@ class InfoDialogButton extends StatelessWidget {
     return IconButton(
       tooltip: context.l10n.info,
       icon: const Icon(Icons.info_outline),
-      onPressed: () => _showInfoDialog(context),
+      onPressed: () => showInfoDialog(context),
     );
   }
 }

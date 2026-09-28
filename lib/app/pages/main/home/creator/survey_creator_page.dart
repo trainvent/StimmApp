@@ -760,13 +760,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               ? null
               : () => _chooseTemplate(title, description),
         ),
-        IconButton(
-          icon: const Icon(Icons.bookmark_add_outlined),
-          tooltip: context.l10n.savePollTemplate,
-          onPressed: _auth.currentUser == null
-              ? null
-              : () => _saveTemplate(title, description),
-        ),
       ],
     ),
   );
@@ -931,6 +924,13 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createSurvey,
       contentActionsBuilder: _buildTemplateActions,
+      appBarActionBuilder: (title, description) => IconButton(
+        icon: const Icon(Icons.bookmark_add_outlined),
+        tooltip: context.l10n.savePollTemplate,
+        onPressed: _auth.currentUser == null
+            ? null
+            : () => _saveTemplate(title, description),
+      ),
       additionalDraftClearer: _clearSpecificDraft,
       onResetAdditionalFields: _resetSpecificFields,
       additionalMiddleFields: [

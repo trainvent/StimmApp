@@ -22,6 +22,7 @@ class BaseCreatorPage extends StatefulWidget {
     required this.onSubmit,
     this.additionalTopFields,
     this.contentActionsBuilder,
+    this.appBarActionBuilder,
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
@@ -46,6 +47,11 @@ class BaseCreatorPage extends StatefulWidget {
     TextEditingController description,
   )?
   contentActionsBuilder;
+  final Widget Function(
+    TextEditingController title,
+    TextEditingController description,
+  )?
+  appBarActionBuilder;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
@@ -591,44 +597,85 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     );
   }
 
+  void _confirmReset() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.delete),
+        content: Text(S.of(context).areYouSureYouWantToClearThisDraft),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              _resetForm();
+              Navigator.pop(context);
+            },
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  InfoDialogButton _helpButton() => InfoDialogButton(
+    title: widget.title,
+    content: _buildTutorialContent(),
+    cornerImagePath: 'assets/images/Lemm_teaching.png',
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(context.l10n.delete),
-                  content: Text(
-                    S.of(context).areYouSureYouWantToClearThisDraft,
+          if (widget.appBarActionBuilder != null) ...[
+            widget.appBarActionBuilder!(
+              _titleController,
+              _descriptionController,
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (action) {
+                if (action == 'reset') {
+                  _confirmReset();
+                } else {
+                  _helpButton().showInfoDialog(context);
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'reset',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete_outline),
+                      const SizedBox(width: 12),
+                      Text(context.l10n.resetCreatorDraft),
+                    ],
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(context.l10n.cancel),
-                    ),
-                    FilledButton(
-                      onPressed: () {
-                        _resetForm();
-                        Navigator.pop(context);
-                      },
-                      child: Text(context.l10n.confirm),
-                    ),
-                  ],
                 ),
-              );
-            },
-          ),
-          InfoDialogButton(
-            title: widget.title,
-            content: _buildTutorialContent(),
-            cornerImagePath: "assets/images/Lemm_teaching.png",
-          ),
+                PopupMenuItem(
+                  value: 'help',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline),
+                      const SizedBox(width: 12),
+                      Text(context.l10n.creatorHelp),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: _confirmReset,
+            ),
+            _helpButton(),
+          ],
         ],
       ),
       body: Padding(
