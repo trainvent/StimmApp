@@ -30,11 +30,12 @@ class BaseCreatorPage extends StatefulWidget {
     this.profileLoader,
     this.additionalDraftClearer,
     this.onResetAdditionalFields,
+    this.previewContentBuilder,
   });
 
   final String title;
   final List<dynamic> tutorialSteps; // Can be String or PollTutorialStep
-  final Future<void> Function({
+  final Future<bool> Function({
     required String title,
     required String description,
     required List<String> tags,
@@ -59,6 +60,7 @@ class BaseCreatorPage extends StatefulWidget {
   final Future<UserProfile?> Function()? profileLoader;
   final Future<void> Function()? additionalDraftClearer;
   final VoidCallback? onResetAdditionalFields;
+  final WidgetBuilder? previewContentBuilder;
 
   @override
   State<BaseCreatorPage> createState() => BaseCreatorPageState();
@@ -79,6 +81,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _profileStateOrRegion;
   String? _profileTown;
   bool _isLoading = false;
+  bool _isReviewing = false;
   int _durationDays = AppLimits.defaultFormDurationDays;
   bool _openUntilClosed = false;
 
@@ -322,7 +325,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(context.l10n.cancel),
             ),
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(pendingTags),
               child: Text(context.l10n.confirm),
             ),
@@ -335,7 +338,91 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     await _saveDraft();
   }
 
+  String get _scopeSummary => [
+    _scopeLabel(_selectedScope),
+    if (_selectedScope == FormScopeType.countryUnion &&
+        _selectedCountryUnion != null)
+      _countryUnionLabel(_selectedCountryUnion!)
+    else if (_scopeValue(_selectedScope) != null)
+      _scopeValue(_selectedScope)!,
+  ].join(' · ');
+
+  Future<bool> _reviewPublication() async {
+    setState(() => _isReviewing = true);
+    final confirmed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text(context.l10n.reviewPublication)),
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              Text(
+                _titleController.text.trim(),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 12),
+              Text(_descriptionController.text.trim()),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  for (final tag in _selectedTags)
+                    Chip(
+                      label: Text(AppTagsHelper.getLocalizedTag(context, tag)),
+                    ),
+                ],
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.schedule),
+                title: Text(context.l10n.duration),
+                subtitle: Text(
+                  _openUntilClosed
+                      ? context.l10n.openUntilClosed
+                      : context.l10n.durationDays(_durationDays),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: _scopeLeading(_selectedScope),
+                title: Text(context.l10n.geographicalScope),
+                subtitle: Text(_scopeSummary),
+              ),
+              if (widget.previewContentBuilder != null)
+                widget.previewContentBuilder!(context),
+            ],
+          ),
+          bottomNavigationBar: SafeArea(
+            minimum: const EdgeInsets.all(16),
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(context.l10n.backToEditing),
+                ),
+                FilledButton.icon(
+                  key: const Key('confirm_publication'),
+                  onPressed: () => Navigator.pop(context, true),
+                  icon: const Icon(Icons.publish),
+                  label: Text(context.l10n.publishNow),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (!mounted) return false;
+    setState(() => _isReviewing = false);
+    return confirmed == true;
+  }
+
   Future<void> _handleSubmit() async {
+    if (_isLoading || _isReviewing) return;
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -347,11 +434,6 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
 
-    final currentUser = authService.currentUser;
-    if (currentUser == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
-    }
     if (_selectedScope == FormScopeType.stateOrRegion &&
         (!_supportsStateScope || _profileStateOrRegion == null)) {
       showErrorSnackBar(context.l10n.pleaseSelectState);
@@ -372,11 +454,12 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
     final scope = _buildSelectedScope();
+    if (!await _reviewPublication() || !mounted) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await widget.onSubmit(
+      final published = await widget.onSubmit(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
@@ -384,7 +467,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         durationDays: _durationDays,
         openUntilClosed: _openUntilClosed,
       );
-      await _clearDraft(); // Clear draft on successful submission
+      if (published) await _clearDraft();
     } catch (e) {
       // Error handling is mostly done in the callback, but catch here just in case
       if (mounted) showErrorSnackBar(e.toString());
@@ -624,13 +707,29 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
           PopupMenuItem<T>(
             value: option,
             height: 56,
-            child: Row(
-              children: [
-                SizedBox(width: 40, child: Center(child: leading(option))),
-                const SizedBox(width: 12),
-                Expanded(child: Text(label(option))),
-                if (option == selected) const Icon(Icons.check),
-              ],
+            child: IconTheme.merge(
+              data: IconThemeData(
+                color:
+                    Theme.of(context).popupMenuTheme.textStyle?.color ??
+                    Theme.of(context).colorScheme.onSurface,
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 40, child: Center(child: leading(option))),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      label(option),
+                      style: TextStyle(
+                        fontFamily: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.fontFamily,
+                      ),
+                    ),
+                  ),
+                  if (option == selected) const Icon(Icons.check),
+                ],
+              ),
             ),
           ),
       ],
@@ -923,7 +1022,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                     ),
                   IconButton.outlined(
                     key: const Key('select_tags_button'),
-                    tooltip: context.l10n.tags,
+                    tooltip: context.l10n.editTags,
                     onPressed: _selectTags,
                     icon: const Icon(Icons.add),
                   ),
@@ -1033,6 +1132,11 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 ),
               ),
               const SizedBox(height: 10),
+              Text(
+                context.l10n.geographicalScope,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
               _scopeSelectorCard(),
               if (_selectedScope == FormScopeType.countryUnion) ...[
                 const SizedBox(height: 10),
@@ -1044,7 +1148,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
               Builder(
                 builder: (context) {
                   return ElevatedButton(
-                    onPressed: _isLoading ? null : _handleSubmit,
+                    onPressed: _isLoading || _isReviewing
+                        ? null
+                        : _handleSubmit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -1057,7 +1163,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                             ).colorScheme.onPrimary,
                           )
                         : Text(
-                            widget.title,
+                            context.l10n.reviewPublication,
                             style: const TextStyle(fontSize: 16),
                           ),
                   );

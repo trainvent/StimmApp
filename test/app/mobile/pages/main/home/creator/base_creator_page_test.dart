@@ -13,6 +13,145 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  testWidgets(
+    'tag popup confirms selection, enforces the limit, and cancels edits',
+    (tester) async {
+      final key = GlobalKey<BaseCreatorPageState>();
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            key: key,
+            title: 'Tag draft',
+            tutorialSteps: const [],
+            onSubmit:
+                ({
+                  required title,
+                  required description,
+                  required tags,
+                  required scope,
+                  required durationDays,
+                  required openUntilClosed,
+                }) async => true,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final add = find.byKey(const Key('select_tags_button'));
+      await tester.scrollUntilVisible(
+        add,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+      for (final label in ['Environment', 'Politics', 'Education']) {
+        await tester.tap(find.widgetWithText(FilterChip, label));
+        await tester.pumpAndSettle();
+      }
+      expect(find.text('3 of 3 selected'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Health'))
+            .onSelected,
+        isNull,
+      );
+      expect(key.currentState!.templateSettings.tags, isEmpty);
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+      expect(find.byType(InputChip), findsNWidgets(3));
+      expect(find.byType(FilterChip), findsNothing);
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, 'Politics'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Health'))
+            .onSelected,
+        isNotNull,
+      );
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(key.currentState!.templateSettings.tags, [
+        'Environment',
+        'Politics',
+        'Education',
+      ]);
+    },
+  );
+
+  testWidgets(
+    'preview does not publish until confirmed and failed publication preserves draft',
+    (tester) async {
+      final key = GlobalKey<BaseCreatorPageState>();
+      var attempts = 0;
+      var succeeds = false;
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            key: key,
+            title: 'Review draft',
+            tutorialSteps: const [],
+            previewContentBuilder: (_) => const Text('Preview answers'),
+            onSubmit:
+                ({
+                  required title,
+                  required description,
+                  required tags,
+                  required scope,
+                  required durationDays,
+                  required openUntilClosed,
+                }) async {
+                  attempts++;
+                  expect(title, 'A useful title');
+                  expect(tags, ['Environment']);
+                  return succeeds;
+                },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await key.currentState!.applyTemplate(
+        const PollTemplate(
+          id: 'review',
+          name: 'Review',
+          title: 'A useful title',
+          description: 'A description long enough to publish.',
+          tags: ['Environment'],
+          scopeType: 'global',
+        ),
+      );
+      await tester.pumpAndSettle();
+      final preview = find.widgetWithText(ElevatedButton, 'Preview');
+      await tester.scrollUntilVisible(
+        preview,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(preview);
+      await tester.pumpAndSettle();
+      expect(attempts, 0);
+      expect(find.text('Preview answers'), findsOneWidget);
+      await tester.tap(find.text('Continue editing'));
+      await tester.pumpAndSettle();
+      expect(attempts, 0);
+      await tester.tap(preview);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm_publication')));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      expect(attempts, 1);
+      expect(prefs.getString('draft_Review draft_title'), 'A useful title');
+      succeeds = true;
+      await tester.tap(preview);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm_publication')));
+      await tester.pumpAndSettle();
+      expect(attempts, 2);
+      expect(prefs.getString('draft_Review draft_title'), isNull);
+    },
+  );
+
   testWidgets('city scope dismisses focus and has no editable town field', (
     tester,
   ) async {
@@ -29,7 +168,7 @@ void main() {
                 required scope,
                 required durationDays,
                 required openUntilClosed,
-              }) async {},
+              }) async => true,
         ),
       ),
     );
@@ -104,7 +243,7 @@ void main() {
                   required scope,
                   required durationDays,
                   required openUntilClosed,
-                }) async {},
+                }) async => true,
           ),
         ),
       );
@@ -149,7 +288,7 @@ void main() {
                 required scope,
                 required durationDays,
                 required openUntilClosed,
-              }) async {},
+              }) async => true,
         ),
       ),
     );
@@ -167,7 +306,7 @@ void main() {
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
 
-    final submitButton = find.widgetWithText(ElevatedButton, 'Create form');
+    final submitButton = find.widgetWithText(ElevatedButton, 'Preview');
     await tester.scrollUntilVisible(
       submitButton,
       300,
@@ -201,7 +340,7 @@ void main() {
                 required scope,
                 required durationDays,
                 required openUntilClosed,
-              }) async {},
+              }) async => true,
         ),
       ),
     );
@@ -265,7 +404,7 @@ void main() {
                   required scope,
                   required durationDays,
                   required openUntilClosed,
-                }) async {},
+                }) async => true,
           ),
         ),
       );

@@ -1096,5 +1096,31 @@
   "pollTemplateScopeUnavailable": "This scope is unavailable for your profile.",
   "pollTemplateGroupUnavailable": "This group is no longer available.",
   "pollTemplateReplaceAction": "Update template",
-  "pollTemplateOverwriteConfirmation": "Overwrite existing template?"
+  "pollTemplateOverwriteConfirmation": "Overwrite existing template?",
+  "tagSelectionCount": "{selected} of {max} selected",
+  "tagSelectionLimit": "Deselect a tag to choose another.",
+  "editTags": "Select tags",
+  "reviewPublication": "Preview",
+  "backToEditing": "Continue editing",
+  "publishNow": "Publish",
+  "geographicalScope": "Geographical scope",
+  "templateQuestionCount": "{count, plural, =1{1 question with answers} other{{count} questions with answers}}",
+  "templateApplyHint": "Only the listed fields will be replaced. Other settings stay as they are.",
+  "@tagSelectionCount": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@templateQuestionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

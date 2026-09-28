@@ -85,7 +85,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     }
   }
 
-  Future<void> _createPetition({
+  Future<bool> _createPetition({
     required String title,
     required String description,
     required List<String> tags,
@@ -96,16 +96,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
+      return false;
     }
 
     if (ContentModerationService.instance.containsObjectionableContent(
       <String?>[title, description],
     )) {
-      showErrorSnackBar(
-        'Please remove abusive or objectionable language before publishing.',
-      );
-      return;
+      showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
+      return false;
     }
 
     try {
@@ -113,7 +111,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       if (_imageFile != null) {
         imageUrl = await _uploadImageForUser(currentUser.uid);
         if (imageUrl == null) {
-          return;
+          return false;
         }
       }
 
@@ -142,7 +140,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
           : '';
       if (matchedTitle.isNotEmpty && matchedTitle == petition.title) {
         if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
-        return;
+        return false;
       }
 
       await PublishingQuotaService.instance.ensureCanCreatePetition();
@@ -159,6 +157,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         showSuccessSnackBar(context.l10n.createdPetition + petitionId);
         Navigator.of(context).pop();
       }
+      return true;
     } on StateError catch (e) {
       if (mounted) {
         if (e.message == 'petition_daily_limit_reached') {
@@ -172,6 +171,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         showErrorSnackBar(context.l10n.errorCreatingPetition + e.toString());
       }
     }
+    return false;
   }
 
   @override
@@ -180,6 +180,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
       onSubmit: _createPetition,
+      previewContentBuilder: (context) => _imageFile == null
+          ? const SizedBox.shrink()
+          : FutureBuilder<Uint8List>(
+              future: _imageFile!.readAsBytes(),
+              builder: (context, snapshot) => snapshot.hasData
+                  ? Image.memory(snapshot.data!)
+                  : const Center(child: TriangleLoadingIndicator()),
+            ),
       additionalTopFields: [
         if (_user?.isPro == true) ...[
           if (_imageFile != null)

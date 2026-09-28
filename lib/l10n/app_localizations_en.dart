@@ -2783,4 +2783,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pollTemplateOverwriteConfirmation =>
       'Overwrite existing template?';
+
+  @override
+  String tagSelectionCount(int selected, int max) {
+    return '$selected of $max selected';
+  }
+
+  @override
+  String get tagSelectionLimit => 'Deselect a tag to choose another.';
+
+  @override
+  String get editTags => 'Select tags';
+
+  @override
+  String get reviewPublication => 'Preview';
+
+  @override
+  String get backToEditing => 'Continue editing';
+
+  @override
+  String get publishNow => 'Publish';
+
+  @override
+  String get geographicalScope => 'Geographical scope';
+
+  @override
+  String templateQuestionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions with answers',
+      one: '1 question with answers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get templateApplyHint =>
+      'Only the listed fields will be replaced. Other settings stay as they are.';
 }

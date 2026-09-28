@@ -1100,5 +1100,14 @@
   "pollTemplateScopeUnavailable": "Dieser Geltungsbereich ist für dein Profil nicht verfügbar.",
   "pollTemplateGroupUnavailable": "Diese Gruppe ist nicht mehr verfügbar.",
   "pollTemplateReplaceAction": "Vorlage aktualisieren",
-  "pollTemplateOverwriteConfirmation": "Bestehende Vorlage überschreiben?"
+  "pollTemplateOverwriteConfirmation": "Bestehende Vorlage überschreiben?",
+  "tagSelectionCount": "{selected} von {max} ausgewählt",
+  "tagSelectionLimit": "Wähle ein Tag ab, um ein anderes auszuwählen.",
+  "editTags": "Tags auswählen",
+  "reviewPublication": "Vorschau",
+  "backToEditing": "Weiter bearbeiten",
+  "publishNow": "Veröffentlichen",
+  "geographicalScope": "Geografischer Geltungsbereich",
+  "templateQuestionCount": "{count, plural, =1{1 Frage mit Antworten} other{{count} Fragen mit Antworten}}",
+  "templateApplyHint": "Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten."
 }

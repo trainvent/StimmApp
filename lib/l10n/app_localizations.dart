@@ -5095,6 +5095,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Overwrite existing template?'**
   String get pollTemplateOverwriteConfirmation;
+
+  /// No description provided for @tagSelectionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{selected} of {max} selected'**
+  String tagSelectionCount(int selected, int max);
+
+  /// No description provided for @tagSelectionLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect a tag to choose another.'**
+  String get tagSelectionLimit;
+
+  /// No description provided for @editTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Select tags'**
+  String get editTags;
+
+  /// No description provided for @reviewPublication.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get reviewPublication;
+
+  /// No description provided for @backToEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue editing'**
+  String get backToEditing;
+
+  /// No description provided for @publishNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get publishNow;
+
+  /// No description provided for @geographicalScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Geographical scope'**
+  String get geographicalScope;
+
+  /// No description provided for @templateQuestionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 question with answers} other{{count} questions with answers}}'**
+  String templateQuestionCount(int count);
+
+  /// No description provided for @templateApplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the listed fields will be replaced. Other settings stay as they are.'**
+  String get templateApplyHint;
 }
 
 class _AppLocalizationsDelegate

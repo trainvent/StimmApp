@@ -2816,4 +2816,43 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pollTemplateOverwriteConfirmation =>
       'Bestehende Vorlage überschreiben?';
+
+  @override
+  String tagSelectionCount(int selected, int max) {
+    return '$selected von $max ausgewählt';
+  }
+
+  @override
+  String get tagSelectionLimit =>
+      'Wähle ein Tag ab, um ein anderes auszuwählen.';
+
+  @override
+  String get editTags => 'Tags auswählen';
+
+  @override
+  String get reviewPublication => 'Vorschau';
+
+  @override
+  String get backToEditing => 'Weiter bearbeiten';
+
+  @override
+  String get publishNow => 'Veröffentlichen';
+
+  @override
+  String get geographicalScope => 'Geografischer Geltungsbereich';
+
+  @override
+  String templateQuestionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Fragen mit Antworten',
+      one: '1 Frage mit Antworten',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get templateApplyHint =>
+      'Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten.';
 }

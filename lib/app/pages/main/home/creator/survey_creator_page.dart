@@ -374,7 +374,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     _saveSpecificDraft();
   }
 
-  Future<void> _createSurvey({
+  Future<bool> _createSurvey({
     required String title,
     required String description,
     required List<String> tags,
@@ -385,7 +385,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
+      return false;
     }
 
     final moderationInputs = <String?>[
@@ -401,7 +401,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       moderationInputs,
     )) {
       showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
-      return;
+      return false;
     }
 
     try {
@@ -457,7 +457,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           if (mounted) {
             showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
           }
-          return;
+          return false;
         }
 
         await PublishingQuotaService.instance.ensureCanCreatePoll();
@@ -477,7 +477,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           showSuccessSnackBar('${context.l10n.createdPoll} $pollId');
           Navigator.of(context).pop();
         }
-        return;
+        return true;
       }
 
       final survey = Survey(
@@ -509,7 +509,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           : '';
       if (matchedTitle.isNotEmpty && matchedTitle == survey.title) {
         if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
-        return;
+        return false;
       }
 
       await PublishingQuotaService.instance.ensureCanCreatePoll();
@@ -532,9 +532,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         showSuccessSnackBar('${context.l10n.createdSurvey} $surveyId');
         Navigator.of(context).pop();
       }
+      return true;
     } on StateError catch (error) {
       if (!mounted) {
-        return;
+        return false;
       }
       if (error.message == 'poll_daily_limit_reached') {
         showErrorSnackBar(context.l10n.dailyCreateLimitReached);
@@ -552,6 +553,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         showErrorSnackBar('$failureMessage: $error');
       }
     }
+    return false;
   }
 
   Future<bool> _confirmReplacement(String message) async {
@@ -730,6 +732,65 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     }
   }
 
+  String _templateSummary(PollTemplate template) {
+    final l = context.l10n;
+    return [
+      if (template.title != null) l.title,
+      if (template.description != null) l.description,
+      if (template.questions != null)
+        l.templateQuestionCount(template.questions!.length),
+      if (template.tags != null) l.tags,
+      if (template.scopeType != null) l.geographicalScope,
+      if (template.durationDays != null || template.openUntilClosed != null)
+        l.duration,
+      if (template.includesAudience) l.publishTo,
+    ].join(' · ');
+  }
+
+  Widget _buildPublicationPreview(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(
+          _selectedGroup == null ? Icons.public : Icons.group_outlined,
+        ),
+        title: Text(context.l10n.publishTo),
+        subtitle: Text(_selectedGroup?.name ?? context.l10n.public),
+      ),
+      for (var index = 0; index < _questions.length; index++)
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_questions.length > 1) ...[
+                  Text(
+                    '${index + 1}. ${_questions[index].titleController.text.trim()}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                for (final option in _questions[index].optionControllers)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.radio_button_unchecked),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(option.text.trim())),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+    ],
+  );
+
   Future<void> _chooseTemplate(
     TextEditingController title,
     TextEditingController description,
@@ -753,6 +814,8 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(context.l10n.pollTemplatesLocal),
+                  const SizedBox(height: 8),
+                  Text(context.l10n.templateApplyHint),
                   const SizedBox(height: 12),
                   if (templates.isEmpty) Text(context.l10n.pollTemplatesEmpty),
                   Flexible(
@@ -763,6 +826,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                         final template = templates[index];
                         return ListTile(
                           title: Text(template.name),
+                          subtitle: Text(_templateSummary(template)),
                           onTap: () => Navigator.pop(dialogContext, template),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline),
@@ -804,7 +868,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         ),
       );
       if (selected == null || !mounted) return;
-      if (!await _confirmReplacement(context.l10n.pollTemplateReplace) ||
+      if (!await _confirmReplacement(
+            '${context.l10n.pollTemplateReplace}\n\n${selected.name}\n${_templateSummary(selected)}',
+          ) ||
           !mounted) {
         return;
       }
@@ -1040,6 +1106,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           : context.l10n.createSurvey,
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createSurvey,
+      previewContentBuilder: _buildPublicationPreview,
       contentActionsBuilder: _buildTemplateActions,
       appBarActionBuilder: (title, description) => IconButton(
         icon: const Icon(Icons.bookmark_add_outlined),

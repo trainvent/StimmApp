@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
+import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
@@ -112,6 +114,135 @@ void main() {
         .toList();
     expect(fields[2].controller!.text, 'First question');
     expect(fields[5].controller!.text, 'Second question');
+  });
+
+  testWidgets(
+    'preview includes group and ordered questions without publishing',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'draft_poll_specific_v1': jsonEncode({
+          'groupId': 'group-1',
+          'questions': [
+            {
+              'title': 'First question',
+              'options': ['First A', 'First B'],
+            },
+            {
+              'title': 'Second question',
+              'options': ['Second A', 'Second B'],
+            },
+          ],
+        }),
+      });
+      tester.view.physicalSize = const Size(800, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        createTestWidget(
+          ProviderScope(
+            child: SurveyCreatorPage(
+              presentAsPoll: true,
+              auth: _FakeAuthService(_FakeUser()),
+              groupRepository: _FakeGroupRepository([group]),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final base = tester.state<BaseCreatorPageState>(
+        find.byType(BaseCreatorPage),
+      );
+      await base.applyTemplate(
+        const PollTemplate(
+          id: 'review',
+          name: 'Review',
+          title: 'Team decisions',
+          description: 'The agenda for our next team meeting.',
+          tags: ['Social'],
+          scopeType: 'global',
+        ),
+      );
+      await tester.pumpAndSettle();
+      final preview = find.widgetWithText(ElevatedButton, 'Preview');
+      await tester.scrollUntilVisible(
+        preview,
+        400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(preview);
+      await tester.pumpAndSettle();
+      expect(find.text('Ops Team'), findsOneWidget);
+      expect(find.text('1. First question'), findsOneWidget);
+      expect(find.text('2. Second question'), findsOneWidget);
+      expect(find.text('Second B'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      await tester.tap(find.text('Continue editing'));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getString('draft_poll_specific_v1'),
+        contains('First question'),
+      );
+    },
+  );
+
+  testWidgets('review rejects an empty question scrolled off screen', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'draft_poll_specific_v1': jsonEncode({
+        'questions': [
+          {
+            'title': '',
+            'options': ['Yes', 'No'],
+          },
+          {
+            'title': 'Valid question',
+            'options': ['Yes', 'No'],
+          },
+        ],
+      }),
+    });
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      createTestWidget(
+        ProviderScope(
+          child: SurveyCreatorPage(
+            presentAsPoll: true,
+            auth: _FakeAuthService(_FakeUser()),
+            groupRepository: _FakeGroupRepository([]),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final base = tester.state<BaseCreatorPageState>(
+      find.byType(BaseCreatorPage),
+    );
+    await base.applyTemplate(
+      const PollTemplate(
+        id: 'review',
+        name: 'Review',
+        title: 'Team decisions',
+        description: 'The agenda for our next team meeting.',
+        tags: ['Social'],
+        scopeType: 'global',
+      ),
+    );
+    await tester.pumpAndSettle();
+    final preview = find.widgetWithText(ElevatedButton, 'Preview');
+    await tester.scrollUntilVisible(
+      preview,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(preview);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('confirm_publication')), findsNothing);
   });
 
   testWidgets('writes question and option edits to the specific draft', (
@@ -247,6 +378,7 @@ void main() {
             .every((field) => field.value == true),
         isTrue,
       );
+      expect(tester.testTextInput.isVisible, isFalse);
       if (!includeAll) {
         for (final field in [
           'description',
@@ -324,6 +456,11 @@ void main() {
       await tester.ensureVisible(find.byTooltip('Poll templates'));
       await tester.tap(find.byTooltip('Poll templates'));
       await tester.pumpAndSettle();
+      final templateTile = tester.widget<ListTile>(
+        find.widgetWithText(ListTile, 'Weekly meeting'),
+      );
+      final summary = (templateTile.subtitle! as Text).data!;
+      expect(summary, includeAll ? contains('question') : 'Title');
       await tester.tap(find.text('Weekly meeting'));
       await tester.pumpAndSettle();
       expect(find.text('Changed title'), findsOneWidget);
