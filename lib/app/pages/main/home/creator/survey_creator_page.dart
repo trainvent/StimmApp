@@ -37,7 +37,6 @@ enum _TemplateField {
 }
 
 const String _publicGroupValue = '__public__';
-const String _manageGroupsValue = '__manage_groups__';
 
 class SurveyCreatorPage extends ConsumerStatefulWidget {
   const SurveyCreatorPage({
@@ -217,10 +216,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       _saveSpecificDraft();
       return;
     }
-    if (value == _manageGroupsValue) {
-      await _openManageGroups();
-      return;
-    }
 
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
@@ -304,10 +299,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   value: group.id,
                   child: Text(group.name, overflow: TextOverflow.ellipsis),
                 ),
-              ),
-              DropdownMenuItem<String>(
-                value: _manageGroupsValue,
-                child: Text(context.l10n.createOrManageGroups),
               ),
             ],
             onChanged: _handleGroupSelection,
@@ -869,6 +860,12 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       children: [
         Expanded(child: _buildGroupSelector()),
         const SizedBox(width: 8),
+        IconButton(
+          key: const Key('survey_manage_groups_button'),
+          icon: const Icon(Icons.group_outlined),
+          tooltip: context.l10n.createOrManageGroups,
+          onPressed: _auth.currentUser == null ? null : _openManageGroups,
+        ),
         IconButton(
           icon: const Icon(Icons.library_books_outlined),
           tooltip: context.l10n.pollTemplates,
