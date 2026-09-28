@@ -603,6 +603,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       _TemplateField.duration: context.l10n.duration,
       _TemplateField.audience: context.l10n.publishTo,
     };
+    FocusManager.instance.primaryFocus?.unfocus();
     final name = await showDialog<String>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -624,7 +625,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                 children: [
                   TextField(
                     controller: nameController,
-                    autofocus: true,
                     maxLength: AppLimits.maxTitleLength,
                     onChanged: (_) => update(() {}),
                     decoration: InputDecoration(

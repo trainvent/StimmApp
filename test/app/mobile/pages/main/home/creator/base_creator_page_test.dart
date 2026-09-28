@@ -164,6 +164,8 @@ void main() {
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.at(0), 'Valid title');
     await tester.enterText(fields.at(1), 'Too short');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
 
     final submitButton = find.widgetWithText(ElevatedButton, 'Create form');
     await tester.scrollUntilVisible(

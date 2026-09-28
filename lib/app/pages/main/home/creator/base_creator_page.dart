@@ -7,6 +7,7 @@ import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/country_union_memberships.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -65,6 +66,9 @@ class BaseCreatorPage extends StatefulWidget {
 
 class BaseCreatorPageState extends State<BaseCreatorPage> {
   final _formKey = GlobalKey<FormState>();
+  String? _openScopePicker;
+  final _scopeAnchorKey = GlobalKey();
+  final _unionAnchorKey = GlobalKey();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
@@ -296,6 +300,41 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     widget.onResetAdditionalFields?.call();
   }
 
+  Future<void> _selectTags() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    var pendingTags = List<String>.of(_selectedTags);
+    final selectedTags = await showDialog<List<String>>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(context.l10n.tags),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: TagSelector(
+                selectedTags: pendingTags,
+                onChanged: (tags) => setDialogState(() => pendingTags = tags),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(context.l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(pendingTags),
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || selectedTags == null) return;
+    setState(() => _selectedTags = selectedTags);
+    await _saveDraft();
+  }
+
   Future<void> _handleSubmit() async {
     FocusManager.instance.primaryFocus?.unfocus();
 
@@ -512,17 +551,20 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   }
 
   Widget _scopeLocationCard({
+    Key? key,
     required Widget leading,
     required String title,
     required String? value,
     required String? missingMessage,
     Widget? trailing,
+    VoidCallback? onTap,
   }) {
     final hasValue = value != null && value.isNotEmpty;
     final isMissing = !hasValue && missingMessage != null;
     final color = isMissing ? Theme.of(context).colorScheme.error : null;
 
     return Card(
+      key: key,
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: leading,
@@ -533,18 +575,80 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
             ? null
             : Text(missingMessage),
         trailing: trailing,
+        onTap: onTap,
         textColor: color,
         iconColor: color,
       ),
     );
   }
 
+  Future<void> _showScopePicker<T>({
+    required String id,
+    required GlobalKey anchorKey,
+    required String title,
+    required List<T> options,
+    required T? selected,
+    required String Function(T) label,
+    required Widget Function(T) leading,
+    required ValueChanged<T> onSelected,
+  }) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _openScopePicker = id);
+    final overlay =
+        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final menuWidth = (overlay.size.width - 32).clamp(0.0, 320.0);
+    final value = await showMenu<T>(
+      context: context,
+      semanticLabel: title,
+      constraints: BoxConstraints.tightFor(width: menuWidth),
+      positionBuilder: (context, constraints) {
+        final anchor =
+            anchorKey.currentContext!.findRenderObject() as RenderBox;
+        final rect =
+            anchor.localToGlobal(Offset.zero, ancestor: overlay) & anchor.size;
+        final menuHeight = options.length * 56.0 + 16;
+        final safePadding = MediaQuery.paddingOf(context);
+        final spaceBelow =
+            overlay.size.height - safePadding.bottom - rect.bottom - 8;
+        final spaceAbove = rect.top - safePadding.top - 8;
+        final top = spaceBelow < menuHeight && spaceAbove > spaceBelow
+            ? rect.top - menuHeight - 4
+            : rect.bottom + 4;
+        return RelativeRect.fromRect(
+          Rect.fromLTWH(rect.center.dx - menuWidth / 2, top, menuWidth, 0),
+          Offset.zero & overlay.size,
+        );
+      },
+      items: [
+        for (final option in options)
+          PopupMenuItem<T>(
+            value: option,
+            height: 56,
+            child: Row(
+              children: [
+                SizedBox(width: 40, child: Center(child: leading(option))),
+                const SizedBox(width: 12),
+                Expanded(child: Text(label(option))),
+                if (option == selected) const Icon(Icons.check),
+              ],
+            ),
+          ),
+      ],
+    );
+    if (!mounted) return;
+    setState(() => _openScopePicker = null);
+    if (value != null) onSelected(value);
+  }
+
   Widget _scopeSelectorCard() {
-    return PopupMenuButton<FormScopeType>(
-      key: const Key('scopeSelectorCard'),
-      initialValue: _selectedScope,
-      tooltip: context.l10n.scope,
-      onOpened: () => FocusManager.instance.primaryFocus?.unfocus(),
+    void openPicker() => _showScopePicker<FormScopeType>(
+      id: 'scope',
+      anchorKey: _scopeAnchorKey,
+      title: context.l10n.scope,
+      options: _availableScopes,
+      selected: _selectedScope,
+      label: _scopeLabel,
+      leading: (scope) => _scopeLeading(scope),
       onSelected: (value) {
         setState(() {
           _selectedScope = value;
@@ -555,36 +659,26 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         });
         _saveDraft();
       },
-      itemBuilder: (context) => _availableScopes
-          .map(
-            (scope) => PopupMenuItem<FormScopeType>(
-              value: scope,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 40,
-                    child: Center(
-                      child: IconTheme.merge(
-                        data: IconThemeData(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                        child: _scopeLeading(scope),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(_scopeLabel(scope)),
-                ],
-              ),
-            ),
-          )
-          .toList(),
+    );
+
+    return KeyedSubtree(
+      key: const Key('scopeSelectorCard'),
       child: _scopeLocationCard(
+        key: _scopeAnchorKey,
         leading: _scopeLeading(_selectedScope, showResolvedValue: true),
         title: _scopeLabel(_selectedScope),
         value: _scopeValue(_selectedScope),
         missingMessage: _scopeMissingMessage(_selectedScope),
-        trailing: const Icon(Icons.arrow_drop_down),
+        onTap: openPicker,
+        trailing: IconButton(
+          tooltip: context.l10n.scope,
+          onPressed: openPicker,
+          icon: Icon(
+            _openScopePicker == 'scope'
+                ? Icons.arrow_left
+                : Icons.arrow_drop_down,
+          ),
+        ),
       ),
     );
   }
@@ -601,34 +695,31 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   Widget _countryUnionSelectorCard() {
     final selected = _selectedCountryUnion;
-    return PopupMenuButton<CountryUnion>(
-      key: const Key('countryUnionSelectorCard'),
-      initialValue: selected,
-      tooltip: context.l10n.selectCountryUnion,
+    void openPicker() => _showScopePicker<CountryUnion>(
+      id: 'union',
+      anchorKey: _unionAnchorKey,
+      title: context.l10n.selectCountryUnion,
+      options: CountryUnion.values
+          .where(_availableCountryUnions.contains)
+          .toList(),
+      selected: selected,
+      label: _countryUnionLabel,
+      leading: (union) => Flag.fromCode(
+        _countryUnionFlag(union),
+        width: 32,
+        height: 22,
+        borderRadius: 2,
+      ),
       onSelected: (value) {
         setState(() => _selectedCountryUnion = value);
         _saveDraft();
       },
-      itemBuilder: (context) => [
-        for (final union in CountryUnion.values)
-          if (_availableCountryUnions.contains(union))
-            PopupMenuItem<CountryUnion>(
-              value: union,
-              child: Row(
-                children: [
-                  Flag.fromCode(
-                    _countryUnionFlag(union),
-                    width: 32,
-                    height: 22,
-                    borderRadius: 2,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(_countryUnionLabel(union)),
-                ],
-              ),
-            ),
-      ],
+    );
+
+    return KeyedSubtree(
+      key: const Key('countryUnionSelectorCard'),
       child: _scopeLocationCard(
+        key: _unionAnchorKey,
         leading: selected == null
             ? const Icon(Icons.hub_outlined)
             : Flag.fromCode(
@@ -642,7 +733,16 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         missingMessage: selected == null
             ? context.l10n.countryUnionScopeOnlyForMembers
             : null,
-        trailing: const Icon(Icons.arrow_drop_down),
+        onTap: openPicker,
+        trailing: IconButton(
+          tooltip: context.l10n.selectCountryUnion,
+          onPressed: openPicker,
+          icon: Icon(
+            _openScopePicker == 'union'
+                ? Icons.arrow_left
+                : Icons.arrow_drop_down,
+          ),
+        ),
       ),
     );
   }
@@ -808,14 +908,26 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              TagSelector(
-                selectedTags: _selectedTags,
-                onChanged: (newTags) {
-                  setState(() {
-                    _selectedTags = newTags;
-                  });
-                  _saveDraft();
-                },
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  for (final tag in _selectedTags)
+                    InputChip(
+                      label: Text(AppTagsHelper.getLocalizedTag(context, tag)),
+                      onDeleted: () {
+                        setState(() => _selectedTags.remove(tag));
+                        _saveDraft();
+                      },
+                    ),
+                  IconButton.outlined(
+                    key: const Key('select_tags_button'),
+                    tooltip: context.l10n.tags,
+                    onPressed: _selectTags,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Text(
