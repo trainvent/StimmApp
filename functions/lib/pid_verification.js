@@ -7,6 +7,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.pidVerificationRequestPreview = exports.pidVerifier = exports.pidVerifierApp = void 0;
 exports.ensurePidVerifierAgent = ensurePidVerifierAgent;
 exports.shutdownPidVerifierAgent = shutdownPidVerifierAgent;
+const pid_verifier_trust_js_1 = require("./pid_verifier_trust.js");
+const pid_verifier_issuer_js_1 = require("./pid_verifier_issuer.js");
+const pid_verifier_crypto_js_1 = require("./pid_verifier_crypto.js");
 const express_1 = __importDefault(require("express"));
 const node_crypto_1 = require("node:crypto");
 const auth_1 = require("firebase-admin/auth");
@@ -45,93 +48,6 @@ const pidAccessPrivateKeySecret = (0, params_1.defineSecret)('PID_ACCESS_PRIVATE
 const pidRegistrationCertificateSecret = (0, params_1.defineSecret)('PID_REGISTRATION_CERTIFICATE');
 const pidVerifierProxySharedSecret = (0, params_1.defineSecret)('PID_VERIFIER_PROXY_SHARED_SECRET');
 const PID_VERIFIER_BASE_URL = (_a = process.env.PID_VERIFIER_BASE_URL) !== null && _a !== void 0 ? _a : 'https://stimmapp-dev.web.app/oid4vp';
-const PID_SANDBOX_TRUST_LIST_BASE_URL = 'https://bmi.usercontent.opencode.de/eudi-wallet/test-trust-lists';
-let pidTrustListCache;
-let pidTrustListPromise;
-function decodeBase64UrlJson(value) {
-    return JSON.parse(Buffer.from(value, 'base64url').toString('utf8'));
-}
-function pemCertificateBody(value) {
-    return value
-        .replace(/-----BEGIN CERTIFICATE-----/g, '')
-        .replace(/-----END CERTIFICATE-----/g, '')
-        .replace(/\s/g, '');
-}
-async function fetchPidSandboxTrustList() {
-    var _a, _b, _c, _d;
-    const [trustListResponse, signingCertificateResponse] = await Promise.all([
-        fetch(`${PID_SANDBOX_TRUST_LIST_BASE_URL}/pid-provider.jwt`),
-        fetch(`${PID_SANDBOX_TRUST_LIST_BASE_URL}/certificate.pem`),
-    ]);
-    if (!trustListResponse.ok || !signingCertificateResponse.ok) {
-        throw new Error('The official EUDI sandbox PID trust list could not be downloaded.');
-    }
-    const compactJwt = (await trustListResponse.text()).trim();
-    const signingCertificate = (await signingCertificateResponse.text()).trim();
-    const parts = compactJwt.split('.');
-    if (parts.length !== 3) {
-        throw new Error('The official EUDI sandbox PID trust list is not a compact JWT.');
-    }
-    const header = decodeBase64UrlJson(parts[0]);
-    if (header.alg !== 'ES256' || header.typ !== 'trustlist+jwt' ||
-        !Array.isArray(header.x5c) || header.x5c[0] !== pemCertificateBody(signingCertificate)) {
-        throw new Error('The official EUDI sandbox PID trust-list signer is invalid.');
-    }
-    const signatureValid = (0, node_crypto_1.verify)('sha256', Buffer.from(`${parts[0]}.${parts[1]}`, 'ascii'), { key: signingCertificate, dsaEncoding: 'ieee-p1363' }, Buffer.from(parts[2], 'base64url'));
-    if (!signatureValid) {
-        throw new Error('The official EUDI sandbox PID trust-list signature is invalid.');
-    }
-    const payload = decodeBase64UrlJson(parts[1]);
-    const listInformation = (_a = payload.LoTE) === null || _a === void 0 ? void 0 : _a.ListAndSchemeInformation;
-    const issueTime = Date.parse((_b = listInformation === null || listInformation === void 0 ? void 0 : listInformation.ListIssueDateTime) !== null && _b !== void 0 ? _b : '');
-    const nextUpdate = Date.parse((_c = listInformation === null || listInformation === void 0 ? void 0 : listInformation.NextUpdate) !== null && _c !== void 0 ? _c : '');
-    const now = Date.now();
-    if (!Number.isFinite(issueTime) || !Number.isFinite(nextUpdate) ||
-        issueTime > now + 5 * 60 * 1000 || nextUpdate <= now) {
-        throw new Error('The official EUDI sandbox PID trust list is not currently valid.');
-    }
-    const entities = (_d = payload.LoTE) === null || _d === void 0 ? void 0 : _d.TrustedEntitiesList;
-    const certificates = Array.isArray(entities) ? entities.flatMap((entity) => {
-        const services = entity === null || entity === void 0 ? void 0 : entity.TrustedEntityServices;
-        if (!Array.isArray(services))
-            return [];
-        return services.flatMap((service) => {
-            var _a;
-            const information = service === null || service === void 0 ? void 0 : service.ServiceInformation;
-            if ((information === null || information === void 0 ? void 0 : information.ServiceTypeIdentifier) !== 'http://uri.etsi.org/19602/SvcType/PID/Issuance') {
-                return [];
-            }
-            const values = (_a = information === null || information === void 0 ? void 0 : information.ServiceDigitalIdentity) === null || _a === void 0 ? void 0 : _a.X509Certificates;
-            if (!Array.isArray(values))
-                return [];
-            return values.map((certificate) => certificate === null || certificate === void 0 ? void 0 : certificate.val)
-                .filter((certificate) => typeof certificate === 'string' && certificate.length > 0);
-        });
-    }) : [];
-    const uniqueCertificates = [...new Set(certificates)];
-    if (uniqueCertificates.length === 0) {
-        throw new Error('The official EUDI sandbox PID trust list contains no PID issuance certificates.');
-    }
-    return {
-        certificates: uniqueCertificates,
-        // Refresh before the signed list expires, but avoid downloading it for
-        // each verification handled by a warm Cloud Functions instance.
-        validUntil: Math.min(nextUpdate - 5 * 60 * 1000, now + 60 * 60 * 1000),
-    };
-}
-async function getPidSandboxTrustCertificates() {
-    if (pidTrustListCache && pidTrustListCache.validUntil > Date.now()) {
-        return pidTrustListCache.certificates;
-    }
-    if (!pidTrustListPromise) {
-        pidTrustListPromise = fetchPidSandboxTrustList()
-            .then((result) => (pidTrustListCache = result))
-            .finally(() => {
-            pidTrustListPromise = undefined;
-        });
-    }
-    return (await pidTrustListPromise).certificates;
-}
 exports.pidVerifierApp = (0, express_1.default)();
 // Every OpenID4VP endpoint is session- and user-specific. In particular, a
 // status response must never be revalidated as 304 because the Flutter HTTP
@@ -197,23 +113,26 @@ async function initializePidVerifierAgent() {
     const deps = await loadCredoDeps();
     const config = {
         logger: new deps.ConsoleLogger(deps.LogLevel.Off),
+        getTrustedIssuersForVerification: async (_agentContext, context) => {
+            if (context.verification.type !== 'credential')
+                return undefined;
+            if (context.signer.method !== 'x509')
+                return { trustedIssuers: [] };
+            return { trustedIssuers: await (0, pid_verifier_trust_js_1.getPidSandboxTrustedIssuers)() };
+        },
     };
     const agent = new deps.Agent({
         config,
         dependencies: deps.agentDependencies,
         modules: {
-            x509: new deps.X509Module({
-                getTrustedCertificatesForVerification: async (_agentContext, context) => {
-                    var _a;
-                    if (((_a = context === null || context === void 0 ? void 0 : context.verification) === null || _a === void 0 ? void 0 : _a.type) !== 'credential')
-                        return undefined;
-                    return getPidSandboxTrustCertificates();
-                },
-            }),
+            kms: await (0, pid_verifier_crypto_js_1.createPidKeyManagementModule)(),
+            x509: new deps.X509Module(),
             askar: new deps.AskarModule({
+                enableKms: false, // Registered explicitly alongside ES512 verification.
                 askar: deps.askar,
                 store: (0, pid_verifier_runtime_config_js_1.getPidAskarStoreConfig)(),
             }),
+            sdJwtVc: await (0, pid_verifier_issuer_js_1.createPidSdJwtVcModule)(),
             openid4vc: new deps.OpenId4VcModule({
                 // Credo currently carries its own Express type copy. Both values are
                 // the same runtime API, but TypeScript cannot unify the declarations.

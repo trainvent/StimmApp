@@ -3,9 +3,9 @@ workflows:
     name: iOS Release
     max_build_duration: 60
     instance_type: mac_mini_m2
-    integrations:
+    integrations: &ios_signing_integration
       app_store_connect: LeMarq # Replace with the name you gave your API key in Codemagic UI
-    environment:
+    environment: &ios_release_environment
       groups:
         - app_store_credentials 
       ios_signing:
@@ -13,11 +13,11 @@ workflows:
         bundle_identifier: de.lemarq.stimmapp
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
-      flutter: stable
-      xcode: latest
-      cocoapods: default
-    scripts:
+        XCODE_SCHEME: "prod"
+      # Keep in sync with .flutter-version.
+      flutter: 3.44.5
+      xcode: "27.0"
+    scripts: &ios_release_scripts
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
           keychain initialize
@@ -27,22 +27,16 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
-      - name: Clean iOS build state
+      - name: Configure Flutter Swift Package Manager
         script: |
-          flutter clean
-          rm -rf ios/Pods ios/Podfile.lock
+          flutter config --enable-swift-package-manager
       - name: Get Flutter packages
         script: |
-          flutter packages get
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios
-          pod deintegrate || true
-          pod install --repo-update
+          flutter pub get --enforce-lockfile
       - name: Flutter build ipa
         script: |
-          flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist --dart-define-from-file=.env
-    artifacts:
+          flutter build ipa --release --flavor prod -t lib/main.dart --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist --dart-define-from-file=.env
+    artifacts: &ios_release_artifacts
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
@@ -52,42 +46,41 @@ workflows:
         submit_to_testflight: true
         beta_groups:
           - "Internal Testers"
+  # Same archive/export checks as release, without uploading to TestFlight.
+  ios-validation:
+    name: iOS Validation (Archive only)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations: *ios_signing_integration
+    environment: *ios_release_environment
+    scripts: *ios_release_scripts
+    artifacts: *ios_release_artifacts
   ios-preview:
     name: iOS Preview (Simulator)
     max_build_duration: 60
     instance_type: mac_mini_m2
     environment:
-      flutter: stable
-      xcode: latest
-      cocoapods: default
+      # Keep in sync with .flutter-version.
+      flutter: 3.44.5
+      xcode: "27.0"
     scripts:
-      - name: Clean iOS build state
+      - name: Configure Flutter Swift Package Manager
         script: |
-          flutter clean
-          rm -rf ios/Pods ios/Podfile.lock
-          rm -rf build/ios_sim
+          flutter config --enable-swift-package-manager
       - name: Get Flutter packages
         script: |
-          flutter pub get
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios
-          pod deintegrate || true
-          pod install --repo-update
+          flutter pub get --enforce-lockfile
       - name: Build iOS Simulator app
         script: |
-          cd ios
-          xcodebuild \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Debug \
+          flutter build ios --simulator --debug --config-only --flavor dev -t lib/main_dev.dart --dart-define-from-file=.env
+          xcodebuild build \
+            -workspace ios/Runner.xcworkspace \
+            -scheme dev \
+            -configuration Debug-dev \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath ../build/ios_sim \
-            ONLY_ACTIVE_ARCH=YES \
-            ARCHS=arm64 \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+            -derivedDataPath build/ios_sim \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO
     artifacts:
-      - build/ios_sim/Build/Products/Debug-iphonesimulator/*.app
+      - build/ios_sim/Build/Products/Debug-dev-iphonesimulator/*.app
       - /tmp/xcodebuild_logs/*.log

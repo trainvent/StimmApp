@@ -26,13 +26,13 @@ and [wallet operation](https://bmi.usercontent.opencode.de/eudi-wallet/developer
 From the repository root:
 
 ```sh
-flutter pub get
-cd ios
-pod install
-cd ..
+flutter pub get --enforce-lockfile
 flutter devices
 flutter run --flavor dev -t lib/main_dev.dart --dart-define-from-file=.env -d <iphone-device-id>
 ```
+
+Flutter manages native dependencies through Swift Package Manager. See
+[iOS builds](ios-builds.md) for the pinned toolchain and build configuration.
 
 VS Code also provides **Flutter: StimmApp Dev (Debug iOS)** and
 **Flutter: StimmApp Dev (Profile iOS / EUDI)**. Select the physical iPhone as the
@@ -125,7 +125,7 @@ Working tree based on `bb0395a5`, with the Apple configuration and export fixes:
   confirmation. Scheme registration is confirmed; authenticated callback
   handling and session restoration still require the device acceptance test.
 - Xcode build settings for `Profile-dev` and `Release-dev` resolve to the dev
-  bundle ID, entrypoint, entitlements, and hosts. CocoaPods integration succeeded.
+  bundle ID, entrypoint, entitlements, and hosts.
 - Unauthenticated dev `/oid4vp/resumable` request: expected HTTP 401,
   `Cache-Control: no-store`, and `x-stimmapp-verifier-origin: server`.
 - The paired physical iPhone was offline. Device installation, TestFlight

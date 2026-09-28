@@ -1,6 +1,5 @@
 # Miscellaneous
 *.class
-*.lock
 *.log
 *.pyc
 *.swp
@@ -42,6 +41,7 @@ analysis_benchmark.json
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+/.xcode-cloud/
 **/generated_plugin_registrant.dart
 .packages
 .pub-preload-cache/
@@ -156,3 +156,6 @@ mcp.json
 .env
 .env.local
 .env.test
+
+# Wallet diagnostic exports contain credentials and personal disclosures.
+/docs/eudi-ios-wallet-logs*.txt

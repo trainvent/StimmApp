@@ -118,10 +118,14 @@ function Faq({ copy, locale }) {
 function Support({ copy, locale }) {
   const privacyUrl = locale === 'de' ? '/datenschutzerklaerung' : '/privacy-policy';
   const termsUrl = locale === 'de' ? '/nutzungsbedingungen' : '/terms-of-service';
+  const supportUrl = locale === 'de'
+    ? 'https://next.trainvent.com/de/software-support/'
+    : 'https://next.trainvent.com/en/software-support/';
   return (
     <article className={`${styles.document} ${styles.card}`}>
       <h1>{copy.heading}</h1>
       <p>{copy.intro}</p>
+      <p>{copy.supportPortalPrefix} <a href={supportUrl} target="_blank" rel="noreferrer">{copy.supportPortalLink}</a>.</p>
       <p><strong>{copy.emailLabel}</strong> <a href="mailto:support@trainvent.com">support@trainvent.com</a></p>
       <h2>{copy.linksHeading}</h2>
       <ul>

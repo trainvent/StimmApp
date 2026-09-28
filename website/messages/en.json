@@ -151,6 +151,8 @@
       "title": "Support - StimmApp",
       "heading": "StimmApp Support",
       "intro": "If you need help with your account, subscriptions, or technical issues, contact us:",
+      "supportPortalPrefix": "For the quickest help, use the Trainvent software support page:",
+      "supportPortalLink": "Open software support",
       "emailLabel": "Email:",
       "linksHeading": "Helpful Links",
       "privacyLink": "Privacy Policy",
