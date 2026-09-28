@@ -2762,6 +2762,12 @@ abstract class AppLocalizations {
   /// **'Please enter your details.'**
   String get pleaseEnterYourDetails;
 
+  /// No description provided for @furtherHelpingHands.
+  ///
+  /// In en, this message translates to:
+  /// **'Further helping hands'**
+  String get furtherHelpingHands;
+
   /// No description provided for @thisAppWasDevelopedBy.
   ///
   /// In en, this message translates to:

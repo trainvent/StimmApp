@@ -1448,6 +1448,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pleaseEnterYourDetails => 'Bitte gib deine Daten ein.';
 
   @override
+  String get furtherHelpingHands => 'Weitere helfende Hände';
+
+  @override
   String get thisAppWasDevelopedBy => 'Diese App wurde entwickelt von';
 
   @override

@@ -30,12 +30,14 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contributors = [
+    final team = [
       const Contributor(
         name: 'Leon',
         role: 'Core Development',
         email: 'contact@trainvent.com',
       ),
+    ];
+    final helpingHands = [
       const Contributor(
         name: 'Yannic',
         role: 'Lead Developer',
@@ -73,7 +75,25 @@ class AboutPage extends StatelessWidget {
                   ),
                 ),
                 const Divider(),
-                ...contributors.map((c) => _buildContributorTile(context, c)),
+                ...team.map((c) => _buildContributorTile(context, c)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          NeonPaddingWidget(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    context.l10n.furtherHelpingHands,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.m,
+                  ),
+                ),
+                const Divider(),
+                ...helpingHands.map((c) => _buildContributorTile(context, c)),
               ],
             ),
           ),

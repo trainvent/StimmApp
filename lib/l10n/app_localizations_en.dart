@@ -1431,6 +1431,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterYourDetails => 'Please enter your details.';
 
   @override
+  String get furtherHelpingHands => 'Further helping hands';
+
+  @override
   String get thisAppWasDevelopedBy => 'This app was developed by';
 
   @override
