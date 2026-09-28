@@ -915,15 +915,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     };
     return PopupMenuButton<String>(
       tooltip: l.answerPresets,
-      color: colors.primary,
-      surfaceTintColor: Colors.transparent,
       iconColor: colors.onPrimary,
       itemBuilder: (_) => [
         for (final name in presets.keys)
-          PopupMenuItem(
-            value: name,
-            child: Text(name, style: TextStyle(color: colors.onPrimary)),
-          ),
+          PopupMenuItem(value: name, child: Text(name)),
       ],
       onSelected: (name) async {
         if (question.optionControllers.any(

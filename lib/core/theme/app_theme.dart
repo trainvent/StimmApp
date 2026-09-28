@@ -84,6 +84,21 @@ class AppTheme {
         foregroundColor: onPrimary,
         elevation: 0,
       ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: primary,
+        surfaceTintColor: Colors.transparent,
+        textStyle: TextStyle(color: onPrimary),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => TextStyle(
+            color: states.contains(WidgetState.disabled)
+                ? onPrimary.withValues(alpha: 0.65)
+                : onPrimary,
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.small),
+        ),
+      ),
       tabBarTheme: TabBarThemeData(
         labelColor: onPrimary,
         unselectedLabelColor: onPrimary.withValues(alpha: 0.7),

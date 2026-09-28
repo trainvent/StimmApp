@@ -563,7 +563,14 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 children: [
                   SizedBox(
                     width: 40,
-                    child: Center(child: _scopeLeading(scope)),
+                    child: Center(
+                      child: IconTheme.merge(
+                        data: IconThemeData(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        child: _scopeLeading(scope),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Text(_scopeLabel(scope)),
@@ -671,6 +678,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -694,9 +702,12 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                   value: 'reset',
                   child: Row(
                     children: [
-                      const Icon(Icons.delete_outline),
+                      Icon(Icons.delete_outline, color: colors.onPrimary),
                       const SizedBox(width: 12),
-                      Text(context.l10n.resetCreatorDraft),
+                      Text(
+                        context.l10n.resetCreatorDraft,
+                        style: TextStyle(color: colors.onPrimary),
+                      ),
                     ],
                   ),
                 ),
@@ -704,9 +715,12 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                   value: 'help',
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline),
+                      Icon(Icons.info_outline, color: colors.onPrimary),
                       const SizedBox(width: 12),
-                      Text(context.l10n.creatorHelp),
+                      Text(
+                        context.l10n.creatorHelp,
+                        style: TextStyle(color: colors.onPrimary),
+                      ),
                     ],
                   ),
                 ),
