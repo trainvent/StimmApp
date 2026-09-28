@@ -630,9 +630,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     onChanged: (_) => update(() {}),
                     decoration: InputDecoration(
                       labelText: context.l10n.pollTemplateName,
-                      errorText: repository.containsName(nameController.text)
-                          ? context.l10n.pollTemplateNameTaken
-                          : null,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -662,13 +659,23 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               child: Text(context.l10n.cancel),
             ),
             FilledButton(
-              onPressed:
-                  nameController.text.trim().isEmpty ||
-                      included.isEmpty ||
-                      repository.containsName(nameController.text)
+              onPressed: nameController.text.trim().isEmpty || included.isEmpty
                   ? null
-                  : () => Navigator.pop(context, nameController.text.trim()),
-              child: Text(context.l10n.confirm),
+                  : () async {
+                      final name = nameController.text.trim();
+                      if (repository.containsName(name)) {
+                        final confirmed = await _confirmReplacement(
+                          context.l10n.pollTemplateOverwriteConfirmation,
+                        );
+                        if (!confirmed) return;
+                      }
+                      if (context.mounted) Navigator.pop(context, name);
+                    },
+              child: Text(
+                repository.containsName(nameController.text)
+                    ? context.l10n.pollTemplateReplaceAction
+                    : context.l10n.confirm,
+              ),
             ),
           ],
         ),
@@ -719,8 +726,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     try {
       await repository.save(template);
       if (mounted) showSuccessSnackBar(context.l10n.pollTemplateSaved);
-    } on DuplicatePollTemplateNameException {
-      if (mounted) showErrorSnackBar(context.l10n.pollTemplateNameTaken);
     } catch (_) {
       if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
     }

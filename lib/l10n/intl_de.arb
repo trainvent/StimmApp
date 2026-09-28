@@ -1061,11 +1061,11 @@
   "pollTemplates": "Abstimmungsvorlagen",
   "savePollTemplate": "Als Vorlage speichern",
   "pollTemplateName": "Name der Vorlage",
-  "pollTemplatesLocal": "Für dein Konto auf diesem Gerät gespeichert. Nur die in einer Vorlage enthaltenen Felder werden übernommen.",
+  "pollTemplatesLocal": "Auf diesem Gerät gespeichert.",
   "pollTemplatesEmpty": "Noch keine Vorlagen gespeichert.",
   "pollTemplateSaved": "Vorlage gespeichert.",
   "pollTemplateError": "Vorlagen konnten nicht gespeichert oder geladen werden. Bitte versuche es erneut.",
-  "pollTemplateReplace": "Vorlage anwenden? Enthaltene Felder ersetzen deine aktuellen Inhalte und Einstellungen. Andere Felder bleiben unverändert.",
+  "pollTemplateReplace": "Gespeicherte Vorlagenfelder übernehmen?",
   "pollTemplateDelete": "Diese gespeicherte Vorlage löschen?",
   "pollTemplateDeleteAction": "Vorlage löschen",
   "answerPresets": "Antwortvorlagen",
@@ -1095,9 +1095,10 @@
   "presetNever": "Nie",
   "resetCreatorDraft": "Entwurf zurücksetzen",
   "creatorHelp": "Hilfe",
-  "pollTemplateIncludeFields": "In dieser Vorlage speichern (abgewählte Felder bleiben beim Anwenden unverändert):",
+  "pollTemplateIncludeFields": "Inhalt",
   "pollTemplateQuestionsAndAnswers": "Fragen und Antworten",
-  "pollTemplateScopeUnavailable": "Der Geltungsbereich dieser Vorlage ist für dein Profil nicht verfügbar. Dein Formular wurde nicht geändert.",
-  "pollTemplateGroupUnavailable": "Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert.",
-  "pollTemplateNameTaken": "Eine Vorlage mit diesem Namen existiert bereits. Wähle einen anderen Namen."
+  "pollTemplateScopeUnavailable": "Dieser Geltungsbereich ist für dein Profil nicht verfügbar.",
+  "pollTemplateGroupUnavailable": "Diese Gruppe ist nicht mehr verfügbar.",
+  "pollTemplateReplaceAction": "Vorlage aktualisieren",
+  "pollTemplateOverwriteConfirmation": "Bestehende Vorlage überschreiben?"
 }

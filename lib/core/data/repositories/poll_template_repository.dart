@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 
-class DuplicatePollTemplateNameException implements Exception {
-  const DuplicatePollTemplateNameException();
-}
-
 /// Templates are private to an account on this device, separate from drafts.
 class PollTemplateRepository {
   PollTemplateRepository(this.preferences, String userId)
@@ -32,11 +28,27 @@ class PollTemplateRepository {
   );
 
   Future<void> save(PollTemplate template) async {
-    if (containsName(template.name, excludingId: template.id)) {
-      throw const DuplicatePollTemplateNameException();
-    }
-    final templates = load()..removeWhere((item) => item.id == template.id);
-    templates.insert(0, template);
+    final templates = load();
+    final normalizedName = template.name.trim().toLowerCase();
+    final matches = templates.where(
+      (item) => item.name.trim().toLowerCase() == normalizedName,
+    );
+    final existingId = matches.isEmpty ? template.id : matches.first.id;
+    // Replace the complete selection, including removal of newly unchecked fields.
+    // Consolidate any same-name duplicates saved before name matching was added.
+    templates.removeWhere(
+      (item) =>
+          item.id == template.id ||
+          item.name.trim().toLowerCase() == normalizedName,
+    );
+    templates.insert(
+      0,
+      PollTemplate.fromJson({
+        ...template.toJson(),
+        'id': existingId,
+        'name': template.name.trim(),
+      }),
+    );
     await _write(templates);
   }
 

@@ -2661,8 +2661,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pollTemplateName => 'Template name';
 
   @override
-  String get pollTemplatesLocal =>
-      'Saved on this device for your account. Only the fields included in a template are applied.';
+  String get pollTemplatesLocal => 'Saved on this device.';
 
   @override
   String get pollTemplatesEmpty => 'No saved templates yet.';
@@ -2675,8 +2674,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not save or load templates. Please try again.';
 
   @override
-  String get pollTemplateReplace =>
-      'Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.';
+  String get pollTemplateReplace => 'Apply the selected template fields?';
 
   @override
   String get pollTemplateDelete => 'Delete this saved template?';
@@ -2766,21 +2764,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creatorHelp => 'Help';
 
   @override
-  String get pollTemplateIncludeFields =>
-      'Include in this template (untick to leave a field unchanged when applying):';
+  String get pollTemplateIncludeFields => 'Include';
 
   @override
   String get pollTemplateQuestionsAndAnswers => 'Questions and answers';
 
   @override
   String get pollTemplateScopeUnavailable =>
-      'This template’s scope is unavailable for your profile. Your form has not changed.';
+      'This scope is unavailable for your profile.';
 
   @override
   String get pollTemplateGroupUnavailable =>
-      'You no longer have access to this template’s group. Your form has not changed.';
+      'This group is no longer available.';
 
   @override
-  String get pollTemplateNameTaken =>
-      'A template with this name already exists. Choose another name.';
+  String get pollTemplateReplaceAction => 'Update template';
+
+  @override
+  String get pollTemplateOverwriteConfirmation =>
+      'Overwrite existing template?';
 }

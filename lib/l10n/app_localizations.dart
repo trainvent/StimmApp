@@ -4859,7 +4859,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplatesLocal.
   ///
   /// In en, this message translates to:
-  /// **'Saved on this device for your account. Only the fields included in a template are applied.'**
+  /// **'Saved on this device.'**
   String get pollTemplatesLocal;
 
   /// No description provided for @pollTemplatesEmpty.
@@ -4883,7 +4883,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplateReplace.
   ///
   /// In en, this message translates to:
-  /// **'Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.'**
+  /// **'Apply the selected template fields?'**
   String get pollTemplateReplace;
 
   /// No description provided for @pollTemplateDelete.
@@ -5063,7 +5063,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplateIncludeFields.
   ///
   /// In en, this message translates to:
-  /// **'Include in this template (untick to leave a field unchanged when applying):'**
+  /// **'Include'**
   String get pollTemplateIncludeFields;
 
   /// No description provided for @pollTemplateQuestionsAndAnswers.
@@ -5075,20 +5075,26 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplateScopeUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'This template’s scope is unavailable for your profile. Your form has not changed.'**
+  /// **'This scope is unavailable for your profile.'**
   String get pollTemplateScopeUnavailable;
 
   /// No description provided for @pollTemplateGroupUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'You no longer have access to this template’s group. Your form has not changed.'**
+  /// **'This group is no longer available.'**
   String get pollTemplateGroupUnavailable;
 
-  /// No description provided for @pollTemplateNameTaken.
+  /// No description provided for @pollTemplateReplaceAction.
   ///
   /// In en, this message translates to:
-  /// **'A template with this name already exists. Choose another name.'**
-  String get pollTemplateNameTaken;
+  /// **'Update template'**
+  String get pollTemplateReplaceAction;
+
+  /// No description provided for @pollTemplateOverwriteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite existing template?'**
+  String get pollTemplateOverwriteConfirmation;
 }
 
 class _AppLocalizationsDelegate

@@ -2694,8 +2694,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pollTemplateName => 'Name der Vorlage';
 
   @override
-  String get pollTemplatesLocal =>
-      'Für dein Konto auf diesem Gerät gespeichert. Nur die in einer Vorlage enthaltenen Felder werden übernommen.';
+  String get pollTemplatesLocal => 'Auf diesem Gerät gespeichert.';
 
   @override
   String get pollTemplatesEmpty => 'Noch keine Vorlagen gespeichert.';
@@ -2708,8 +2707,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Vorlagen konnten nicht gespeichert oder geladen werden. Bitte versuche es erneut.';
 
   @override
-  String get pollTemplateReplace =>
-      'Vorlage anwenden? Enthaltene Felder ersetzen deine aktuellen Inhalte und Einstellungen. Andere Felder bleiben unverändert.';
+  String get pollTemplateReplace => 'Gespeicherte Vorlagenfelder übernehmen?';
 
   @override
   String get pollTemplateDelete => 'Diese gespeicherte Vorlage löschen?';
@@ -2799,21 +2797,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get creatorHelp => 'Hilfe';
 
   @override
-  String get pollTemplateIncludeFields =>
-      'In dieser Vorlage speichern (abgewählte Felder bleiben beim Anwenden unverändert):';
+  String get pollTemplateIncludeFields => 'Inhalt';
 
   @override
   String get pollTemplateQuestionsAndAnswers => 'Fragen und Antworten';
 
   @override
   String get pollTemplateScopeUnavailable =>
-      'Der Geltungsbereich dieser Vorlage ist für dein Profil nicht verfügbar. Dein Formular wurde nicht geändert.';
+      'Dieser Geltungsbereich ist für dein Profil nicht verfügbar.';
 
   @override
   String get pollTemplateGroupUnavailable =>
-      'Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert.';
+      'Diese Gruppe ist nicht mehr verfügbar.';
 
   @override
-  String get pollTemplateNameTaken =>
-      'Eine Vorlage mit diesem Namen existiert bereits. Wähle einen anderen Namen.';
+  String get pollTemplateReplaceAction => 'Vorlage aktualisieren';
+
+  @override
+  String get pollTemplateOverwriteConfirmation =>
+      'Bestehende Vorlage überschreiben?';
 }

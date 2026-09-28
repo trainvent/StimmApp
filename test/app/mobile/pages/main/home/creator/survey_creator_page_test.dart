@@ -273,19 +273,37 @@ void main() {
         );
         await tester.enterText(nameField, '  WEEKLY meeting  ');
         await tester.pumpAndSettle();
-        expect(
-          find.text(
-            'A template with this name already exists. Choose another name.',
-          ),
-          findsOneWidget,
-        );
-        final confirm = find.widgetWithText(FilledButton, 'Confirm');
-        expect(tester.widget<FilledButton>(confirm).onPressed, isNull);
+        final update = find.widgetWithText(FilledButton, 'Update template');
+        expect(tester.widget<FilledButton>(update).onPressed, isNotNull);
         await tester.enterText(nameField, 'Another meeting');
         await tester.pumpAndSettle();
-        expect(tester.widget<FilledButton>(confirm).onPressed, isNotNull);
-        await tester.tap(find.text('Cancel'));
+        expect(
+          tester
+              .widget<FilledButton>(
+                find.widgetWithText(FilledButton, 'Confirm'),
+              )
+              .onPressed,
+          isNotNull,
+        );
+        await tester.enterText(nameField, 'Weekly meeting');
         await tester.pumpAndSettle();
+        final beforeOverwrite = prefs.getStringList('poll_templates_v1_user-1');
+        await tester.tap(find.text('Update template'));
+        await tester.pumpAndSettle();
+        expect(find.text('Overwrite existing template?'), findsOneWidget);
+        await tester.tap(find.text('Cancel').last);
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(
+          prefs.getStringList('poll_templates_v1_user-1'),
+          beforeOverwrite,
+        );
+        await tester.tap(find.text('Update template'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Confirm'));
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
+
         expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
       }
 

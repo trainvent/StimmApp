@@ -68,7 +68,7 @@ void main() {
     },
   );
   test(
-    'rejects duplicate names, ignoring case and surrounding whitespace',
+    'updates matching names, ignoring case and surrounding whitespace',
     () async {
       final repository = PollTemplateRepository(
         await SharedPreferences.getInstance(),
@@ -80,11 +80,14 @@ void main() {
         'weekly DECISION',
         '  Weekly decision  ',
       ]) {
-        await expectLater(
-          repository.save(PollTemplate(id: 'another', name: name)),
-          throwsA(isA<DuplicatePollTemplateNameException>()),
+        await repository.save(
+          PollTemplate(id: 'another', name: name, title: 'Updated'),
         );
-        expect(repository.load().single.toJson(), template.toJson());
+        final saved = repository.load().single;
+        expect(saved.id, template.id);
+        expect(saved.title, 'Updated');
+        expect(saved.description, isNull);
+        expect(saved.questions, isNull);
       }
       await repository.delete(template.id);
       await repository.save(

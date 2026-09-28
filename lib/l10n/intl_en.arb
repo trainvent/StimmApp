@@ -1057,11 +1057,11 @@
   "pollTemplates": "Poll templates",
   "savePollTemplate": "Save as template",
   "pollTemplateName": "Template name",
-  "pollTemplatesLocal": "Saved on this device for your account. Only the fields included in a template are applied.",
+  "pollTemplatesLocal": "Saved on this device.",
   "pollTemplatesEmpty": "No saved templates yet.",
   "pollTemplateSaved": "Template saved.",
   "pollTemplateError": "Could not save or load templates. Please try again.",
-  "pollTemplateReplace": "Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.",
+  "pollTemplateReplace": "Apply the selected template fields?",
   "pollTemplateDelete": "Delete this saved template?",
   "pollTemplateDeleteAction": "Delete template",
   "answerPresets": "Answer presets",
@@ -1091,9 +1091,10 @@
   "presetNever": "Never",
   "resetCreatorDraft": "Reset draft",
   "creatorHelp": "Help",
-  "pollTemplateIncludeFields": "Include in this template (untick to leave a field unchanged when applying):",
+  "pollTemplateIncludeFields": "Include",
   "pollTemplateQuestionsAndAnswers": "Questions and answers",
-  "pollTemplateScopeUnavailable": "This template’s scope is unavailable for your profile. Your form has not changed.",
-  "pollTemplateGroupUnavailable": "You no longer have access to this template’s group. Your form has not changed.",
-  "pollTemplateNameTaken": "A template with this name already exists. Choose another name."
+  "pollTemplateScopeUnavailable": "This scope is unavailable for your profile.",
+  "pollTemplateGroupUnavailable": "This group is no longer available.",
+  "pollTemplateReplaceAction": "Update template",
+  "pollTemplateOverwriteConfirmation": "Overwrite existing template?"
 }
