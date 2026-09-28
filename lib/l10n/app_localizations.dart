@@ -4859,7 +4859,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplatesLocal.
   ///
   /// In en, this message translates to:
-  /// **'Saved on this device for your account. Templates include the title, description, questions and answers.'**
+  /// **'Saved on this device for your account. Only the fields included in a template are applied.'**
   String get pollTemplatesLocal;
 
   /// No description provided for @pollTemplatesEmpty.
@@ -4883,7 +4883,7 @@ abstract class AppLocalizations {
   /// No description provided for @pollTemplateReplace.
   ///
   /// In en, this message translates to:
-  /// **'Replace the current title, description, questions and answers?'**
+  /// **'Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.'**
   String get pollTemplateReplace;
 
   /// No description provided for @pollTemplateDelete.
@@ -5059,6 +5059,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Help'**
   String get creatorHelp;
+
+  /// No description provided for @pollTemplateIncludeFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Include in this template (untick to leave a field unchanged when applying):'**
+  String get pollTemplateIncludeFields;
+
+  /// No description provided for @pollTemplateQuestionsAndAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions and answers'**
+  String get pollTemplateQuestionsAndAnswers;
+
+  /// No description provided for @pollTemplateScopeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This template’s scope is unavailable for your profile. Your form has not changed.'**
+  String get pollTemplateScopeUnavailable;
+
+  /// No description provided for @pollTemplateGroupUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have access to this template’s group. Your form has not changed.'**
+  String get pollTemplateGroupUnavailable;
 }
 
 class _AppLocalizationsDelegate

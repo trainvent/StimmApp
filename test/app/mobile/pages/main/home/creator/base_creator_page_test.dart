@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
@@ -243,4 +244,78 @@ void main() {
       isNot(SliderComponentShape.noThumb),
     );
   });
+  testWidgets(
+    'templates restore settings and leave excluded settings unchanged',
+    (tester) async {
+      final key = GlobalKey<BaseCreatorPageState>();
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            key: key,
+            title: 'Template settings',
+            tutorialSteps: const [],
+            profileLoader: () async => null,
+            onSubmit:
+                ({
+                  required title,
+                  required description,
+                  required tags,
+                  required scope,
+                  required durationDays,
+                  required openUntilClosed,
+                }) async {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        await key.currentState!.applyTemplate(
+          const PollTemplate(
+            id: 'one',
+            name: 'All settings',
+            title: 'Original title',
+            description: 'Original description',
+            tags: ['community'],
+            scopeType: 'global',
+            durationDays: 7,
+            openUntilClosed: true,
+          ),
+        ),
+        isTrue,
+      );
+      await tester.pumpAndSettle();
+      final settings = key.currentState!.templateSettings;
+      expect(settings.tags, ['community']);
+      expect(settings.scopeType, 'global');
+      expect(settings.durationDays, 7);
+      expect(settings.openUntilClosed, isTrue);
+      await key.currentState!.applyTemplate(
+        const PollTemplate(id: 'two', name: 'Title only', title: 'New title'),
+      );
+      await tester.pumpAndSettle();
+      expect(key.currentState!.templateSettings.toJson(), settings.toJson());
+      expect(find.text('New title'), findsOneWidget);
+      expect(find.text('Original description'), findsOneWidget);
+      await key.currentState!.applyTemplate(
+        const PollTemplate(id: 'three', name: 'Clear tags', tags: []),
+      );
+      await tester.pumpAndSettle();
+      expect(key.currentState!.templateSettings.tags, isEmpty);
+      expect(
+        await key.currentState!.applyTemplate(
+          const PollTemplate(
+            id: 'four',
+            name: 'Unavailable scope',
+            title: 'Do not apply',
+            scopeType: 'countryUnion',
+            countryUnion: 'EU',
+          ),
+        ),
+        isFalse,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('New title'), findsOneWidget);
+      expect(key.currentState!.templateSettings.scopeType, 'global');
+    },
+  );
 }

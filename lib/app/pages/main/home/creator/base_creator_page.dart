@@ -1,4 +1,5 @@
 import 'package:flag/flag.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/widgets/info_dialog_button.dart';
@@ -59,10 +60,10 @@ class BaseCreatorPage extends StatefulWidget {
   final VoidCallback? onResetAdditionalFields;
 
   @override
-  State<BaseCreatorPage> createState() => _BaseCreatorPageState();
+  State<BaseCreatorPage> createState() => BaseCreatorPageState();
 }
 
-class _BaseCreatorPageState extends State<BaseCreatorPage> {
+class BaseCreatorPageState extends State<BaseCreatorPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -76,6 +77,48 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   bool _isLoading = false;
   int _durationDays = AppLimits.defaultFormDurationDays;
   bool _openUntilClosed = false;
+
+  /// A snapshot of settings for the template save dialog.
+  PollTemplate get templateSettings => PollTemplate(
+    id: '',
+    name: '',
+    tags: List.of(_selectedTags),
+    scopeType: _selectedScope.name,
+    countryUnion: _selectedCountryUnion?.code,
+    durationDays: _durationDays,
+    openUntilClosed: _openUntilClosed,
+  );
+
+  /// Refuse unavailable scope settings instead of silently broadening an audience.
+  Future<bool> applyTemplate(PollTemplate template) async {
+    final scope = template.scopeType == null
+        ? null
+        : parseFormScopeType(template.scopeType);
+    final union = parseCountryUnion(template.countryUnion);
+    if ((scope == FormScopeType.stateOrRegion && !_supportsStateScope) ||
+        (scope == FormScopeType.countryUnion &&
+            !_availableCountryUnions.contains(union))) {
+      showErrorSnackBar(context.l10n.pollTemplateScopeUnavailable);
+      return false;
+    }
+    setState(() {
+      if (template.title != null) _titleController.text = template.title!;
+      if (template.description != null) {
+        _descriptionController.text = template.description!;
+      }
+      if (template.tags != null) _selectedTags = List.of(template.tags!);
+      if (scope != null) {
+        _selectedScope = scope;
+        _selectedCountryUnion = union;
+      }
+      if (template.durationDays != null) _durationDays = template.durationDays!;
+      if (template.openUntilClosed != null) {
+        _openUntilClosed = template.openUntilClosed!;
+      }
+    });
+    await _saveDraft();
+    return true;
+  }
 
   Set<CountryUnion> get _availableCountryUnions =>
       countryUnionsForCountry(_profileCountryCode);

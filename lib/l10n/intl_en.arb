@@ -1057,11 +1057,11 @@
   "pollTemplates": "Poll templates",
   "savePollTemplate": "Save as template",
   "pollTemplateName": "Template name",
-  "pollTemplatesLocal": "Saved on this device for your account. Templates include the title, description, questions and answers.",
+  "pollTemplatesLocal": "Saved on this device for your account. Only the fields included in a template are applied.",
   "pollTemplatesEmpty": "No saved templates yet.",
   "pollTemplateSaved": "Template saved.",
   "pollTemplateError": "Could not save or load templates. Please try again.",
-  "pollTemplateReplace": "Replace the current title, description, questions and answers?",
+  "pollTemplateReplace": "Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.",
   "pollTemplateDelete": "Delete this saved template?",
   "pollTemplateDeleteAction": "Delete template",
   "answerPresets": "Answer presets",
@@ -1090,5 +1090,9 @@
   "presetRarely": "Rarely",
   "presetNever": "Never",
   "resetCreatorDraft": "Reset draft",
-  "creatorHelp": "Help"
+  "creatorHelp": "Help",
+  "pollTemplateIncludeFields": "Include in this template (untick to leave a field unchanged when applying):",
+  "pollTemplateQuestionsAndAnswers": "Questions and answers",
+  "pollTemplateScopeUnavailable": "This template’s scope is unavailable for your profile. Your form has not changed.",
+  "pollTemplateGroupUnavailable": "You no longer have access to this template’s group. Your form has not changed."
 }

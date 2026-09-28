@@ -208,50 +208,94 @@ void main() {
     },
   );
 
-  testWidgets('save and reuse a template restores content after confirmation', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1000, 2600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(
-      createTestWidget(
-        ProviderScope(
-          child: SurveyCreatorPage(
-            presentAsPoll: true,
-            auth: _FakeAuthService(_FakeUser()),
-            groupRepository: _FakeGroupRepository([]),
+  for (final includeAll in [true, false]) {
+    testWidgets('save and reuse a template (include all: $includeAll)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        createTestWidget(
+          ProviderScope(
+            child: SurveyCreatorPage(
+              presentAsPoll: true,
+              auth: _FakeAuthService(_FakeUser()),
+              groupRepository: _FakeGroupRepository([group]),
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(0), 'Weekly meeting');
-    await tester.enterText(fields.at(1), 'Our recurring agenda');
-    await tester.enterText(fields.at(2), 'Shall we proceed?');
-    await tester.enterText(fields.at(3), 'Yes');
-    await tester.enterText(fields.at(4), 'No');
-    await tester.ensureVisible(find.byTooltip('Save as template'));
-    await tester.tap(find.byTooltip('Save as template'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Confirm'));
-    await tester.pumpAndSettle();
-    final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
-    await tester.enterText(fields.at(0), 'Changed title');
-    await tester.ensureVisible(find.byTooltip('Poll templates'));
-    await tester.tap(find.byTooltip('Poll templates'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Weekly meeting'));
-    await tester.pumpAndSettle();
-    expect(find.text('Changed title'), findsOneWidget);
-    await tester.tap(find.text('Confirm'));
-    await tester.pumpAndSettle();
-    expect(find.text('Weekly meeting'), findsOneWidget);
-    expect(find.text('Our recurring agenda'), findsOneWidget);
-    expect(find.text('Shall we proceed?'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('survey_group_dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ops Team').last);
+      await tester.pumpAndSettle();
+      final fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(0), 'Weekly meeting');
+      await tester.enterText(fields.at(1), 'Our recurring agenda');
+      await tester.enterText(fields.at(2), 'Shall we proceed?');
+      await tester.enterText(fields.at(3), 'Yes');
+      await tester.enterText(fields.at(4), 'No');
+      await tester.ensureVisible(find.byTooltip('Save as template'));
+      await tester.tap(find.byTooltip('Save as template'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
+            .every((field) => field.value == true),
+        isTrue,
+      );
+      if (!includeAll) {
+        for (final field in [
+          'description',
+          'questions',
+          'tags',
+          'scope',
+          'duration',
+          'audience',
+        ]) {
+          await tester.tap(find.byKey(ValueKey('template_field_$field')));
+          await tester.pumpAndSettle();
+        }
+      }
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
+      final saved =
+          jsonDecode(prefs.getStringList('poll_templates_v1_user-1')!.single)
+              as Map;
+      expect(saved.containsKey('scopeType'), includeAll);
+      expect(saved.containsKey('durationDays'), includeAll);
+      expect(saved.containsKey('tags'), includeAll);
+      expect(saved.containsKey('includesAudience'), includeAll);
+      expect(saved.containsKey('questions'), includeAll);
+      await tester.enterText(fields.at(1), 'Changed description');
+      await tester.tap(find.byKey(const Key('survey_group_dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Public').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(fields.at(0), 'Changed title');
+      await tester.ensureVisible(find.byTooltip('Poll templates'));
+      await tester.tap(find.byTooltip('Poll templates'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Weekly meeting'));
+      await tester.pumpAndSettle();
+      expect(find.text('Changed title'), findsOneWidget);
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+      expect(find.text('Weekly meeting'), findsOneWidget);
+      expect(
+        find.text(includeAll ? 'Our recurring agenda' : 'Changed description'),
+        findsOneWidget,
+      );
+      expect(find.text('Shall we proceed?'), findsOneWidget);
+      final draft =
+          jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
+      expect(draft['groupId'], includeAll ? 'group-1' : null);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

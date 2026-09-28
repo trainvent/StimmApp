@@ -2662,7 +2662,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pollTemplatesLocal =>
-      'Saved on this device for your account. Templates include the title, description, questions and answers.';
+      'Saved on this device for your account. Only the fields included in a template are applied.';
 
   @override
   String get pollTemplatesEmpty => 'No saved templates yet.';
@@ -2676,7 +2676,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pollTemplateReplace =>
-      'Replace the current title, description, questions and answers?';
+      'Apply this template? Included fields will replace your current content and settings. Other fields stay unchanged.';
 
   @override
   String get pollTemplateDelete => 'Delete this saved template?';
@@ -2764,4 +2764,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creatorHelp => 'Help';
+
+  @override
+  String get pollTemplateIncludeFields =>
+      'Include in this template (untick to leave a field unchanged when applying):';
+
+  @override
+  String get pollTemplateQuestionsAndAnswers => 'Questions and answers';
+
+  @override
+  String get pollTemplateScopeUnavailable =>
+      'This template’s scope is unavailable for your profile. Your form has not changed.';
+
+  @override
+  String get pollTemplateGroupUnavailable =>
+      'You no longer have access to this template’s group. Your form has not changed.';
 }

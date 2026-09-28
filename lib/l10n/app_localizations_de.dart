@@ -2695,7 +2695,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollTemplatesLocal =>
-      'Für dein Konto auf diesem Gerät gespeichert. Vorlagen enthalten Titel, Beschreibung, Fragen und Antworten.';
+      'Für dein Konto auf diesem Gerät gespeichert. Nur die in einer Vorlage enthaltenen Felder werden übernommen.';
 
   @override
   String get pollTemplatesEmpty => 'Noch keine Vorlagen gespeichert.';
@@ -2709,7 +2709,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pollTemplateReplace =>
-      'Aktuellen Titel, Beschreibung, Fragen und Antworten ersetzen?';
+      'Vorlage anwenden? Enthaltene Felder ersetzen deine aktuellen Inhalte und Einstellungen. Andere Felder bleiben unverändert.';
 
   @override
   String get pollTemplateDelete => 'Diese gespeicherte Vorlage löschen?';
@@ -2797,4 +2797,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get creatorHelp => 'Hilfe';
+
+  @override
+  String get pollTemplateIncludeFields =>
+      'In dieser Vorlage speichern (abgewählte Felder bleiben beim Anwenden unverändert):';
+
+  @override
+  String get pollTemplateQuestionsAndAnswers => 'Fragen und Antworten';
+
+  @override
+  String get pollTemplateScopeUnavailable =>
+      'Der Geltungsbereich dieser Vorlage ist für dein Profil nicht verfügbar. Dein Formular wurde nicht geändert.';
+
+  @override
+  String get pollTemplateGroupUnavailable =>
+      'Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert.';
 }
