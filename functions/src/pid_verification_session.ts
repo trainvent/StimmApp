@@ -16,6 +16,7 @@ export type PidVerificationSessionState =
   | 'pending'
   | 'verified'
   | 'accepted'
+  | 'cancelled'
   | 'failed'
   | 'expired';
 
@@ -43,9 +44,10 @@ const allowedTransitions: Record<
   PidVerificationSessionState,
   readonly PidVerificationSessionState[]
 > = {
-  pending: ['verified', 'failed', 'expired'],
-  verified: ['accepted', 'failed', 'expired'],
+  pending: ['verified', 'failed', 'expired', 'cancelled'],
+  verified: ['accepted', 'failed', 'expired', 'cancelled'],
   accepted: [],
+  cancelled: [],
   failed: [],
   expired: [],
 };
@@ -213,16 +215,20 @@ export async function transitionPidVerificationSession(
 ) {
   const reference = sessionReference(sessionId);
 
-  await getFirestore().runTransaction(async (transaction) => {
+  return getFirestore().runTransaction(async (transaction) => {
     const snapshot = await transaction.get(reference);
     const session = parseSession(sessionId, snapshot.data());
     if (!session) {
       throw new Error('PID verification session record is unavailable.');
     }
-    if (session.state === nextState) return;
+    if (session.state === nextState) return session.state;
     if (!allowedTransitions[session.state].includes(nextState)) {
       // A terminal state must never be overwritten by a late status poll.
-      return;
+      return session.state;
+    }
+    if (nextState === 'verified' && pidVerificationSessionResumableUntil(session).getTime() <= Date.now()) {
+      transaction.update(reference, { state: 'expired', updatedAt: FieldValue.serverTimestamp(), expiredAt: FieldValue.serverTimestamp() });
+      return 'expired' as const;
     }
 
     const transitionTimestamp = `${nextState}At`;
@@ -231,5 +237,6 @@ export async function transitionPidVerificationSession(
       updatedAt: FieldValue.serverTimestamp(),
       [transitionTimestamp]: FieldValue.serverTimestamp(),
     });
+    return nextState;
   });
 }

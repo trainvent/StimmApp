@@ -2661,4 +2661,173 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileDetailsUpdated => 'Your profile has been updated.';
+
+  @override
+  String get pidTitle => 'PID verification';
+
+  @override
+  String get pidHeading => 'Identity verification';
+
+  @override
+  String get pidIntro =>
+      'Verify your identity with the EUDI Wallet sandbox app. Review your details here before saving them to your profile.';
+
+  @override
+  String get pidWebHint =>
+      'Open the wallet on your phone, then return here to check the result.';
+
+  @override
+  String get pidRegistration => 'Registration verification';
+
+  @override
+  String get pidReverification => 'Renew identity verification';
+
+  @override
+  String pidExpiry(String time) {
+    return 'Available until $time';
+  }
+
+  @override
+  String get pidSignedIn => 'Sign in to verify your identity.';
+
+  @override
+  String get pidRestoreError =>
+      'Your previous verification could not be restored. Check your connection and try restoring it again.';
+
+  @override
+  String get pidStartError =>
+      'Verification could not be started. Check your connection and try again.';
+
+  @override
+  String get pidSaveError =>
+      'Saving could not be confirmed. Check the status or try saving again; your details will not be saved twice.';
+
+  @override
+  String get pidStatusError =>
+      'The status is currently unavailable. Check your connection and try again.';
+
+  @override
+  String get pidTimeout =>
+      'The connection timed out. Your verification may still be in progress. Check the status before starting again.';
+
+  @override
+  String get pidExpired =>
+      'This verification has expired. Start a new request to continue.';
+
+  @override
+  String get pidFailed =>
+      'The wallet response could not be verified. No details were saved from this request. Start a new request to try again.';
+
+  @override
+  String get pidMissing =>
+      'This verification is no longer available for your account. Start a new request.';
+
+  @override
+  String get pidInvalidClaims =>
+      'The wallet did not provide all required identity and address details. Check your wallet credential and start again.';
+
+  @override
+  String get pidInvalidLink =>
+      'The wallet link could not be opened. Start a new request.';
+
+  @override
+  String get pidWalletMissing =>
+      'The wallet could not be opened. Install the EUDI Wallet sandbox app, then try opening it again.';
+
+  @override
+  String get pidWaiting => 'Waiting for the wallet';
+
+  @override
+  String get pidWaitingHint =>
+      'No result yet. Finish in the wallet and check again. If you cancelled there, cancel this request here or start a new one.';
+
+  @override
+  String get pidVerified => 'Identity verified — review your details';
+
+  @override
+  String get pidAccepted => 'Identity verified and saved';
+
+  @override
+  String get pidSaved =>
+      'The verified EUDI details were saved to your profile.';
+
+  @override
+  String get pidMismatch => 'Some verified details differ from your profile.';
+
+  @override
+  String get pidMatch => 'Your verified details match your profile.';
+
+  @override
+  String get pidUseDetails => 'Use verified EUDI details';
+
+  @override
+  String get pidConfirm => 'Confirm verified identity';
+
+  @override
+  String get pidOpenWallet => 'Open EUDI Wallet';
+
+  @override
+  String get pidChecking => 'Checking status';
+
+  @override
+  String get pidCheck => 'Check status';
+
+  @override
+  String get pidRestart => 'Start a new request';
+
+  @override
+  String get pidRestoring => 'Restoring verification';
+
+  @override
+  String get pidGenerating => 'Creating request';
+
+  @override
+  String get pidStart => 'Start verification';
+
+  @override
+  String get pidRestore => 'Restore previous verification';
+
+  @override
+  String get pidCancel => 'Cancel this request';
+
+  @override
+  String get pidCancelling => 'Cancelling request';
+
+  @override
+  String get pidCancelled =>
+      'Verification cancelled. No details were saved from this request. You can start again whenever you are ready.';
+
+  @override
+  String get pidCancelError =>
+      'Cancellation could not be confirmed. Check your connection and try again.';
+
+  @override
+  String get pidGivenName => 'Given name';
+
+  @override
+  String get pidSurname => 'Surname';
+
+  @override
+  String get pidBirthdate => 'Date of birth';
+
+  @override
+  String get pidAddress => 'Residential address';
+
+  @override
+  String get pidRegion => 'State or region';
+
+  @override
+  String get pidCountry => 'Country';
+
+  @override
+  String get pidNotProvided => 'Not provided';
+
+  @override
+  String get pidOriginal => 'Wallet:';
+
+  @override
+  String get pidCompared => 'Compared as:';
+
+  @override
+  String get pidProfile => 'Profile:';
 }

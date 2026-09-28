@@ -4855,6 +4855,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your profile has been updated.'**
   String get profileDetailsUpdated;
+
+  /// No description provided for @pidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PID verification'**
+  String get pidTitle;
+
+  /// No description provided for @pidHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verification'**
+  String get pidHeading;
+
+  /// No description provided for @pidIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your identity with the EUDI Wallet sandbox app. Review your details here before saving them to your profile.'**
+  String get pidIntro;
+
+  /// No description provided for @pidWebHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the wallet on your phone, then return here to check the result.'**
+  String get pidWebHint;
+
+  /// No description provided for @pidRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration verification'**
+  String get pidRegistration;
+
+  /// No description provided for @pidReverification.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew identity verification'**
+  String get pidReverification;
+
+  /// No description provided for @pidExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Available until {time}'**
+  String pidExpiry(String time);
+
+  /// No description provided for @pidSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to verify your identity.'**
+  String get pidSignedIn;
+
+  /// No description provided for @pidRestoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your previous verification could not be restored. Check your connection and try restoring it again.'**
+  String get pidRestoreError;
+
+  /// No description provided for @pidStartError.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification could not be started. Check your connection and try again.'**
+  String get pidStartError;
+
+  /// No description provided for @pidSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving could not be confirmed. Check the status or try saving again; your details will not be saved twice.'**
+  String get pidSaveError;
+
+  /// No description provided for @pidStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'The status is currently unavailable. Check your connection and try again.'**
+  String get pidStatusError;
+
+  /// No description provided for @pidTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection timed out. Your verification may still be in progress. Check the status before starting again.'**
+  String get pidTimeout;
+
+  /// No description provided for @pidExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This verification has expired. Start a new request to continue.'**
+  String get pidExpired;
+
+  /// No description provided for @pidFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The wallet response could not be verified. No details were saved from this request. Start a new request to try again.'**
+  String get pidFailed;
+
+  /// No description provided for @pidMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This verification is no longer available for your account. Start a new request.'**
+  String get pidMissing;
+
+  /// No description provided for @pidInvalidClaims.
+  ///
+  /// In en, this message translates to:
+  /// **'The wallet did not provide all required identity and address details. Check your wallet credential and start again.'**
+  String get pidInvalidClaims;
+
+  /// No description provided for @pidInvalidLink.
+  ///
+  /// In en, this message translates to:
+  /// **'The wallet link could not be opened. Start a new request.'**
+  String get pidInvalidLink;
+
+  /// No description provided for @pidWalletMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The wallet could not be opened. Install the EUDI Wallet sandbox app, then try opening it again.'**
+  String get pidWalletMissing;
+
+  /// No description provided for @pidWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the wallet'**
+  String get pidWaiting;
+
+  /// No description provided for @pidWaitingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No result yet. Finish in the wallet and check again. If you cancelled there, cancel this request here or start a new one.'**
+  String get pidWaitingHint;
+
+  /// No description provided for @pidVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verified — review your details'**
+  String get pidVerified;
+
+  /// No description provided for @pidAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verified and saved'**
+  String get pidAccepted;
+
+  /// No description provided for @pidSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'The verified EUDI details were saved to your profile.'**
+  String get pidSaved;
+
+  /// No description provided for @pidMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Some verified details differ from your profile.'**
+  String get pidMismatch;
+
+  /// No description provided for @pidMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified details match your profile.'**
+  String get pidMatch;
+
+  /// No description provided for @pidUseDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Use verified EUDI details'**
+  String get pidUseDetails;
+
+  /// No description provided for @pidConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm verified identity'**
+  String get pidConfirm;
+
+  /// No description provided for @pidOpenWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Open EUDI Wallet'**
+  String get pidOpenWallet;
+
+  /// No description provided for @pidChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking status'**
+  String get pidChecking;
+
+  /// No description provided for @pidCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check status'**
+  String get pidCheck;
+
+  /// No description provided for @pidRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new request'**
+  String get pidRestart;
+
+  /// No description provided for @pidRestoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring verification'**
+  String get pidRestoring;
+
+  /// No description provided for @pidGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating request'**
+  String get pidGenerating;
+
+  /// No description provided for @pidStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start verification'**
+  String get pidStart;
+
+  /// No description provided for @pidRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore previous verification'**
+  String get pidRestore;
+
+  /// No description provided for @pidCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this request'**
+  String get pidCancel;
+
+  /// No description provided for @pidCancelling.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling request'**
+  String get pidCancelling;
+
+  /// No description provided for @pidCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification cancelled. No details were saved from this request. You can start again whenever you are ready.'**
+  String get pidCancelled;
+
+  /// No description provided for @pidCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation could not be confirmed. Check your connection and try again.'**
+  String get pidCancelError;
+
+  /// No description provided for @pidGivenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Given name'**
+  String get pidGivenName;
+
+  /// No description provided for @pidSurname.
+  ///
+  /// In en, this message translates to:
+  /// **'Surname'**
+  String get pidSurname;
+
+  /// No description provided for @pidBirthdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get pidBirthdate;
+
+  /// No description provided for @pidAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Residential address'**
+  String get pidAddress;
+
+  /// No description provided for @pidRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'State or region'**
+  String get pidRegion;
+
+  /// No description provided for @pidCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get pidCountry;
+
+  /// No description provided for @pidNotProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get pidNotProvided;
+
+  /// No description provided for @pidOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet:'**
+  String get pidOriginal;
+
+  /// No description provided for @pidCompared.
+  ///
+  /// In en, this message translates to:
+  /// **'Compared as:'**
+  String get pidCompared;
+
+  /// No description provided for @pidProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile:'**
+  String get pidProfile;
 }
 
 class _AppLocalizationsDelegate

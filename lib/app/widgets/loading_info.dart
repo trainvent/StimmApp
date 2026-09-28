@@ -28,7 +28,7 @@ class LoadingInfo extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(text),
+            Flexible(child: Text(text)),
             const SizedBox(width: 8),
             SizedBox.square(
               dimension: size,

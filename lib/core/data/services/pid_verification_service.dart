@@ -1,11 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 
-final pidVerificationService = PidVerificationService();
+final pidVerificationServiceProvider = Provider<PidVerificationService>((ref) {
+  final service = PidVerificationService();
+  ref.onDispose(service.dispose);
+  return service;
+});
 
 class PidVerificationRequestResponse {
   const PidVerificationRequestResponse({
@@ -49,11 +55,14 @@ class PidVerificationService {
   final FirebaseAuth _auth;
   final http.Client _client;
 
+  void dispose() => _client.close();
+
   Future<PidResumableSession?> getResumableSession() async {
     final token = await _auth.currentUser?.getIdToken();
     if (token == null) {
       throw const PidVerificationException(
         'You need to be signed in to verify your identity.',
+        code: 'unauthenticated',
       );
     }
 
@@ -76,6 +85,7 @@ class PidVerificationService {
           : null;
       throw PidVerificationException(
         message ?? 'The previous PID verification could not be restored.',
+        code: _errorCode(response, decoded),
       );
     }
     final session = decoded['session'];
@@ -89,6 +99,7 @@ class PidVerificationService {
     if (token == null) {
       throw const PidVerificationException(
         'You need to be signed in to verify your identity.',
+        code: 'unauthenticated',
       );
     }
 
@@ -119,6 +130,7 @@ class PidVerificationService {
           : null;
       throw PidVerificationException(
         message ?? 'The PID verifier is unavailable. Please try again.',
+        code: _errorCode(response, decoded),
       );
     }
 
@@ -131,6 +143,7 @@ class PidVerificationService {
     if (token == null) {
       throw const PidVerificationException(
         'You need to be signed in to verify your identity.',
+        code: 'unauthenticated',
       );
     }
 
@@ -163,6 +176,7 @@ class PidVerificationService {
           : null;
       throw PidVerificationException(
         message ?? 'The PID verification status is unavailable.',
+        code: _errorCode(response, decoded),
       );
     }
     return PidVerificationStatusResponse.fromJson(decoded);
@@ -173,6 +187,7 @@ class PidVerificationService {
     if (token == null) {
       throw const PidVerificationException(
         'You need to be signed in to verify your identity.',
+        code: 'unauthenticated',
       );
     }
 
@@ -194,8 +209,48 @@ class PidVerificationService {
           : null;
       throw PidVerificationException(
         message ?? 'The verified PID could not be saved.',
+        code: _errorCode(response, decoded),
       );
     }
+  }
+
+  Future<String> cancelSession(String sessionId) async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw const PidVerificationException(
+        'Authentication required',
+        code: 'unauthenticated',
+      );
+    }
+    final projectId = Firebase.app().options.projectId;
+    final response = await _post(
+      Uri.parse(
+        'https://$projectId.web.app/oid4vp/cancel/${Uri.encodeComponent(sessionId)}',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+      unavailableMessage: 'Cancellation failed',
+    );
+    final decoded = _decodeResponse(response, 'Cancellation failed');
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        decoded is! Map<String, dynamic>) {
+      throw PidVerificationException(
+        'Cancellation failed',
+        code: _errorCode(response, decoded),
+      );
+    }
+    return decoded['status']?.toString() ?? 'pending';
+  }
+
+  String _errorCode(http.Response response, dynamic decoded) {
+    if (response.statusCode == 401) return 'unauthenticated';
+    if (response.statusCode == 404) return 'session_not_found';
+    if (decoded is Map && decoded['code'] is String) {
+      return decoded['code'] as String;
+    }
+    if (response.statusCode == 409) return 'session_closed';
+    if (response.statusCode == 422) return 'invalid_claims';
+    return 'unavailable';
   }
 
   Future<http.Response> _get(
@@ -220,6 +275,11 @@ class PidVerificationService {
   ) async {
     try {
       return await request.timeout(_requestTimeout);
+    } on TimeoutException {
+      throw const PidVerificationException(
+        'Request timed out',
+        code: 'timeout',
+      );
     } on PidVerificationException {
       rethrow;
     } catch (_) {
@@ -253,7 +313,8 @@ class PidVerificationStatusResponse {
       status == 'verified' ||
       status == 'accepted' ||
       status == 'failed' ||
-      status == 'expired';
+      status == 'expired' ||
+      status == 'cancelled';
 
   factory PidVerificationStatusResponse.fromJson(Map<String, dynamic> json) {
     final rawClaims = json['claims'];
@@ -302,7 +363,9 @@ class PidResumableSession {
 }
 
 class PidVerificationException implements Exception {
-  const PidVerificationException(this.message);
+  const PidVerificationException(this.message, {this.code = 'unavailable'});
+
+  final String code;
 
   final String message;
 

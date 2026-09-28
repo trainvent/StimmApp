@@ -1,10 +1,12 @@
+import { pidResultPage } from './pid_verification_result_page.js';
+import { registerPidSessionRoutes } from './pid_verification_routes.js';
 import { getPidSandboxTrustedIssuers } from './pid_verifier_trust.js';
 import { createPidSdJwtVcModule } from './pid_verifier_issuer.js';
 import { createPidKeyManagementModule } from './pid_verifier_crypto.js';
 import express from 'express';
 import { createPrivateKey, createPublicKey, randomUUID } from 'node:crypto';
 import { getAuth } from 'firebase-admin/auth';
-import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import { HttpsError, onRequest } from 'firebase-functions/v2/https';
 import {
@@ -13,10 +15,6 @@ import {
   normalizePidPostalCode,
 } from './pid_claim_normalization.js';
 import {
-  PID_IDENTITY_VERIFICATION_POLICY_VERSION,
-  PID_IDENTITY_VERIFIED_FIELDS,
-  pidIdentityRevision,
-  pidIdentityVerificationValidUntil,
   pidVerificationModeForProfile,
 } from './pid_identity_verification_policy.js';
 import {
@@ -24,10 +22,6 @@ import {
   PidVerificationReturnTarget,
   createPidVerificationSession,
   getPidVerificationSessionByResultNonce,
-  getLatestResumablePidVerificationSession,
-  getOwnedPidVerificationSession,
-  pidVerificationSessionResumableUntil,
-  transitionPidVerificationSession,
 } from './pid_verification_session.js';
 import {
   getPidAskarStoreConfig,
@@ -120,7 +114,7 @@ type CreatePidVerificationRequestResult = {
   expiresAt: string;
 };
 
-type VerifiedPidClaims = {
+export type VerifiedPidClaims = {
   givenName: string | null;
   familyName: string | null;
   birthdate: string | null;
@@ -321,7 +315,11 @@ async function requireFirebaseUser(request: express.Request) {
   if (!authorization?.startsWith('Bearer ')) {
     throw new HttpsError('unauthenticated', 'Firebase authentication is required.');
   }
-  return getAuth().verifyIdToken(authorization.substring('Bearer '.length));
+  try {
+    return await getAuth().verifyIdToken(authorization.substring('Bearer '.length));
+  } catch (_) {
+    throw new HttpsError('unauthenticated', 'Firebase authentication is required.');
+  }
 }
 
 async function getVerifiedPidClaims(agent: any, sessionId: string): Promise<VerifiedPidClaims> {
@@ -416,209 +414,9 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
   }
 });
 
-pidVerifierApp.get('/oid4vp/resumable', async (request, response) => {
-  const startedAt = Date.now();
-  try {
-    const user = await requireFirebaseUser(request);
-    const session = await getLatestResumablePidVerificationSession(user.uid);
-    response.json({
-      session: session ? {
-        sessionId: session.sessionId,
-        status: session.state,
-        mode: session.mode,
-        purpose: session.purpose,
-        expiresAt: pidVerificationSessionResumableUntil(session).toISOString(),
-      } : null,
-    });
-  } catch (error) {
-    const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logPidVerifierEvent({
-      event: 'operation_failed', outcome: 'failure', status,
-      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
-      errorCode: 'resumable_session_failed', protocolStage: 'status_check',
-    });
-    response.status(status).json({
-      error: status === 401 ? 'Authentication is required.' :
-        'The PID verification session could not be restored.',
-    });
-  }
-});
-
-pidVerifierApp.get('/oid4vp/status/:sessionId', async (request, response) => {
-  const startedAt = Date.now();
-  try {
-    const user = await requireFirebaseUser(request);
-    const sessionId = request.params.sessionId;
-    const persistedSession = await getOwnedPidVerificationSession(
-      sessionId,
-      user.uid,
-    );
-    if (!persistedSession) {
-      response.status(404).json({ error: 'Verification session not found.' });
-      return;
-    }
-
-    if (persistedSession.state === 'failed') {
-      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_failed', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'previously_failed', validationOutcome: 'failure', protocolStage: 'status_check' });
-      response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
-      return;
-    }
-    if (persistedSession.state === 'accepted') {
-      response.json({ status: 'accepted' });
-      return;
-    }
-    if (persistedSession.state === 'expired' ||
-        pidVerificationSessionResumableUntil(persistedSession).getTime() <= Date.now()) {
-      await transitionPidVerificationSession(sessionId, 'expired');
-      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_expired', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'session_expired', validationOutcome: 'not_applicable', protocolStage: 'status_check' });
-      response.json({ status: 'expired' });
-      return;
-    }
-
-    const { agent } = await ensurePidVerifierAgent();
-    const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
-    if (session.state === 'ResponseVerified') {
-      await transitionPidVerificationSession(sessionId, 'verified');
-      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_verified', outcome: 'success', status: 200, latencyMs: Date.now() - startedAt, validationOutcome: 'success', protocolStage: 'status_check' });
-      const claims = await getVerifiedPidClaims(agent, sessionId);
-      response.json({
-        status: 'verified',
-        claims,
-        normalizedClaims: normalizeVerifiedPidClaimsForProfile(claims),
-      });
-      return;
-    }
-    if (session.state === 'Error') {
-      await transitionPidVerificationSession(sessionId, 'failed');
-      logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_failed', outcome: 'failure', status: 200, latencyMs: Date.now() - startedAt, errorCategory: 'validation', errorCode: 'presentation_verification_failed', validationOutcome: 'failure', protocolStage: 'status_check' });
-      response.json({ status: 'failed', error: 'The PID presentation could not be verified.' });
-      return;
-    }
-    response.json({ status: 'pending' });
-  } catch (error) {
-    const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logPidVerifierEvent({
-      event: 'operation_failed', outcome: 'failure', status,
-      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
-      errorCode: 'status_read_failed', protocolStage: 'status_check',
-    });
-    response.status(status).json({
-      error: status === 401 ? 'Authentication is required.' : 'The PID verification status is unavailable.',
-    });
-  }
-});
-
-pidVerifierApp.post('/oid4vp/accept/:sessionId', async (request, response) => {
-  const startedAt = Date.now();
-  try {
-    const user = await requireFirebaseUser(request);
-    const sessionId = request.params.sessionId;
-    const persistedSession = await getOwnedPidVerificationSession(
-      sessionId,
-      user.uid,
-    );
-    if (!persistedSession) {
-      response.status(404).json({ error: 'Verification session not found.' });
-      return;
-    }
-    if (persistedSession.state === 'accepted') {
-      response.json({ ok: true, alreadyAccepted: true });
-      return;
-    }
-    if (pidVerificationSessionResumableUntil(persistedSession).getTime() <= Date.now()) {
-      await transitionPidVerificationSession(sessionId, 'expired');
-      response.status(409).json({ error: 'The PID verification request expired.' });
-      return;
-    }
-
-    const { agent } = await ensurePidVerifierAgent();
-    const session = await agent.openid4vc.verifier.getVerificationSessionById(sessionId);
-    if (session.state !== 'ResponseVerified') {
-      response.status(409).json({ error: 'The PID presentation has not been verified.' });
-      return;
-    }
-    await transitionPidVerificationSession(sessionId, 'verified');
-
-    const claims = normalizeVerifiedPidClaimsForProfile(
-      await getVerifiedPidClaims(agent, sessionId),
-    );
-    if (!claims.givenName || !claims.familyName ||
-        !claims.birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(claims.birthdate) ||
-        !claims.streetAddress || !claims.postalCode || !claims.locality ||
-        !claims.country || !claims.formattedAddress) {
-      response.status(422).json({
-        error: 'The verified PID is missing identity or full residential address fields.',
-      });
-      return;
-    }
-    const dateOfBirth = new Date(`${claims.birthdate}T12:00:00.000Z`);
-    if (!Number.isFinite(dateOfBirth.getTime())) {
-      response.status(422).json({ error: 'The verified PID contains an invalid birth date.' });
-      return;
-    }
-
-    const firestore = getFirestore();
-    const profileReference = firestore.collection('users').doc(user.uid);
-    let alreadyAccepted = false;
-    await firestore.runTransaction(async (transaction) => {
-      const sessionReference = firestore
-        .collection('pidVerificationSessions')
-        .doc(sessionId);
-      const sessionSnapshot = await transaction.get(sessionReference);
-      const sessionData = sessionSnapshot.data();
-      if (sessionData?.ownerUid !== user.uid) {
-        throw new Error('PID verification session ownership changed.');
-      }
-      if (sessionData.state === 'accepted') {
-        alreadyAccepted = true;
-        return;
-      }
-      if (sessionData.state !== 'verified') {
-        throw new Error('PID verification session is not ready for acceptance.');
-      }
-
-      const profileSnapshot = await transaction.get(profileReference);
-      const nextIdentityRevision = pidIdentityRevision(profileSnapshot.data()) + 1;
-      const verifiedAt = new Date();
-      transaction.set(profileReference, {
-        givenName: claims.givenName,
-        surname: claims.familyName,
-        dateOfBirth: Timestamp.fromDate(dateOfBirth),
-        address: claims.formattedAddress,
-        town: claims.locality,
-        countryCode: claims.country!.toUpperCase(),
-        isVerified: true,
-        gotVerifiedAt: Timestamp.fromDate(verifiedAt),
-        identityVerificationValidUntil: Timestamp.fromDate(
-          pidIdentityVerificationValidUntil(verifiedAt),
-        ),
-        identityVerificationPolicyVersion:
-          PID_IDENTITY_VERIFICATION_POLICY_VERSION,
-        identityRevision: nextIdentityRevision,
-        verifiedIdentityRevision: nextIdentityRevision,
-        identityVerificationVerifiedFields: PID_IDENTITY_VERIFIED_FIELDS,
-        updatedAt: FieldValue.serverTimestamp(),
-      }, { merge: true });
-      transaction.update(sessionReference, {
-        state: 'accepted',
-        updatedAt: FieldValue.serverTimestamp(),
-        acceptedAt: FieldValue.serverTimestamp(),
-      });
-    });
-
-    response.json({ ok: true, alreadyAccepted, claims });
-    logPidVerifierEvent({ traceId: persistedSession.traceId, event: 'session_accepted', outcome: 'success', status: 200, latencyMs: Date.now() - startedAt, validationOutcome: 'success', protocolStage: 'acceptance' });
-  } catch (error) {
-    const status = error instanceof HttpsError && error.code === 'unauthenticated' ? 401 : 500;
-    if (status === 500) logPidVerifierEvent({
-      event: 'operation_failed', outcome: 'failure', status,
-      latencyMs: Date.now() - startedAt, errorCategory: pidVerifierErrorCategory(error),
-      errorCode: 'acceptance_failed', protocolStage: 'acceptance',
-    });
-    response.status(status).json({
-      error: status === 401 ? 'Authentication is required.' : 'The verified PID could not be saved.',
-    });
-  }
+registerPidSessionRoutes(pidVerifierApp, {
+  requireFirebaseUser, ensurePidVerifierAgent, getVerifiedPidClaims,
+  normalizeVerifiedPidClaimsForProfile,
 });
 
 function allowedWebReturnOrigin(request: express.Request) {
@@ -646,15 +444,10 @@ function pidResultReturnUrl(session: {
   return `${origin}/pid-verification`;
 }
 
-function pidResultPage(returnUrl: string) {
-  const serializedUrl = JSON.stringify(returnUrl).replace(/</g, '\\u003c');
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verification received</title></head><body><main><h1>Verification received</h1><p>Your wallet has sent the presentation successfully.</p><p id="countdown">Returning to StimmApp in 5 seconds…</p><p><a id="return-link" href="${returnUrl}">Return to StimmApp now</a></p></main><script>const returnUrl=${serializedUrl};let seconds=5;const countdown=document.getElementById('countdown');const timer=setInterval(()=>{seconds-=1;countdown.textContent=seconds>0?\`Returning to StimmApp in \${seconds} second\${seconds===1?'':'s'}…\`:'Opening StimmApp…';if(seconds===0){clearInterval(timer);window.location.assign(returnUrl);}},1000);</script></body></html>`;
-}
-
 pidVerifierApp.get('/oid4vp/result/:nonce', async (request, response) => {
   const session = await getPidVerificationSessionByResultNonce(request.params.nonce);
   const returnUrl = session ? pidResultReturnUrl(session) : 'stimmapp://pid-verification';
-  response.status(200).type('html').send(pidResultPage(returnUrl));
+  response.status(200).type('html').send(pidResultPage(returnUrl, request.acceptsLanguages('en', 'de') === 'de' ? 'de' : 'en'));
 });
 
 const pidVerifierSecrets = [

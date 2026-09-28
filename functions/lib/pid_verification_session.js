@@ -12,9 +12,10 @@ const node_crypto_1 = require("node:crypto");
 const PID_VERIFICATION_SESSIONS_COLLECTION = 'pidVerificationSessions';
 const PID_VERIFICATION_REVIEW_WINDOW_MS = 30 * 60 * 1000;
 const allowedTransitions = {
-    pending: ['verified', 'failed', 'expired'],
-    verified: ['accepted', 'failed', 'expired'],
+    pending: ['verified', 'failed', 'expired', 'cancelled'],
+    verified: ['accepted', 'failed', 'expired', 'cancelled'],
     accepted: [],
+    cancelled: [],
     failed: [],
     expired: [],
 };
@@ -118,17 +119,21 @@ async function getLatestResumablePidVerificationSession(ownerUid) {
 }
 async function transitionPidVerificationSession(sessionId, nextState) {
     const reference = sessionReference(sessionId);
-    await (0, firestore_1.getFirestore)().runTransaction(async (transaction) => {
+    return (0, firestore_1.getFirestore)().runTransaction(async (transaction) => {
         const snapshot = await transaction.get(reference);
         const session = parseSession(sessionId, snapshot.data());
         if (!session) {
             throw new Error('PID verification session record is unavailable.');
         }
         if (session.state === nextState)
-            return;
+            return session.state;
         if (!allowedTransitions[session.state].includes(nextState)) {
             // A terminal state must never be overwritten by a late status poll.
-            return;
+            return session.state;
+        }
+        if (nextState === 'verified' && pidVerificationSessionResumableUntil(session).getTime() <= Date.now()) {
+            transaction.update(reference, { state: 'expired', updatedAt: firestore_1.FieldValue.serverTimestamp(), expiredAt: firestore_1.FieldValue.serverTimestamp() });
+            return 'expired';
         }
         const transitionTimestamp = `${nextState}At`;
         transaction.update(reference, {
@@ -136,6 +141,7 @@ async function transitionPidVerificationSession(sessionId, nextState) {
             updatedAt: firestore_1.FieldValue.serverTimestamp(),
             [transitionTimestamp]: firestore_1.FieldValue.serverTimestamp(),
         });
+        return nextState;
     });
 }
 //# sourceMappingURL=pid_verification_session.js.map
