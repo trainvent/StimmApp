@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/repositories/poll_template_repository.dart';
 import 'package:stimmapp/core/providers/poll_template_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
@@ -588,6 +589,17 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   ) async {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return;
+    late final PollTemplateRepository repository;
+    try {
+      repository = await ref.read(
+        pollTemplateRepositoryProvider(userId).future,
+      );
+      repository.load();
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+      return;
+    }
+    if (!mounted) return;
     final nameController = TextEditingController(text: title.text.trim());
     final included = _TemplateField.values.toSet();
     final settings = _creatorKey.currentState!.templateSettings;
@@ -618,6 +630,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     onChanged: (_) => update(() {}),
                     decoration: InputDecoration(
                       labelText: context.l10n.pollTemplateName,
+                      errorText: repository.containsName(nameController.text)
+                          ? context.l10n.pollTemplateNameTaken
+                          : null,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -647,7 +662,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               child: Text(context.l10n.cancel),
             ),
             FilledButton(
-              onPressed: nameController.text.trim().isEmpty || included.isEmpty
+              onPressed:
+                  nameController.text.trim().isEmpty ||
+                      included.isEmpty ||
+                      repository.containsName(nameController.text)
                   ? null
                   : () => Navigator.pop(context, nameController.text.trim()),
               child: Text(context.l10n.confirm),
@@ -699,11 +717,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           : null,
     );
     try {
-      final repository = await ref.read(
-        pollTemplateRepositoryProvider(userId).future,
-      );
       await repository.save(template);
       if (mounted) showSuccessSnackBar(context.l10n.pollTemplateSaved);
+    } on DuplicatePollTemplateNameException {
+      if (mounted) showErrorSnackBar(context.l10n.pollTemplateNameTaken);
     } catch (_) {
       if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
     }

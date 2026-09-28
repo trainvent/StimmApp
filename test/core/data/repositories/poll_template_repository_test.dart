@@ -67,4 +67,30 @@ void main() {
       expect(prefs.getStringList('poll_templates_v1_alice'), ['invalid json']);
     },
   );
+  test(
+    'rejects duplicate names, ignoring case and surrounding whitespace',
+    () async {
+      final repository = PollTemplateRepository(
+        await SharedPreferences.getInstance(),
+        'alice',
+      );
+      await repository.save(template);
+      for (final name in [
+        'Weekly decision',
+        'weekly DECISION',
+        '  Weekly decision  ',
+      ]) {
+        await expectLater(
+          repository.save(PollTemplate(id: 'another', name: name)),
+          throwsA(isA<DuplicatePollTemplateNameException>()),
+        );
+        expect(repository.load().single.toJson(), template.toJson());
+      }
+      await repository.delete(template.id);
+      await repository.save(
+        const PollTemplate(id: 'another', name: 'Weekly decision'),
+      );
+      expect(repository.load().single.id, 'another');
+    },
+  );
 }

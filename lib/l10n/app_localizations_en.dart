@@ -2779,4 +2779,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pollTemplateGroupUnavailable =>
       'You no longer have access to this template’s group. Your form has not changed.';
+
+  @override
+  String get pollTemplateNameTaken =>
+      'A template with this name already exists. Choose another name.';
 }

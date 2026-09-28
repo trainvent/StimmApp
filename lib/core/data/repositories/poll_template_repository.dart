@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 
+class DuplicatePollTemplateNameException implements Exception {
+  const DuplicatePollTemplateNameException();
+}
+
 /// Templates are private to an account on this device, separate from drafts.
 class PollTemplateRepository {
   PollTemplateRepository(this.preferences, String userId)
@@ -21,7 +25,16 @@ class PollTemplateRepository {
         .toList();
   }
 
+  bool containsName(String name, {String? excludingId}) => load().any(
+    (template) =>
+        template.id != excludingId &&
+        template.name.trim().toLowerCase() == name.trim().toLowerCase(),
+  );
+
   Future<void> save(PollTemplate template) async {
+    if (containsName(template.name, excludingId: template.id)) {
+      throw const DuplicatePollTemplateNameException();
+    }
     final templates = load()..removeWhere((item) => item.id == template.id);
     templates.insert(0, template);
     await _write(templates);

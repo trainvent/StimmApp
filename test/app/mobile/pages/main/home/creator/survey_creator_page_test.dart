@@ -264,6 +264,31 @@ void main() {
       await tester.pumpAndSettle();
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
+      if (includeAll) {
+        await tester.tap(find.byTooltip('Save as template'));
+        await tester.pumpAndSettle();
+        final nameField = find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(TextField),
+        );
+        await tester.enterText(nameField, '  WEEKLY meeting  ');
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'A template with this name already exists. Choose another name.',
+          ),
+          findsOneWidget,
+        );
+        final confirm = find.widgetWithText(FilledButton, 'Confirm');
+        expect(tester.widget<FilledButton>(confirm).onPressed, isNull);
+        await tester.enterText(nameField, 'Another meeting');
+        await tester.pumpAndSettle();
+        expect(tester.widget<FilledButton>(confirm).onPressed, isNotNull);
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
+      }
+
       final saved =
           jsonDecode(prefs.getStringList('poll_templates_v1_user-1')!.single)
               as Map;

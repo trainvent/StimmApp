@@ -2812,4 +2812,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pollTemplateGroupUnavailable =>
       'Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert.';
+
+  @override
+  String get pollTemplateNameTaken =>
+      'Eine Vorlage mit diesem Namen existiert bereits. Wähle einen anderen Namen.';
 }

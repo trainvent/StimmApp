@@ -1098,5 +1098,6 @@
   "pollTemplateIncludeFields": "In dieser Vorlage speichern (abgewählte Felder bleiben beim Anwenden unverändert):",
   "pollTemplateQuestionsAndAnswers": "Fragen und Antworten",
   "pollTemplateScopeUnavailable": "Der Geltungsbereich dieser Vorlage ist für dein Profil nicht verfügbar. Dein Formular wurde nicht geändert.",
-  "pollTemplateGroupUnavailable": "Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert."
+  "pollTemplateGroupUnavailable": "Du hast keinen Zugriff mehr auf die Gruppe dieser Vorlage. Dein Formular wurde nicht geändert.",
+  "pollTemplateNameTaken": "Eine Vorlage mit diesem Namen existiert bereits. Wähle einen anderen Namen."
 }

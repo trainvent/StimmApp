@@ -5083,6 +5083,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You no longer have access to this template’s group. Your form has not changed.'**
   String get pollTemplateGroupUnavailable;
+
+  /// No description provided for @pollTemplateNameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'A template with this name already exists. Choose another name.'**
+  String get pollTemplateNameTaken;
 }
 
 class _AppLocalizationsDelegate

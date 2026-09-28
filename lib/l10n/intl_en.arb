@@ -1094,5 +1094,6 @@
   "pollTemplateIncludeFields": "Include in this template (untick to leave a field unchanged when applying):",
   "pollTemplateQuestionsAndAnswers": "Questions and answers",
   "pollTemplateScopeUnavailable": "This template’s scope is unavailable for your profile. Your form has not changed.",
-  "pollTemplateGroupUnavailable": "You no longer have access to this template’s group. Your form has not changed."
+  "pollTemplateGroupUnavailable": "You no longer have access to this template’s group. Your form has not changed.",
+  "pollTemplateNameTaken": "A template with this name already exists. Choose another name."
 }
