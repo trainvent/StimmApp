@@ -32,6 +32,13 @@ class PdfExportService extends ExportContentService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         build: (context) => [
+          if (!document.hasDetails && document.documentTitle != null) ...[
+            pw.Text(
+              document.documentTitle!,
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 10),
+          ],
           if (document.hasDetails) ...[
             pw.TableHelper.fromTextArray(
               context: context,
@@ -40,7 +47,11 @@ class PdfExportService extends ExportContentService {
                   [detail.label, detail.value],
               ],
               cellStyle: const pw.TextStyle(fontSize: 9),
-              columnWidths: {0: const pw.FixedColumnWidth(130)},
+              tableWidth: pw.TableWidth.max,
+              columnWidths: {
+                0: const pw.FixedColumnWidth(85),
+                1: const pw.FlexColumnWidth(),
+              },
             ),
             pw.SizedBox(height: 18),
           ],
@@ -70,7 +81,11 @@ class PdfExportService extends ExportContentService {
                           : '',
                     ],
                 ],
-                columnWidths: {0: const pw.FixedColumnWidth(105)},
+                tableWidth: pw.TableWidth.max,
+                columnWidths: {
+                  0: const pw.FixedColumnWidth(85),
+                  1: const pw.FlexColumnWidth(),
+                },
                 cellStyle: const pw.TextStyle(fontSize: 9),
                 border: pw.TableBorder.all(color: PdfColors.grey500),
                 cellPadding: const pw.EdgeInsets.all(5),
