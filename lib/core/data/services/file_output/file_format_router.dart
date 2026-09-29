@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
+import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
@@ -33,6 +34,7 @@ class FileFormatRouter {
       ExportFileFormat.csv => const CsvExportService(),
       ExportFileFormat.json => const JsonExportService(),
       ExportFileFormat.pdf => const PdfExportService(),
+      ExportFileFormat.pdfSlim => const PdfExportService(slim: true),
     };
   }
 
@@ -44,14 +46,23 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
       petitionId,
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _petitionDetails(petition) : null,
-      rowsTitle: 'Signatures',
+      details: includeContent ? _petitionDetails(petition, labels) : null,
+      rowsTitle: context.l10n.exportSignatures,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: petition.title,
+      compactColumns: [
+        ExportColumn(sourceIndex: 1, label: context.l10n.name),
+        ExportColumn(sourceIndex: 2, label: context.l10n.surname),
+        ExportColumn(sourceIndex: 4, label: context.l10n.livingAddress),
+        ExportColumn(sourceIndex: 3, label: context.l10n.email),
+      ],
     );
     return _writer.saveDocument(
       'petition_${petition.title}',
@@ -68,14 +79,23 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
       petitionId,
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _petitionDetails(petition) : null,
-      rowsTitle: 'Signatures',
+      details: includeContent ? _petitionDetails(petition, labels) : null,
+      rowsTitle: context.l10n.exportSignatures,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: petition.title,
+      compactColumns: [
+        ExportColumn(sourceIndex: 1, label: context.l10n.name),
+        ExportColumn(sourceIndex: 2, label: context.l10n.surname),
+        ExportColumn(sourceIndex: 4, label: context.l10n.livingAddress),
+        ExportColumn(sourceIndex: 3, label: context.l10n.email),
+      ],
     );
     return _writer.shareDocument(
       'petition_${petition.title}',
@@ -100,6 +120,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
       poll,
@@ -107,8 +128,10 @@ class FileFormatRouter {
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _pollDetails(poll) : null,
-      rowsTitle: 'Results',
+      details: includeContent ? _pollDetails(poll, labels) : null,
+      rowsTitle: context.l10n.exportResults,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: poll.title,
     );
     return _writer.saveDocument('poll_${poll.title}', document, service);
   }
@@ -121,6 +144,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
       poll,
@@ -128,8 +152,10 @@ class FileFormatRouter {
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _pollDetails(poll) : null,
-      rowsTitle: 'Results',
+      details: includeContent ? _pollDetails(poll, labels) : null,
+      rowsTitle: context.l10n.exportResults,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: poll.title,
     );
     return _writer.shareDocument('poll_${poll.title}', document, service);
   }
@@ -150,6 +176,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildSurveyResultsRows(
       CsvExportLabels.fromContext(context),
       survey,
@@ -157,8 +184,10 @@ class FileFormatRouter {
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _surveyDetails(survey) : null,
-      rowsTitle: 'Results',
+      details: includeContent ? _surveyDetails(survey, labels) : null,
+      rowsTitle: context.l10n.exportResults,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: survey.title,
     );
     return _writer.saveDocument('survey_${survey.title}', document, service);
   }
@@ -171,6 +200,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final labels = ExportLabels.fromContext(context);
     final rows = await _buildSurveyResultsRows(
       CsvExportLabels.fromContext(context),
       survey,
@@ -178,8 +208,10 @@ class FileFormatRouter {
     );
     final document = ExportDocument(
       rows: rows,
-      details: includeContent ? _surveyDetails(survey) : null,
-      rowsTitle: 'Results',
+      details: includeContent ? _surveyDetails(survey, labels) : null,
+      rowsTitle: context.l10n.exportResults,
+      rowTitle: context.l10n.exportSignature,
+      documentTitle: survey.title,
     );
     return _writer.shareDocument('survey_${survey.title}', document, service);
   }
@@ -212,7 +244,7 @@ class FileFormatRouter {
       final p = r['profile'] as UserProfile;
       final reason = r['reason'] as String? ?? '';
       rows.add([
-        'signed',
+        labels.signed,
         p.givenName ?? '',
         p.surname ?? '',
         p.email ?? '',
@@ -298,7 +330,7 @@ class FileFormatRouter {
         final profile = await _userRepo.getById(doc.id);
 
         rows.add([
-          'submitted',
+          labels.submitted,
           profile?.givenName ?? '',
           profile?.surname ?? '',
           profile?.email ?? '',
@@ -328,33 +360,33 @@ class FileFormatRouter {
     return rows;
   }
 
-  List<ExportDetail> _petitionDetails(Petition petition) {
+  List<ExportDetail> _petitionDetails(Petition petition, ExportLabels labels) {
     return _withoutEmptyValues([
-      ExportDetail('Type', 'Petition'),
-      ExportDetail('ID', petition.id),
-      ExportDetail('Header', petition.title),
-      ExportDetail('Body', petition.description),
-      ExportDetail('Tags', petition.tags.join(', ')),
-      ExportDetail('Signature count', petition.signatureCount.toString()),
-      ExportDetail('Created by', petition.createdBy),
-      ExportDetail('Created at', _formatDateTime(petition.createdAt)),
+      ExportDetail(labels.type, labels.petition),
+      ExportDetail(labels.id, petition.id),
+      ExportDetail(labels.header, petition.title),
+      ExportDetail(labels.body, petition.description),
+      ExportDetail(labels.tags, petition.tags.join(', ')),
+      ExportDetail(labels.signatureCount, petition.signatureCount.toString()),
+      ExportDetail(labels.createdBy, petition.createdBy),
+      ExportDetail(labels.createdAt, _formatDateTime(petition.createdAt)),
       ExportDetail(
-        'Expires at',
+        labels.expiresAt,
         petition.expiresAt == null
-            ? 'Open until closed'
+            ? labels.openUntilClosed
             : _formatDateTime(petition.expiresAt!),
       ),
-      ExportDetail('Status', petition.status),
-      ExportDetail('Scope type', petition.scopeType),
-      ExportDetail('Continent', petition.continentCode ?? ''),
-      ExportDetail('Country', petition.countryCode ?? ''),
-      ExportDetail('State or region', petition.stateOrRegion ?? ''),
-      ExportDetail('Town', petition.town ?? ''),
-      ExportDetail('Image URL', petition.imageUrl ?? ''),
+      ExportDetail(labels.status, petition.status),
+      ExportDetail(labels.scopeType, petition.scopeType),
+      ExportDetail(labels.continent, petition.continentCode ?? ''),
+      ExportDetail(labels.country, petition.countryCode ?? ''),
+      ExportDetail(labels.stateOrRegion, petition.stateOrRegion ?? ''),
+      ExportDetail(labels.town, petition.town ?? ''),
+      ExportDetail(labels.imageUrl, petition.imageUrl ?? ''),
     ]);
   }
 
-  List<ExportDetail> _pollDetails(Poll poll) {
+  List<ExportDetail> _pollDetails(Poll poll, ExportLabels labels) {
     final options = poll.options.map((option) => option.label).join(', ');
     final votes = poll.votes.entries
         .map((entry) {
@@ -369,35 +401,35 @@ class FileFormatRouter {
         .join(', ');
 
     return _withoutEmptyValues([
-      ExportDetail('Type', 'Poll'),
-      ExportDetail('ID', poll.id),
-      ExportDetail('Header', poll.title),
-      ExportDetail('Body', poll.description),
-      ExportDetail('Tags', poll.tags.join(', ')),
-      ExportDetail('Options', options),
-      ExportDetail('Votes', votes),
-      ExportDetail('Total votes', poll.totalVotes.toString()),
-      ExportDetail('Created by', poll.createdBy),
-      ExportDetail('Created at', _formatDateTime(poll.createdAt)),
+      ExportDetail(labels.type, labels.poll),
+      ExportDetail(labels.id, poll.id),
+      ExportDetail(labels.header, poll.title),
+      ExportDetail(labels.body, poll.description),
+      ExportDetail(labels.tags, poll.tags.join(', ')),
+      ExportDetail(labels.options, options),
+      ExportDetail(labels.votes, votes),
+      ExportDetail(labels.totalVotes, poll.totalVotes.toString()),
+      ExportDetail(labels.createdBy, poll.createdBy),
+      ExportDetail(labels.createdAt, _formatDateTime(poll.createdAt)),
       ExportDetail(
-        'Expires at',
+        labels.expiresAt,
         poll.expiresAt == null
-            ? 'Open until closed'
+            ? labels.openUntilClosed
             : _formatDateTime(poll.expiresAt!),
       ),
-      ExportDetail('Status', poll.status),
-      ExportDetail('Scope type', poll.scopeType),
-      ExportDetail('Continent', poll.continentCode ?? ''),
-      ExportDetail('Country', poll.countryCode ?? ''),
-      ExportDetail('State or region', poll.stateOrRegion ?? ''),
-      ExportDetail('Town', poll.town ?? ''),
-      ExportDetail('Group ID', poll.groupId ?? ''),
-      ExportDetail('Group name', poll.groupName ?? ''),
-      ExportDetail('Visibility', poll.visibility),
+      ExportDetail(labels.status, poll.status),
+      ExportDetail(labels.scopeType, poll.scopeType),
+      ExportDetail(labels.continent, poll.continentCode ?? ''),
+      ExportDetail(labels.country, poll.countryCode ?? ''),
+      ExportDetail(labels.stateOrRegion, poll.stateOrRegion ?? ''),
+      ExportDetail(labels.town, poll.town ?? ''),
+      ExportDetail(labels.groupId, poll.groupId ?? ''),
+      ExportDetail(labels.groupName, poll.groupName ?? ''),
+      ExportDetail(labels.visibility, poll.visibility),
     ]);
   }
 
-  List<ExportDetail> _surveyDetails(Survey survey) {
+  List<ExportDetail> _surveyDetails(Survey survey, ExportLabels labels) {
     final questions = survey.questions
         .map((question) {
           final options = question.options
@@ -419,31 +451,31 @@ class FileFormatRouter {
         .join(' | ');
 
     return _withoutEmptyValues([
-      ExportDetail('Type', 'Survey'),
-      ExportDetail('ID', survey.id),
-      ExportDetail('Header', survey.title),
-      ExportDetail('Body', survey.description),
-      ExportDetail('Tags', survey.tags.join(', ')),
-      ExportDetail('Questions', questions),
-      ExportDetail('Votes', votes),
-      ExportDetail('Response count', survey.responseCount.toString()),
-      ExportDetail('Created by', survey.createdBy),
-      ExportDetail('Created at', _formatDateTime(survey.createdAt)),
+      ExportDetail(labels.type, labels.survey),
+      ExportDetail(labels.id, survey.id),
+      ExportDetail(labels.header, survey.title),
+      ExportDetail(labels.body, survey.description),
+      ExportDetail(labels.tags, survey.tags.join(', ')),
+      ExportDetail(labels.options, questions),
+      ExportDetail(labels.votes, votes),
+      ExportDetail(labels.responseCount, survey.responseCount.toString()),
+      ExportDetail(labels.createdBy, survey.createdBy),
+      ExportDetail(labels.createdAt, _formatDateTime(survey.createdAt)),
       ExportDetail(
-        'Expires at',
+        labels.expiresAt,
         survey.expiresAt == null
-            ? 'Open until closed'
+            ? labels.openUntilClosed
             : _formatDateTime(survey.expiresAt!),
       ),
-      ExportDetail('Status', survey.status),
-      ExportDetail('Scope type', survey.scopeType),
-      ExportDetail('Continent', survey.continentCode ?? ''),
-      ExportDetail('Country', survey.countryCode ?? ''),
-      ExportDetail('State or region', survey.stateOrRegion ?? ''),
-      ExportDetail('Town', survey.town ?? ''),
-      ExportDetail('Group ID', survey.groupId ?? ''),
-      ExportDetail('Group name', survey.groupName ?? ''),
-      ExportDetail('Visibility', survey.visibility),
+      ExportDetail(labels.status, survey.status),
+      ExportDetail(labels.scopeType, survey.scopeType),
+      ExportDetail(labels.continent, survey.continentCode ?? ''),
+      ExportDetail(labels.country, survey.countryCode ?? ''),
+      ExportDetail(labels.stateOrRegion, survey.stateOrRegion ?? ''),
+      ExportDetail(labels.town, survey.town ?? ''),
+      ExportDetail(labels.groupId, survey.groupId ?? ''),
+      ExportDetail(labels.groupName, survey.groupName ?? ''),
+      ExportDetail(labels.visibility, survey.visibility),
     ]);
   }
 

@@ -589,6 +589,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportSuccess => 'Export created';
 
   @override
+  String get exportPdf => 'PDF';
+
+  @override
+  String get exportPdfVerbose => 'PDF (verbose)';
+
+  @override
+  String get exportPdfSlim => 'PDF (slim)';
+
+  @override
+  String get exportJson => 'JSON';
+
+  @override
+  String get exportSignatures => 'Signatures';
+
+  @override
+  String get exportResults => 'Results';
+
+  @override
+  String get exportSignature => 'Signature';
+
+  @override
+  String get exportPetition => 'Petition';
+
+  @override
+  String get exportPoll => 'Poll';
+
+  @override
+  String get exportSurvey => 'Survey';
+
+  @override
+  String get exportSigned => 'signed';
+
+  @override
+  String get exportSubmitted => 'submitted';
+
+  @override
+  String get exportType => 'Type';
+
+  @override
+  String get exportId => 'ID';
+
+  @override
+  String get exportHeader => 'Header';
+
+  @override
+  String get exportBody => 'Body';
+
+  @override
+  String get exportTags => 'Tags';
+
+  @override
+  String get exportSignatureCount => 'Signature count';
+
+  @override
+  String get exportCreatedBy => 'Created by';
+
+  @override
+  String get exportCreatedAt => 'Created at';
+
+  @override
+  String get exportExpiresAt => 'Expires at';
+
+  @override
+  String get exportOpenUntilClosed => 'Open until closed';
+
+  @override
+  String get exportStatus => 'Status';
+
+  @override
+  String get exportScopeType => 'Scope type';
+
+  @override
+  String get exportContinent => 'Continent';
+
+  @override
+  String get exportCountry => 'Country';
+
+  @override
+  String get exportStateOrRegion => 'State or region';
+
+  @override
+  String get exportTown => 'Town';
+
+  @override
+  String get exportImageUrl => 'Image URL';
+
+  @override
+  String get exportOptions => 'Options';
+
+  @override
+  String get exportVotes => 'Votes';
+
+  @override
+  String get exportTotalVotes => 'Total votes';
+
+  @override
+  String get exportResponseCount => 'Response count';
+
+  @override
+  String get exportGroupId => 'Group ID';
+
+  @override
+  String get exportGroupName => 'Group name';
+
+  @override
+  String get exportVisibility => 'Visibility';
+
+  @override
+  String get exportReason => 'Reason';
+
+  @override
   String get failedToCreatePoll => 'Failed to create poll';
 
   @override

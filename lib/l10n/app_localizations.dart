@@ -1166,6 +1166,228 @@ abstract class AppLocalizations {
   /// **'Export created'**
   String get exportSuccess;
 
+  /// No description provided for @exportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get exportPdf;
+
+  /// No description provided for @exportPdfVerbose.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF (verbose)'**
+  String get exportPdfVerbose;
+
+  /// No description provided for @exportPdfSlim.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF (slim)'**
+  String get exportPdfSlim;
+
+  /// No description provided for @exportJson.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON'**
+  String get exportJson;
+
+  /// No description provided for @exportSignatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Signatures'**
+  String get exportSignatures;
+
+  /// No description provided for @exportResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get exportResults;
+
+  /// No description provided for @exportSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get exportSignature;
+
+  /// No description provided for @exportPetition.
+  ///
+  /// In en, this message translates to:
+  /// **'Petition'**
+  String get exportPetition;
+
+  /// No description provided for @exportPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll'**
+  String get exportPoll;
+
+  /// No description provided for @exportSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey'**
+  String get exportSurvey;
+
+  /// No description provided for @exportSigned.
+  ///
+  /// In en, this message translates to:
+  /// **'signed'**
+  String get exportSigned;
+
+  /// No description provided for @exportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'submitted'**
+  String get exportSubmitted;
+
+  /// No description provided for @exportType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get exportType;
+
+  /// No description provided for @exportId.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get exportId;
+
+  /// No description provided for @exportHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Header'**
+  String get exportHeader;
+
+  /// No description provided for @exportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get exportBody;
+
+  /// No description provided for @exportTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get exportTags;
+
+  /// No description provided for @exportSignatureCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature count'**
+  String get exportSignatureCount;
+
+  /// No description provided for @exportCreatedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get exportCreatedBy;
+
+  /// No description provided for @exportCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get exportCreatedAt;
+
+  /// No description provided for @exportExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires at'**
+  String get exportExpiresAt;
+
+  /// No description provided for @exportOpenUntilClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Open until closed'**
+  String get exportOpenUntilClosed;
+
+  /// No description provided for @exportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get exportStatus;
+
+  /// No description provided for @exportScopeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope type'**
+  String get exportScopeType;
+
+  /// No description provided for @exportContinent.
+  ///
+  /// In en, this message translates to:
+  /// **'Continent'**
+  String get exportContinent;
+
+  /// No description provided for @exportCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get exportCountry;
+
+  /// No description provided for @exportStateOrRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'State or region'**
+  String get exportStateOrRegion;
+
+  /// No description provided for @exportTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Town'**
+  String get exportTown;
+
+  /// No description provided for @exportImageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get exportImageUrl;
+
+  /// No description provided for @exportOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get exportOptions;
+
+  /// No description provided for @exportVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes'**
+  String get exportVotes;
+
+  /// No description provided for @exportTotalVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Total votes'**
+  String get exportTotalVotes;
+
+  /// No description provided for @exportResponseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Response count'**
+  String get exportResponseCount;
+
+  /// No description provided for @exportGroupId.
+  ///
+  /// In en, this message translates to:
+  /// **'Group ID'**
+  String get exportGroupId;
+
+  /// No description provided for @exportGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get exportGroupName;
+
+  /// No description provided for @exportVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get exportVisibility;
+
+  /// No description provided for @exportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get exportReason;
+
   /// No description provided for @failedToCreatePoll.
   ///
   /// In en, this message translates to:

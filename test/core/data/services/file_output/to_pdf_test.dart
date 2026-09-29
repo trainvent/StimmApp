@@ -19,4 +19,30 @@ void main() {
     expect(utf8.decode(bytes, allowMalformed: true), startsWith('%PDF-'));
     expect(bytes, contains(0x25));
   });
+
+  test('builds a compact PDF with one signer per row', () async {
+    final bytes = await const PdfExportService(slim: true).buildBytes(
+      const ExportDocument(
+        rows: [
+          ['Result', 'Name', 'Surname', 'Email', 'Address', 'Reason'],
+          [
+            'signed',
+            'Ada',
+            'Lovelace',
+            'ada@example.com',
+            '1 Analytical Engine Way',
+            '',
+          ],
+        ],
+        compactColumns: [
+          ExportColumn(sourceIndex: 1, label: 'Name'),
+          ExportColumn(sourceIndex: 2, label: 'Surname'),
+          ExportColumn(sourceIndex: 4, label: 'Address'),
+          ExportColumn(sourceIndex: 3, label: 'Email'),
+        ],
+      ),
+    );
+
+    expect(utf8.decode(bytes, allowMalformed: true), startsWith('%PDF-'));
+  });
 }

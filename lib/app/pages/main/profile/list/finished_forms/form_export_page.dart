@@ -162,7 +162,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: false);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: true);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -198,7 +198,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -234,7 +234,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -327,7 +327,7 @@ class _FormExportPageState extends State<FormExportPage> {
     );
   }
 
-  Future<ExportFileFormat?> _selectExportFormat() {
+  Future<ExportFileFormat?> _selectExportFormat({required bool isPetition}) {
     return showModalBottomSheet<ExportFileFormat>(
       context: context,
       showDragHandle: true,
@@ -338,22 +338,29 @@ class _FormExportPageState extends State<FormExportPage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.table_chart),
-                title: const Text('CSV'),
+                title: Text(context.l10n.exportCsv),
                 subtitle: const Text('.csv'),
                 onTap: () => Navigator.pop(context, ExportFileFormat.csv),
               ),
               ListTile(
                 leading: const Icon(Icons.data_object),
-                title: const Text('JSON'),
+                title: Text(context.l10n.exportJson),
                 subtitle: const Text('.json'),
                 onTap: () => Navigator.pop(context, ExportFileFormat.json),
               ),
               ListTile(
                 leading: const Icon(Icons.picture_as_pdf),
-                title: const Text('PDF'),
+                title: Text(context.l10n.exportPdfVerbose),
                 subtitle: const Text('.pdf'),
                 onTap: () => Navigator.pop(context, ExportFileFormat.pdf),
               ),
+              if (isPetition)
+                ListTile(
+                  leading: const Icon(Icons.view_list_outlined),
+                  title: Text(context.l10n.exportPdfSlim),
+                  subtitle: const Text('.pdf'),
+                  onTap: () => Navigator.pop(context, ExportFileFormat.pdfSlim),
+                ),
             ],
           ),
         );

@@ -595,6 +595,117 @@ class AppLocalizationsDe extends AppLocalizations {
   String get exportSuccess => 'Export erstellt';
 
   @override
+  String get exportPdf => 'PDF';
+
+  @override
+  String get exportPdfVerbose => 'PDF (detailliert)';
+
+  @override
+  String get exportPdfSlim => 'PDF (kompakt)';
+
+  @override
+  String get exportJson => 'JSON';
+
+  @override
+  String get exportSignatures => 'Unterschriften';
+
+  @override
+  String get exportResults => 'Ergebnisse';
+
+  @override
+  String get exportSignature => 'Unterschrift';
+
+  @override
+  String get exportPetition => 'Petition';
+
+  @override
+  String get exportPoll => 'Umfrage';
+
+  @override
+  String get exportSurvey => 'Fragebogen';
+
+  @override
+  String get exportSigned => 'unterschrieben';
+
+  @override
+  String get exportSubmitted => 'abgesendet';
+
+  @override
+  String get exportType => 'Typ';
+
+  @override
+  String get exportId => 'ID';
+
+  @override
+  String get exportHeader => 'Überschrift';
+
+  @override
+  String get exportBody => 'Beschreibung';
+
+  @override
+  String get exportTags => 'Tags';
+
+  @override
+  String get exportSignatureCount => 'Anzahl der Unterschriften';
+
+  @override
+  String get exportCreatedBy => 'Erstellt von';
+
+  @override
+  String get exportCreatedAt => 'Erstellt am';
+
+  @override
+  String get exportExpiresAt => 'Läuft ab am';
+
+  @override
+  String get exportOpenUntilClosed => 'Offen bis zur Schließung';
+
+  @override
+  String get exportStatus => 'Status';
+
+  @override
+  String get exportScopeType => 'Geltungsbereich';
+
+  @override
+  String get exportContinent => 'Kontinent';
+
+  @override
+  String get exportCountry => 'Land';
+
+  @override
+  String get exportStateOrRegion => 'Bundesland oder Region';
+
+  @override
+  String get exportTown => 'Ort';
+
+  @override
+  String get exportImageUrl => 'Bild-URL';
+
+  @override
+  String get exportOptions => 'Optionen';
+
+  @override
+  String get exportVotes => 'Stimmen';
+
+  @override
+  String get exportTotalVotes => 'Stimmen insgesamt';
+
+  @override
+  String get exportResponseCount => 'Antworten';
+
+  @override
+  String get exportGroupId => 'Gruppen-ID';
+
+  @override
+  String get exportGroupName => 'Gruppenname';
+
+  @override
+  String get exportVisibility => 'Sichtbarkeit';
+
+  @override
+  String get exportReason => 'Grund';
+
+  @override
   String get failedToCreatePoll => 'Fehler beim Erstellen der Umfrage';
 
   @override
