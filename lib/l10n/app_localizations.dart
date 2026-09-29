@@ -5149,6 +5149,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only the listed fields will be replaced. Other settings stay as they are.'**
   String get templateApplyHint;
+
+  /// No description provided for @showExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Show explanations'**
+  String get showExplanations;
+
+  /// No description provided for @hideExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide explanations'**
+  String get hideExplanations;
 }
 
 class _AppLocalizationsDelegate

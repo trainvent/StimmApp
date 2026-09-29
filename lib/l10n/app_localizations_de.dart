@@ -2855,4 +2855,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get templateApplyHint =>
       'Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten.';
+
+  @override
+  String get showExplanations => 'Erklärungen anzeigen';
+
+  @override
+  String get hideExplanations => 'Erklärungen ausblenden';
 }

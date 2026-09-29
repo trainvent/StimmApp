@@ -1122,5 +1122,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "showExplanations": "Show explanations",
+  "hideExplanations": "Hide explanations"
 }

@@ -32,6 +32,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   final List<_AllowedDomainDraft> _domainDrafts = [];
   List<PollGroupAllowedMember> _existingAllowedMembers = const [];
   bool _allowSelfNamedNicknames = true;
+  bool _showExplanations = false;
   DateTime? _expiresAt;
   bool _isCreating = false;
   PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
@@ -359,11 +360,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          context.l10n.allowedMailDomainsDescription,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        const SizedBox(height: 16),
+        if (_showExplanations) ...[
+          Text(
+            context.l10n.allowedMailDomainsDescription,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+        ],
         if (_domainDrafts.isEmpty)
           Text(
             context.l10n.noDomainRulesYet,
@@ -483,24 +486,46 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
     return Scaffold(
       appBar: AppBar(
+        actionsPadding: const EdgeInsets.only(right: 12),
         title: Text(
           _isEditing
               ? context.l10n.editGroupTitle
               : context.l10n.createGroupTitle,
         ),
+        actions: [
+          IconButton(
+            key: const Key('group_editor_help'),
+            tooltip: _showExplanations
+                ? context.l10n.hideExplanations
+                : context.l10n.showExplanations,
+            isSelected: _showExplanations,
+            style: IconButton.styleFrom(
+              backgroundColor: _showExplanations
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : null,
+              foregroundColor: _showExplanations
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            icon: const Icon(Icons.accessibility_new),
+            onPressed: () =>
+                setState(() => _showExplanations = !_showExplanations),
+          ),
+        ],
       ),
       body: user == null
           ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Text(
-                  _isEditing
-                      ? context.l10n.editGroupDescription
-                      : context.l10n.createGroupDescription,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 20),
+                if (_showExplanations) ...[
+                  Text(
+                    _isEditing
+                        ? context.l10n.editGroupDescription
+                        : context.l10n.createGroupDescription,
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 TextField(
                   controller: _nameController,
                   maxLength: AppLimits.maxGroupNameLength,
@@ -518,11 +543,12 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                 const SizedBox(height: 16),
                 _buildAccessModeDropdown(),
                 const SizedBox(height: 8),
-                Text(
-                  _accessMode.localizedDescription(context),
-                  key: const Key('access_mode_description'),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                if (_showExplanations)
+                  Text(
+                    _accessMode.localizedDescription(context),
+                    key: const Key('access_mode_description'),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: _allowSelfNamedNicknames,

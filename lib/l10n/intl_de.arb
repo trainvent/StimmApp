@@ -1109,5 +1109,7 @@
   "publishNow": "Veröffentlichen",
   "geographicalScope": "Geografischer Geltungsbereich",
   "templateQuestionCount": "{count, plural, =1{1 Frage mit Antworten} other{{count} Fragen mit Antworten}}",
-  "templateApplyHint": "Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten."
+  "templateApplyHint": "Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten.",
+  "showExplanations": "Erklärungen anzeigen",
+  "hideExplanations": "Erklärungen ausblenden"
 }

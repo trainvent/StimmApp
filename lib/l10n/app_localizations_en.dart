@@ -2821,4 +2821,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get templateApplyHint =>
       'Only the listed fields will be replaced. Other settings stay as they are.';
+
+  @override
+  String get showExplanations => 'Show explanations';
+
+  @override
+  String get hideExplanations => 'Hide explanations';
 }

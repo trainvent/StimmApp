@@ -146,7 +146,7 @@ void main() {
   );
 
   group('Group editor and invitation pages', () {
-    testWidgets('defaults to protected access and shows access description', (
+    testWidgets('accessibility help toggles inline explanations', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -157,7 +157,20 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('access_mode_dropdown')), findsOneWidget);
+      expect(find.byKey(const Key('access_mode_description')), findsNothing);
+      await tester.tap(find.byKey(const Key('group_editor_help')));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
       expect(find.byKey(const Key('access_mode_description')), findsOneWidget);
+      expect(
+        tester
+            .widget<IconButton>(find.byKey(const Key('group_editor_help')))
+            .isSelected,
+        isTrue,
+      );
+      await tester.tap(find.byKey(const Key('group_editor_help')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('access_mode_description')), findsNothing);
     });
 
     testWidgets('invitation page imports CSV rows and reports malformed ones', (
