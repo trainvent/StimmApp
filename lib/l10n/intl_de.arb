@@ -1111,5 +1111,10 @@
   "templateQuestionCount": "{count, plural, =1{1 Frage mit Antworten} other{{count} Fragen mit Antworten}}",
   "templateApplyHint": "Nur die aufgeführten Felder werden ersetzt. Andere Einstellungen bleiben erhalten.",
   "showExplanations": "Erklärungen anzeigen",
-  "hideExplanations": "Erklärungen ausblenden"
+  "hideExplanations": "Erklärungen ausblenden",
+  "groupPicture": "Gruppenbild",
+  "chooseGroupPicture": "Bild auswählen",
+  "removeGroupPicture": "Gruppenbild entfernen",
+  "groupPicturePickFailed": "Dieses Bild konnte nicht geöffnet werden. Wähle ein Bild unter 5 MB.",
+  "groupPictureSaveFailed": "Die Gruppe wurde gespeichert, aber das Bild konnte nicht gespeichert werden. Bitte versuche erneut zu speichern."
 }

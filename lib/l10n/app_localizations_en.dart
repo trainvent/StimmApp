@@ -2827,4 +2827,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hideExplanations => 'Hide explanations';
+
+  @override
+  String get groupPicture => 'Group picture';
+
+  @override
+  String get chooseGroupPicture => 'Choose picture';
+
+  @override
+  String get removeGroupPicture => 'Remove group picture';
+
+  @override
+  String get groupPicturePickFailed =>
+      'Could not open this picture. Choose an image smaller than 5 MB.';
+
+  @override
+  String get groupPictureSaveFailed =>
+      'The group was saved, but its picture could not be saved. Please try saving again.';
 }

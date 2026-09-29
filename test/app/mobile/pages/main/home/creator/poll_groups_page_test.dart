@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,8 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/data/services/group_picture_service.dart';
+import 'package:stimmapp/app/widgets/group_avatar.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 import '../../../../../../test_helper.dart';
@@ -46,6 +50,15 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
   Map<String, Object?>? lastCreatePayload;
   Map<String, Object?>? lastUpdatePayload;
   final List<PollGroup> createdGroups = [];
+  int createCalls = 0;
+  String? savedPicture;
+  bool pictureSaved = false;
+
+  @override
+  Future<void> setProfilePicture(String groupId, String? url) async {
+    pictureSaved = true;
+    savedPicture = url;
+  }
 
   @override
   Future<List<PollGroupAllowedMember>> getAllowedMembers(String groupId) async {
@@ -86,6 +99,7 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
     List<PollGroupAllowedMember> allowedMembers = const [],
     List<PollGroupAllowedDomain> allowedDomains = const [],
   }) async {
+    createCalls++;
     lastCreatePayload = {
       'creatorUid': creatorUid,
       'name': name,
@@ -121,6 +135,31 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
   }
 }
 
+class _FakeGroupPictures extends GroupPictureService {
+  bool failUpload = false;
+  int uploads = 0;
+  final deleted = <String>[];
+  @override
+  Future<Uint8List?> pickPicture() async => base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aT9sAAAAASUVORK5CYII=',
+  );
+  @override
+  Future<String> upload(
+    String groupId,
+    Uint8List bytes, {
+    required void Function(double) onProgress,
+  }) async {
+    uploads++;
+    onProgress(0.5);
+    if (failUpload) throw StateError('upload_failed');
+    onProgress(1);
+    return 'https://example.test/new-group.png';
+  }
+
+  @override
+  Future<void> delete(String groupId, String url) async => deleted.add(url);
+}
+
 void main() {
   late _FakeUser user;
   late _RecordingPollGroupRepository repository;
@@ -146,6 +185,100 @@ void main() {
   );
 
   group('Group editor and invitation pages', () {
+    testWidgets(
+      'picture upload retries use the created group instead of creating twice',
+      (tester) async {
+        final pictures = _FakeGroupPictures()..failUpload = true;
+        await tester.pumpWidget(
+          createTestWidget(
+            GroupEditorPage(
+              repository: repository,
+              auth: _FakeAuthService(user),
+              pictureService: pictures,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('pick_group_picture')));
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<GroupAvatar>(find.byType(GroupAvatar)).bytes,
+          isNotNull,
+        );
+        await tester.enterText(find.byType(TextField).first, 'Photo group');
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('save_group_button')),
+          250,
+          scrollable: find.byType(Scrollable).first,
+        );
+        tester
+            .widget<FilledButton>(find.byKey(const Key('save_group_button')))
+            .onPressed!();
+        await tester.pumpAndSettle();
+        expect(repository.createCalls, 1);
+        expect(repository.pictureSaved, isFalse);
+        expect(find.text('Edit group'), findsOneWidget);
+        pictures.failUpload = false;
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('save_group_button')),
+          250,
+          scrollable: find.byType(Scrollable).first,
+        );
+        tester
+            .widget<FilledButton>(find.byKey(const Key('save_group_button')))
+            .onPressed!();
+        await tester.pumpAndSettle();
+        expect(repository.createCalls, 1);
+        expect(repository.savedPicture, 'https://example.test/new-group.png');
+        expect(pictures.uploads, 2);
+      },
+    );
+
+    testWidgets(
+      'removing a picture saves null and cleans up the previous image',
+      (tester) async {
+        final pictures = _FakeGroupPictures();
+        await tester.pumpWidget(
+          createTestWidget(
+            GroupEditorPage(
+              initialGroup: existingGroup.copyWith(
+                profilePictureUrl: 'https://example.test/old.png',
+              ),
+              repository: repository,
+              auth: _FakeAuthService(user),
+              pictureService: pictures,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('remove_group_picture')));
+        await tester.pumpAndSettle();
+        expect(repository.pictureSaved, isFalse);
+        expect(
+          tester.widget<GroupAvatar>(find.byType(GroupAvatar)).url,
+          isNull,
+        );
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('save_group_button')),
+          250,
+          scrollable: find.byType(Scrollable).first,
+        );
+        tester
+            .widget<FilledButton>(find.byKey(const Key('save_group_button')))
+            .onPressed!();
+        await tester.pumpAndSettle();
+        expect(repository.pictureSaved, isTrue);
+        expect(repository.savedPicture, isNull);
+        expect(pictures.deleted, ['https://example.test/old.png']);
+      },
+    );
+
     testWidgets('accessibility help toggles inline explanations', (
       tester,
     ) async {

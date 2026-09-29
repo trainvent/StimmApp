@@ -152,6 +152,7 @@ PollGroupInvitationStatus parsePollGroupInvitationStatus(String? value) {
 class PollGroup {
   final String id;
   final String name;
+  final String? profilePictureUrl;
   final String createdBy;
   final DateTime createdAt;
   final DateTime? expiresAt;
@@ -169,6 +170,7 @@ class PollGroup {
   const PollGroup({
     required this.id,
     required this.name,
+    this.profilePictureUrl,
     required this.createdBy,
     required this.createdAt,
     required this.joinCode,
@@ -187,6 +189,7 @@ class PollGroup {
   PollGroup copyWith({
     String? id,
     String? name,
+    Object? profilePictureUrl = _unset,
     String? createdBy,
     DateTime? createdAt,
     Object? expiresAt = _unset,
@@ -204,6 +207,9 @@ class PollGroup {
     return PollGroup(
       id: id ?? this.id,
       name: name ?? this.name,
+      profilePictureUrl: identical(profilePictureUrl, _unset)
+          ? this.profilePictureUrl
+          : profilePictureUrl as String?,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: identical(expiresAt, _unset)
@@ -232,6 +238,7 @@ class PollGroup {
     return PollGroup(
       id: snap.id,
       name: (data['name'] ?? '') as String,
+      profilePictureUrl: data['profilePictureUrl'] as String?,
       createdBy: (data['createdBy'] ?? '') as String,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as Timestamp?)?.toDate(),
@@ -255,6 +262,7 @@ class PollGroup {
   static Map<String, Object?> toFirestore(PollGroup group, SetOptions? _) {
     return {
       'name': group.name,
+      'profilePictureUrl': group.profilePictureUrl,
       'createdBy': group.createdBy,
       'createdAt': Timestamp.fromDate(group.createdAt),
       'expiresAt': group.expiresAt != null

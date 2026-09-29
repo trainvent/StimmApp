@@ -165,6 +165,10 @@ class PollGroupRepository {
     }
   }
 
+  Future<void> setProfilePicture(String groupId, String? url) async {
+    await _groups().doc(groupId).update({'profilePictureUrl': url});
+  }
+
   Future<int> countGroupsCreatedByUser(String uid) async {
     final groups = await watchGroupsForUser(uid).first;
     return groups.where((group) => group.createdBy == uid).take(2).length;

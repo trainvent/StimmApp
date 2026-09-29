@@ -29,6 +29,25 @@ void main() {
       expect(result['importedMemberCount'], 2);
     });
 
+    test(
+      'picture URL round trips, remains optional, and can be removed',
+      () async {
+        const url = 'https://example.test/group.png';
+        final withPicture = group.copyWith(profilePictureUrl: url);
+        final firestore = FakeFirebaseFirestore();
+        final ref = firestore.collection('pollGroups').doc(group.id);
+        await ref.set(PollGroup.toFirestore(withPicture, null));
+        final loaded = PollGroup.fromFirestore(await ref.get(), null);
+        expect(loaded.profilePictureUrl, url);
+        expect(loaded.copyWith(name: 'Renamed').profilePictureUrl, url);
+        expect(
+          loaded.copyWith(profilePictureUrl: null).profilePictureUrl,
+          isNull,
+        );
+        expect(group.profilePictureUrl, isNull);
+      },
+    );
+
     test('deserializes invite and privacy fields', () async {
       final firestore = FakeFirebaseFirestore();
       final ref = await firestore.collection('pollGroups').add({

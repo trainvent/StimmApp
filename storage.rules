@@ -20,6 +20,25 @@ service firebase.storage {
                    && request.resource.contentType.matches('image/.*');
     }
 
+    match /groups/{groupId}/profile/{fileName} {
+      function groupData() {
+        return firestore.get(/databases/(default)/documents/pollGroups/$(groupId)).data;
+      }
+      function canManagePicture() {
+        return request.auth != null &&
+          (groupData().createdBy == request.auth.uid ||
+           firestore.get(/databases/(default)/documents/pollGroups/$(groupId)/members/$(request.auth.uid)).data.role == 'admin');
+      }
+      allow read: if request.auth != null &&
+        (groupData().createdBy == request.auth.uid ||
+         request.auth.uid in groupData().memberIds ||
+         groupData().accessMode != 'private');
+      allow create, update: if canManagePicture() &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType == 'image/png';
+      allow delete: if canManagePicture();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

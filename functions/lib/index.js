@@ -36,7 +36,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.closeExpiredForms = exports.checkSubscriptions = void 0;
+exports.cleanupGroupPictures = exports.closeExpiredForms = exports.checkSubscriptions = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -152,4 +152,6 @@ if (process.env.GCLOUD_PROJECT !== PROD_PROJECT_ID) {
         exports[key] = testDataSeeder[key];
     });
 }
+var group_picture_cleanup_1 = require("./group_picture_cleanup");
+Object.defineProperty(exports, "cleanupGroupPictures", { enumerable: true, get: function () { return group_picture_cleanup_1.cleanupGroupPictures; } });
 //# sourceMappingURL=index.js.map

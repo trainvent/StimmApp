@@ -1124,5 +1124,10 @@
     }
   },
   "showExplanations": "Show explanations",
-  "hideExplanations": "Hide explanations"
+  "hideExplanations": "Hide explanations",
+  "groupPicture": "Group picture",
+  "chooseGroupPicture": "Choose picture",
+  "removeGroupPicture": "Remove group picture",
+  "groupPicturePickFailed": "Could not open this picture. Choose an image smaller than 5 MB.",
+  "groupPictureSaveFailed": "The group was saved, but its picture could not be saved. Please try saving again."
 }

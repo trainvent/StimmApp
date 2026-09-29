@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/app/widgets/group_avatar.dart';
+import 'package:stimmapp/core/data/services/group_picture_service.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -17,11 +19,13 @@ class GroupEditorPage extends StatefulWidget {
     this.initialGroup,
     this.repository,
     this.auth,
+    this.pictureService,
   });
 
   final PollGroup? initialGroup;
   final PollGroupRepository? repository;
   final AuthService? auth;
+  final GroupPictureService? pictureService;
 
   @override
   State<GroupEditorPage> createState() => _GroupEditorPageState();
@@ -38,7 +42,16 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
   bool _isLoadingExistingRules = false;
 
-  bool get _isEditing => widget.initialGroup != null;
+  PollGroup? _savedGroup;
+  Uint8List? _pictureBytes;
+  String? _pictureUrl;
+  bool _pictureChanged = false;
+  bool _isPickingPicture = false;
+  double? _uploadProgress;
+  late final GroupPictureService _pictures =
+      widget.pictureService ?? GroupPictureService();
+
+  bool get _isEditing => _savedGroup != null;
 
   PollGroupRepository get _repository =>
       widget.repository ?? PollGroupRepository.create();
@@ -47,6 +60,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   @override
   void initState() {
     super.initState();
+    _savedGroup = widget.initialGroup;
+    _pictureUrl = widget.initialGroup?.profilePictureUrl;
     _seedForm();
   }
 
@@ -58,6 +73,80 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
     super.dispose();
   }
+
+  Future<void> _pickPicture() async {
+    setState(() => _isPickingPicture = true);
+    try {
+      final bytes = await _pictures.pickPicture();
+      if (!mounted || bytes == null) return;
+      setState(() {
+        _pictureBytes = bytes;
+        _pictureChanged = true;
+      });
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.groupPicturePickFailed);
+    } finally {
+      if (mounted) setState(() => _isPickingPicture = false);
+    }
+  }
+
+  Widget _buildPicturePicker() => Column(
+    children: [
+      Semantics(
+        label: context.l10n.groupPicture,
+        child: SizedBox.square(
+          dimension: 104,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              GroupAvatar(url: _pictureUrl, bytes: _pictureBytes, size: 96),
+              if (_uploadProgress != null)
+                Positioned.fill(
+                  child: CircularProgressIndicator(value: _uploadProgress),
+                ),
+            ],
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        children: [
+          TextButton.icon(
+            key: const Key('pick_group_picture'),
+            onPressed: _isCreating || _isPickingPicture ? null : _pickPicture,
+            icon: _isPickingPicture
+                ? const SizedBox.square(
+                    dimension: 24,
+                    child: Center(
+                      child: TriangleLoadingIndicator(
+                        size: 20,
+                        showFill: false,
+                      ),
+                    ),
+                  )
+                : const Icon(Icons.add_a_photo_outlined),
+            label: Text(context.l10n.chooseGroupPicture),
+          ),
+          if (_pictureBytes != null || _pictureUrl != null)
+            IconButton(
+              key: const Key('remove_group_picture'),
+              tooltip: context.l10n.removeGroupPicture,
+              onPressed: _isCreating || _isPickingPicture
+                  ? null
+                  : () => setState(() {
+                      _pictureBytes = null;
+                      _pictureUrl = null;
+                      _pictureChanged = true;
+                    }),
+              icon: const Icon(Icons.delete_outline),
+            ),
+        ],
+      ),
+      const SizedBox(height: 16),
+    ],
+  );
 
   Future<void> _pickExpirationDate() async {
     final now = DateTime.now();
@@ -184,6 +273,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   }
 
   Future<void> _saveGroup() async {
+    if (_isCreating || _isPickingPicture) return;
+    final wasEditing = _isEditing;
     final user = _auth.currentUser;
     if (user == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
@@ -206,9 +297,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
     setState(() => _isCreating = true);
     try {
-      late final PollGroup group;
+      late PollGroup group;
       if (_isEditing) {
-        final existingGroup = widget.initialGroup!;
+        final existingGroup = _savedGroup!;
         group = existingGroup.copyWith(
           name: groupName,
           expiresAt: _expiresAt,
@@ -241,14 +332,53 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         );
         group = await _repository
             .watchGroupsForUser(user.uid)
-            .first
+            .firstWhere((groups) => groups.any((item) => item.id == groupId))
             .then((groups) => groups.firstWhere((item) => item.id == groupId));
       }
-      if (!mounted) {
-        return;
+      // Keep the saved group for retries if its optional picture upload fails.
+      _savedGroup = group;
+      if (_pictureChanged) {
+        String? uploadedUrl;
+        try {
+          final oldUrl = group.profilePictureUrl;
+          if (_pictureBytes != null) {
+            if (mounted) setState(() => _uploadProgress = 0);
+            uploadedUrl = await _pictures.upload(
+              group.id,
+              _pictureBytes!,
+              onProgress: (value) {
+                if (mounted) setState(() => _uploadProgress = value);
+              },
+            );
+          }
+          await _repository.setProfilePicture(group.id, uploadedUrl);
+          group = group.copyWith(profilePictureUrl: uploadedUrl);
+          _savedGroup = group;
+          _pictureUrl = uploadedUrl;
+          _pictureBytes = null;
+          _pictureChanged = false;
+          if (oldUrl != null && oldUrl != uploadedUrl) {
+            try {
+              await _pictures.delete(group.id, oldUrl);
+            } catch (_) {
+              debugPrint('Could not clean up the previous group picture.');
+            }
+          }
+        } catch (_) {
+          if (uploadedUrl != null) {
+            try {
+              await _pictures.delete(group.id, uploadedUrl);
+            } catch (_) {}
+          }
+          if (mounted) showErrorSnackBar(context.l10n.groupPictureSaveFailed);
+          return;
+        } finally {
+          if (mounted) setState(() => _uploadProgress = null);
+        }
       }
+      if (!mounted) return;
       showSuccessSnackBar(
-        _isEditing ? context.l10n.groupUpdated : context.l10n.groupCreated,
+        wasEditing ? context.l10n.groupUpdated : context.l10n.groupCreated,
       );
       Navigator.of(context).pop(group);
     } on StateError catch (error) {
@@ -484,111 +614,118 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
 
-    return Scaffold(
-      appBar: AppBar(
-        actionsPadding: const EdgeInsets.only(right: 12),
-        title: Text(
-          _isEditing
-              ? context.l10n.editGroupTitle
-              : context.l10n.createGroupTitle,
-        ),
-        actions: [
-          IconButton(
-            key: const Key('group_editor_help'),
-            tooltip: _showExplanations
-                ? context.l10n.hideExplanations
-                : context.l10n.showExplanations,
-            isSelected: _showExplanations,
-            style: IconButton.styleFrom(
-              backgroundColor: _showExplanations
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : null,
-              foregroundColor: _showExplanations
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-            ),
-            icon: const Icon(Icons.accessibility_new),
-            onPressed: () =>
-                setState(() => _showExplanations = !_showExplanations),
+    return PopScope(
+      canPop: !_isCreating,
+      child: Scaffold(
+        appBar: AppBar(
+          actionsPadding: const EdgeInsets.only(right: 12),
+          title: Text(
+            _isEditing
+                ? context.l10n.editGroupTitle
+                : context.l10n.createGroupTitle,
           ),
-        ],
-      ),
-      body: user == null
-          ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
-          : ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                if (_showExplanations) ...[
-                  Text(
-                    _isEditing
-                        ? context.l10n.editGroupDescription
-                        : context.l10n.createGroupDescription,
-                  ),
-                  const SizedBox(height: 20),
-                ],
-                TextField(
-                  controller: _nameController,
-                  maxLength: AppLimits.maxGroupNameLength,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(
-                      AppLimits.maxGroupNameLength,
-                    ),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: '${context.l10n.groupNameLabel} *',
-                    border: const OutlineInputBorder(),
-                    counterText: '',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildAccessModeDropdown(),
-                const SizedBox(height: 8),
-                if (_showExplanations)
-                  Text(
-                    _accessMode.localizedDescription(context),
-                    key: const Key('access_mode_description'),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: _allowSelfNamedNicknames,
-                  title: Text(context.l10n.membersCanChooseTheirOwnNickname),
-                  onChanged: (value) {
-                    setState(() => _allowSelfNamedNicknames = value);
-                  },
-                ),
-                const SizedBox(height: 8),
-                _buildExpirationDateSection(),
-                if (_isLoadingExistingRules) ...[
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: TriangleLoadingIndicator(showFill: false),
-                    ),
-                  ),
-                ] else ...[
-                  const SizedBox(height: 16),
-                  _buildDomainSection(),
-                  const SizedBox(height: 24),
-                ],
-                FilledButton.icon(
-                  key: const Key('save_group_button'),
-                  onPressed: _isCreating || _isLoadingExistingRules
-                      ? null
-                      : _saveGroup,
-                  icon: Icon(_isEditing ? Icons.save : Icons.group_add),
-                  label: Text(
-                    _isCreating
-                        ? (_isEditing
-                              ? context.l10n.savingGroup
-                              : context.l10n.creatingGroup)
-                        : (_isEditing
-                              ? context.l10n.saveGroupLabel
-                              : context.l10n.createGroupTitle),
-                  ),
-                ),
-              ],
+          actions: [
+            IconButton(
+              key: const Key('group_editor_help'),
+              tooltip: _showExplanations
+                  ? context.l10n.hideExplanations
+                  : context.l10n.showExplanations,
+              isSelected: _showExplanations,
+              style: IconButton.styleFrom(
+                backgroundColor: _showExplanations
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : null,
+                foregroundColor: _showExplanations
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              icon: const Icon(Icons.accessibility_new),
+              onPressed: () =>
+                  setState(() => _showExplanations = !_showExplanations),
             ),
+          ],
+        ),
+        body: user == null
+            ? Center(child: Text(context.l10n.pleaseSignInToManageGroups))
+            : ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  if (_showExplanations) ...[
+                    Text(
+                      _isEditing
+                          ? context.l10n.editGroupDescription
+                          : context.l10n.createGroupDescription,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  _buildPicturePicker(),
+                  TextField(
+                    controller: _nameController,
+                    maxLength: AppLimits.maxGroupNameLength,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(
+                        AppLimits.maxGroupNameLength,
+                      ),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: '${context.l10n.groupNameLabel} *',
+                      border: const OutlineInputBorder(),
+                      counterText: '',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildAccessModeDropdown(),
+                  const SizedBox(height: 8),
+                  if (_showExplanations)
+                    Text(
+                      _accessMode.localizedDescription(context),
+                      key: const Key('access_mode_description'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: _allowSelfNamedNicknames,
+                    title: Text(context.l10n.membersCanChooseTheirOwnNickname),
+                    onChanged: (value) {
+                      setState(() => _allowSelfNamedNicknames = value);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _buildExpirationDateSection(),
+                  if (_isLoadingExistingRules) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: TriangleLoadingIndicator(showFill: false),
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 16),
+                    _buildDomainSection(),
+                    const SizedBox(height: 24),
+                  ],
+                  FilledButton.icon(
+                    key: const Key('save_group_button'),
+                    onPressed:
+                        _isCreating ||
+                            _isPickingPicture ||
+                            _isLoadingExistingRules
+                        ? null
+                        : _saveGroup,
+                    icon: Icon(_isEditing ? Icons.save : Icons.group_add),
+                    label: Text(
+                      _isCreating
+                          ? (_isEditing
+                                ? context.l10n.savingGroup
+                                : context.l10n.creatingGroup)
+                          : (_isEditing
+                                ? context.l10n.saveGroupLabel
+                                : context.l10n.createGroupTitle),
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

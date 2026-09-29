@@ -5161,6 +5161,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide explanations'**
   String get hideExplanations;
+
+  /// No description provided for @groupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Group picture'**
+  String get groupPicture;
+
+  /// No description provided for @chooseGroupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose picture'**
+  String get chooseGroupPicture;
+
+  /// No description provided for @removeGroupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove group picture'**
+  String get removeGroupPicture;
+
+  /// No description provided for @groupPicturePickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this picture. Choose an image smaller than 5 MB.'**
+  String get groupPicturePickFailed;
+
+  /// No description provided for @groupPictureSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The group was saved, but its picture could not be saved. Please try saving again.'**
+  String get groupPictureSaveFailed;
 }
 
 class _AppLocalizationsDelegate
