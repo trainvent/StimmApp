@@ -32,8 +32,15 @@ bool groupCreationRequiresPro({
   return createdCount >= 1 && !hasProAccess;
 }
 
-class GroupsOverviewPage extends StatelessWidget {
+class GroupsOverviewPage extends StatefulWidget {
   const GroupsOverviewPage({super.key});
+
+  @override
+  State<GroupsOverviewPage> createState() => _GroupsOverviewPageState();
+}
+
+class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
+  final Set<String> _hintedGroups = {};
 
   Future<void> _showAdditionalGroupsProDialog(BuildContext context) async {
     final openPaywall = await showDialog<bool>(
@@ -275,6 +282,7 @@ class GroupsOverviewPage extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: AppSlidable(
                       key: ValueKey('member_group_${group.id}'),
+                      showSwipeHint: _hintedGroups.add(group.id),
                       startAction: AppSlidableAction(
                         icon: Icons.dashboard_outlined,
                         label: context.l10n.openGroupDashboard,
