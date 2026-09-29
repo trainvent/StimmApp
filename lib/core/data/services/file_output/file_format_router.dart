@@ -12,9 +12,9 @@ import 'package:stimmapp/core/data/services/file_output/export_content_service.d
 import 'package:stimmapp/core/data/services/file_output/export_document.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_writer.dart';
+import 'package:stimmapp/core/data/services/file_output/to_pdf.dart';
 import 'package:stimmapp/core/data/services/file_output/to_csv.dart';
 import 'package:stimmapp/core/data/services/file_output/to_json.dart';
-import 'package:stimmapp/core/data/services/file_output/to_text.dart';
 
 export 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
 
@@ -32,7 +32,7 @@ class FileFormatRouter {
     return switch (format) {
       ExportFileFormat.csv => const CsvExportService(),
       ExportFileFormat.json => const JsonExportService(),
-      ExportFileFormat.plainText => const TextExportService(),
+      ExportFileFormat.pdf => const PdfExportService(),
     };
   }
 
@@ -53,9 +53,9 @@ class FileFormatRouter {
       details: includeContent ? _petitionDetails(petition) : null,
       rowsTitle: 'Signatures',
     );
-    return _writer.save(
+    return _writer.saveDocument(
       'petition_${petition.title}',
-      service.build(document),
+      document,
       service,
     );
   }
@@ -77,9 +77,9 @@ class FileFormatRouter {
       details: includeContent ? _petitionDetails(petition) : null,
       rowsTitle: 'Signatures',
     );
-    return _writer.share(
+    return _writer.shareDocument(
       'petition_${petition.title}',
-      service.build(document),
+      document,
       service,
     );
   }
@@ -110,7 +110,7 @@ class FileFormatRouter {
       details: includeContent ? _pollDetails(poll) : null,
       rowsTitle: 'Results',
     );
-    return _writer.save('poll_${poll.title}', service.build(document), service);
+    return _writer.saveDocument('poll_${poll.title}', document, service);
   }
 
   Future<String> sharePollResults(
@@ -131,11 +131,7 @@ class FileFormatRouter {
       details: includeContent ? _pollDetails(poll) : null,
       rowsTitle: 'Results',
     );
-    return _writer.share(
-      'poll_${poll.title}',
-      service.build(document),
-      service,
-    );
+    return _writer.shareDocument('poll_${poll.title}', document, service);
   }
 
   Future<String> exportPollResults(
@@ -164,11 +160,7 @@ class FileFormatRouter {
       details: includeContent ? _surveyDetails(survey) : null,
       rowsTitle: 'Results',
     );
-    return _writer.save(
-      'survey_${survey.title}',
-      service.build(document),
-      service,
-    );
+    return _writer.saveDocument('survey_${survey.title}', document, service);
   }
 
   Future<String> shareSurveyResults(
@@ -189,11 +181,7 @@ class FileFormatRouter {
       details: includeContent ? _surveyDetails(survey) : null,
       rowsTitle: 'Results',
     );
-    return _writer.share(
-      'survey_${survey.title}',
-      service.build(document),
-      service,
-    );
+    return _writer.shareDocument('survey_${survey.title}', document, service);
   }
 
   Future<String> exportSurveyResults(

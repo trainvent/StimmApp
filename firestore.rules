@@ -187,6 +187,14 @@ service cloud.firestore {
              !(request.auth.uid in request.resource.data.memberIds);
     }
 
+    function hasValidGroupPictureUpdate(groupId) {
+      return (isPollGroupCreator(groupId) || isPollGroupAdmin(groupId)) &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['profilePictureUrl']) &&
+         (request.resource.data.profilePictureUrl == null ||
+          (request.resource.data.profilePictureUrl is string &&
+           request.resource.data.profilePictureUrl.size() > 0));
+    }
+
     // --- Collection Rules ---
 
     // Users Collection
@@ -318,6 +326,7 @@ service cloud.firestore {
                     ));
       allow create: if isAdmin();
       allow update: if isAdmin() ||
+            hasValidGroupPictureUpdate(groupId) ||
                     (isAuthenticated() &&
                      resource.data.createdBy == request.auth.uid) ||
                     isPollGroupAdmin(groupId) ||

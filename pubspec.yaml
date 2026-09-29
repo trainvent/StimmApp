@@ -82,6 +82,7 @@ dependencies:
   trainvent_general: ^0.0.4
   pinput: ^6.0.2
   flag: ^7.0.2
+  pdf: ^3.12.0
 
 dev_dependencies:
   flutter_test:

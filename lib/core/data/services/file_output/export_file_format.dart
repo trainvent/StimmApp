@@ -4,7 +4,7 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 enum ExportFileFormat {
   csv('csv', 'text/csv; charset=utf-8'),
   json('json', 'application/json; charset=utf-8'),
-  plainText('txt', 'text/plain; charset=utf-8');
+  pdf('pdf', 'application/pdf');
 
   const ExportFileFormat(this.extension, this.mimeType);
 

@@ -11,6 +11,10 @@ abstract class ExportContentService {
 
   String build(ExportDocument document);
 
+  Future<Uint8List> buildBytes(ExportDocument document) async {
+    return bytes(build(document));
+  }
+
   Uint8List bytes(String content) {
     return Uint8List.fromList(utf8.encode(content));
   }
