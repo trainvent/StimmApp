@@ -1171,5 +1171,22 @@
   "settingsBehaviour": "Behaviour",
   "detailScope": "Scope",
   "detailGroup": "Group",
-  "detailTopics": "Topics"
+  "detailTopics": "Topics",
+"showBlockedForms": "blocked forms mode",
+"blockedFormsSettingDescription": "Read-only archive",
+"banned": "Banned",
+"blockedModeHint": "You’re viewing only blocked forms. You can turn this off in Settings.",
+"blockedFormsEmpty": "No blocked forms to show.",
+"blockedFormsError": "Blocked forms could not be loaded.",
+"blockedFormsInfo": "About blocked forms",
+"blockedFormsNotice": "These forms were removed for violating our community guidelines. Participation and sharing are disabled.",
+"blockedSafeSummary": "The original content is withheld. Only moderator-approved public information is shown.",
+"blockedGuideline": "Violated guideline",
+"blockedExplanation": "Moderation explanation",
+"blockedRemovedAt": "Removed on",
+"publicArchiveTitle": "Public archive title (safe to publish)",
+"publicArchiveSummary": "Public safe summary",
+"publicArchiveGuideline": "Public violated guideline",
+"publicArchiveExplanation": "Public moderation explanation",
+"publicArchiveHelp": "Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text."
 }

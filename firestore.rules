@@ -452,6 +452,12 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Public moderation summaries contain no raw content or reporter data.
+    match /blockedForms/{formId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
     // Verification Codes: Blocked
     match /verificationCodes/{document=**} {
       allow read, write: if false;

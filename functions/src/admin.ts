@@ -417,6 +417,19 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 		throw new HttpsError('failed-precondition', 'Report is missing required moderation fields.');
 	}
 
+	const publicArchive = request.data.publicArchive;
+	let publicFields: Record<string, string> | null = null;
+	if (action === 'remove' && publicArchive != null) {
+		publicFields = {};
+		for (const key of ['title', 'summary', 'guideline', 'explanation']) {
+			const value = publicArchive[key];
+			if (typeof value !== 'string' || !value.trim() || value.trim().length > 2000) {
+				throw new HttpsError('invalid-argument', 'Public archive fields must contain 1–2000 characters.');
+			}
+			publicFields[key] = value.trim();
+		}
+	}
+
 	const reporterEmails = await getReporterEmails(db, report);
 	const sourceCollection = contentType === 'petition' ? 'petitions' : contentType === 'poll' ? 'polls' : null;
 	if (!sourceCollection) {
@@ -535,6 +548,12 @@ export const moderateReport = onCall({ secrets: [smtpPassword] }, async (request
 	);
 
 	await db.recursiveDelete(contentRef);
+
+	await db.collection('blockedForms').doc(removalRef.id).set({
+		...(publicFields ?? {}),
+		contentType,
+		removedAt: admin.firestore.FieldValue.serverTimestamp(),
+	});
 
 	if (creatorEmail) {
 		await sendModerationNoticeEmail({

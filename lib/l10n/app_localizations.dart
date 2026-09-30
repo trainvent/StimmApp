@@ -5443,6 +5443,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Topics'**
   String get detailTopics;
+
+  /// No description provided for @showBlockedForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only blocked forms'**
+  String get showBlockedForms;
+
+  /// No description provided for @blockedFormsSettingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only archive'**
+  String get blockedFormsSettingDescription;
+
+  /// No description provided for @banned.
+  ///
+  /// In en, this message translates to:
+  /// **'Banned'**
+  String get banned;
+
+  /// No description provided for @blockedModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re viewing only blocked forms. You can turn this off in Settings.'**
+  String get blockedModeHint;
+
+  /// No description provided for @blockedFormsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No blocked forms to show.'**
+  String get blockedFormsEmpty;
+
+  /// No description provided for @blockedFormsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked forms could not be loaded.'**
+  String get blockedFormsError;
+
+  /// No description provided for @blockedFormsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'About blocked forms'**
+  String get blockedFormsInfo;
+
+  /// No description provided for @blockedFormsNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'These forms were removed for violating our community guidelines. Participation and sharing are disabled.'**
+  String get blockedFormsNotice;
+
+  /// No description provided for @blockedSafeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'The original content is withheld. Only moderator-approved public information is shown.'**
+  String get blockedSafeSummary;
+
+  /// No description provided for @blockedGuideline.
+  ///
+  /// In en, this message translates to:
+  /// **'Violated guideline'**
+  String get blockedGuideline;
+
+  /// No description provided for @blockedExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderation explanation'**
+  String get blockedExplanation;
+
+  /// No description provided for @blockedRemovedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed on'**
+  String get blockedRemovedAt;
+
+  /// No description provided for @publicArchiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public archive title (safe to publish)'**
+  String get publicArchiveTitle;
+
+  /// No description provided for @publicArchiveSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Public safe summary'**
+  String get publicArchiveSummary;
+
+  /// No description provided for @publicArchiveGuideline.
+  ///
+  /// In en, this message translates to:
+  /// **'Public violated guideline'**
+  String get publicArchiveGuideline;
+
+  /// No description provided for @publicArchiveExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Public moderation explanation'**
+  String get publicArchiveExplanation;
+
+  /// No description provided for @publicArchiveHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.'**
+  String get publicArchiveHelp;
 }
 
 class _AppLocalizationsDelegate

@@ -316,6 +316,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
+              SwitchListTile(
+                key: const Key('showBlockedForms'),
+                title: Text(context.l10n.showBlockedForms),
+                subtitle: Text(
+                  context.l10n.blockedFormsSettingDescription,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                value: ref.watch(showBlockedFormsProvider),
+                onChanged: (value) => ref
+                    .read(showBlockedFormsProvider.notifier)
+                    .setEnabled(value),
+              ),
               const SizedBox(height: 24),
               const Divider(),
               ListTile(

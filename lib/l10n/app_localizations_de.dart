@@ -3004,4 +3004,62 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get detailTopics => 'Themen';
+
+  @override
+  String get showBlockedForms => 'Nur gesperrte Formulare anzeigen';
+
+  @override
+  String get blockedFormsSettingDescription => 'Archiv zum Nachlesen';
+
+  @override
+  String get banned => 'Gesperrt';
+
+  @override
+  String get blockedModeHint =>
+      'Du siehst nur gesperrte Formulare. Du kannst dies in den Einstellungen ausschalten.';
+
+  @override
+  String get blockedFormsEmpty => 'Keine gesperrten Formulare vorhanden.';
+
+  @override
+  String get blockedFormsError =>
+      'Gesperrte Formulare konnten nicht geladen werden.';
+
+  @override
+  String get blockedFormsInfo => 'Über gesperrte Formulare';
+
+  @override
+  String get blockedFormsNotice =>
+      'Diese Formulare wurden wegen Verstößen gegen unsere Community-Richtlinien entfernt. Teilnahme und Teilen sind deaktiviert.';
+
+  @override
+  String get blockedSafeSummary =>
+      'Der ursprüngliche Inhalt wird nicht angezeigt. Hier stehen nur öffentlich freigegebene Informationen der Moderation.';
+
+  @override
+  String get blockedGuideline => 'Verletzte Richtlinie';
+
+  @override
+  String get blockedExplanation => 'Begründung der Moderation';
+
+  @override
+  String get blockedRemovedAt => 'Entfernt am';
+
+  @override
+  String get publicArchiveTitle =>
+      'Öffentlicher Archivtitel (zur Veröffentlichung geeignet)';
+
+  @override
+  String get publicArchiveSummary =>
+      'Öffentliche unbedenkliche Zusammenfassung';
+
+  @override
+  String get publicArchiveGuideline => 'Öffentliche verletzte Richtlinie';
+
+  @override
+  String get publicArchiveExplanation => 'Öffentliche Moderationsbegründung';
+
+  @override
+  String get publicArchiveHelp =>
+      'Optional: Fülle alle vier Felder aus, um einen unbedenklichen Archiveintrag zu veröffentlichen. Keine personenbezogenen Daten oder beleidigenden Texte angeben.';
 }

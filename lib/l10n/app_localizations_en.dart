@@ -2970,4 +2970,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailTopics => 'Topics';
+
+  @override
+  String get showBlockedForms => 'Show only blocked forms';
+
+  @override
+  String get blockedFormsSettingDescription => 'Read-only archive';
+
+  @override
+  String get banned => 'Banned';
+
+  @override
+  String get blockedModeHint =>
+      'You’re viewing only blocked forms. You can turn this off in Settings.';
+
+  @override
+  String get blockedFormsEmpty => 'No blocked forms to show.';
+
+  @override
+  String get blockedFormsError => 'Blocked forms could not be loaded.';
+
+  @override
+  String get blockedFormsInfo => 'About blocked forms';
+
+  @override
+  String get blockedFormsNotice =>
+      'These forms were removed for violating our community guidelines. Participation and sharing are disabled.';
+
+  @override
+  String get blockedSafeSummary =>
+      'The original content is withheld. Only moderator-approved public information is shown.';
+
+  @override
+  String get blockedGuideline => 'Violated guideline';
+
+  @override
+  String get blockedExplanation => 'Moderation explanation';
+
+  @override
+  String get blockedRemovedAt => 'Removed on';
+
+  @override
+  String get publicArchiveTitle => 'Public archive title (safe to publish)';
+
+  @override
+  String get publicArchiveSummary => 'Public safe summary';
+
+  @override
+  String get publicArchiveGuideline => 'Public violated guideline';
+
+  @override
+  String get publicArchiveExplanation => 'Public moderation explanation';
+
+  @override
+  String get publicArchiveHelp =>
+      'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.';
 }

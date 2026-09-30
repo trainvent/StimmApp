@@ -1158,5 +1158,22 @@
   "settingsBehaviour": "Verhalten",
   "detailScope": "Bereich",
   "detailGroup": "Gruppe",
-  "detailTopics": "Themen"
+  "detailTopics": "Themen",
+"showBlockedForms": "Nur gesperrte Formulare",
+"blockedFormsSettingDescription": "Archiv zum Nachlesen",
+"banned": "Gesperrt",
+"blockedModeHint": "Du siehst nur gesperrte Formulare. Du kannst dies in den Einstellungen ausschalten.",
+"blockedFormsEmpty": "Keine gesperrten Formulare vorhanden.",
+"blockedFormsError": "Gesperrte Formulare konnten nicht geladen werden.",
+"blockedFormsInfo": "Über gesperrte Formulare",
+"blockedFormsNotice": "Diese Formulare wurden wegen Verstößen gegen unsere Community-Richtlinien entfernt. Teilnahme und Teilen sind deaktiviert.",
+"blockedSafeSummary": "Der ursprüngliche Inhalt wird nicht angezeigt. Hier stehen nur öffentlich freigegebene Informationen der Moderation.",
+"blockedGuideline": "Verletzte Richtlinie",
+"blockedExplanation": "Begründung der Moderation",
+"blockedRemovedAt": "Entfernt am",
+"publicArchiveTitle": "Öffentlicher Archivtitel (zur Veröffentlichung geeignet)",
+"publicArchiveSummary": "Öffentliche unbedenkliche Zusammenfassung",
+"publicArchiveGuideline": "Öffentliche verletzte Richtlinie",
+"publicArchiveExplanation": "Öffentliche Moderationsbegründung",
+"publicArchiveHelp": "Optional: Fülle alle vier Felder aus, um einen unbedenklichen Archiveintrag zu veröffentlichen. Keine personenbezogenen Daten oder beleidigenden Texte angeben."
 }
