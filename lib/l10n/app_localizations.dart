@@ -3077,7 +3077,7 @@ abstract class AppLocalizations {
   /// No description provided for @tagAnimalWelfare.
   ///
   /// In en, this message translates to:
-  /// **'Animal Welfare'**
+  /// **'Welfare'**
   String get tagAnimalWelfare;
 
   /// No description provided for @tagSafety.
@@ -5545,6 +5545,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.'**
   String get publicArchiveHelp;
+
+  /// No description provided for @tagHumanRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Rights'**
+  String get tagHumanRights;
+
+  /// No description provided for @tagEconomicJustice.
+  ///
+  /// In en, this message translates to:
+  /// **'Equity'**
+  String get tagEconomicJustice;
+
+  /// No description provided for @tagLocalGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Municipalities'**
+  String get tagLocalGovernment;
+
+  /// No description provided for @tagRegionalGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Regions'**
+  String get tagRegionalGovernment;
+
+  /// No description provided for @tagFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get tagFamily;
+
+  /// No description provided for @tagEntertainment.
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get tagEntertainment;
+
+  /// No description provided for @tagAnimalRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Animals'**
+  String get tagAnimalRights;
+
+  /// No description provided for @tagCriminalJustice.
+  ///
+  /// In en, this message translates to:
+  /// **'Justice'**
+  String get tagCriminalJustice;
+
+  /// No description provided for @tagChildrensRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Children'**
+  String get tagChildrensRights;
+
+  /// No description provided for @tagEducationReform.
+  ///
+  /// In en, this message translates to:
+  /// **'Reforms'**
+  String get tagEducationReform;
+
+  /// No description provided for @tagEducationInfrastructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Schools'**
+  String get tagEducationInfrastructure;
+
+  /// No description provided for @tagPublicHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get tagPublicHealth;
+
+  /// No description provided for @tagMigrationIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'Migration'**
+  String get tagMigrationIntegration;
+
+  /// No description provided for @tagAccessToCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get tagAccessToCare;
+
+  /// No description provided for @tagVotingRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Elections'**
+  String get tagVotingRights;
+
+  /// No description provided for @tagFamilyRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Parenthood'**
+  String get tagFamilyRights;
+
+  /// No description provided for @tagClimateProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Climate'**
+  String get tagClimateProtection;
+
+  /// No description provided for @tagWomensRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Women'**
+  String get tagWomensRights;
+
+  /// No description provided for @tagConsumerRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumers'**
+  String get tagConsumerRights;
 }
 
 class _AppLocalizationsDelegate

@@ -1605,7 +1605,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tagSports => 'Sport';
 
   @override
-  String get tagAnimalWelfare => 'Tierschutz';
+  String get tagAnimalWelfare => 'Tierwohl';
 
   @override
   String get tagSafety => 'Sicherheit';
@@ -3062,4 +3062,61 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get publicArchiveHelp =>
       'Optional: Fülle alle vier Felder aus, um einen unbedenklichen Archiveintrag zu veröffentlichen. Keine personenbezogenen Daten oder beleidigenden Texte angeben.';
+
+  @override
+  String get tagHumanRights => 'Menschenrechte';
+
+  @override
+  String get tagEconomicJustice => 'Verteilungsgerechtigkeit';
+
+  @override
+  String get tagLocalGovernment => 'Kommunalpolitik';
+
+  @override
+  String get tagRegionalGovernment => 'Landespolitik';
+
+  @override
+  String get tagFamily => 'Familie';
+
+  @override
+  String get tagEntertainment => 'Unterhaltung';
+
+  @override
+  String get tagAnimalRights => 'Tierrechte';
+
+  @override
+  String get tagCriminalJustice => 'Strafjustiz';
+
+  @override
+  String get tagChildrensRights => 'Kinderrechte';
+
+  @override
+  String get tagEducationReform => 'Bildungsreform';
+
+  @override
+  String get tagEducationInfrastructure => 'Bildungsstätten';
+
+  @override
+  String get tagPublicHealth => 'Gesundheitsschutz';
+
+  @override
+  String get tagMigrationIntegration => 'Migration';
+
+  @override
+  String get tagAccessToCare => 'Pflege';
+
+  @override
+  String get tagVotingRights => 'Wahlrecht';
+
+  @override
+  String get tagFamilyRights => 'Familienrecht';
+
+  @override
+  String get tagClimateProtection => 'Klimaschutz';
+
+  @override
+  String get tagWomensRights => 'Frauenrechte';
+
+  @override
+  String get tagConsumerRights => 'Verbraucherschutz';
 }

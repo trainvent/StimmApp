@@ -1588,7 +1588,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tagSports => 'Sports';
 
   @override
-  String get tagAnimalWelfare => 'Animal Welfare';
+  String get tagAnimalWelfare => 'Welfare';
 
   @override
   String get tagSafety => 'Safety';
@@ -3025,4 +3025,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get publicArchiveHelp =>
       'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.';
+
+  @override
+  String get tagHumanRights => 'Rights';
+
+  @override
+  String get tagEconomicJustice => 'Equity';
+
+  @override
+  String get tagLocalGovernment => 'Municipalities';
+
+  @override
+  String get tagRegionalGovernment => 'Regions';
+
+  @override
+  String get tagFamily => 'Family';
+
+  @override
+  String get tagEntertainment => 'Entertainment';
+
+  @override
+  String get tagAnimalRights => 'Animals';
+
+  @override
+  String get tagCriminalJustice => 'Justice';
+
+  @override
+  String get tagChildrensRights => 'Children';
+
+  @override
+  String get tagEducationReform => 'Reforms';
+
+  @override
+  String get tagEducationInfrastructure => 'Schools';
+
+  @override
+  String get tagPublicHealth => 'Prevention';
+
+  @override
+  String get tagMigrationIntegration => 'Migration';
+
+  @override
+  String get tagAccessToCare => 'Care';
+
+  @override
+  String get tagVotingRights => 'Elections';
+
+  @override
+  String get tagFamilyRights => 'Parenthood';
+
+  @override
+  String get tagClimateProtection => 'Climate';
+
+  @override
+  String get tagWomensRights => 'Women';
+
+  @override
+  String get tagConsumerRights => 'Consumers';
 }

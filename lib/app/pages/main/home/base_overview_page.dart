@@ -263,6 +263,9 @@ class _BaseOverviewPageState<T extends HomeItem>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              // Keep the width stable as filter sections expand; narrow screens
+              // still constrain the dialog to the available space.
+              constraints: const BoxConstraints.tightFor(width: 560),
               title: Text(context.l10n.filter), // Using "Settings" or "Filter"
               content: SingleChildScrollView(
                 child: Column(
