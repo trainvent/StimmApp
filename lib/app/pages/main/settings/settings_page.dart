@@ -316,18 +316,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
-              SwitchListTile(
+              ListTile(
                 key: const Key('showBlockedForms'),
                 title: Text(context.l10n.showBlockedForms),
-                subtitle: Text(
-                  context.l10n.blockedFormsSettingDescription,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      tooltip: context.l10n.blockedFormsInfo,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(context.l10n.blockedFormsInfo),
+                          content: Text(context.l10n.blockedFormsNotice),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(context.l10n.close),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: ref.watch(showBlockedFormsProvider),
+                      onChanged: (value) => ref
+                          .read(showBlockedFormsProvider.notifier)
+                          .setEnabled(value),
+                    ),
+                  ],
                 ),
-                value: ref.watch(showBlockedFormsProvider),
-                onChanged: (value) => ref
-                    .read(showBlockedFormsProvider.notifier)
-                    .setEnabled(value),
               ),
               const SizedBox(height: 24),
               const Divider(),
