@@ -2961,4 +2961,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsBehaviour => 'Behaviour';
+
+  @override
+  String get detailScope => 'Scope';
+
+  @override
+  String get detailGroup => 'Group';
+
+  @override
+  String get detailTopics => 'Topics';
 }

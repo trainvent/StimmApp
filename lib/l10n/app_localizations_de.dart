@@ -2995,4 +2995,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsBehaviour => 'Verhalten';
+
+  @override
+  String get detailScope => 'Bereich';
+
+  @override
+  String get detailGroup => 'Gruppe';
+
+  @override
+  String get detailTopics => 'Themen';
 }

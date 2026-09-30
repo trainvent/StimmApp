@@ -5425,6 +5425,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Behaviour'**
   String get settingsBehaviour;
+
+  /// No description provided for @detailScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get detailScope;
+
+  /// No description provided for @detailGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get detailGroup;
+
+  /// No description provided for @detailTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics'**
+  String get detailTopics;
 }
 
 class _AppLocalizationsDelegate

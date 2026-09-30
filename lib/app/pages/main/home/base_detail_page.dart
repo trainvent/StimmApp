@@ -242,43 +242,6 @@ class _DiscoveryStatusPill extends StatelessWidget {
   }
 }
 
-class _DetailBadge extends StatelessWidget {
-  const _DetailBadge({
-    required this.label,
-    this.icon,
-    this.leading,
-    this.tooltip,
-  });
-
-  final String label;
-  final IconData? icon;
-  final Widget? leading;
-  final String? tooltip;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
-    final badge = Container(
-      constraints: const BoxConstraints(minHeight: 36),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.outlineVariant),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          leading ?? Icon(icon, size: 18, color: color.primary),
-          const SizedBox(width: 7),
-          Text(label, style: Theme.of(context).textTheme.labelLarge),
-        ],
-      ),
-    );
-    return tooltip == null ? badge : Tooltip(message: tooltip!, child: badge);
-  }
-}
-
 class _BaseDetailPageState<T extends HomeItem>
     extends State<BaseDetailPage<T>> {
   late Stream<T?> _itemStream;
@@ -395,12 +358,11 @@ class _BaseDetailPageState<T extends HomeItem>
     }
   }
 
-  Widget _scopeBadge(BuildContext context, T item) {
+  Widget _scopeValue(BuildContext context, T item) {
     final code = item.countryCode?.trim().toLowerCase();
     final hasCountryFlag = code != null && Flag.flagsCode.contains(code);
     final scopeType = item.scope.type;
-    final leading =
-        hasCountryFlag && scopeType == FormScopeType.country
+    final leading = hasCountryFlag && scopeType == FormScopeType.country
         ? Flag.fromString(
             code,
             width: 28,
@@ -416,29 +378,79 @@ class _BaseDetailPageState<T extends HomeItem>
             FormScopeType.stateOrRegion => Icons.map_outlined,
             FormScopeType.city => Icons.location_city_outlined,
           }, size: 20);
-    final scopeLabel = _scopeLabel(context, item);
-    return _DetailBadge(
-      leading: leading,
-      label: scopeLabel,
-      tooltip: context.l10n.scopeLabelWithValue(scopeLabel),
+    return _detailValue(context, _scopeLabel(context, item), leading: leading);
+  }
+
+  Widget _detailValue(
+    BuildContext context,
+    String text, {
+    required Widget leading,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: 28, child: Center(child: leading)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+        ),
+      ],
     );
   }
 
-  List<Widget> _detailMetaChips(BuildContext context, T item) {
-    final chips = <Widget>[_scopeBadge(context, item)];
-
-    final groupName = _groupName(item);
-    if ((groupName ?? '').trim().isNotEmpty) {
-      chips.add(
-        _DetailBadge(
-          icon: Icons.groups_2_outlined,
-          label: groupName!.trim(),
-          tooltip: context.l10n.groupLabelWithValue(groupName.trim()),
-        ),
+  Widget _buildDetailMetadata(BuildContext context, T item) {
+    final groupName = _groupName(item)?.trim();
+    TableRow metadataRow(String label, Widget value) {
+      return TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              end: 12,
+              top: 8,
+              bottom: 8,
+            ),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: value,
+          ),
+        ],
       );
     }
 
-    return chips;
+    return Table(
+      columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
+      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+      children: [
+        metadataRow(context.l10n.detailScope, _scopeValue(context, item)),
+        if (groupName != null && groupName.isNotEmpty)
+          metadataRow(
+            context.l10n.detailGroup,
+            _detailValue(
+              context,
+              groupName,
+              leading: const Icon(Icons.groups_2_outlined, size: 20),
+            ),
+          ),
+        if (item.tags.isNotEmpty)
+          metadataRow(
+            context.l10n.detailTopics,
+            _detailValue(
+              context,
+              item.tags
+                  .map((tag) => AppTagsHelper.getLocalizedTag(context, tag))
+                  .join(', '),
+              leading: const Icon(Icons.label_outline, size: 20),
+            ),
+          ),
+      ],
+    );
   }
 
   String? _groupName(T item) {
@@ -530,8 +542,6 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   Widget _buildHeaderCard(BuildContext context, T item) {
-    final hasTags = item.tags.isNotEmpty;
-    final metaChips = _detailMetaChips(context, item);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -559,37 +569,7 @@ class _BaseDetailPageState<T extends HomeItem>
               item.title,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            children: [
-              if (metaChips.isNotEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: metaChips,
-                  ),
-                ),
-              if (hasTags) ...[
-                if (metaChips.isNotEmpty) const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: item.tags.map((tagKey) {
-                      return Chip(
-                        label: Text(
-                          AppTagsHelper.getLocalizedTag(context, tagKey),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ],
+            children: [_buildDetailMetadata(context, item)],
           ),
         ),
       ),
