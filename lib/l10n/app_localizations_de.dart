@@ -1790,7 +1790,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reasonYourSignature => 'Begründe deine Unterschrift';
 
   @override
-  String get signatureReasoning => 'Begründung der Unterschrift';
+  String get signatureReasoning => 'Unterschrift begründen';
 
   @override
   String get signatureReasoningInfo =>
@@ -3006,7 +3006,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailTopics => 'Themen';
 
   @override
-  String get showBlockedForms => 'Nur gesperrte Formulare anzeigen';
+  String get showBlockedForms => 'Nur gesperrte Formulare';
 
   @override
   String get blockedFormsSettingDescription => 'Archiv zum Nachlesen';

@@ -5447,7 +5447,7 @@ abstract class AppLocalizations {
   /// No description provided for @showBlockedForms.
   ///
   /// In en, this message translates to:
-  /// **'Show only blocked forms'**
+  /// **'blocked forms mode'**
   String get showBlockedForms;
 
   /// No description provided for @blockedFormsSettingDescription.

@@ -2972,7 +2972,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailTopics => 'Topics';
 
   @override
-  String get showBlockedForms => 'Show only blocked forms';
+  String get showBlockedForms => 'blocked forms mode';
 
   @override
   String get blockedFormsSettingDescription => 'Read-only archive';
