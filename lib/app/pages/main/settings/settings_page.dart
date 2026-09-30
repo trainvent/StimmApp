@@ -162,6 +162,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   },
                 ),
               ),
+              _buildSectionHeader(context, context.l10n.settingsLookAndFeel),
               ListTile(
                 title: Text(context.l10n.colorTheme),
                 onTap: () {
@@ -280,6 +281,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                 },
               ),
+              _buildSectionHeader(context, context.l10n.settingsBehaviour),
               ListTile(
                 title: Text(S.of(context).signatureReasoning),
                 trailing: Row(
@@ -314,6 +316,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              const Divider(),
               ListTile(
                 title: Text(context.l10n.aboutThisApp),
                 onTap: () {
@@ -327,14 +331,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                 },
               ),
-              Divider(
-                color: Theme.of(context).colorScheme.primary,
-                thickness: 5,
-              ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+Widget _buildSectionHeader(BuildContext context, String title) {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
+    child: Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
+  );
 }

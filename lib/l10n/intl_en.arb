@@ -1166,5 +1166,7 @@
   "chooseGroupPicture": "Choose picture",
   "removeGroupPicture": "Remove group picture",
   "groupPicturePickFailed": "Could not open this picture. Choose an image smaller than 5 MB.",
-  "groupPictureSaveFailed": "The group was saved, but its picture could not be saved. Please try saving again."
+  "groupPictureSaveFailed": "The group was saved, but its picture could not be saved. Please try saving again.",
+  "settingsLookAndFeel": "Look & Feel",
+  "settingsBehaviour": "Behaviour"
 }

@@ -2989,4 +2989,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get groupPictureSaveFailed =>
       'Die Gruppe wurde gespeichert, aber das Bild konnte nicht gespeichert werden. Bitte versuche erneut zu speichern.';
+
+  @override
+  String get settingsLookAndFeel => 'Erscheinungsbild';
+
+  @override
+  String get settingsBehaviour => 'Verhalten';
 }

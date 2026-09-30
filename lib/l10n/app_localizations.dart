@@ -5413,6 +5413,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The group was saved, but its picture could not be saved. Please try saving again.'**
   String get groupPictureSaveFailed;
+
+  /// No description provided for @settingsLookAndFeel.
+  ///
+  /// In en, this message translates to:
+  /// **'Look & Feel'**
+  String get settingsLookAndFeel;
+
+  /// No description provided for @settingsBehaviour.
+  ///
+  /// In en, this message translates to:
+  /// **'Behaviour'**
+  String get settingsBehaviour;
 }
 
 class _AppLocalizationsDelegate

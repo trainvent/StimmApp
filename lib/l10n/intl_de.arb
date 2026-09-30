@@ -1153,5 +1153,7 @@
   "chooseGroupPicture": "Bild auswählen",
   "removeGroupPicture": "Gruppenbild entfernen",
   "groupPicturePickFailed": "Dieses Bild konnte nicht geöffnet werden. Wähle ein Bild unter 5 MB.",
-  "groupPictureSaveFailed": "Die Gruppe wurde gespeichert, aber das Bild konnte nicht gespeichert werden. Bitte versuche erneut zu speichern."
+  "groupPictureSaveFailed": "Die Gruppe wurde gespeichert, aber das Bild konnte nicht gespeichert werden. Bitte versuche erneut zu speichern.",
+  "settingsLookAndFeel": "Erscheinungsbild",
+  "settingsBehaviour": "Verhalten"
 }

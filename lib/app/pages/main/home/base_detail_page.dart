@@ -1,3 +1,4 @@
+import 'package:flag/flag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -241,6 +242,43 @@ class _DiscoveryStatusPill extends StatelessWidget {
   }
 }
 
+class _DetailBadge extends StatelessWidget {
+  const _DetailBadge({
+    required this.label,
+    this.icon,
+    this.leading,
+    this.tooltip,
+  });
+
+  final String label;
+  final IconData? icon;
+  final Widget? leading;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    final badge = Container(
+      constraints: const BoxConstraints(minHeight: 36),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.outlineVariant),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          leading ?? Icon(icon, size: 18, color: color.primary),
+          const SizedBox(width: 7),
+          Text(label, style: Theme.of(context).textTheme.labelLarge),
+        ],
+      ),
+    );
+    return tooltip == null ? badge : Tooltip(message: tooltip!, child: badge);
+  }
+}
+
 class _BaseDetailPageState<T extends HomeItem>
     extends State<BaseDetailPage<T>> {
   late Stream<T?> _itemStream;
@@ -357,19 +395,46 @@ class _BaseDetailPageState<T extends HomeItem>
     }
   }
 
+  Widget _scopeBadge(BuildContext context, T item) {
+    final code = item.countryCode?.trim().toLowerCase();
+    final hasCountryFlag = code != null && Flag.flagsCode.contains(code);
+    final scopeType = item.scope.type;
+    final leading =
+        hasCountryFlag && scopeType == FormScopeType.country
+        ? Flag.fromString(
+            code,
+            width: 28,
+            height: 20,
+            borderRadius: 3,
+            fit: BoxFit.cover,
+          )
+        : Icon(switch (scopeType) {
+            FormScopeType.global => Icons.public_outlined,
+            FormScopeType.countryUnion => Icons.hub_outlined,
+            FormScopeType.continent => Icons.public_outlined,
+            FormScopeType.country => Icons.flag_outlined,
+            FormScopeType.stateOrRegion => Icons.map_outlined,
+            FormScopeType.city => Icons.location_city_outlined,
+          }, size: 20);
+    final scopeLabel = _scopeLabel(context, item);
+    return _DetailBadge(
+      leading: leading,
+      label: scopeLabel,
+      tooltip: context.l10n.scopeLabelWithValue(scopeLabel),
+    );
+  }
+
   List<Widget> _detailMetaChips(BuildContext context, T item) {
-    final chips = <Widget>[
-      Chip(
-        label: Text(
-          context.l10n.scopeLabelWithValue(_scopeLabel(context, item)),
-        ),
-      ),
-    ];
+    final chips = <Widget>[_scopeBadge(context, item)];
 
     final groupName = _groupName(item);
     if ((groupName ?? '').trim().isNotEmpty) {
       chips.add(
-        Chip(label: Text(context.l10n.groupLabelWithValue(groupName!.trim()))),
+        _DetailBadge(
+          icon: Icons.groups_2_outlined,
+          label: groupName!.trim(),
+          tooltip: context.l10n.groupLabelWithValue(groupName.trim()),
+        ),
       );
     }
 
@@ -466,6 +531,7 @@ class _BaseDetailPageState<T extends HomeItem>
 
   Widget _buildHeaderCard(BuildContext context, T item) {
     final hasTags = item.tags.isNotEmpty;
+    final metaChips = _detailMetaChips(context, item);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -489,33 +555,22 @@ class _BaseDetailPageState<T extends HomeItem>
               vertical: 6,
             ),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    item.title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
+            title: Text(
+              item.title,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _detailMetaChips(context, item),
+              if (metaChips.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: metaChips,
+                  ),
                 ),
-              ),
               if (hasTags) ...[
-                const SizedBox(height: 12),
+                if (metaChips.isNotEmpty) const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Wrap(
@@ -677,14 +732,6 @@ class _BaseDetailPageState<T extends HomeItem>
                       children: [
                         _buildHeaderCard(context, item),
                         const SizedBox(height: 12),
-                        if (item.state != null && item.state!.isNotEmpty) ...[
-                          Chip(
-                            label: Text(
-                              context.l10n.relatedToState(item.state!),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
                         Text(item.description),
                         const SizedBox(height: 12),
                         _buildDiscoveryStatusBanner(

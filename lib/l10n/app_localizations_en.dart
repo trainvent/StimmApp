@@ -2955,4 +2955,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupPictureSaveFailed =>
       'The group was saved, but its picture could not be saved. Please try saving again.';
+
+  @override
+  String get settingsLookAndFeel => 'Look & Feel';
+
+  @override
+  String get settingsBehaviour => 'Behaviour';
 }
