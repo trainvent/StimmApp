@@ -3082,4 +3082,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagConsumerRights => 'Consumers';
+
+  @override
+  String get petitionComments => 'Why people signed';
+
+  @override
+  String get petitionCommentsEmpty => 'No comments yet.';
+
+  @override
+  String get petitionCommentsError =>
+      'Comments could not be loaded. Tap to retry.';
+
+  @override
+  String get likeComment => 'Like comment';
+
+  @override
+  String get unlikeComment => 'Remove like';
+
+  @override
+  String get commentLikeError =>
+      'Your like could not be saved. Please try again.';
+
+  @override
+  String get commentLikesError => 'Likes unavailable. Tap to retry.';
+
+  @override
+  String get signInToLikeComment => 'Sign in to like comments';
+
+  @override
+  String get signatureReasonPublic =>
+      'Your comment will appear publicly with your display name.';
 }

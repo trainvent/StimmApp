@@ -1207,5 +1207,14 @@
 "tagFamilyRights": "Parenthood",
 "tagClimateProtection": "Climate",
 "tagWomensRights": "Women",
-"tagConsumerRights": "Consumers"
+"tagConsumerRights": "Consumers",
+"petitionComments": "Why people signed",
+"petitionCommentsEmpty": "No comments yet.",
+"petitionCommentsError": "Comments could not be loaded. Tap to retry.",
+"likeComment": "Like comment",
+"unlikeComment": "Remove like",
+"commentLikeError": "Your like could not be saved. Please try again.",
+"commentLikesError": "Likes unavailable. Tap to retry.",
+"signInToLikeComment": "Sign in to like comments",
+"signatureReasonPublic": "Your comment will appear publicly with your display name."
 }

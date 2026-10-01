@@ -3119,4 +3119,35 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tagConsumerRights => 'Verbraucherschutz';
+
+  @override
+  String get petitionComments => 'Warum Menschen unterschreiben';
+
+  @override
+  String get petitionCommentsEmpty => 'Noch keine Kommentare.';
+
+  @override
+  String get petitionCommentsError =>
+      'Kommentare konnten nicht geladen werden. Tippe zum Wiederholen.';
+
+  @override
+  String get likeComment => 'Kommentar liken';
+
+  @override
+  String get unlikeComment => 'Like entfernen';
+
+  @override
+  String get commentLikeError =>
+      'Dein Like konnte nicht gespeichert werden. Bitte versuche es erneut.';
+
+  @override
+  String get commentLikesError =>
+      'Likes nicht verfügbar. Tippe zum Wiederholen.';
+
+  @override
+  String get signInToLikeComment => 'Melde dich an, um Kommentare zu liken';
+
+  @override
+  String get signatureReasonPublic =>
+      'Dein Kommentar wird mit deinem Anzeigenamen öffentlich angezeigt.';
 }

@@ -5659,6 +5659,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Consumers'**
   String get tagConsumerRights;
+
+  /// No description provided for @petitionComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Why people signed'**
+  String get petitionComments;
+
+  /// No description provided for @petitionCommentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet.'**
+  String get petitionCommentsEmpty;
+
+  /// No description provided for @petitionCommentsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments could not be loaded. Tap to retry.'**
+  String get petitionCommentsError;
+
+  /// No description provided for @likeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Like comment'**
+  String get likeComment;
+
+  /// No description provided for @unlikeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove like'**
+  String get unlikeComment;
+
+  /// No description provided for @commentLikeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your like could not be saved. Please try again.'**
+  String get commentLikeError;
+
+  /// No description provided for @commentLikesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes unavailable. Tap to retry.'**
+  String get commentLikesError;
+
+  /// No description provided for @signInToLikeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to like comments'**
+  String get signInToLikeComment;
+
+  /// No description provided for @signatureReasonPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Your comment will appear publicly with your display name.'**
+  String get signatureReasonPublic;
 }
 
 class _AppLocalizationsDelegate

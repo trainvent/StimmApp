@@ -33,6 +33,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
     required this.contentBuilder,
     required this.sharePathSegment,
     this.bottomAction,
+    this.allowExpiredContentInteraction = false,
     this.participantsStream,
     this.participantIdsStream,
     this.signaturesStream,
@@ -49,6 +50,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   final Stream<T?> Function(String id) streamProvider;
   final Widget Function(BuildContext context, T item) contentBuilder;
   final Widget? bottomAction;
+  final bool allowExpiredContentInteraction;
   final Stream<List<UserProfile>>? participantsStream;
   final Stream<Set<String>>? participantIdsStream;
   final Stream<List<Map<String, dynamic>>>? signaturesStream;
@@ -764,7 +766,9 @@ class _BaseDetailPageState<T extends HomeItem>
                         const SizedBox(height: 16),
                         Expanded(
                           child: AbsorbPointer(
-                            absorbing: isExpired,
+                            absorbing:
+                                isExpired &&
+                                !widget.allowExpiredContentInteraction,
                             child: widget.contentBuilder(context, item),
                           ),
                         ),

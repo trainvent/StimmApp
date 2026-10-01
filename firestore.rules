@@ -272,10 +272,33 @@ service cloud.firestore {
     }
 
     // Petitions & Polls
-    match /petitions/{document=**} {
+    match /petitions/{petitionId} {
       allow read: if true;
       allow write: if isAdmin() ||
                     (isAuthenticated() && hasValidContentState(request.resource.data));
+    }
+
+    match /petitions/{petitionId}/signatures/{signerId} {
+      allow read: if true;
+      allow delete: if isAdmin() || isOwner(signerId);
+      allow create, update: if isAdmin() ||
+                    (isOwner(signerId) && hasValidContentState(request.resource.data));
+
+      match /commentLikes/{userId} {
+        function hasComment() {
+          let signature = get(/databases/$(database)/documents/petitions/$(petitionId)/signatures/$(signerId));
+          return exists(/databases/$(database)/documents/petitions/$(petitionId)) &&
+                 signature.data.reason is string &&
+                 signature.data.reason.matches('(?s).*\\S.*');
+        }
+        allow read: if hasComment();
+        allow create: if isOwner(userId) && hasComment() &&
+                      request.resource.data.keys().hasOnly(['uid', 'createdAt']) &&
+                      request.resource.data.uid == userId &&
+                      request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if isOwner(userId);
+      }
     }
 
     match /polls/{document=**} {

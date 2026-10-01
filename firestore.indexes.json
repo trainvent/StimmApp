@@ -124,5 +124,42 @@
       ]
     }
   ],
-  "fieldOverrides": []
+  "fieldOverrides": [
+  {
+    "collectionGroup": "commentLikes",
+    "fieldPath": "uid",
+    "indexes": [
+      {
+        "order": "ASCENDING",
+        "queryScope": "COLLECTION"
+      },
+      {
+        "order": "DESCENDING",
+        "queryScope": "COLLECTION"
+      },
+      {
+        "order": "ASCENDING",
+        "queryScope": "COLLECTION_GROUP"
+      }
+    ]
+  },
+  {
+    "collectionGroup": "signatures",
+    "fieldPath": "uid",
+    "indexes": [
+      {
+        "order": "ASCENDING",
+        "queryScope": "COLLECTION"
+      },
+      {
+        "order": "DESCENDING",
+        "queryScope": "COLLECTION"
+      },
+      {
+        "order": "ASCENDING",
+        "queryScope": "COLLECTION_GROUP"
+      }
+    ]
+  }
+]
 }

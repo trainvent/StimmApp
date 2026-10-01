@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/pages/main/home/petitions/petition_comments.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/buttons/sign_action_button.dart';
@@ -77,12 +78,13 @@ class PetitionDetailPage extends StatelessWidget {
           ],
         );
       },
-      contentBuilder: (context, p) {
-        if (p.imageUrl != null) {
-          return Image.network(p.imageUrl!);
-        }
-        return const SizedBox.shrink();
-      },
+      allowExpiredContentInteraction: true,
+      contentBuilder: (context, p) => ListView(
+        children: [
+          if (p.imageUrl != null) Image.network(p.imageUrl!),
+          PetitionComments(petitionId: id),
+        ],
+      ),
       bottomAction: SignActionButton(
         submissionId: 'petition:$id',
         label: context.l10n.sign,

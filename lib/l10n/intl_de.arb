@@ -1194,5 +1194,14 @@
 "tagFamilyRights": "Familienrecht",
 "tagClimateProtection": "Klimaschutz",
 "tagWomensRights": "Frauenrechte",
-"tagConsumerRights": "Verbraucherschutz"
+"tagConsumerRights": "Verbraucherschutz",
+"petitionComments": "Warum Menschen unterschreiben",
+"petitionCommentsEmpty": "Noch keine Kommentare.",
+"petitionCommentsError": "Kommentare konnten nicht geladen werden. Tippe zum Wiederholen.",
+"likeComment": "Kommentar liken",
+"unlikeComment": "Like entfernen",
+"commentLikeError": "Dein Like konnte nicht gespeichert werden. Bitte versuche es erneut.",
+"commentLikesError": "Likes nicht verfügbar. Tippe zum Wiederholen.",
+"signInToLikeComment": "Melde dich an, um Kommentare zu liken",
+"signatureReasonPublic": "Dein Kommentar wird mit deinem Anzeigenamen öffentlich angezeigt."
 }
