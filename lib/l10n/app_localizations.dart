@@ -5713,6 +5713,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your comment will appear publicly with your display name.'**
   String get signatureReasonPublic;
+
+  /// No description provided for @importFormJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Import JSON form'**
+  String get importFormJson;
+
+  /// No description provided for @importFormConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply this form to your draft? Included fields will be replaced. You can edit and review it before publishing. Fields not included, your audience and any image stay as currently selected.'**
+  String get importFormConfirmation;
+
+  /// No description provided for @importFormSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Form imported. Review your settings before publishing.'**
+  String get importFormSuccess;
+
+  /// No description provided for @importFormInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid form JSON. Check the format, form type and field limits.'**
+  String get importFormInvalid;
+
+  /// No description provided for @importFormError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not import the file. Please try again.'**
+  String get importFormError;
 }
 
 class _AppLocalizationsDelegate

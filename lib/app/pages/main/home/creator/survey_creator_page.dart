@@ -1101,6 +1101,25 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   Widget build(BuildContext context) {
     return BaseCreatorPage(
       key: _creatorKey,
+      importType: widget.presentAsPoll ? 'poll' : 'survey',
+      onImportQuestions: (questions) async {
+        setState(() {
+          for (final question in _questions) {
+            question.dispose();
+          }
+          _questions
+            ..clear()
+            ..addAll(
+              questions.map(
+                (question) => _createQuestionDraft(
+                  title: question.title,
+                  options: question.options,
+                ),
+              ),
+            );
+        });
+        await _saveSpecificDraft();
+      },
       title: widget.presentAsPoll
           ? context.l10n.createPoll
           : context.l10n.createSurvey,

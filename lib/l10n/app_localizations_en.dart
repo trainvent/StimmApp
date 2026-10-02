@@ -3112,4 +3112,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get signatureReasonPublic =>
       'Your comment will appear publicly with your display name.';
+
+  @override
+  String get importFormJson => 'Import JSON form';
+
+  @override
+  String get importFormConfirmation =>
+      'Apply this form to your draft? Included fields will be replaced. You can edit and review it before publishing. Fields not included, your audience and any image stay as currently selected.';
+
+  @override
+  String get importFormSuccess =>
+      'Form imported. Review your settings before publishing.';
+
+  @override
+  String get importFormInvalid =>
+      'Invalid form JSON. Check the format, form type and field limits.';
+
+  @override
+  String get importFormError => 'Could not import the file. Please try again.';
 }

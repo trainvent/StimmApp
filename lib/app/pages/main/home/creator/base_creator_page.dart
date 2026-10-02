@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:stimmapp/core/data/models/form_import.dart';
 import 'package:flag/flag.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +34,12 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalDraftClearer,
     this.onResetAdditionalFields,
     this.previewContentBuilder,
+    this.importType,
+    this.onImportQuestions,
   });
 
+  final String? importType;
+  final Future<void> Function(List<PollTemplateQuestion>)? onImportQuestions;
   final String title;
   final List<dynamic> tutorialSteps; // Can be String or PollTutorialStep
   final Future<bool> Function({
@@ -125,6 +132,65 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     });
     await _saveDraft();
     return true;
+  }
+
+  bool _isImporting = false;
+
+  Future<void> _importJson() async {
+    if (_isImporting) return;
+    setState(() => _isImporting = true);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (!mounted || file == null) return;
+      if ((await file.length() ?? 0) > FormImport.maxBytes) {
+        throw const FormatException('file');
+      }
+      final bytes = await file.readAsBytes();
+      if (!mounted) return;
+      final template = FormImport.parse(
+        utf8.decode(bytes),
+        expectedType: widget.importType!,
+        allowedTags: AppTagsHelper.getTags(context).keys.toSet(),
+      );
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.importFormJson),
+          content: Text(
+            '${template.title}\n\n${context.l10n.importFormConfirmation}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      if (!await applyTemplate(template) || !mounted) return;
+      if (template.questions != null) {
+        await widget.onImportQuestions!(template.questions!);
+      }
+      if (mounted) showSuccessSnackBar(context.l10n.importFormSuccess);
+    } on FormatException catch (error) {
+      if (mounted) {
+        showErrorSnackBar(
+          '${context.l10n.importFormInvalid} (${error.message})',
+        );
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.importFormError);
+    } finally {
+      if (mounted) setState(() => _isImporting = false);
+    }
   }
 
   Set<CountryUnion> get _availableCountryUnions =>
@@ -882,6 +948,15 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
+          if (widget.importType != null)
+            IconButton(
+              key: const Key('import_form_json'),
+              tooltip: context.l10n.importFormJson,
+              icon: const Icon(Icons.file_upload_outlined),
+              onPressed: _isImporting || _isLoading || _isReviewing
+                  ? null
+                  : _importJson,
+            ),
           if (widget.appBarActionBuilder != null) ...[
             widget.appBarActionBuilder!(
               _titleController,

@@ -1216,5 +1216,10 @@
 "commentLikeError": "Your like could not be saved. Please try again.",
 "commentLikesError": "Likes unavailable. Tap to retry.",
 "signInToLikeComment": "Sign in to like comments",
-"signatureReasonPublic": "Your comment will appear publicly with your display name."
+"signatureReasonPublic": "Your comment will appear publicly with your display name.",
+  "importFormJson": "Import JSON form",
+  "importFormConfirmation": "Apply this form to your draft? Included fields will be replaced. You can edit and review it before publishing. Fields not included, your audience and any image stay as currently selected.",
+  "importFormSuccess": "Form imported. Review your settings before publishing.",
+  "importFormInvalid": "Invalid form JSON. Check the format, form type and field limits.",
+  "importFormError": "Could not import the file. Please try again."
 }

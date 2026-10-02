@@ -1203,5 +1203,10 @@
 "commentLikeError": "Dein Like konnte nicht gespeichert werden. Bitte versuche es erneut.",
 "commentLikesError": "Likes nicht verfügbar. Tippe zum Wiederholen.",
 "signInToLikeComment": "Melde dich an, um Kommentare zu liken",
-"signatureReasonPublic": "Dein Kommentar wird mit deinem Anzeigenamen öffentlich angezeigt."
+"signatureReasonPublic": "Dein Kommentar wird mit deinem Anzeigenamen öffentlich angezeigt.",
+  "importFormJson": "JSON-Formular importieren",
+  "importFormConfirmation": "Dieses Formular in deinen Entwurf übernehmen? Enthaltene Felder werden ersetzt. Vor der Veröffentlichung kannst du alles bearbeiten und prüfen. Nicht enthaltene Felder, deine Zielgruppe und ein ausgewähltes Bild bleiben unverändert.",
+  "importFormSuccess": "Formular importiert. Prüfe deine Einstellungen vor der Veröffentlichung.",
+  "importFormInvalid": "Ungültiges Formular-JSON. Prüfe Format, Formulartyp und Feldgrenzen.",
+  "importFormError": "Die Datei konnte nicht importiert werden. Bitte versuche es erneut."
 }

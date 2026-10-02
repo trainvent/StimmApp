@@ -177,6 +177,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
+      importType: 'petition',
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
       onSubmit: _createPetition,

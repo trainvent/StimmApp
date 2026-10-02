@@ -3150,4 +3150,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get signatureReasonPublic =>
       'Dein Kommentar wird mit deinem Anzeigenamen öffentlich angezeigt.';
+
+  @override
+  String get importFormJson => 'JSON-Formular importieren';
+
+  @override
+  String get importFormConfirmation =>
+      'Dieses Formular in deinen Entwurf übernehmen? Enthaltene Felder werden ersetzt. Vor der Veröffentlichung kannst du alles bearbeiten und prüfen. Nicht enthaltene Felder, deine Zielgruppe und ein ausgewähltes Bild bleiben unverändert.';
+
+  @override
+  String get importFormSuccess =>
+      'Formular importiert. Prüfe deine Einstellungen vor der Veröffentlichung.';
+
+  @override
+  String get importFormInvalid =>
+      'Ungültiges Formular-JSON. Prüfe Format, Formulartyp und Feldgrenzen.';
+
+  @override
+  String get importFormError =>
+      'Die Datei konnte nicht importiert werden. Bitte versuche es erneut.';
 }
