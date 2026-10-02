@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "type": "petition",
+  "title": "Mehr Bäume für unsere Nachbarschaft",
+  "description": "Wir bitten unsere Gemeinde, mehr Bäume entlang der Wohnstraßen zu pflanzen, um Schatten zu spenden und die Luftqualität zu verbessern.",
+  "tags": [
+    "Environment"
+  ],
+  "durationDays": 42
+}

@@ -1,4 +1,7 @@
 export const contentRoutes = {
+  'form-import': { page: 'formImport' },
+  'import-forms': { page: 'formImport', locale: 'en' },
+  'formulare-importieren': { page: 'formImport', locale: 'de' },
   datenschutzerklaerung: { page: 'privacyPolicy', locale: 'de' },
   'datenschutzerklaerung-absturzdaten': {
     page: 'privacyPolicyCrashData',

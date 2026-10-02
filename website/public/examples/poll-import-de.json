@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "type": "poll",
+  "title": "Unser nächstes Nachbarschaftsprojekt",
+  "description": "Hilf uns zu entscheiden, welches Projekt wir dieses Jahr in unserer Nachbarschaft zuerst angehen sollen.",
+  "tags": [
+    "Environment"
+  ],
+  "durationDays": 14,
+  "questions": [
+    {
+      "title": "Welches Projekt soll Vorrang haben?",
+      "options": [
+        "Bäume pflanzen",
+        "Radwege verbessern",
+        "Gemeinschaftsgarten anlegen"
+      ]
+    }
+  ]
+}

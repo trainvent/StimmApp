@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "type": "poll",
+  "title": "Choose our next community project",
+  "description": "Help us decide which community project to prioritise this year.",
+  "tags": [
+    "Environment"
+  ],
+  "durationDays": 14,
+  "questions": [
+    {
+      "title": "Which project should we prioritise?",
+      "options": [
+        "Plant trees",
+        "Improve cycle paths",
+        "Create a community garden"
+      ]
+    }
+  ]
+}

@@ -145,7 +145,9 @@
       "questionLegal": "Where can I find the privacy policy and terms of service?",
       "privacyLink": "Privacy Policy",
       "termsLink": "Terms of Service",
-      "backLink": "Back to Support"
+      "backLink": "Back to Support",
+      "questionImport": "How can I reuse a premade form?",
+      "importLink": "Follow the JSON import guide and download an example."
     },
     "support": {
       "title": "Support - StimmApp",
@@ -163,7 +165,8 @@
       "messageEmail": "Your account email address",
       "messageDevice": "Your device model and iOS version",
       "messageDescription": "A short description of the issue and how to reproduce it",
-      "meta": "Support hours: Monday to Friday. Response times may vary."
+      "meta": "Support hours: Monday to Friday. Response times may vary.",
+      "formImportLink": "Import forms"
     },
     "license": {
       "title": "License - StimmApp",
@@ -197,6 +200,111 @@
       "invalidCredentials": "Email or password is incorrect.",
       "tooManyRequests": "Too many attempts. Please try again later.",
       "unknownError": "An unknown error occurred"
+    },
+    "formImport": {
+      "title": "Import forms with JSON — Vivot",
+      "description": "Create and share reusable petitions and polls with JSON. Step-by-step instructions, downloads and a field reference.",
+      "heading": "Import premade forms",
+      "intro": "Prepare a petition or poll once and share its JSON file with others. They can import it into their own draft, adapt it and publish it after review.",
+      "stepsHeading": "How to import",
+      "steps": [
+        "Download an example below, or use a file someone has shared with you. Save it as a UTF-8 text file ending in .json.",
+        "In the app, open the petition or poll creator that matches the file type.",
+        "Choose “Import JSON form” using the upload icon in the toolbar and select your file.",
+        "Confirm replacing the included draft fields. Check the content, tags, duration, geographical scope, selected group and any image.",
+        "Edit as needed, then use the normal publication review to publish. Importing alone does not publish the form."
+      ],
+      "examplesHeading": "Download an example",
+      "pollDownload": "Download poll JSON",
+      "petitionDownload": "Download petition JSON",
+      "exampleHint": "Edit the text and answer options in a text editor. Keep the field names and fixed values in English, even when your form is in another language.",
+      "fieldsHeading": "JSON format · version 1",
+      "fieldLabel": "Field",
+      "ruleLabel": "Rule",
+      "fields": [
+        [
+          "version",
+          "Required: integer 1."
+        ],
+        [
+          "type",
+          "Required: petition, poll or survey. Must match the editor; the poll editor also accepts survey."
+        ],
+        [
+          "title",
+          "Required: 5–100 characters."
+        ],
+        [
+          "description",
+          "Required: 20–1000 characters."
+        ],
+        [
+          "questions",
+          "Required for polls/surveys; omit for petitions. 1–20 objects, each with title (1–200 characters) and options (2–10 distinct strings, 1–50 characters each). Options must differ even when ignoring letter case."
+        ],
+        [
+          "tags",
+          "Optional: 1–3 distinct keys from the tag list below."
+        ],
+        [
+          "durationDays",
+          "Optional: integer 1–42 (days)."
+        ],
+        [
+          "openUntilClosed",
+          "Optional: true or false. true keeps the form open until you close it."
+        ],
+        [
+          "scopeType",
+          "Optional: global, countryUnion, country, stateOrRegion or city."
+        ],
+        [
+          "countryUnion",
+          "Required for countryUnion scope: EU or UN. Omit for every other scope."
+        ]
+      ],
+      "settingsHeading": "Check your publication settings",
+      "settings": "Omitted optional fields keep their current draft values. The selected group audience and petition image also stay unchanged. Geography comes from your own profile; unavailable state or country-union scopes are rejected. Account IDs, votes, signatures, images and publication status cannot be imported.",
+      "tagsHeading": "Accepted tag keys",
+      "tags": [
+        "Environment",
+        "Politics",
+        "Education",
+        "Health",
+        "Infrastructure",
+        "Economy",
+        "Social",
+        "Technology",
+        "Culture",
+        "Sports",
+        "Animal Welfare",
+        "Safety",
+        "Traffic",
+        "Housing",
+        "Human Rights",
+        "Economic Justice",
+        "Local Government",
+        "Regional Government",
+        "Family",
+        "Entertainment",
+        "Animal Rights",
+        "Criminal Justice",
+        "Children’s Rights",
+        "Education Reform",
+        "Education Infrastructure",
+        "Public Health",
+        "Migration and Integration",
+        "Access to Care",
+        "Elections and Voting Rights",
+        "Family Rights",
+        "Climate Protection",
+        "Women’s Rights",
+        "Consumer Rights",
+        "Other"
+      ],
+      "errorsHeading": "If the import fails",
+      "errors": "The file must be one JSON object, at most 256 KiB. Use double quotes, no comments and no trailing commas. Unknown fields, unsupported versions and values outside the limits are rejected. Text is trimmed before length checks. Start with an example and check the field named in the error. If a scope is unavailable, update your profile or choose an available scope."
     }
-  }
+  },
+  "footerFormImport": "Import forms"
 }

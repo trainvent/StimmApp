@@ -145,7 +145,9 @@
       "questionLegal": "Wo finde ich Datenschutz und Nutzungsbedingungen?",
       "privacyLink": "Datenschutzerklärung",
       "termsLink": "Nutzungsbedingungen",
-      "backLink": "Zurück zum Support"
+      "backLink": "Zurück zum Support",
+      "questionImport": "Wie kann ich ein vorbereitetes Formular verwenden?",
+      "importLink": "Öffne die JSON-Import-Anleitung und lade eine Beispieldatei herunter."
     },
     "support": {
       "title": "Support - StimmApp",
@@ -163,7 +165,8 @@
       "messageEmail": "Ihre Konto-E-Mail-Adresse",
       "messageDevice": "Ihr Gerätemodell und Ihre iOS-Version",
       "messageDescription": "Kurze Beschreibung des Problems und Schritte zur Reproduktion",
-      "meta": "Supportzeiten: Montag bis Freitag, Antwortzeiten können variieren."
+      "meta": "Supportzeiten: Montag bis Freitag, Antwortzeiten können variieren.",
+      "formImportLink": "Formulare importieren"
     },
     "license": {
       "title": "Lizenz - StimmApp",
@@ -197,6 +200,111 @@
       "invalidCredentials": "E-Mail oder Passwort ist falsch.",
       "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
       "unknownError": "Ein unbekannter Fehler ist aufgetreten"
+    },
+    "formImport": {
+      "title": "Formulare mit JSON importieren — StimmApp",
+      "description": "Petitionen und Umfragen mit JSON vorbereiten und teilen: Anleitung, Downloads und Übersicht aller Felder.",
+      "heading": "Vorbereitete Formulare importieren",
+      "intro": "Bereite eine Petition oder Umfrage einmal vor und teile die JSON-Datei. Andere können sie als eigenen Entwurf importieren, anpassen und nach der Prüfung veröffentlichen.",
+      "stepsHeading": "So funktioniert der Import",
+      "steps": [
+        "Lade unten ein Beispiel herunter oder verwende eine geteilte Datei. Speichere sie als UTF-8-Textdatei mit der Endung .json.",
+        "Öffne in der App die Erstellung einer Petition oder Umfrage passend zum Dateityp.",
+        "Wähle „JSON-Formular importieren“ über das Upload-Symbol in der Werkzeugleiste und öffne deine Datei.",
+        "Bestätige das Ersetzen der enthaltenen Entwurfsfelder. Prüfe Inhalt, Tags, Laufzeit, geografischen Geltungsbereich, ausgewählte Gruppe und ein vorhandenes Bild.",
+        "Passe den Entwurf an und veröffentliche ihn über die übliche Vorschau. Der Import allein veröffentlicht das Formular nicht."
+      ],
+      "examplesHeading": "Beispiele herunterladen",
+      "pollDownload": "Umfrage als JSON herunterladen",
+      "petitionDownload": "Petition als JSON herunterladen",
+      "exampleHint": "Bearbeite Texte und Antwortoptionen in einem Texteditor. Feldnamen und feste Werte bleiben auf Englisch, auch bei deutschsprachigen Formularen.",
+      "fieldsHeading": "JSON-Format · Version 1",
+      "fieldLabel": "Feld",
+      "ruleLabel": "Regel",
+      "fields": [
+        [
+          "version",
+          "Pflichtfeld: Ganzzahl 1."
+        ],
+        [
+          "type",
+          "Pflichtfeld: petition, poll oder survey. Muss zur Erstellung passen; die Umfrage-Erstellung akzeptiert auch survey."
+        ],
+        [
+          "title",
+          "Pflichtfeld: 5–100 Zeichen."
+        ],
+        [
+          "description",
+          "Pflichtfeld: 20–1000 Zeichen."
+        ],
+        [
+          "questions",
+          "Pflichtfeld für Umfragen; bei Petitionen weglassen. 1–20 Objekte mit title (1–200 Zeichen) und options (2–10 unterschiedliche Texte mit je 1–50 Zeichen). Antworten müssen sich auch ohne Beachtung der Großschreibung unterscheiden."
+        ],
+        [
+          "tags",
+          "Optional: 1–3 unterschiedliche Schlüssel aus der Tag-Liste unten."
+        ],
+        [
+          "durationDays",
+          "Optional: Ganzzahl 1–42 (Tage)."
+        ],
+        [
+          "openUntilClosed",
+          "Optional: true oder false. true lässt das Formular bis zum manuellen Schließen offen."
+        ],
+        [
+          "scopeType",
+          "Optional: global, countryUnion, country, stateOrRegion oder city."
+        ],
+        [
+          "countryUnion",
+          "Bei countryUnion erforderlich: EU oder UN. Bei allen anderen Geltungsbereichen weglassen."
+        ]
+      ],
+      "settingsHeading": "Veröffentlichungseinstellungen prüfen",
+      "settings": "Nicht enthaltene optionale Felder behalten ihre bisherigen Entwurfswerte. Auch die ausgewählte Gruppe und ein Petitionsbild bleiben erhalten. Geografische Angaben stammen aus deinem Profil; nicht verfügbare Bundesland- oder Staatenverbund-Geltungsbereiche werden abgelehnt. Konto-IDs, Stimmen, Unterschriften, Bilder und Veröffentlichungsstatus können nicht importiert werden.",
+      "tagsHeading": "Zulässige Tag-Schlüssel",
+      "tags": [
+        "Environment",
+        "Politics",
+        "Education",
+        "Health",
+        "Infrastructure",
+        "Economy",
+        "Social",
+        "Technology",
+        "Culture",
+        "Sports",
+        "Animal Welfare",
+        "Safety",
+        "Traffic",
+        "Housing",
+        "Human Rights",
+        "Economic Justice",
+        "Local Government",
+        "Regional Government",
+        "Family",
+        "Entertainment",
+        "Animal Rights",
+        "Criminal Justice",
+        "Children’s Rights",
+        "Education Reform",
+        "Education Infrastructure",
+        "Public Health",
+        "Migration and Integration",
+        "Access to Care",
+        "Elections and Voting Rights",
+        "Family Rights",
+        "Climate Protection",
+        "Women’s Rights",
+        "Consumer Rights",
+        "Other"
+      ],
+      "errorsHeading": "Wenn der Import fehlschlägt",
+      "errors": "Die Datei muss ein einzelnes JSON-Objekt enthalten und darf höchstens 256 KiB groß sein. Verwende doppelte Anführungszeichen, keine Kommentare und keine abschließenden Kommas. Unbekannte Felder, nicht unterstützte Versionen und Werte außerhalb der Grenzen werden abgelehnt. Leerzeichen am Textanfang und -ende werden vor der Längenprüfung entfernt. Beginne mit einem Beispiel und prüfe das in der Fehlermeldung genannte Feld. Bei einem nicht verfügbaren Geltungsbereich ergänze dein Profil oder wähle einen verfügbaren Bereich."
     }
-  }
+  },
+  "footerFormImport": "Formulare importieren"
 }

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "type": "petition",
+  "title": "More trees for our neighbourhood",
+  "description": "We ask our local council to plant more trees along residential streets to provide shade and improve air quality.",
+  "tags": [
+    "Environment"
+  ],
+  "durationDays": 42
+}

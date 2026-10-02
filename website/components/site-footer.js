@@ -18,6 +18,7 @@ export default function SiteFooter({ copy }) {
         <Link href={isEnglish ? '/terms-of-service' : '/nutzungsbedingungen'}>{copy.footerTerms}</Link>
         <Link href="/support">{copy.footerSupport}</Link>
         <Link href="/faq">FAQ</Link>
+        <Link href={isEnglish ? "/import-forms" : "/formulare-importieren"}>{copy.footerFormImport}</Link>
       </div>
     </footer>
   );

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './content-page.module.css';
 import SubpageShell from './subpage-shell';
+import FormImportGuide from './form-import-guide';
 
 const FIREBASE_API_KEY = 'AIzaSyD8neBcTS2fkkRJf_GG-l4hD5dGArstQW8';
 
@@ -106,6 +107,8 @@ function Faq({ copy, locale }) {
       <h1>{copy.heading}</h1>
       <h2>{copy.questionDelete}</h2>
       <p>{copy.answerDeletePrefix} <Link href="/delete-account">{copy.deleteLink}</Link> {copy.answerDeleteMiddle} <a href="mailto:support@trainvent.com">support@trainvent.com</a>.</p>
+      <h2>{copy.questionImport}</h2>
+      <p><Link href={locale === 'en' ? '/import-forms' : '/formulare-importieren'}>{copy.importLink}</Link></p>
       <h2>{copy.questionTechnical}</h2>
       <p>{copy.answerTechnical}</p>
       <h2>{copy.questionLegal}</h2>
@@ -130,6 +133,7 @@ function Support({ copy, locale }) {
       <h2>{copy.linksHeading}</h2>
       <ul>
         <li><Link href="/faq">FAQ</Link></li>
+        <li><Link href={locale === 'en' ? '/import-forms' : '/formulare-importieren'}>{copy.formImportLink}</Link></li>
         <li><Link href={privacyUrl}>{copy.privacyLink}</Link></li>
         <li><Link href={termsUrl}>{copy.termsLink}</Link></li>
         <li><Link href="/license">{copy.licenseLink}</Link></li>
@@ -234,6 +238,7 @@ function DeleteAccount({ copy }) {
 const pageComponents = {
   deleteAccount: DeleteAccount,
   faq: Faq,
+  formImport: FormImportGuide,
   license: License,
   marketing: Marketing,
   privacyPolicy: PrivacyPolicy,
