@@ -14,7 +14,12 @@
         "Plant trees",
         "Improve cycle paths",
         "Create a community garden"
-      ]
+      ],
+      "type": "multipleChoice"
+    },
+    {
+      "title": "What would you improve, and why?",
+      "type": "text"
     }
   ]
 }

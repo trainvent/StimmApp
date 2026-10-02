@@ -3,12 +3,23 @@
   "type": "poll",
   "title": "Choose our next community project",
   "description": "Help us decide which community project to prioritise this year.",
-  "tags": ["Environment"],
+  "tags": [
+    "Environment"
+  ],
   "durationDays": 14,
   "questions": [
     {
       "title": "Which project should we prioritise?",
-      "options": ["Plant trees", "Improve cycle paths", "Create a community garden"]
+      "options": [
+        "Plant trees",
+        "Improve cycle paths",
+        "Create a community garden"
+      ],
+      "type": "multipleChoice"
+    },
+    {
+      "title": "What would you improve, and why?",
+      "type": "text"
     }
   ]
 }

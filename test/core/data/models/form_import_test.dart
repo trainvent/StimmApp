@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
 
@@ -15,6 +17,71 @@ void main() {
         expectedType: type,
         allowedTags: {'Environment'},
       );
+
+  test('imports mixed questions and defaults omitted type to choice', () {
+    final result = parse({
+      ...petition,
+      'type': 'poll',
+      'questions': [
+        {
+          'title': 'Choose',
+          'options': ['Yes', 'No'],
+        },
+        {'title': 'Explain', 'type': 'text'},
+        {'title': 'More feedback', 'type': 'text', 'options': []},
+      ],
+    }, type: 'poll');
+    expect(result.questions[0].type, SurveyQuestionType.multipleChoice);
+    expect(result.questions[1].type, SurveyQuestionType.text);
+    expect(result.questions[1].options, isEmpty);
+  });
+
+  test('rejects invalid question types and text options', () {
+    for (final question in [
+      {
+        'title': 'Explain',
+        'type': null,
+        'options': ['Yes', 'No'],
+      },
+      {'title': 'Explain', 'type': 'rating'},
+      {'title': 'Explain', 'type': 'text', 'options': null},
+      {
+        'title': 'Explain',
+        'type': 'text',
+        'options': ['Yes'],
+      },
+    ]) {
+      expect(
+        () => parse({
+          ...petition,
+          'type': 'poll',
+          'questions': [question],
+        }, type: 'poll'),
+        throwsFormatException,
+      );
+    }
+  });
+
+  test('public tutorial examples remain importable', () {
+    for (final locale in ['de', 'en']) {
+      for (final type in ['poll', 'petition']) {
+        final result = FormImport.parse(
+          File(
+            'website/public/examples/$type-import-$locale.json',
+          ).readAsStringSync(),
+          expectedType: type,
+          allowedTags: {'Environment'},
+        );
+        expect(result.title, isNotEmpty);
+        if (type == 'poll') {
+          expect(
+            result.questions!.any((q) => q.type == SurveyQuestionType.text),
+            isTrue,
+          );
+        }
+      }
+    }
+  });
 
   test('imports petition content without importing identity or audience', () {
     final result = parse({

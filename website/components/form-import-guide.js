@@ -17,6 +17,8 @@ export default function FormImportGuide({ copy, locale }) {
       </ul>
       <p>{copy.exampleHint}</p>
       <pre className={styles.jsonExample}><code>{JSON.stringify(example, null, 2)}</code></pre>
+      <h2>{copy.questionTypesHeading}</h2>
+      <p>{copy.questionTypes}</p>
       <h2>{copy.fieldsHeading}</h2>
       <div className={styles.tableScroll} role="region" aria-label={copy.fieldsHeading} tabIndex={0}>
         <table className={styles.fieldTable}>
@@ -28,6 +30,8 @@ export default function FormImportGuide({ copy, locale }) {
       <p>{copy.settings}</p>
       <h2>{copy.tagsHeading}</h2>
       <ul className={styles.tagKeys}>{copy.tags.map((tag) => <li key={tag}><code>{tag}</code></li>)}</ul>
+      <h2>{copy.exportsHeading}</h2>
+      <p>{copy.exports}</p>
       <h2>{copy.errorsHeading}</h2>
       <p>{copy.errors}</p>
     </article>

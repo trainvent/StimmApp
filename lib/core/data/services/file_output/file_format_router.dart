@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/services/file_output/survey_export_answers.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
@@ -46,6 +47,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
@@ -54,14 +56,14 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _petitionDetails(petition, labels) : null,
-      rowsTitle: context.l10n.exportSignatures,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportSignatures,
+      rowTitle: l10n.exportSignature,
       documentTitle: petition.title,
       compactColumns: [
-        ExportColumn(sourceIndex: 1, label: context.l10n.name),
-        ExportColumn(sourceIndex: 2, label: context.l10n.surname),
-        ExportColumn(sourceIndex: 4, label: context.l10n.livingAddress),
-        ExportColumn(sourceIndex: 3, label: context.l10n.email),
+        ExportColumn(sourceIndex: 1, label: l10n.name),
+        ExportColumn(sourceIndex: 2, label: l10n.surname),
+        ExportColumn(sourceIndex: 4, label: l10n.livingAddress),
+        ExportColumn(sourceIndex: 3, label: l10n.email),
       ],
     );
     return _writer.saveDocument(
@@ -79,6 +81,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildPetitionResultsRows(
       CsvExportLabels.fromContext(context),
@@ -87,14 +90,14 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _petitionDetails(petition, labels) : null,
-      rowsTitle: context.l10n.exportSignatures,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportSignatures,
+      rowTitle: l10n.exportSignature,
       documentTitle: petition.title,
       compactColumns: [
-        ExportColumn(sourceIndex: 1, label: context.l10n.name),
-        ExportColumn(sourceIndex: 2, label: context.l10n.surname),
-        ExportColumn(sourceIndex: 4, label: context.l10n.livingAddress),
-        ExportColumn(sourceIndex: 3, label: context.l10n.email),
+        ExportColumn(sourceIndex: 1, label: l10n.name),
+        ExportColumn(sourceIndex: 2, label: l10n.surname),
+        ExportColumn(sourceIndex: 4, label: l10n.livingAddress),
+        ExportColumn(sourceIndex: 3, label: l10n.email),
       ],
     );
     return _writer.shareDocument(
@@ -120,6 +123,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
@@ -129,8 +133,8 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _pollDetails(poll, labels) : null,
-      rowsTitle: context.l10n.exportResults,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportResults,
+      rowTitle: l10n.exportSignature,
       documentTitle: poll.title,
     );
     return _writer.saveDocument('poll_${poll.title}', document, service);
@@ -144,6 +148,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildPollResultsRows(
       CsvExportLabels.fromContext(context),
@@ -153,8 +158,8 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _pollDetails(poll, labels) : null,
-      rowsTitle: context.l10n.exportResults,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportResults,
+      rowTitle: l10n.exportSignature,
       documentTitle: poll.title,
     );
     return _writer.shareDocument('poll_${poll.title}', document, service);
@@ -176,6 +181,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildSurveyResultsRows(
       CsvExportLabels.fromContext(context),
@@ -185,8 +191,8 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _surveyDetails(survey, labels) : null,
-      rowsTitle: context.l10n.exportResults,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportResults,
+      rowTitle: l10n.exportSignature,
       documentTitle: survey.title,
     );
     return _writer.saveDocument('survey_${survey.title}', document, service);
@@ -200,6 +206,7 @@ class FileFormatRouter {
     bool includeContent = false,
   ]) async {
     final service = _serviceFor(format);
+    final l10n = context.l10n;
     final labels = ExportLabels.fromContext(context);
     final rows = await _buildSurveyResultsRows(
       CsvExportLabels.fromContext(context),
@@ -209,8 +216,8 @@ class FileFormatRouter {
     final document = ExportDocument(
       rows: rows,
       details: includeContent ? _surveyDetails(survey, labels) : null,
-      rowsTitle: context.l10n.exportResults,
-      rowTitle: context.l10n.exportSignature,
+      rowsTitle: l10n.exportResults,
+      rowTitle: l10n.exportSignature,
       documentTitle: survey.title,
     );
     return _writer.shareDocument('survey_${survey.title}', document, service);
@@ -303,13 +310,6 @@ class FileFormatRouter {
         .doc(surveyId)
         .collection(DatabaseCollections.responses)
         .get();
-    final optionLabelsByQuestion = {
-      for (final question in survey.questions)
-        question.id: {
-          for (final option in question.options) option.id: option.label,
-        },
-    };
-
     final rows = <List<String>>[
       [
         labels.result,
@@ -324,9 +324,6 @@ class FileFormatRouter {
     if (responseSnap.docs.isNotEmpty) {
       for (final doc in responseSnap.docs) {
         final data = doc.data();
-        final answers = Map<String, dynamic>.from(
-          data['answers'] as Map? ?? const <String, dynamic>{},
-        );
         final profile = await _userRepo.getById(doc.id);
 
         rows.add([
@@ -335,15 +332,13 @@ class FileFormatRouter {
           profile?.surname ?? '',
           profile?.email ?? '',
           profile?.address ?? '',
-          for (final question in survey.questions)
-            optionLabelsByQuestion[question.id]?[answers[question.id]] ??
-                (answers[question.id] as String? ?? ''),
+          ...surveyExportAnswers(survey.questions, data),
         ]);
       }
       return rows;
     }
 
-    for (final question in survey.questions) {
+    for (final question in survey.questions.where((q) => !q.isText)) {
       final votes = survey.questionVotes[question.id] ?? const <String, int>{};
       for (final option in question.options) {
         rows.add([
@@ -435,10 +430,11 @@ class FileFormatRouter {
           final options = question.options
               .map((option) => option.label)
               .join(', ');
-          return '${question.title} [$options]';
+          return '${question.title} [${question.isText ? labels.writtenAnswer : options}]';
         })
         .join(' | ');
     final votes = survey.questions
+        .where((question) => !question.isText)
         .map((question) {
           final optionCounts = survey.questionVotes[question.id] ?? const {};
           final optionVotes = question.options

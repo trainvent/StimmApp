@@ -240,7 +240,11 @@
         ],
         [
           "questions",
-          "Pflichtfeld für Umfragen; bei Petitionen weglassen. 1–20 Objekte mit title (1–200 Zeichen) und options (2–10 unterschiedliche Texte mit je 1–50 Zeichen). Antworten müssen sich auch ohne Beachtung der Großschreibung unterscheiden."
+          "Pflichtfeld für Umfragen; bei Petitionen weglassen. 1–20 Objekte mit title (1–200 Zeichen) und optionalem type: multipleChoice (Standard) oder text."
+        ],
+        [
+          "questions[].options",
+          "Bei multipleChoice: Pflichtliste mit 2–10 unterschiedlichen Texten mit je 1–50 Zeichen; Großschreibung allein reicht nicht als Unterschied. Bei text: options weglassen oder eine leere Liste [] verwenden. null ist nicht zulässig."
         ],
         [
           "tags",
@@ -303,7 +307,11 @@
         "Other"
       ],
       "errorsHeading": "Wenn der Import fehlschlägt",
-      "errors": "Die Datei muss ein einzelnes JSON-Objekt enthalten und darf höchstens 256 KiB groß sein. Verwende doppelte Anführungszeichen, keine Kommentare und keine abschließenden Kommas. Unbekannte Felder, nicht unterstützte Versionen und Werte außerhalb der Grenzen werden abgelehnt. Leerzeichen am Textanfang und -ende werden vor der Längenprüfung entfernt. Beginne mit einem Beispiel und prüfe das in der Fehlermeldung genannte Feld. Bei einem nicht verfügbaren Geltungsbereich ergänze dein Profil oder wähle einen verfügbaren Bereich."
+      "errors": "Die Datei muss ein einzelnes JSON-Objekt enthalten und darf höchstens 256 KiB groß sein. Verwende doppelte Anführungszeichen, keine Kommentare und keine abschließenden Kommas. Unbekannte Felder, nicht unterstützte Versionen und Werte außerhalb der Grenzen werden abgelehnt. Leerzeichen am Textanfang und -ende werden vor der Längenprüfung entfernt. Beginne mit einem Beispiel und prüfe das in der Fehlermeldung genannte Feld. Bei einem nicht verfügbaren Geltungsbereich ergänze dein Profil oder wähle einen verfügbaren Bereich.",
+      "questionTypesHeading": "Auswahl und schriftliche Antworten",
+      "questionTypes": "Kombiniere multipleChoice- und text-Fragen in derselben Umfrage. Bei Auswahlfragen wählen Teilnehmende eine Option. Textfragen erlauben eine schriftliche Antwort mit bis zu 2.000 Zeichen. Jede Frage muss beantwortet werden. Schriftliche Antworten sind nur für die erstellende Person sichtbar. Ohne type gilt multipleChoice; bestehende Dateien der Version 1 funktionieren weiterhin.",
+      "exportsHeading": "Ergebnisse exportieren",
+      "exports": "Wähle bei einer abgeschlossenen Umfrage Speichern oder Teilen und anschließend CSV, JSON oder PDF. Exporte enthalten ausgewählte Antworttexte und schriftliche Antworten in der Reihenfolge der Fragen. Du kannst zusätzlich den Formularinhalt einschließen. Diese Ergebnisberichte sind keine wiederverwendbaren Formulardateien: Verwende für neue Entwürfe das oben beschriebene Format der Version 1. Schriftliche Antworten sind in der gespeicherten oder geteilten Datei enthalten."
     }
   },
   "footerFormImport": "Formulare importieren"

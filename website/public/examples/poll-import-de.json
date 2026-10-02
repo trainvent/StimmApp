@@ -14,7 +14,12 @@
         "Bäume pflanzen",
         "Radwege verbessern",
         "Gemeinschaftsgarten anlegen"
-      ]
+      ],
+      "type": "multipleChoice"
+    },
+    {
+      "title": "Was würdest du verbessern und warum?",
+      "type": "text"
     }
   ]
 }

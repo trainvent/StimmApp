@@ -116,11 +116,16 @@ class FormImport {
           invalid('questions');
         }
         final question = value as Map;
-        final type = question['type'] ?? 'multipleChoice';
-        if (type != 'multipleChoice' && type != 'text')
+        final type = question.containsKey('type')
+            ? question['type']
+            : 'multipleChoice';
+        if (type != 'multipleChoice' && type != 'text') {
           invalid('questions.type');
+        }
         final isText = type == 'text';
-        final options = question['options'] ?? (isText ? [] : null);
+        final options = question.containsKey('options')
+            ? question['options']
+            : (isText ? [] : null);
         if (options is! List ||
             (isText ? options.isNotEmpty : options.length < 2) ||
             options.length > AppLimits.maxSurveyOptionsPerQuestion) {

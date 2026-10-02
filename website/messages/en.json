@@ -240,7 +240,11 @@
         ],
         [
           "questions",
-          "Required for polls/surveys; omit for petitions. 1–20 objects, each with title (1–200 characters) and options (2–10 distinct strings, 1–50 characters each). Options must differ even when ignoring letter case."
+          "Required for polls/surveys; omit for petitions. 1–20 objects, each with title (1–200 characters) and an optional type: multipleChoice (default) or text."
+        ],
+        [
+          "questions[].options",
+          "For multipleChoice: required list of 2–10 distinct strings, each 1–50 characters; answers must differ ignoring letter case. For text: omit options or use an empty list []. null is not accepted."
         ],
         [
           "tags",
@@ -303,7 +307,11 @@
         "Other"
       ],
       "errorsHeading": "If the import fails",
-      "errors": "The file must be one JSON object, at most 256 KiB. Use double quotes, no comments and no trailing commas. Unknown fields, unsupported versions and values outside the limits are rejected. Text is trimmed before length checks. Start with an example and check the field named in the error. If a scope is unavailable, update your profile or choose an available scope."
+      "errors": "The file must be one JSON object, at most 256 KiB. Use double quotes, no comments and no trailing commas. Unknown fields, unsupported versions and values outside the limits are rejected. Text is trimmed before length checks. Start with an example and check the field named in the error. If a scope is unavailable, update your profile or choose an available scope.",
+      "questionTypesHeading": "Choice and written answers",
+      "questionTypes": "Mix multipleChoice and text questions in the same poll. Multiple-choice questions let participants select one option. Text questions accept a written answer of up to 2,000 characters. Every question requires an answer. Written responses are visible only to the creator. Question type defaults to multipleChoice when omitted, so existing version 1 files still work.",
+      "exportsHeading": "Exporting results",
+      "exports": "For a finished poll, use its save or share action and choose CSV, JSON or PDF. Exports include choice labels and written answers in question order. You can include the form content as well. These are result reports, not reusable form files: to import a new draft, use the version 1 format above. Written responses are included in the file you save or share."
     }
   },
   "footerFormImport": "Import forms"

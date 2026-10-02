@@ -54,6 +54,7 @@ class CsvExportLabels {
 
 class ExportLabels {
   const ExportLabels({
+    this.writtenAnswer = 'Written answer',
     required this.type,
     required this.id,
     required this.header,
@@ -89,6 +90,7 @@ class ExportLabels {
   factory ExportLabels.fromContext(BuildContext context) {
     final l10n = context.l10n;
     return ExportLabels(
+      writtenAnswer: l10n.writtenAnswer,
       type: l10n.exportType,
       id: l10n.exportId,
       header: l10n.exportHeader,
@@ -122,6 +124,7 @@ class ExportLabels {
     );
   }
 
+  final String writtenAnswer;
   final String type;
   final String id;
   final String header;
