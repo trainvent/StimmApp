@@ -1,3 +1,5 @@
+import 'package:stimmapp/core/data/models/survey.dart';
+
 /// Only selected fields are stored; absent fields leave the current form unchanged.
 class PollTemplate {
   const PollTemplate({
@@ -67,13 +69,25 @@ class PollTemplate {
 }
 
 class PollTemplateQuestion {
-  const PollTemplateQuestion({required this.title, required this.options});
+  const PollTemplateQuestion({
+    required this.title,
+    required this.options,
+    this.type = SurveyQuestionType.multipleChoice,
+  });
+  final SurveyQuestionType type;
   final String title;
   final List<String> options;
 
-  Map<String, dynamic> toJson() => {'title': title, 'options': options};
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'options': options,
+    'type': type.name,
+  };
   factory PollTemplateQuestion.fromJson(Map<String, dynamic> json) =>
       PollTemplateQuestion(
+        type: json['type'] == 'text'
+            ? SurveyQuestionType.text
+            : SurveyQuestionType.multipleChoice,
         title: json['title'] as String,
         options: List<String>.from(json['options'] as List),
       );

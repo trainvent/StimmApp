@@ -5743,6 +5743,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not import the file. Please try again.'**
   String get importFormError;
+
+  /// No description provided for @answerType.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer type'**
+  String get answerType;
+
+  /// No description provided for @multipleChoiceAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice'**
+  String get multipleChoiceAnswer;
+
+  /// No description provided for @writtenAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Written answer'**
+  String get writtenAnswer;
+
+  /// No description provided for @writtenAnswerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants write their own answer. Only the creator can read written responses.'**
+  String get writtenAnswerHint;
+
+  /// No description provided for @yourWrittenAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer'**
+  String get yourWrittenAnswer;
+
+  /// No description provided for @writtenResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Written responses'**
+  String get writtenResponses;
+
+  /// No description provided for @noWrittenResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'No written responses yet.'**
+  String get noWrittenResponses;
+
+  /// No description provided for @writtenResponsesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load written responses.'**
+  String get writtenResponsesError;
 }
 
 class _AppLocalizationsDelegate

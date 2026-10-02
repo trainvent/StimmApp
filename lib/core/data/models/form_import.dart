@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:stimmapp/core/data/models/survey.dart';
 
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
@@ -77,7 +78,8 @@ class FormImport {
             duration > AppLimits.defaultFormDurationDays)) {
       invalid('durationDays');
     }
-    if (json.containsKey('openUntilClosed') && json['openUntilClosed'] is! bool) {
+    if (json.containsKey('openUntilClosed') &&
+        json['openUntilClosed'] is! bool) {
       invalid('openUntilClosed');
     }
     final scope = json['scopeType'];
@@ -108,13 +110,19 @@ class FormImport {
       }
       questions = (values as List).map((value) {
         if (value is! Map ||
-            value.keys.any((key) => key != 'title' && key != 'options')) {
+            value.keys.any(
+              (key) => key != 'title' && key != 'options' && key != 'type',
+            )) {
           invalid('questions');
         }
         final question = value as Map;
-        final options = question['options'];
+        final type = question['type'] ?? 'multipleChoice';
+        if (type != 'multipleChoice' && type != 'text')
+          invalid('questions.type');
+        final isText = type == 'text';
+        final options = question['options'] ?? (isText ? [] : null);
         if (options is! List ||
-            options.length < 2 ||
+            (isText ? options.isNotEmpty : options.length < 2) ||
             options.length > AppLimits.maxSurveyOptionsPerQuestion) {
           invalid('options');
         }
@@ -129,6 +137,9 @@ class FormImport {
           invalid('options');
         }
         return PollTemplateQuestion(
+          type: isText
+              ? SurveyQuestionType.text
+              : SurveyQuestionType.multipleChoice,
           title: text(
             question['title'],
             'questions.title',

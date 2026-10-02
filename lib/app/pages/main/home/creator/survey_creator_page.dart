@@ -80,10 +80,12 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
   _QuestionDraft _createQuestionDraft({
     String title = '',
+    SurveyQuestionType type = SurveyQuestionType.multipleChoice,
     List<String>? options,
   }) {
     return _QuestionDraft(
       title: title,
+      type: type,
       options: options,
       onChanged: _saveSpecificDraft,
     );
@@ -108,7 +110,13 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                 .toList();
             return _createQuestionDraft(
               title: question['title'] as String? ?? '',
-              options: options,
+              type: question['type'] == 'text'
+                  ? SurveyQuestionType.text
+                  : SurveyQuestionType.multipleChoice,
+              options: question.type == SurveyQuestionType.text
+                  ? const []
+                  : options,
+              type: question.type,
             );
           })
           .toList();
@@ -139,6 +147,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         for (final question in _questions)
           {
             'title': question.titleController.text,
+            'type': question.type.name,
             'options': [
               for (final controller in question.optionControllers)
                 controller.text,
@@ -393,8 +402,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       description,
       ..._questions.map((question) => question.titleController.text),
       ..._questions.expand(
-        (question) =>
-            question.optionControllers.map((controller) => controller.text),
+        (question) => question.type == SurveyQuestionType.text
+            ? <String>[]
+            : question.optionControllers.map((controller) => controller.text),
       ),
     ];
     if (ContentModerationService.instance.containsObjectionableContent(
@@ -418,13 +428,17 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             return SurveyQuestion(
               id: _uuid.v4(),
               title: question.titleController.text.trim(),
-              options: options,
+              options: question.type == SurveyQuestionType.text
+                  ? const []
+                  : options,
+              type: question.type,
             );
           })
           .toList(growable: false);
 
       final now = DateTime.now();
-      final isSingleQuestionPoll = questions.length == 1;
+      final isSingleQuestionPoll =
+          questions.length == 1 && !questions.single.isText;
       if (isSingleQuestionPoll) {
         final question = questions.single;
         final poll = Poll(
@@ -716,6 +730,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               for (final question in _questions)
                 PollTemplateQuestion(
                   title: question.titleController.text,
+                  type: question.type,
                   options: [
                     for (final option in question.optionControllers)
                       option.text,
@@ -766,24 +781,28 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_questions.length > 1) ...[
+                if (_questions.length > 1 ||
+                    _questions[index].type == SurveyQuestionType.text) ...[
                   Text(
                     '${index + 1}. ${_questions[index].titleController.text.trim()}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 12),
                 ],
-                for (final option in _questions[index].optionControllers)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.radio_button_unchecked),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(option.text.trim())),
-                      ],
+                if (_questions[index].type == SurveyQuestionType.text)
+                  Text(context.l10n.writtenAnswerHint),
+                if (_questions[index].type == SurveyQuestionType.multipleChoice)
+                  for (final option in _questions[index].optionControllers)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.radio_button_unchecked),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(option.text.trim())),
+                        ],
+                      ),
                     ),
-                  ),
               ],
             ),
           ),
@@ -902,6 +921,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   .map(
                     (question) => _createQuestionDraft(
                       title: question.title,
+                      type: question.type,
                       options: question.options
                           .take(AppLimits.maxSurveyOptionsPerQuestion)
                           .toList(),
@@ -1056,41 +1076,71 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   : null,
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.l10n.options,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            DropdownButtonFormField<SurveyQuestionType>(
+              key: ValueKey(
+                'answer_type_${identityHashCode(question)}_${question.type.name}',
+              ),
+              initialValue: question.type,
+              decoration: InputDecoration(
+                labelText: context.l10n.answerType,
+                border: const OutlineInputBorder(),
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: SurveyQuestionType.multipleChoice,
+                  child: Text(context.l10n.multipleChoiceAnswer),
+                ),
+                DropdownMenuItem(
+                  value: SurveyQuestionType.text,
+                  child: Text(context.l10n.writtenAnswer),
+                ),
+              ],
+              onChanged: (type) {
+                if (type == null) return;
+                setState(() => question.type = type);
+                _saveSpecificDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            if (question.type == SurveyQuestionType.text)
+              Text(context.l10n.writtenAnswerHint),
+            if (question.type == SurveyQuestionType.multipleChoice) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.l10n.options,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                _buildAnswerPresets(question),
-              ],
-            ),
-            ChoiceOptionListEditor(
-              controllers: question.optionControllers,
-              maxOptionLength: AppLimits.maxSurveyOptionLength,
-              optionLabelBuilder: (optionIndex) =>
-                  context.l10n.optionNumber(optionIndex + 1),
-              optionRequiredMessage: context.l10n.optionRequired,
-              onReorder: (oldIndex, newIndex) =>
-                  _reorderOptions(question, oldIndex, newIndex),
-              onRemove: (optionIndex) => _removeOption(question, optionIndex),
-            ),
-            if (question.optionControllers.length <
-                AppLimits.maxSurveyOptionsPerQuestion)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: Text(context.l10n.addOption),
-                  onPressed: () => _addOption(question),
-                ),
+                  const SizedBox(width: 12),
+                  _buildAnswerPresets(question),
+                ],
               ),
+              ChoiceOptionListEditor(
+                controllers: question.optionControllers,
+                maxOptionLength: AppLimits.maxSurveyOptionLength,
+                optionLabelBuilder: (optionIndex) =>
+                    context.l10n.optionNumber(optionIndex + 1),
+                optionRequiredMessage: context.l10n.optionRequired,
+                onReorder: (oldIndex, newIndex) =>
+                    _reorderOptions(question, oldIndex, newIndex),
+                onRemove: (optionIndex) => _removeOption(question, optionIndex),
+              ),
+              if (question.optionControllers.length <
+                  AppLimits.maxSurveyOptionsPerQuestion)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: Text(context.l10n.addOption),
+                    onPressed: () => _addOption(question),
+                  ),
+                ),
+            ],
           ],
         ),
       ),
@@ -1113,6 +1163,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               questions.map(
                 (question) => _createQuestionDraft(
                   title: question.title,
+                  type: question.type,
                   options: question.options,
                 ),
               ),
@@ -1165,6 +1216,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 class _QuestionDraft {
   _QuestionDraft({
     required this.onChanged,
+    this.type = SurveyQuestionType.multipleChoice,
     String title = '',
     List<String>? options,
   }) : titleController = TextEditingController(text: title),
@@ -1177,6 +1229,7 @@ class _QuestionDraft {
     }
   }
 
+  SurveyQuestionType type;
   final VoidCallback onChanged;
   final TextEditingController titleController;
   final List<TextEditingController> optionControllers;

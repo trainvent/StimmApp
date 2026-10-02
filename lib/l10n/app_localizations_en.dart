@@ -3130,4 +3130,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importFormError => 'Could not import the file. Please try again.';
+
+  @override
+  String get answerType => 'Answer type';
+
+  @override
+  String get multipleChoiceAnswer => 'Multiple choice';
+
+  @override
+  String get writtenAnswer => 'Written answer';
+
+  @override
+  String get writtenAnswerHint =>
+      'Participants write their own answer. Only the creator can read written responses.';
+
+  @override
+  String get yourWrittenAnswer => 'Your answer';
+
+  @override
+  String get writtenResponses => 'Written responses';
+
+  @override
+  String get noWrittenResponses => 'No written responses yet.';
+
+  @override
+  String get writtenResponsesError => 'Could not load written responses.';
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trainvent_general/trainvent_general.dart';
+import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/app/widgets/buttons/sign_action_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -19,6 +22,15 @@ class SurveyDetailPage extends StatefulWidget {
 
 class _SurveyDetailPageState extends State<SurveyDetailPage> {
   final Map<String, String> _selectedOptionIds = {};
+  final Map<String, TextEditingController> _textControllers = {};
+
+  @override
+  void dispose() {
+    for (final controller in _textControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +102,39 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
           separatorBuilder: (context, index) => const Divider(height: 24),
           itemBuilder: (context, index) {
             final question = survey.questions[index];
+            if (question.isText) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    question.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    key: ValueKey('written_answer_${question.id}'),
+                    controller: _textControllers.putIfAbsent(
+                      question.id,
+                      TextEditingController.new,
+                    ),
+                    minLines: 3,
+                    maxLines: 6,
+                    maxLength: AppLimits.maxSurveyTextAnswerLength,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.yourWrittenAnswer,
+                      helperText: context.l10n.writtenAnswerHint,
+                      helperMaxLines: 3,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  if (authService.currentUser?.uid == survey.createdBy)
+                    _WrittenResponses(
+                      surveyId: survey.id,
+                      questionId: question.id,
+                    ),
+                ],
+              );
+            }
             final selectedOptionId = _selectedOptionIds[question.id];
             final total = survey.totalVotesForQuestion(question.id);
             return RadioGroup<String>(
@@ -140,11 +185,14 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
         onAction: ({String? reason}) async {
           final survey = await repo.get(widget.id);
           if (survey == null) return;
-          final answers = {
-            for (final question in survey.questions)
-              if (_selectedOptionIds[question.id] != null)
-                question.id: _selectedOptionIds[question.id]!,
-          };
+          final answers = <String, String>{};
+          for (final question in survey.questions) {
+            final answer = question.isText
+                ? _textControllers[question.id]?.text.trim()
+                : _selectedOptionIds[question.id];
+            if (answer != null && answer.isNotEmpty)
+              answers[question.id] = answer;
+          }
           if (answers.length != survey.questions.length) {
             throw StateError(answerAllQuestionsMessage);
           }
@@ -236,5 +284,55 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       showSuccessSnackBar(context.l10n.userBlockedContentHidden);
       Navigator.of(context).pop();
     }
+  }
+}
+
+final _writtenResponsesProvider = StreamProvider.autoDispose
+    .family<List<Map<String, String>>, String>((ref, surveyId) {
+      return SurveyRepository.create().watchTextResponses(surveyId);
+    });
+
+class _WrittenResponses extends ConsumerWidget {
+  const _WrittenResponses({required this.surveyId, required this.questionId});
+  final String surveyId;
+  final String questionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ExpansionTile(
+      title: Text(context.l10n.writtenResponses),
+      children: [
+        ref
+            .watch(_writtenResponsesProvider(surveyId))
+            .when(
+              loading: () => const SizedBox(
+                height: 48,
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: TriangleLoadingIndicator(),
+                  ),
+                ),
+              ),
+              error: (error, stack) =>
+                  ListTile(title: Text(context.l10n.writtenResponsesError)),
+              data: (responses) {
+                final answers = responses
+                    .map((response) => response[questionId])
+                    .whereType<String>()
+                    .toList();
+                if (answers.isEmpty)
+                  return ListTile(title: Text(context.l10n.noWrittenResponses));
+                return Column(
+                  children: [
+                    for (final answer in answers)
+                      ListTile(title: SelectableText(answer)),
+                  ],
+                );
+              },
+            ),
+      ],
+    );
   }
 }

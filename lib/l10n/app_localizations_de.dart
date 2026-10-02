@@ -3169,4 +3169,30 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get importFormError =>
       'Die Datei konnte nicht importiert werden. Bitte versuche es erneut.';
+
+  @override
+  String get answerType => 'Antworttyp';
+
+  @override
+  String get multipleChoiceAnswer => 'Multiple Choice';
+
+  @override
+  String get writtenAnswer => 'Freitextantwort';
+
+  @override
+  String get writtenAnswerHint =>
+      'Teilnehmende schreiben eine eigene Antwort. Nur die erstellende Person kann Freitextantworten lesen.';
+
+  @override
+  String get yourWrittenAnswer => 'Deine Antwort';
+
+  @override
+  String get writtenResponses => 'Freitextantworten';
+
+  @override
+  String get noWrittenResponses => 'Noch keine Freitextantworten.';
+
+  @override
+  String get writtenResponsesError =>
+      'Freitextantworten konnten nicht geladen werden.';
 }
