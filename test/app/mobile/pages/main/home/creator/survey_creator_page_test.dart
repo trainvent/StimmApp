@@ -284,6 +284,7 @@ void main() {
     expect(draft['groupId'], 'group-1');
     expect(questions.single, {
       'title': 'Cached question',
+      'type': 'multipleChoice',
       'options': ['Cached A', 'Cached B'],
     });
   });

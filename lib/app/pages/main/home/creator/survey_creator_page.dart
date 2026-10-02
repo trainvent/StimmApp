@@ -104,19 +104,17 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           .take(AppLimits.maxSurveyQuestions)
           .map((rawQuestion) {
             final question = Map<String, dynamic>.from(rawQuestion);
+            final type = question['type'] == 'text'
+                ? SurveyQuestionType.text
+                : SurveyQuestionType.multipleChoice;
             final options = (question['options'] as List?)
                 ?.whereType<String>()
                 .take(AppLimits.maxSurveyOptionsPerQuestion)
                 .toList();
             return _createQuestionDraft(
               title: question['title'] as String? ?? '',
-              type: question['type'] == 'text'
-                  ? SurveyQuestionType.text
-                  : SurveyQuestionType.multipleChoice,
-              options: question.type == SurveyQuestionType.text
-                  ? const []
-                  : options,
-              type: question.type,
+              type: type,
+              options: type == SurveyQuestionType.text ? const [] : options,
             );
           })
           .toList();
