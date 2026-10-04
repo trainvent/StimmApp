@@ -139,11 +139,15 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   bool _isImporting = false;
 
-  Future<void> _openImportGuide() async {
+  Future<void> _openImportGuide([String? format]) async {
     final isGerman = Localizations.localeOf(context).languageCode == 'de';
-    final uri = Uri.parse(
-      IConst.faqUrl,
-    ).replace(path: isGerman ? '/formulare-importieren' : '/import-forms');
+    final documentationPath = isGerman ? '/dokumentation' : '/documentation';
+    final importPath = isGerman ? 'formulare-importieren' : 'import-forms';
+    final uri = Uri.parse(IConst.faqUrl).replace(
+      path: format == null
+          ? '$documentationPath/'
+          : '$documentationPath/$importPath/$format/',
+    );
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!opened && mounted) {
@@ -162,18 +166,20 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
                 children: [
-                  Text(
-                    context.l10n.importFormLabel,
-                    style: Theme.of(context).textTheme.titleLarge,
+                  Expanded(
+                    child: Text(
+                      context.l10n.importFormLabel,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
-                  TextButton.icon(
-                    onPressed: _openImportGuide,
-                    icon: const Icon(Icons.open_in_new, size: 18),
-                    label: Text(context.l10n.importFormFormatHelp),
+                  IconButton(
+                    onPressed: () => _openImportGuide(),
+                    tooltip: context.l10n.importFormFormatHelp,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    icon: const Icon(Icons.menu_book_outlined, size: 20),
                   ),
                 ],
               ),
@@ -182,11 +188,23 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
             ListTile(
               leading: const Icon(Icons.picture_as_pdf_outlined),
               title: Text(context.l10n.importFormPdf),
+              trailing: IconButton(
+                onPressed: () => _openImportGuide('pdf'),
+                tooltip: '${context.l10n.importFormFormatHelp} (PDF)',
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                icon: const Icon(Icons.open_in_new, size: 18),
+              ),
               onTap: () => Navigator.pop(context, true),
             ),
             ListTile(
               leading: const Icon(Icons.code),
               title: Text(context.l10n.importFormJson),
+              trailing: IconButton(
+                onPressed: () => _openImportGuide('json'),
+                tooltip: '${context.l10n.importFormFormatHelp} (JSON)',
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                icon: const Icon(Icons.open_in_new, size: 18),
+              ),
               onTap: () => Navigator.pop(context, false),
             ),
           ],
