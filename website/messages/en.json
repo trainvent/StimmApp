@@ -344,8 +344,23 @@
           "heading": "Import forms with PDF",
           "intro": "Use a simple PDF with selectable text in reading order. Scanned or image-only PDFs are not supported. Avoid columns, tables, headers and footers that interrupt the text."
         }
+      },
+      "documentation": {
+        "title": "Documentation — StimmApp",
+        "heading": "Documentation",
+        "intro": "Guides and reference material for StimmApp. Choose a topic from the library to get started.",
+        "overview": "Overview",
+        "navigation": "Documentation navigation",
+        "category": "Forms",
+        "importHeading": "Import forms",
+        "importIntro": "Create petitions and polls from prepared files. Choose the format you want to use.",
+        "jsonSummary": "Structured forms, downloadable examples and a complete field reference.",
+        "pdfSummary": "Import text from a PDF, with instructions for layout and supported content.",
+        "readGuide": "Read guide",
+        "back": "All documentation"
       }
     }
   },
-  "footerFormImport": "Import forms"
+  "footerFormImport": "Import forms",
+  "footerDocumentation": "Documentation"
 }

@@ -1,9 +1,11 @@
 export const contentRoutes = {
+  dokumentation: { page: 'formImport', locale: 'de', documentation: true },
+  documentation: { page: 'formImport', locale: 'en', documentation: true },
   'import-forms-pdf': { page: 'formImport', locale: 'en', format: 'pdf' },
   'formulare-importieren-pdf': { page: 'formImport', locale: 'de', format: 'pdf' },
-  'form-import': { page: 'formImport' },
-  'import-forms': { page: 'formImport', locale: 'en' },
-  'formulare-importieren': { page: 'formImport', locale: 'de' },
+  'form-import': { page: 'formImport', documentation: true },
+  'import-forms': { page: 'formImport', locale: 'en', documentation: true },
+  'formulare-importieren': { page: 'formImport', locale: 'de', documentation: true },
   datenschutzerklaerung: { page: 'privacyPolicy', locale: 'de' },
   'datenschutzerklaerung-absturzdaten': {
     page: 'privacyPolicyCrashData',

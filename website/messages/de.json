@@ -344,8 +344,23 @@
           "heading": "Formulare importieren mit PDF",
           "intro": "Verwende eine einfache PDF mit auswählbarem Text in Lesereihenfolge. Gescannte Seiten und reine Bild-PDFs werden nicht unterstützt. Vermeide Spalten, Tabellen sowie Kopf- und Fußzeilen, die den Text unterbrechen."
         }
+      },
+      "documentation": {
+        "title": "Dokumentation — StimmApp",
+        "heading": "Dokumentation",
+        "intro": "Anleitungen und Nachschlagewerk für StimmApp. Wähle ein Thema aus der Bibliothek.",
+        "overview": "Übersicht",
+        "navigation": "Dokumentationsnavigation",
+        "category": "Formulare",
+        "importHeading": "Formulare importieren",
+        "importIntro": "Erstelle Petitionen und Umfragen aus vorbereiteten Dateien. Wähle das Format, das du verwenden möchtest.",
+        "jsonSummary": "Strukturierte Formulare, Beispiele zum Herunterladen und eine vollständige Feldreferenz.",
+        "pdfSummary": "Texte aus einer PDF importieren, mit Hinweisen zum Aufbau und zu unterstützten Inhalten.",
+        "readGuide": "Anleitung lesen",
+        "back": "Gesamte Dokumentation"
       }
     }
   },
-  "footerFormImport": "Formulare importieren"
+  "footerFormImport": "Formulare importieren",
+  "footerDocumentation": "Dokumentation"
 }

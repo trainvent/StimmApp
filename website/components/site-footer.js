@@ -18,11 +18,7 @@ export default function SiteFooter({ copy }) {
         <Link href={isEnglish ? '/terms-of-service' : '/nutzungsbedingungen'}>{copy.footerTerms}</Link>
         <Link href="/support">{copy.footerSupport}</Link>
         <Link href="/faq">FAQ</Link>
-        {['json', 'pdf'].map((format) => (
-          <Link key={format} href={`${isEnglish ? '/import-forms' : '/formulare-importieren'}${format === 'pdf' ? '-pdf' : ''}`}>
-            {copy.footerFormImport} ({format.toUpperCase()})
-          </Link>
-        ))}
+        <Link href={isEnglish ? '/documentation' : '/dokumentation'}>{copy.footerDocumentation}</Link>
       </div>
     </footer>
   );

@@ -2,10 +2,10 @@ import pollEn from '../public/examples/poll-import-en.json';
 import pollDe from '../public/examples/poll-import-de.json';
 import styles from './content-page.module.css';
 
-export default function FormImportGuide({ copy, locale, format = 'json' }) {
+export default function FormImportGuide({ copy, locale, format = 'json', embedded = false }) {
   const example = locale === 'en' ? pollEn : pollDe;
   return (
-    <article className={`${styles.document} ${styles.card}`}>
+    <article className={`${styles.document}${embedded ? '' : ` ${styles.card}`}`}>
       <h1>{copy.guides[format].heading}</h1>
       <p>{copy.guides[format].intro}</p>
       {format === 'pdf' ? <section aria-labelledby="pdf-format">
