@@ -139,14 +139,11 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   bool _isImporting = false;
 
-  Future<void> _openImportGuide([String? format]) async {
+  Future<void> _openImportGuide() async {
     final isGerman = Localizations.localeOf(context).languageCode == 'de';
     final documentationPath = isGerman ? '/dokumentation' : '/documentation';
-    final importPath = isGerman ? 'formulare-importieren' : 'import-forms';
     final uri = Uri.parse(IConst.faqUrl).replace(
-      path: format == null
-          ? '$documentationPath/'
-          : '$documentationPath/$importPath/$format/',
+      path: '$documentationPath/',
     );
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -186,25 +183,15 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
             ),
             const Divider(height: 1),
             ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               leading: const Icon(Icons.picture_as_pdf_outlined),
-              title: Text(context.l10n.importFormPdf),
-              trailing: IconButton(
-                onPressed: () => _openImportGuide('pdf'),
-                tooltip: '${context.l10n.importFormFormatHelp} (PDF)',
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                icon: const Icon(Icons.open_in_new, size: 18),
-              ),
+              title: const Text('PDF'),
               onTap: () => Navigator.pop(context, true),
             ),
             ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               leading: const Icon(Icons.code),
-              title: Text(context.l10n.importFormJson),
-              trailing: IconButton(
-                onPressed: () => _openImportGuide('json'),
-                tooltip: '${context.l10n.importFormFormatHelp} (JSON)',
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                icon: const Icon(Icons.open_in_new, size: 18),
-              ),
+              title: const Text('JSON'),
               onTap: () => Navigator.pop(context, false),
             ),
           ],
