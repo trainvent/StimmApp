@@ -247,13 +247,13 @@ const pageComponents = {
   termsOfService: TermsOfService,
 };
 
-export default function ContentPage({ page, explicitLocale, messages }) {
+export default function ContentPage({ page, explicitLocale, messages, format }) {
   const locale = useLocale(explicitLocale);
   const copy = messages[locale];
   const PageComponent = pageComponents[page];
 
   useEffect(() => {
-    document.title = copy.title;
+    document.title = copy.guides?.[format ?? 'json']?.title ?? copy.title;
     if (copy.description) {
       let meta = document.querySelector('meta[name="description"]');
       if (!meta) {
@@ -263,11 +263,11 @@ export default function ContentPage({ page, explicitLocale, messages }) {
       }
       meta.content = copy.description;
     }
-  }, [copy]);
+  }, [copy, format]);
 
   return (
     <SubpageShell locale={locale} centered={page === 'marketing'}>
-      <PageComponent copy={copy} locale={locale} />
+      <PageComponent copy={copy} locale={locale} format={format} />
     </SubpageShell>
   );
 }

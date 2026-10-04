@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
   const locale = route.locale ?? 'de';
   const copy = messages[locale].pages[route.page];
   return {
-    title: copy.title,
+    title: copy.guides?.[route.format ?? 'json']?.title ?? copy.title,
     description: copy.description,
   };
 }
@@ -34,6 +34,7 @@ export default async function StaticContentRoute({ params }) {
     <ContentPage
       page={route.page}
       explicitLocale={route.locale}
+      format={route.format}
       messages={{ de: de.pages[route.page], en: en.pages[route.page] }}
     />
   );

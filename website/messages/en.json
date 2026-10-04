@@ -332,7 +332,19 @@
       ],
       "pdfExampleHeading": "Example PDF text (poll)",
       "pdfExample": "Neighbourhood park improvements\nHelp us decide how to improve our neighbourhood park.\n\n1. Which improvement should come first?\na) More trees\nb) More benches\n\n2. What else would you suggest?",
-      "pdfErrors": "If no text is found, export the original document as a PDF with selectable text. If the format is rejected, correct the extracted text and check the title, description, question and choice limits. Result reports are not formatted for automatic reimport."
+      "pdfErrors": "If no text is found, export the original document as a PDF with selectable text. If the format is rejected, correct the extracted text and check the title, description, question and choice limits. Result reports are not formatted for automatic reimport.",
+      "guides": {
+        "json": {
+          "title": "Import forms with JSON — Vivot",
+          "heading": "Import forms with JSON",
+          "intro": "Prepare a petition or poll as JSON and review the imported draft before publishing."
+        },
+        "pdf": {
+          "title": "Import forms with PDF — Vivot",
+          "heading": "Import forms with PDF",
+          "intro": "Use a simple PDF with selectable text in reading order. Scanned or image-only PDFs are not supported. Avoid columns, tables, headers and footers that interrupt the text."
+        }
+      }
     }
   },
   "footerFormImport": "Import forms"

@@ -332,7 +332,19 @@
       ],
       "pdfExampleHeading": "Beispieltext für eine Umfrage-PDF",
       "pdfExample": "Verbesserungen im Nachbarschaftspark\nHilf uns zu entscheiden, wie wir unseren Nachbarschaftspark verbessern.\n\n1. Welche Verbesserung soll zuerst kommen?\na) Mehr Bäume\nb) Mehr Bänke\n\n2. Was würdest du außerdem vorschlagen?",
-      "pdfErrors": "Wenn kein Text gefunden wird, exportiere das Originaldokument als PDF mit auswählbarem Text. Wird das Format abgelehnt, korrigiere den extrahierten Text und prüfe die Grenzen für Titel, Beschreibung, Fragen und Optionen. Ergebnisberichte sind nicht für den automatischen erneuten Import formatiert."
+      "pdfErrors": "Wenn kein Text gefunden wird, exportiere das Originaldokument als PDF mit auswählbarem Text. Wird das Format abgelehnt, korrigiere den extrahierten Text und prüfe die Grenzen für Titel, Beschreibung, Fragen und Optionen. Ergebnisberichte sind nicht für den automatischen erneuten Import formatiert.",
+      "guides": {
+        "json": {
+          "title": "Formulare importieren mit JSON — StimmApp",
+          "heading": "Formulare importieren mit JSON",
+          "intro": "Bereite eine Petition oder Umfrage als JSON vor und prüfe den importierten Entwurf vor der Veröffentlichung."
+        },
+        "pdf": {
+          "title": "Formulare importieren mit PDF — StimmApp",
+          "heading": "Formulare importieren mit PDF",
+          "intro": "Verwende eine einfache PDF mit auswählbarem Text in Lesereihenfolge. Gescannte Seiten und reine Bild-PDFs werden nicht unterstützt. Vermeide Spalten, Tabellen sowie Kopf- und Fußzeilen, die den Text unterbrechen."
+        }
+      }
     }
   },
   "footerFormImport": "Formulare importieren"

@@ -1,4 +1,6 @@
 export const contentRoutes = {
+  'import-forms-pdf': { page: 'formImport', locale: 'en', format: 'pdf' },
+  'formulare-importieren-pdf': { page: 'formImport', locale: 'de', format: 'pdf' },
   'form-import': { page: 'formImport' },
   'import-forms': { page: 'formImport', locale: 'en' },
   'formulare-importieren': { page: 'formImport', locale: 'de' },
