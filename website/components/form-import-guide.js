@@ -8,6 +8,17 @@ export default function FormImportGuide({ copy, locale }) {
     <article className={`${styles.document} ${styles.card}`}>
       <h1>{copy.heading}</h1>
       <p>{copy.intro}</p>
+      <section aria-labelledby="pdf-format">
+        <h2 id="pdf-format">{copy.pdfHeading}</h2>
+        <p>{copy.pdfIntro}</p>
+        <h3>{copy.pdfStepsHeading}</h3>
+        <ol>{copy.pdfSteps.map((step) => <li key={step}>{step}</li>)}</ol>
+        <h3>{copy.pdfRulesHeading}</h3>
+        <ul>{copy.pdfRules.map((rule) => <li key={rule}>{rule}</li>)}</ul>
+        <h3>{copy.pdfExampleHeading}</h3>
+        <pre className={styles.jsonExample}><code>{copy.pdfExample}</code></pre>
+        <p>{copy.pdfErrors}</p>
+      </section>
       <h2>{copy.stepsHeading}</h2>
       <ol>{copy.steps.map((step) => <li key={step}>{step}</li>)}</ol>
       <h2>{copy.examplesHeading}</h2>

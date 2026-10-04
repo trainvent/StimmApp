@@ -202,15 +202,15 @@
       "unknownError": "An unknown error occurred"
     },
     "formImport": {
-      "title": "Import forms with JSON — Vivot",
-      "description": "Create and share reusable petitions and polls with JSON. Step-by-step instructions, downloads and a field reference.",
+      "title": "Import forms with JSON or PDF — Vivot",
+      "description": "Import petitions and polls with JSON or PDF: instructions, examples and format requirements.",
       "heading": "Import premade forms",
-      "intro": "Prepare a petition or poll once and share its JSON file with others. They can import it into their own draft, adapt it and publish it after review.",
-      "stepsHeading": "How to import",
+      "intro": "Prepare a petition or poll as JSON or a PDF with selectable text. Import it into your draft, check the content and settings, and publish after review.",
+      "stepsHeading": "How to import JSON",
       "steps": [
         "Download an example below, or use a file someone has shared with you. Save it as a UTF-8 text file ending in .json.",
         "In the app, open the petition or poll creator that matches the file type.",
-        "Choose “Import JSON form” using the upload icon in the toolbar and select your file.",
+        "Open the import selector using the upload icon, choose “Import JSON form” and select your file.",
         "Confirm replacing the included draft fields. Check the content, tags, duration, geographical scope, selected group and any image.",
         "Edit as needed, then use the normal publication review to publish. Importing alone does not publish the form."
       ],
@@ -306,12 +306,33 @@
         "Consumer Rights",
         "Other"
       ],
-      "errorsHeading": "If the import fails",
+      "errorsHeading": "If the JSON import fails",
       "errors": "The file must be one JSON object, at most 256 KiB. Use double quotes, no comments and no trailing commas. Unknown fields, unsupported versions and values outside the limits are rejected. Text is trimmed before length checks. Start with an example and check the field named in the error. If a scope is unavailable, update your profile or choose an available scope.",
       "questionTypesHeading": "Choice and written answers",
       "questionTypes": "Mix multipleChoice and text questions in the same poll. Multiple-choice questions let participants select one option. Text questions accept a written answer of up to 2,000 characters. Every question requires an answer. Written responses are visible only to the creator. Question type defaults to multipleChoice when omitted, so existing version 1 files still work.",
       "exportsHeading": "Exporting results",
-      "exports": "For a finished poll, use its save or share action and choose CSV, JSON or PDF. Exports include choice labels and written answers in question order. You can include the form content as well. These are result reports, not reusable form files: to import a new draft, use the version 1 format above. Written responses are included in the file you save or share."
+      "exports": "For a finished poll, use its save or share action and choose CSV, JSON or PDF. Exports include choice labels and written answers in question order. You can include the form content as well. These are result reports, not reusable form files: to import a new draft, use the version 1 format above. Written responses are included in the file you save or share.",
+      "pdfHeading": "PDF format",
+      "pdfIntro": "Use a simple PDF with selectable text in reading order. Scanned or image-only PDFs are not supported. Avoid columns, tables, headers and footers that interrupt the text.",
+      "pdfStepsHeading": "How to import a PDF",
+      "pdfSteps": [
+        "Open the petition or poll creator, tap the upload icon and choose “Import PDF”.",
+        "Select the PDF, then review and correct the extracted text before confirming.",
+        "Apply it to your draft, check the settings and use the usual publication review. Importing alone does not publish it."
+      ],
+      "pdfRulesHeading": "Text layout and limits",
+      "pdfRules": [
+        "First non-empty line: title (5–100 characters). All following lines before the first question form the description (20–1,000 characters). Blank lines are ignored.",
+        "For petitions, everything after the title is the description. Do not include poll questions.",
+        "For polls, start each question on a new line with a number, a dot or closing parenthesis, and a space: “1. Your question” or “2) Your question”. Use 1–20 questions with titles of 1–200 characters.",
+        "Put each choice on its own line with a letter and dot or closing parenthesis, or a bullet (-, •, ☐ or □), followed by a space. Use 2–10 distinct choices of 1–50 characters each. Case alone does not make them different.",
+        "A question without choices accepts a written answer. Unmarked continuation lines extend the preceding question or the last choice. Check wrapped text carefully.",
+        "Maximum: 10 MiB, 50 pages and 100,000 extracted text characters. Content must meet the same limits as JSON.",
+        "PDF imports include only the title, description and poll questions. Set tags, duration and geographical scope in the app. Your selected audience and petition image stay unchanged."
+      ],
+      "pdfExampleHeading": "Example PDF text (poll)",
+      "pdfExample": "Neighbourhood park improvements\nHelp us decide how to improve our neighbourhood park.\n\n1. Which improvement should come first?\na) More trees\nb) More benches\n\n2. What else would you suggest?",
+      "pdfErrors": "If no text is found, export the original document as a PDF with selectable text. If the format is rejected, correct the extracted text and check the title, description, question and choice limits. Result reports are not formatted for automatic reimport."
     }
   },
   "footerFormImport": "Import forms"
