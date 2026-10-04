@@ -3197,6 +3197,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Freitextantworten konnten nicht geladen werden.';
 
   @override
+  String get importFormFormatHelp => 'Eingabeformat und Beispiele';
+
+  @override
   String get importFormLabel => 'Formular importieren';
 
   @override

@@ -1230,6 +1230,7 @@
   "writtenResponses": "Written responses",
   "noWrittenResponses": "No written responses yet.",
   "writtenResponsesError": "Could not load written responses.",
+  "importFormFormatHelp": "Input format and examples",
   "importFormLabel": "Import form",
   "importFormPdf": "Import PDF",
   "importPdfHelp": "Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.",

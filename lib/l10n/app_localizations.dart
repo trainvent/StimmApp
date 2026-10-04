@@ -5792,6 +5792,12 @@ abstract class AppLocalizations {
   /// **'Could not load written responses.'**
   String get writtenResponsesError;
 
+  /// No description provided for @importFormFormatHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Input format and examples'**
+  String get importFormFormatHelp;
+
   /// No description provided for @importFormLabel.
   ///
   /// In en, this message translates to:

@@ -11,6 +11,8 @@ import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/country_union_memberships.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
@@ -137,6 +139,21 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   bool _isImporting = false;
 
+  Future<void> _openImportGuide() async {
+    final isGerman = Localizations.localeOf(context).languageCode == 'de';
+    final uri = Uri.parse(
+      IConst.faqUrl,
+    ).replace(path: isGerman ? '/formulare-importieren' : '/import-forms');
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        showErrorSnackBar(context.l10n.couldNotOpenLink);
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.couldNotOpenLink);
+    }
+  }
+
   Future<void> _chooseImport() async {
     final pdf = await showModalBottomSheet<bool>(
       context: context,
@@ -144,6 +161,24 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.importFormLabel,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  TextButton.icon(
+                    onPressed: _openImportGuide,
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: Text(context.l10n.importFormFormatHelp),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.picture_as_pdf_outlined),
               title: Text(context.l10n.importFormPdf),

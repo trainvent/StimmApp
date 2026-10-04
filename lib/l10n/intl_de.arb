@@ -1217,6 +1217,7 @@
   "writtenResponses": "Freitextantworten",
   "noWrittenResponses": "Noch keine Freitextantworten.",
   "writtenResponsesError": "Freitextantworten konnten nicht geladen werden.",
+  "importFormFormatHelp": "Eingabeformat und Beispiele",
   "importFormLabel": "Formular importieren",
   "importFormPdf": "PDF importieren",
   "importPdfHelp": "Prüfe den extrahierten Text. Erste Zeile: Titel; danach Beschreibung. Für Umfragen: nummerierte Fragen (1.) und Antworten mit Buchstaben (a)) oder Aufzählungszeichen (-). Fragen ohne Optionen erlauben Freitext. Nur PDFs mit auswählbarem Text werden unterstützt.",

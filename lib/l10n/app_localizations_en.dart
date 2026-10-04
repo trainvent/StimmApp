@@ -3157,6 +3157,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get writtenResponsesError => 'Could not load written responses.';
 
   @override
+  String get importFormFormatHelp => 'Input format and examples';
+
+  @override
   String get importFormLabel => 'Import form';
 
   @override
