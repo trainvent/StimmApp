@@ -5791,6 +5791,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load written responses.'**
   String get writtenResponsesError;
+
+  /// No description provided for @importFormLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Import form'**
+  String get importFormLabel;
+
+  /// No description provided for @importFormPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Import PDF'**
+  String get importFormPdf;
+
+  /// No description provided for @importPdfHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.'**
+  String get importPdfHelp;
+
+  /// No description provided for @importPdfNoText.
+  ///
+  /// In en, this message translates to:
+  /// **'No selectable text found. Scanned PDFs are not supported.'**
+  String get importPdfNoText;
+
+  /// No description provided for @importPdfTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.'**
+  String get importPdfTooLarge;
+
+  /// No description provided for @importPdfInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the title, description and question format, and the form field limits.'**
+  String get importPdfInvalid;
 }
 
 class _AppLocalizationsDelegate

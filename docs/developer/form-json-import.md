@@ -1,8 +1,16 @@
 # Importing premade forms
 
-Open the petition or poll creator, choose **Import JSON form** (upload icon in the toolbar), and select a UTF-8 `.json` file. Confirm applying the content, edit the draft, and use the normal publication review. Importing does not publish anything.
+Open the petition or poll creator, choose **Import form → Import JSON form** (upload icon in the toolbar), and select a UTF-8 `.json` file. Confirm applying the content, edit the draft, and use the normal publication review. Importing does not publish anything.
 
 Working examples: [poll](examples/poll-import.json) and [petition](examples/petition-import.json).
+
+## PDF import
+
+Choose **Import form → Import PDF** to extract selectable text locally with `pdfrx`. No AI service or OCR is used. Scanned documents without a text layer are rejected. PDFs are limited to 10 MiB, 50 pages and 100,000 extracted characters.
+
+Review and edit the extracted text before confirming. The first non-empty line becomes the title; subsequent introductory lines become the description. In polls, `1. Question` or `1) Question` starts a question. Choices use `a)`, `a.`, `-`, `•`, `☐` or `□`, followed by a space. Unmarked wrapped lines continue the preceding question or choice. Questions without choices become written-answer questions. In petitions, all lines after the title remain description text.
+
+The existing form limits apply; invalid content stays in the review dialog for correction, and nothing is silently truncated. Tags, audience, geography, duration and images retain their draft values. Complex layouts may extract in an unexpected order, so users must check the text. Importing applies content to an editable draft and never publishes it.
 
 ## Version 1 format
 

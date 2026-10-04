@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/services/pdf_form_import.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
@@ -135,6 +136,134 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   }
 
   bool _isImporting = false;
+
+  Future<void> _chooseImport() async {
+    final pdf = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf_outlined),
+              title: Text(context.l10n.importFormPdf),
+              onTap: () => Navigator.pop(context, true),
+            ),
+            ListTile(
+              leading: const Icon(Icons.code),
+              title: Text(context.l10n.importFormJson),
+              onTap: () => Navigator.pop(context, false),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || pdf == null) return;
+    if (pdf) {
+      await _importPdf();
+    } else {
+      await _importJson();
+    }
+  }
+
+  Future<void> _importPdf() async {
+    if (_isImporting) return;
+    setState(() => _isImporting = true);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      if (!mounted || file == null) return;
+      if ((await file.length() ?? 0) > PdfFormImport.maxBytes) {
+        throw const FormatException('size');
+      }
+      final text = await PdfFormImport.extract(await file.readAsBytes());
+      if (!mounted) return;
+      final controller = TextEditingController(text: text);
+      PollTemplate? template;
+      try {
+        final route = DialogRoute<PollTemplate>(
+          context: context,
+          builder: (context) {
+            String? error;
+            return StatefulBuilder(
+              builder: (context, update) => AlertDialog(
+                title: Text(context.l10n.importFormPdf),
+                content: SizedBox(
+                  width: 600,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(context.l10n.importPdfHelp),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: controller,
+                          minLines: 8,
+                          maxLines: 16,
+                          decoration: InputDecoration(
+                            errorText: error,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(context.l10n.importFormConfirmation),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(context.l10n.cancel),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      try {
+                        final result = PdfFormImport.parse(
+                          controller.text,
+                          type: widget.importType!,
+                        );
+                        Navigator.pop(context, result);
+                      } on FormatException {
+                        update(() => error = context.l10n.importPdfInvalid);
+                      }
+                    },
+                    child: Text(context.l10n.confirm),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+        template = await Navigator.of(context).push(route);
+        await route.completed;
+      } finally {
+        controller.dispose();
+      }
+      if (!mounted || template == null) return;
+      if (!await applyTemplate(template) || !mounted) return;
+      if (template.questions != null) {
+        await widget.onImportQuestions!(template.questions!);
+      }
+      if (mounted) showSuccessSnackBar(context.l10n.importFormSuccess);
+    } on FormatException catch (error) {
+      if (mounted) {
+        showErrorSnackBar(
+          error.message == 'empty'
+              ? context.l10n.importPdfNoText
+              : error.message == 'size'
+              ? context.l10n.importPdfTooLarge
+              : context.l10n.importFormError,
+        );
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.importFormError);
+    } finally {
+      if (mounted) setState(() => _isImporting = false);
+    }
+  }
 
   Future<void> _importJson() async {
     if (_isImporting) return;
@@ -951,11 +1080,23 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
           if (widget.importType != null)
             IconButton(
               key: const Key('import_form_json'),
-              tooltip: context.l10n.importFormJson,
-              icon: const Icon(Icons.file_upload_outlined),
+              tooltip: context.l10n.importFormLabel,
+              icon: _isImporting
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: TriangleLoadingIndicator(
+                          size: 18,
+                          showFill: false,
+                          strokeColor: colors.onSurface,
+                        ),
+                      ),
+                    )
+                  : const Icon(Icons.file_upload_outlined),
               onPressed: _isImporting || _isLoading || _isReviewing
                   ? null
-                  : _importJson,
+                  : _chooseImport,
             ),
           if (widget.appBarActionBuilder != null) ...[
             widget.appBarActionBuilder!(

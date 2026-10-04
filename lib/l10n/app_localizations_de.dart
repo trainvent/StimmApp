@@ -3195,4 +3195,26 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get writtenResponsesError =>
       'Freitextantworten konnten nicht geladen werden.';
+
+  @override
+  String get importFormLabel => 'Formular importieren';
+
+  @override
+  String get importFormPdf => 'PDF importieren';
+
+  @override
+  String get importPdfHelp =>
+      'Prüfe den extrahierten Text. Erste Zeile: Titel; danach Beschreibung. Für Umfragen: nummerierte Fragen (1.) und Antworten mit Buchstaben (a)) oder Aufzählungszeichen (-). Fragen ohne Optionen erlauben Freitext. Nur PDFs mit auswählbarem Text werden unterstützt.';
+
+  @override
+  String get importPdfNoText =>
+      'Kein auswählbarer Text gefunden. Gescannte PDFs werden nicht unterstützt.';
+
+  @override
+  String get importPdfTooLarge =>
+      'Verwende ein PDF mit höchstens 10 MB, 50 Seiten und 100.000 Textzeichen.';
+
+  @override
+  String get importPdfInvalid =>
+      'Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars.';
 }

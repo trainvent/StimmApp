@@ -3155,4 +3155,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get writtenResponsesError => 'Could not load written responses.';
+
+  @override
+  String get importFormLabel => 'Import form';
+
+  @override
+  String get importFormPdf => 'Import PDF';
+
+  @override
+  String get importPdfHelp =>
+      'Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.';
+
+  @override
+  String get importPdfNoText =>
+      'No selectable text found. Scanned PDFs are not supported.';
+
+  @override
+  String get importPdfTooLarge =>
+      'Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.';
+
+  @override
+  String get importPdfInvalid =>
+      'Check the title, description and question format, and the form field limits.';
 }

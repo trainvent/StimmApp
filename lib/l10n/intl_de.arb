@@ -1216,5 +1216,11 @@
   "yourWrittenAnswer": "Deine Antwort",
   "writtenResponses": "Freitextantworten",
   "noWrittenResponses": "Noch keine Freitextantworten.",
-  "writtenResponsesError": "Freitextantworten konnten nicht geladen werden."
+  "writtenResponsesError": "Freitextantworten konnten nicht geladen werden.",
+  "importFormLabel": "Formular importieren",
+  "importFormPdf": "PDF importieren",
+  "importPdfHelp": "Prüfe den extrahierten Text. Erste Zeile: Titel; danach Beschreibung. Für Umfragen: nummerierte Fragen (1.) und Antworten mit Buchstaben (a)) oder Aufzählungszeichen (-). Fragen ohne Optionen erlauben Freitext. Nur PDFs mit auswählbarem Text werden unterstützt.",
+  "importPdfNoText": "Kein auswählbarer Text gefunden. Gescannte PDFs werden nicht unterstützt.",
+  "importPdfTooLarge": "Verwende ein PDF mit höchstens 10 MB, 50 Seiten und 100.000 Textzeichen.",
+  "importPdfInvalid": "Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars."
 }
