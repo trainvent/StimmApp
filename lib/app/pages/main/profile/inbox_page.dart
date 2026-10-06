@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/pages/main/groups/group_access_qr_scanner_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
