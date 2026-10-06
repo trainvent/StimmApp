@@ -102,11 +102,15 @@ class AboutPage extends StatelessWidget {
             child: ListTile(
               title: Text(context.l10n.licenses),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {
+              onTap: () async {
+                final packageInfo = await PackageInfo.fromPlatform();
+                if (!context.mounted) return;
+
                 showLicensePage(
                   context: context,
                   applicationName: context.localizedAppName,
-                  applicationVersion: '1.0.0',
+                  applicationVersion:
+                      '${packageInfo.version} (${packageInfo.buildNumber})',
                   applicationLegalese:
                       context.l10n.publishedUnderTheGnuGeneralPublicLicenseV30,
                   applicationIcon: Padding(
