@@ -146,7 +146,7 @@ swaks \
   --auth LOGIN \
   --auth-user <SMTP_USER> \
   --from <SMTP_MAIL> \
-  --to TEST_MAIL \
+  --to <TEST_MAIL> \
   --header 'Subject: StimmApp Brevo SMTP test' \
   --body 'Test email sent through Brevo SMTP.' \
   --protect-prompt \
