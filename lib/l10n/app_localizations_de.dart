@@ -30,7 +30,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get activityAndContent => 'Aktivität & Inhalte';
 
   @override
-  String get privacyAndData => 'Datenschutz & Daten';
+  String get privacyAndData => 'Datenschutz & Speicher';
 
   @override
   String get accountAndSecurity => 'Konto & Sicherheit';

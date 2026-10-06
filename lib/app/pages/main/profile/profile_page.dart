@@ -653,21 +653,6 @@ class ProfilePage extends ConsumerWidget {
                     context.l10n.privacyAndData,
                   ),
                   PointingListTile(
-                    key: keys.profilePage.blockedUsersListTile,
-                    title: Text(context.l10n.blockedUsers),
-                    onTap: currentUser == null
-                        ? null
-                        : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BlockedUsersPage(userId: currentUser.uid),
-                              ),
-                            );
-                          },
-                  ),
-                  PointingListTile(
                     title: Text(context.l10n.privacy),
                     onTap: () {
                       Navigator.push(
@@ -714,6 +699,21 @@ class ProfilePage extends ConsumerWidget {
                     context,
                     context.l10n.accountAndSecurity,
                   ),
+                  PointingListTile(
+                    key: keys.profilePage.blockedUsersListTile,
+                    title: Text(context.l10n.blockedUsers),
+                    onTap: currentUser == null
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BlockedUsersPage(userId: currentUser.uid),
+                              ),
+                            );
+                          },
+                  ),
                   if (hasPasswordProvider)
                     PointingListTile(
                       key: keys.profilePage.changePasswordListTile,
@@ -729,6 +729,7 @@ class ProfilePage extends ConsumerWidget {
                         );
                       },
                     ),
+
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,
                     title: Text(context.l10n.logout, style: AppTextStyles.red),
