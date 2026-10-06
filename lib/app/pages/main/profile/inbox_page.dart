@@ -26,17 +26,6 @@ class InboxPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.l10n.notificationsTitle),
         actions: [
-          IconButton(
-            tooltip: context.l10n.scanQrCodeTooltip,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const GroupAccessQrScannerPage(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.qr_code_scanner),
-          ),
         ],
       ),
       body: StreamBuilder<List<PollGroupAccessNotification>>(
