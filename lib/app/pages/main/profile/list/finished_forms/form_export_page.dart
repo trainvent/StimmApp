@@ -174,7 +174,7 @@ class _FormExportPageState extends State<FormExportPage> {
         countryUnion: poll.scope.countryUnion?.code,
         questions: [
           PollTemplateQuestion(
-            title: poll.title,
+            title: poll.questionTitle.isEmpty ? poll.title : poll.questionTitle,
             options: poll.options.map((o) => o.label).toList(),
           ),
         ],

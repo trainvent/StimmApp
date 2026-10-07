@@ -454,6 +454,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         final question = questions.single;
         final poll = Poll(
           id: '',
+          questionTitle: question.title,
           title: title,
           description: description,
           tags: tags,
@@ -792,14 +793,11 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_questions.length > 1 ||
-                    _questions[index].type == SurveyQuestionType.text) ...[
-                  Text(
-                    '${index + 1}. ${_questions[index].titleController.text.trim()}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                ],
+                Text(
+                  '${index + 1}. ${_questions[index].titleController.text.trim()}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
                 if (_questions[index].type == SurveyQuestionType.text)
                   Text(context.l10n.writtenAnswerHint),
                 if (_questions[index].type == SurveyQuestionType.multipleChoice)

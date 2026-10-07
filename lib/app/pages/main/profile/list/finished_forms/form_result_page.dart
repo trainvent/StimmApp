@@ -145,6 +145,13 @@ class _PollResults extends StatelessWidget {
       children: [
         _SummaryNumber(value: totalVotes, label: _votesLabel(context)),
         const SizedBox(height: 24),
+        if (poll.questionTitle.trim().isNotEmpty) ...[
+          Text(
+            poll.questionTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+        ],
         if (poll.options.isEmpty)
           Text(_emptyResultsLabel(context))
         else

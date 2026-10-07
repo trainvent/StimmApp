@@ -88,6 +88,22 @@ void main() {
       },
     );
 
+    test('question text survives serialization and copying', () async {
+      final withQuestion = poll.copyWith(
+        questionTitle: 'How satisfied are you?',
+      );
+      final firestore = FakeFirebaseFirestore();
+      final reference = await firestore
+          .collection('polls')
+          .add(Poll.toFirestore(withQuestion, null));
+      final restored = Poll.fromFirestore(await reference.get(), null);
+      expect(restored.questionTitle, 'How satisfied are you?');
+      expect(
+        restored.copyWith(title: 'New poll title').questionTitle,
+        'How satisfied are you?',
+      );
+    });
+
     test('toFirestore returns a map from a Poll object', () {
       final result = Poll.toFirestore(poll, null);
       expect(result, pollFirestoreData);

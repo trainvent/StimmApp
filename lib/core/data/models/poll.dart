@@ -23,6 +23,7 @@ class Poll extends HomeItem {
   final String description;
   @override
   final List<String> tags;
+  final String questionTitle;
   final List<PollOption> options;
   final Map<String, int> votes; // optionId -> count
   @override
@@ -46,6 +47,7 @@ class Poll extends HomeItem {
     required this.description,
     required this.tags,
     required this.options,
+    this.questionTitle = '',
     required this.votes,
     required this.createdBy,
     required this.createdAt,
@@ -69,6 +71,7 @@ class Poll extends HomeItem {
     String? description,
     List<String>? tags,
     List<PollOption>? options,
+    String? questionTitle,
     Map<String, int>? votes,
     String? createdBy,
     DateTime? createdAt,
@@ -86,6 +89,7 @@ class Poll extends HomeItem {
       description: description ?? this.description,
       tags: tags ?? this.tags,
       options: options ?? this.options,
+      questionTitle: questionTitle ?? this.questionTitle,
       votes: votes ?? this.votes,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
@@ -111,6 +115,7 @@ class Poll extends HomeItem {
       id: snap.id,
       title: (data['title'] ?? '') as String,
       description: (data['description'] ?? '') as String,
+      questionTitle: (data['questionTitle'] ?? '') as String,
       tags: (data['tags'] as List?)?.cast<String>() ?? const [],
       options:
           (data['options'] as List?)
@@ -139,6 +144,7 @@ class Poll extends HomeItem {
     return {
       'title': p.title,
       'description': p.description,
+      if (p.questionTitle.isNotEmpty) 'questionTitle': p.questionTitle,
       'tags': p.tags,
       'options': p.options.map((o) => o.toMap()).toList(),
       'votes': p.votes,

@@ -90,6 +90,14 @@ class _PollDetailPageState extends State<PollDetailPage> {
           onChanged: (v) => setState(() => _selectedOptionId = v),
           child: ListView(
             children: [
+              if (poll.questionTitle.trim().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  child: Text(
+                    poll.questionTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
               ...poll.options.map((o) {
                 final count = poll.votes[o.id] ?? 0;
                 final pct = total == 0 ? 0 : (count / total * 100).round();

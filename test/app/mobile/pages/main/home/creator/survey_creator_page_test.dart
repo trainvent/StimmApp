@@ -187,6 +187,61 @@ void main() {
     },
   );
 
+  testWidgets(
+    'preview displays a single multiple-choice question above its answers',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        createTestWidget(
+          ProviderScope(
+            child: SurveyCreatorPage(
+              presentAsPoll: true,
+              auth: _FakeAuthService(_FakeUser()),
+              groupRepository: _FakeGroupRepository([]),
+              initialTemplate: const PollTemplate(
+                id: 'single',
+                name: 'Single question',
+                title: 'Workplace satisfaction',
+                description: 'Please tell us about your experience at work.',
+                tags: ['Social'],
+                scopeType: 'global',
+                questions: [
+                  PollTemplateQuestion(
+                    title: 'How satisfied are you with your workplace?',
+                    options: ['Very satisfied', 'Not satisfied'],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final preview = find.widgetWithText(ElevatedButton, 'Preview');
+      await tester.scrollUntilVisible(
+        preview,
+        400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(preview);
+      await tester.pumpAndSettle();
+      final question = find.text(
+        '1. How satisfied are you with your workplace?',
+      );
+      final firstAnswer = find.text('Very satisfied');
+      expect(question, findsOneWidget);
+      expect(firstAnswer, findsOneWidget);
+      expect(
+        tester.getTopLeft(question).dy,
+        lessThan(tester.getTopLeft(firstAnswer).dy),
+      );
+      expect(find.byType(TextFormField), findsNothing);
+    },
+  );
+
   testWidgets('review rejects an empty question scrolled off screen', (
     tester,
   ) async {

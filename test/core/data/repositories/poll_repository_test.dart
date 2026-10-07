@@ -23,6 +23,7 @@ void main() {
     final tPoll = Poll(
       id: '1',
       title: 'Test Poll',
+      questionTitle: 'Which option do you prefer?',
       description: 'A test poll',
       tags: [],
       options: [
@@ -42,7 +43,14 @@ void main() {
 
       expect(
         stream,
-        emits(predicate<Poll?>((p) => p != null && p.title == tPoll.title)),
+        emits(
+          predicate<Poll?>(
+            (p) =>
+                p != null &&
+                p.title == tPoll.title &&
+                p.questionTitle == tPoll.questionTitle,
+          ),
+        ),
       );
     });
 
