@@ -1238,5 +1238,11 @@
   "importPdfTooLarge": "Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.",
   "importPdfInvalid": "Check the title, description and question format, and the form field limits.",
   "groupInfoDownload": "Download group info and logs (JSON)",
-"useAsTemplate": "Use as template"
+"useAsTemplate": "Use as template",
+"publicationsHubTitle": "Your ideas in action",
+"publicationsHubDescription": "Manage your forms, explore their results and build on what you have already started.",
+"runningFormsDescription": "View participation and manage your active forms.",
+"finishedFormsDescription": "Explore final results, export data or reuse a form as a template.",
+"createNewForm": "Start something new",
+"createNewFormDescription": "Create a petition, poll or questionnaire for your next idea."
 }

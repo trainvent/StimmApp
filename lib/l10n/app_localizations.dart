@@ -5845,6 +5845,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use as template'**
   String get useAsTemplate;
+
+  /// No description provided for @publicationsHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ideas in action'**
+  String get publicationsHubTitle;
+
+  /// No description provided for @publicationsHubDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your forms, explore their results and build on what you have already started.'**
+  String get publicationsHubDescription;
+
+  /// No description provided for @runningFormsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'View participation and manage your active forms.'**
+  String get runningFormsDescription;
+
+  /// No description provided for @finishedFormsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore final results, export data or reuse a form as a template.'**
+  String get finishedFormsDescription;
+
+  /// No description provided for @createNewForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start something new'**
+  String get createNewForm;
+
+  /// No description provided for @createNewFormDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a petition, poll or questionnaire for your next idea.'**
+  String get createNewFormDescription;
 }
 
 class _AppLocalizationsDelegate

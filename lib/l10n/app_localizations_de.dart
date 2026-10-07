@@ -3227,4 +3227,26 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get useAsTemplate => 'Als Vorlage verwenden';
+
+  @override
+  String get publicationsHubTitle => 'Deine Ideen bewegen etwas';
+
+  @override
+  String get publicationsHubDescription =>
+      'Verwalte deine Formulare, entdecke ihre Ergebnisse und knüpfe an deine bisherigen Ideen an.';
+
+  @override
+  String get runningFormsDescription =>
+      'Teilnahme ansehen und deine laufenden Formulare verwalten.';
+
+  @override
+  String get finishedFormsDescription =>
+      'Endergebnisse ansehen, Daten exportieren oder ein Formular als Vorlage verwenden.';
+
+  @override
+  String get createNewForm => 'Etwas Neues starten';
+
+  @override
+  String get createNewFormDescription =>
+      'Erstelle eine Petition, Umfrage oder einen Fragebogen für deine nächste Idee.';
 }

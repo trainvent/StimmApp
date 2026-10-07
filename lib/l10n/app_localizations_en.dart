@@ -3186,4 +3186,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useAsTemplate => 'Use as template';
+
+  @override
+  String get publicationsHubTitle => 'Your ideas in action';
+
+  @override
+  String get publicationsHubDescription =>
+      'Manage your forms, explore their results and build on what you have already started.';
+
+  @override
+  String get runningFormsDescription =>
+      'View participation and manage your active forms.';
+
+  @override
+  String get finishedFormsDescription =>
+      'Explore final results, export data or reuse a form as a template.';
+
+  @override
+  String get createNewForm => 'Start something new';
+
+  @override
+  String get createNewFormDescription =>
+      'Create a petition, poll or questionnaire for your next idea.';
 }

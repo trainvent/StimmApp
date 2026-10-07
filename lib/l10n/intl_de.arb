@@ -1225,5 +1225,11 @@
   "importPdfTooLarge": "Verwende ein PDF mit höchstens 10 MB, 50 Seiten und 100.000 Textzeichen.",
   "importPdfInvalid": "Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars.",
   "groupInfoDownload": "Gruppeninfos und Protokoll herunterladen (JSON)",
-"useAsTemplate": "Als Vorlage verwenden"
+"useAsTemplate": "Als Vorlage verwenden",
+"publicationsHubTitle": "Deine Ideen bewegen etwas",
+"publicationsHubDescription": "Verwalte deine Formulare, entdecke ihre Ergebnisse und knüpfe an deine bisherigen Ideen an.",
+"runningFormsDescription": "Teilnahme ansehen und deine laufenden Formulare verwalten.",
+"finishedFormsDescription": "Endergebnisse ansehen, Daten exportieren oder ein Formular als Vorlage verwenden.",
+"createNewForm": "Etwas Neues starten",
+"createNewFormDescription": "Erstelle eine Petition, Umfrage oder einen Fragebogen für deine nächste Idee."
 }
