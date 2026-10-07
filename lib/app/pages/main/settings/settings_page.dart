@@ -205,7 +205,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     builder: (context) =>
                         SelectionNotifierDialog<AppColorTheme>(
                           notifier: ValueNotifier<AppColorTheme?>(
-                            themeScheme ?? AppColorTheme.trainvent,
+                            themeScheme ?? AppColorTheme.sunset,
                           ),
                           options: AppColorTheme.values,
                           optionLabel: _themeSchemeLabel,
@@ -228,12 +228,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     Text(
                       _themeSchemeLabel(
                         context,
-                        themeScheme ?? AppColorTheme.trainvent,
+                        themeScheme ?? AppColorTheme.sunset,
                       ),
                     ),
                     const SizedBox(width: 10),
                     _themePreview(
-                      themeScheme ?? AppColorTheme.trainvent,
+                      themeScheme ?? AppColorTheme.sunset,
                       size: 12,
                       spacing: 4,
                     ),

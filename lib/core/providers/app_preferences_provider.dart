@@ -55,7 +55,7 @@ class ThemeModeController extends Notifier<ThemeMode> {
 
 class ThemeSchemeController extends Notifier<AppColorTheme?> {
   @override
-  AppColorTheme? build() => AppColorTheme.trainvent;
+  AppColorTheme? build() => AppColorTheme.sunset;
 
   void initialize(AppColorTheme? theme) {
     state = theme;

@@ -278,7 +278,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final themeMode = ref.watch(themeModeProvider);
     final themeScheme = ref.watch(themeSchemeProvider);
     final locale = ref.watch(appLocaleProvider);
-    final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
+    final selectedTheme = themeScheme ?? AppColorTheme.sunset;
 
     final app = MaterialApp(
       navigatorKey: navigatorKey,
