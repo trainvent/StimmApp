@@ -63,10 +63,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           child: Center(
             child: Column(
               children: [
-                const SizedBox(height: 60.0),
-                Text(context.l10n.changePassword, style: AppTextStyles.xxlBold),
                 const SizedBox(height: 20.0),
-                const Text('🔐', style: AppTextStyles.icons),
+                Image.asset(
+                  'assets/images/Lemm_login.png',
+                  height: 180,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
+                ),
                 const SizedBox(height: 50),
                 Form(
                   key: _formKey,

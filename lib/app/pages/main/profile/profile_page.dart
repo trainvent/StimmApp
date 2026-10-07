@@ -611,21 +611,6 @@ class ProfilePage extends ConsumerWidget {
                     topPadding: 0,
                   ),
                   PointingListTile(
-                    key: keys.profilePage.userHistoryPageListTile,
-                    title: Text(context.l10n.activityHistory),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const UserHistoryPage();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-
-                  PointingListTile(
                     key: keys.profilePage.publicationsListTile,
                     title: Text(context.l10n.publications),
                     onTap: () {
@@ -644,6 +629,20 @@ class ProfilePage extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const GroupsOverviewPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  PointingListTile(
+                    key: keys.profilePage.userHistoryPageListTile,
+                    title: Text(context.l10n.activityHistory),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const UserHistoryPage();
+                          },
                         ),
                       );
                     },
