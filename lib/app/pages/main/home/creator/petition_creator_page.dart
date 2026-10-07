@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:stimmapp/core/data/models/poll_template.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,9 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 
 class PetitionCreatorPage extends StatefulWidget {
-  const PetitionCreatorPage({super.key});
+  const PetitionCreatorPage({super.key, this.initialTemplate});
+
+  final PollTemplate? initialTemplate;
 
   @override
   State<PetitionCreatorPage> createState() => _PetitionCreatorPageState();
@@ -29,12 +32,14 @@ class PetitionCreatorPage extends StatefulWidget {
 
 class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   XFile? _imageFile;
+  String? _templateImageUrl;
   UserProfile? _user;
   final _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+    _templateImageUrl = widget.initialTemplate?.imageUrl;
     _fetchUser();
   }
 
@@ -107,7 +112,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     }
 
     try {
-      String? imageUrl;
+      String? imageUrl = _templateImageUrl;
       if (_imageFile != null) {
         imageUrl = await _uploadImageForUser(currentUser.uid);
         if (imageUrl == null) {
@@ -174,43 +179,68 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     return false;
   }
 
+  Widget _imagePreview() {
+    if (_imageFile != null) {
+      return FutureBuilder<Uint8List>(
+        future: _imageFile!.readAsBytes(),
+        builder: (context, snapshot) => snapshot.hasData
+            ? Image.memory(snapshot.data!)
+            : const Center(child: TriangleLoadingIndicator()),
+      );
+    }
+    if (_templateImageUrl != null) {
+      return Image.network(
+        _templateImageUrl!,
+        loadingBuilder: (context, child, progress) => progress == null
+            ? child
+            : const Center(child: TriangleLoadingIndicator()),
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image_outlined),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
+      initialTemplate: widget.initialTemplate,
       importType: 'petition',
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
       onSubmit: _createPetition,
-      previewContentBuilder: (context) => _imageFile == null
-          ? const SizedBox.shrink()
-          : FutureBuilder<Uint8List>(
-              future: _imageFile!.readAsBytes(),
-              builder: (context, snapshot) => snapshot.hasData
-                  ? Image.memory(snapshot.data!)
-                  : const Center(child: TriangleLoadingIndicator()),
-            ),
+      onResetAdditionalFields: () => setState(() {
+        _imageFile = null;
+        _templateImageUrl = null;
+      }),
+      previewContentBuilder: (_) => _imagePreview(),
       additionalTopFields: [
-        if (_user?.isPro == true) ...[
-          if (_imageFile != null)
-            FutureBuilder<List<int>>(
-              future: _imageFile!.readAsBytes().then(
-                (bytes) => List<int>.from(bytes),
+        if (_imageFile != null || _templateImageUrl != null)
+          Stack(
+            children: [
+              _imagePreview(),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton.filled(
+                  tooltip: context.l10n.remove,
+                  onPressed: () => setState(() {
+                    _imageFile = null;
+                    _templateImageUrl = null;
+                  }),
+                  icon: const Icon(Icons.close),
+                ),
               ),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Image.memory(Uint8List.fromList(snapshot.data!));
-                }
-                return const TriangleLoadingIndicator();
-              },
-            )
-          else
-            ElevatedButton.icon(
-              onPressed: _pickImage,
-              icon: const Icon(Icons.add_a_photo),
-              label: Text(context.l10n.addImage),
-            ),
+            ],
+          )
+        else if (_user?.isPro == true)
+          ElevatedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.add_a_photo),
+            label: Text(context.l10n.addImage),
+          ),
+        if (_user?.isPro == true || _templateImageUrl != null)
           const SizedBox(height: 20),
-        ],
       ],
     );
   }

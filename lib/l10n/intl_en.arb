@@ -1237,5 +1237,6 @@
   "importPdfNoText": "No selectable text found. Scanned PDFs are not supported.",
   "importPdfTooLarge": "Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.",
   "importPdfInvalid": "Check the title, description and question format, and the form field limits.",
-  "groupInfoDownload": "Download group info and logs (JSON)"
+  "groupInfoDownload": "Download group info and logs (JSON)",
+"useAsTemplate": "Use as template"
 }

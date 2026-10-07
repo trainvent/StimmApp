@@ -7,6 +7,7 @@ class PollTemplate {
     required this.name,
     this.title,
     this.description,
+    this.imageUrl,
     this.questions,
     this.tags,
     this.scopeType,
@@ -21,6 +22,7 @@ class PollTemplate {
   final String name;
   final String? title;
   final String? description;
+  final String? imageUrl;
   final List<PollTemplateQuestion>? questions;
   final List<String>? tags;
   final String? scopeType;
@@ -35,6 +37,7 @@ class PollTemplate {
     'name': name,
     if (title != null) 'title': title,
     if (description != null) 'description': description,
+    if (imageUrl != null) 'imageUrl': imageUrl,
     if (questions != null)
       'questions': questions!.map((question) => question.toJson()).toList(),
     if (tags != null) 'tags': tags,
@@ -51,6 +54,7 @@ class PollTemplate {
     name: json['name'] as String,
     title: json['title'] as String?,
     description: json['description'] as String?,
+    imageUrl: json['imageUrl'] as String?,
     tags: (json['tags'] as List?)?.cast<String>(),
     scopeType: json['scopeType'] as String?,
     countryUnion: json['countryUnion'] as String?,

@@ -1,3 +1,7 @@
+import 'package:stimmapp/app/pages/main/home/creator/petition_creator_page.dart';
+import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -125,6 +129,25 @@ class _FormExportPageState extends State<FormExportPage> {
       );
       return;
     }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: petition.title,
+        title: petition.title,
+        description: petition.description,
+        imageUrl: petition.imageUrl,
+        tags: List.of(petition.tags),
+        scopeType: petition.scope.type.name,
+        countryUnion: petition.scope.countryUnion?.code,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PetitionCreatorPage(initialTemplate: template),
+        ),
+      );
+      return;
+    }
     await _exportPetition(petition, action);
   }
 
@@ -140,6 +163,31 @@ class _FormExportPageState extends State<FormExportPage> {
       );
       return;
     }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: poll.title,
+        title: poll.title,
+        description: poll.description,
+        tags: List.of(poll.tags),
+        scopeType: poll.scope.type.name,
+        countryUnion: poll.scope.countryUnion?.code,
+        questions: [
+          PollTemplateQuestion(
+            title: poll.title,
+            options: poll.options.map((o) => o.label).toList(),
+          ),
+        ],
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              SurveyCreatorPage(presentAsPoll: true, initialTemplate: template),
+        ),
+      );
+      return;
+    }
     await _exportPoll(poll, action);
   }
 
@@ -151,6 +199,36 @@ class _FormExportPageState extends State<FormExportPage> {
         context,
         MaterialPageRoute(
           builder: (context) => FormResultPage.survey(survey: survey),
+        ),
+      );
+      return;
+    }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: survey.title,
+        title: survey.title,
+        description: survey.description,
+        tags: List.of(survey.tags),
+        scopeType: survey.scope.type.name,
+        countryUnion: survey.scope.countryUnion?.code,
+        questions: survey.questions
+            .map(
+              (q) => PollTemplateQuestion(
+                title: q.title,
+                type: q.type,
+                options: q.options.map((o) => o.label).toList(),
+              ),
+            )
+            .toList(),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SurveyCreatorPage(
+            presentAsPoll: false,
+            initialTemplate: template,
+          ),
         ),
       );
       return;
@@ -309,6 +387,11 @@ class _FormExportPageState extends State<FormExportPage> {
                 leading: const Icon(Icons.bar_chart),
                 title: Text(_viewResultsLabel(context)),
                 onTap: () => Navigator.pop(context, _FormAction.viewResults),
+              ),
+              ListTile(
+                leading: const Icon(Icons.copy_outlined),
+                title: Text(context.l10n.useAsTemplate),
+                onTap: () => Navigator.pop(context, _FormAction.useAsTemplate),
               ),
               ListTile(
                 leading: const Icon(Icons.save_alt),
@@ -581,4 +664,4 @@ class _FormExportPageState extends State<FormExportPage> {
   }
 }
 
-enum _FormAction { viewResults, save, share }
+enum _FormAction { viewResults, useAsTemplate, save, share }

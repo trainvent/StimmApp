@@ -41,11 +41,13 @@ const String _publicGroupValue = '__public__';
 class SurveyCreatorPage extends ConsumerStatefulWidget {
   const SurveyCreatorPage({
     super.key,
+    this.initialTemplate,
     this.presentAsPoll = false,
     this.auth,
     this.groupRepository,
   });
 
+  final PollTemplate? initialTemplate;
   final bool presentAsPoll;
   final AuthService? auth;
   final PollGroupRepository? groupRepository;
@@ -74,8 +76,19 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   @override
   void initState() {
     super.initState();
-    _questions = [_createQuestionDraft()];
-    _restoreSpecificDraft();
+    final templateQuestions = widget.initialTemplate?.questions;
+    _questions = templateQuestions == null || templateQuestions.isEmpty
+        ? [_createQuestionDraft()]
+        : templateQuestions
+              .map(
+                (q) => _createQuestionDraft(
+                  title: q.title,
+                  type: q.type,
+                  options: List.of(q.options),
+                ),
+              )
+              .toList();
+    if (widget.initialTemplate == null) _restoreSpecificDraft();
   }
 
   _QuestionDraft _createQuestionDraft({
@@ -1148,6 +1161,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
+      initialTemplate: widget.initialTemplate,
       key: _creatorKey,
       importType: widget.presentAsPoll ? 'poll' : 'survey',
       onImportQuestions: (questions) async {

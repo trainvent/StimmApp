@@ -1224,5 +1224,6 @@
   "importPdfNoText": "Kein auswählbarer Text gefunden. Gescannte PDFs werden nicht unterstützt.",
   "importPdfTooLarge": "Verwende ein PDF mit höchstens 10 MB, 50 Seiten und 100.000 Textzeichen.",
   "importPdfInvalid": "Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars.",
-  "groupInfoDownload": "Gruppeninfos und Protokoll herunterladen (JSON)"
+  "groupInfoDownload": "Gruppeninfos und Protokoll herunterladen (JSON)",
+"useAsTemplate": "Als Vorlage verwenden"
 }

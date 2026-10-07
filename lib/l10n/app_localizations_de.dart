@@ -3224,4 +3224,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get groupInfoDownload =>
       'Gruppeninfos und Protokoll herunterladen (JSON)';
+
+  @override
+  String get useAsTemplate => 'Als Vorlage verwenden';
 }

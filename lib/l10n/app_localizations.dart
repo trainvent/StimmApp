@@ -5839,6 +5839,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download group info and logs (JSON)'**
   String get groupInfoDownload;
+
+  /// No description provided for @useAsTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as template'**
+  String get useAsTemplate;
 }
 
 class _AppLocalizationsDelegate

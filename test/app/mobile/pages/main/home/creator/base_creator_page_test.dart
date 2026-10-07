@@ -13,6 +13,51 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  testWidgets('initial template replaces stale draft after profile loading', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'draft_Reuse_title': 'Stale title',
+      'draft_Reuse_description': 'Stale description',
+      'draft_Reuse_duration': 1,
+    });
+    final key = GlobalKey<BaseCreatorPageState>();
+    await tester.pumpWidget(
+      createTestWidget(
+        BaseCreatorPage(
+          key: key,
+          title: 'Reuse',
+          tutorialSteps: const [],
+          profileLoader: () async => null,
+          initialTemplate: const PollTemplate(
+            id: '',
+            name: 'Expired form',
+            title: 'Reused title',
+            description: 'Reused description',
+            tags: ['Environment'],
+          ),
+          onSubmit:
+              ({
+                required title,
+                required description,
+                required tags,
+                required scope,
+                required durationDays,
+                required openUntilClosed,
+              }) async => true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = tester
+        .widgetList<TextFormField>(find.byType(TextFormField))
+        .toList();
+    expect(fields[0].controller!.text, 'Reused title');
+    expect(fields[1].controller!.text, 'Reused description');
+    expect(key.currentState!.templateSettings.tags, ['Environment']);
+    expect(key.currentState!.templateSettings.openUntilClosed, false);
+  });
+
   testWidgets(
     'tag popup confirms selection, enforces the limit, and cancels edits',
     (tester) async {

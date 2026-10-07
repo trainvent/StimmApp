@@ -37,10 +37,12 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalDraftClearer,
     this.onResetAdditionalFields,
     this.previewContentBuilder,
+    this.initialTemplate,
     this.importType,
     this.onImportQuestions,
   });
 
+  final PollTemplate? initialTemplate;
   final String? importType;
   final Future<void> Function(List<PollTemplateQuestion>)? onImportQuestions;
   final String title;
@@ -142,9 +144,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   Future<void> _openImportGuide() async {
     final isGerman = Localizations.localeOf(context).languageCode == 'de';
     final documentationPath = isGerman ? '/dokumentation' : '/documentation';
-    final uri = Uri.parse(IConst.faqUrl).replace(
-      path: '$documentationPath/',
-    );
+    final uri = Uri.parse(IConst.faqUrl).replace(path: '$documentationPath/');
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!opened && mounted) {
@@ -371,10 +371,19 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   @override
   void initState() {
     super.initState();
-    _loadStateScope();
-    _loadDraft();
+    _initializeContent();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
+  }
+
+  Future<void> _initializeContent() async {
+    await _loadStateScope();
+    if (!mounted) return;
+    if (widget.initialTemplate case final template?) {
+      await applyTemplate(template);
+    } else {
+      await _loadDraft();
+    }
   }
 
   @override
@@ -422,7 +431,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         _selectedScope = FormScopeType.country;
       }
     });
-    await _loadDraft();
+    if (widget.initialTemplate == null) await _loadDraft();
   }
 
   Future<UserProfile?> _loadCurrentUserProfile() async {
