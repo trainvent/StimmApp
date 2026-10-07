@@ -1322,7 +1322,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get thankYouForSigning => 'Danke für deine Unterschrift!';
 
   @override
-  String get theWelcomePhrase => 'Der ultimative Weg, deine Meinung zu äußern';
+  String get theWelcomePhrase => 'Der ultimative Weg deine Meinung zu äußern';
 
   @override
   String get title => 'Titel';

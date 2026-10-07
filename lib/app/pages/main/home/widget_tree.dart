@@ -31,7 +31,6 @@ class WidgetTree extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(pages[selectedPage].title),
-        leadingWidth: blockedOnly ? 96 : null,
         leading: blockedOnly
             ? const BannedModeMarker()
             : selectedPage == 0

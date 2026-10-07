@@ -130,14 +130,12 @@ class BannedModeMarker extends StatelessWidget {
   const BannedModeMarker({super.key});
 
   @override
-  Widget build(BuildContext context) => TextButton(
+  Widget build(BuildContext context) => IconButton(
+    tooltip: context.l10n.blockedModeHint,
     onPressed: () => ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.blockedModeHint))),
-    child: Text(
-      context.l10n.banned,
-      style: TextStyle(color: Theme.of(context).colorScheme.error),
-    ),
+    icon: const Icon(Icons.block),
   );
 }
 
