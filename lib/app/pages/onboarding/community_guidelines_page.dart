@@ -65,11 +65,19 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
               Text(context.l10n.communityRulesAgreementNotice),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () => _openUrl(IConst.termsOfServiceUrl),
+                onPressed: () => _openUrl(
+                  IConst.termsOfServiceUrlForLocale(
+                    Localizations.localeOf(context),
+                  ),
+                ),
                 child: Text(context.l10n.openTermsOfService),
               ),
               TextButton(
-                onPressed: () => _openUrl(IConst.privacyPolicyUrl),
+                onPressed: () => _openUrl(
+                  IConst.privacyPolicyUrlForLocale(
+                    Localizations.localeOf(context),
+                  ),
+                ),
                 child: Text(context.l10n.openPrivacyPolicy),
               ),
               const SizedBox(height: 16),

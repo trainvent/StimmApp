@@ -13,6 +13,16 @@ function useLocale(explicitLocale) {
   const [locale, setLocale] = useState(explicitLocale ?? 'de');
 
   useEffect(() => {
+    const host = window.location.hostname.toLowerCase();
+    const isStimmapp = host === 'stimmapp.net' || host.endsWith('.stimmapp.net');
+    const isVivot = host === 'vivot.net' || host.endsWith('.vivot.net');
+    if ((explicitLocale === 'en' && isStimmapp) ||
+        (explicitLocale === 'de' && isVivot)) {
+      const url = new URL(window.location.href);
+      url.hostname = explicitLocale === 'en' ? 'vivot.net' : 'stimmapp.net';
+      window.location.replace(url.href);
+      return;
+    }
     const nextLocale =
       explicitLocale ??
       (window.location.hostname.toLowerCase().includes('vivot.net') ? 'en' : 'de');

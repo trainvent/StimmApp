@@ -61,6 +61,10 @@ class IConst {
   static String get termsOfServiceUrl => Environment.termsOfServiceUrl;
   static String termsOfServiceUrlForLocale(Locale locale) =>
       Environment.termsOfServiceUrlForLocale(locale);
+  static String privacyPolicyCrashDataUrlForLocale(Locale locale) =>
+      Environment.privacyPolicyCrashDataUrlForLocale(locale);
+  static String documentationUrlForLocale(Locale locale) =>
+      Environment.documentationUrlForLocale(locale);
   static String get faqUrl => Environment.faqUrl;
 
   static const String _revenueCatApiKeyDevAndroid = String.fromEnvironment(

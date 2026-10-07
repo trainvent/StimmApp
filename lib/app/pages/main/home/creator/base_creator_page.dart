@@ -142,9 +142,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   bool _isImporting = false;
 
   Future<void> _openImportGuide() async {
-    final isGerman = Localizations.localeOf(context).languageCode == 'de';
-    final documentationPath = isGerman ? '/dokumentation' : '/documentation';
-    final uri = Uri.parse(IConst.faqUrl).replace(path: '$documentationPath/');
+    final uri = Uri.parse(
+      IConst.documentationUrlForLocale(Localizations.localeOf(context)),
+    );
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!opened && mounted) {

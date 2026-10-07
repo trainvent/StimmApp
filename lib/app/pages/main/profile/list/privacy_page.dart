@@ -124,12 +124,16 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
               _buildPolicyTile(
                 title: context.l10n.privacyPolicyEssentialTitle,
                 subtitle: context.l10n.privacyPolicyEssentialDescription,
-                url: IConst.privacyPolicyUrl,
+                url: IConst.privacyPolicyUrlForLocale(
+                  Localizations.localeOf(context),
+                ),
               ),
               _buildPolicyTile(
                 title: context.l10n.analyticsData,
                 subtitle: context.l10n.analyticsDataDescription,
-                url: IConst.privacyPolicyUrl,
+                url: IConst.privacyPolicyUrlForLocale(
+                  Localizations.localeOf(context),
+                ),
                 switchValue: analyticsCollectionEnabled,
                 onChanged: (value) =>
                     _toggleAnalyticsCollection(value, profile),
@@ -138,7 +142,9 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
               _buildPolicyTile(
                 title: context.l10n.sendCrashLogs,
                 subtitle: context.l10n.sendCrashLogsDescription,
-                url: IConst.privacyPolicyCrashDataUrl,
+                url: IConst.privacyPolicyCrashDataUrlForLocale(
+                  Localizations.localeOf(context),
+                ),
                 switchValue: sendCrashLogs,
                 onChanged: (value) => _toggleCrashLogs(value, profile),
                 showInfoButton: false,

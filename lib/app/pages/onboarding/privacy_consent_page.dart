@@ -32,7 +32,9 @@ class _PrivacyConsentPageState extends ConsumerState<PrivacyConsentPage> {
 
   Future<void> _openPrivacyPolicy() async {
     final opened = await launchUrl(
-      Uri.parse(IConst.privacyPolicyUrl),
+      Uri.parse(
+        IConst.privacyPolicyUrlForLocale(Localizations.localeOf(context)),
+      ),
       mode: LaunchMode.externalApplication,
     );
     if (!opened && mounted) {
