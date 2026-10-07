@@ -303,8 +303,15 @@ service cloud.firestore {
 
     match /polls/{document=**} {
       allow read: if true;
-      allow write: if isAdmin() ||
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin() ||
                     (isAuthenticated() && hasValidContentState(request.resource.data));
+    }
+
+    match /polls/{pollId} {
+      // A delete has no request.resource; check ownership on the stored poll.
+      allow delete: if isAdmin() ||
+                    (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
 
     match /surveys/{surveyId} {

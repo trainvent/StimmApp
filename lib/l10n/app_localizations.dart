@@ -5935,6 +5935,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No group'**
   String get noGroupFilter;
+
+  /// No description provided for @pollDeletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the poll. Please try again.'**
+  String get pollDeletionFailed;
 }
 
 class _AppLocalizationsDelegate

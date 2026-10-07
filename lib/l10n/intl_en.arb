@@ -1253,5 +1253,6 @@
   "petitionDraftsEmpty": "No saved petition drafts yet.",
   "untitledPetitionDraft": "Untitled petition",
   "petitionDraftApplyConfirmation": "Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.",
-  "noGroupFilter": "No group"
+  "noGroupFilter": "No group",
+  "pollDeletionFailed": "Could not delete the poll. Please try again."
 }

@@ -1240,5 +1240,6 @@
   "petitionDraftsEmpty": "Noch keine gespeicherten Petitionsentwürfe.",
   "untitledPetitionDraft": "Petition ohne Titel",
   "petitionDraftApplyConfirmation": "Diesen Entwurf öffnen? Er ersetzt das aktuelle Formular und Bild. Speichere deinen aktuellen Entwurf zuerst, wenn du ihn behalten möchtest.",
-  "noGroupFilter": "Keine Gruppe"
+  "noGroupFilter": "Keine Gruppe",
+  "pollDeletionFailed": "Die Umfrage konnte nicht gelöscht werden. Bitte versuche es erneut."
 }

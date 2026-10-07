@@ -235,7 +235,16 @@ class PollRepository {
   }
 
   Future<void> delete(String id) async {
-    await _col().doc(id).delete();
+    final reference = _col().doc(id);
+    await _fs.instance.runTransaction((transaction) async {
+      final snapshot = await transaction.get(reference);
+      final poll = snapshot.data();
+      if (poll == null) return;
+      if (poll.totalVotes != 0) {
+        throw StateError('poll_has_votes');
+      }
+      transaction.delete(reference);
+    });
   }
 
   // Upload title image for poll and set imageUrl on the poll document.

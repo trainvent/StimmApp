@@ -19,6 +19,7 @@ class PollDetailPage extends StatefulWidget {
 
 class _PollDetailPageState extends State<PollDetailPage> {
   String? _selectedOptionId;
+  bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +135,7 @@ class _PollDetailPageState extends State<PollDetailPage> {
   }
 
   Future<void> _deletePoll(BuildContext context, Poll poll) async {
+    if (_isDeleting) return;
     if (poll.totalVotes != 0) {
       showErrorSnackBar(context.l10n.cannotDeletePollHasVotes);
       return;
@@ -161,11 +163,27 @@ class _PollDetailPageState extends State<PollDetailPage> {
       return;
     }
 
-    await PollRepository.create().delete(poll.id);
-    QuotaUpdateNotifier.instance.notify();
-    if (context.mounted) {
-      showSuccessSnackBar(context.l10n.pollDeleted);
-      Navigator.of(context).pop();
+    if (!context.mounted || _isDeleting) return;
+    setState(() => _isDeleting = true);
+    try {
+      await PollRepository.create().delete(poll.id);
+      QuotaUpdateNotifier.instance.notify();
+      if (context.mounted) {
+        showSuccessSnackBar(context.l10n.pollDeleted);
+        Navigator.of(context).pop();
+      }
+    } on StateError catch (error) {
+      if (context.mounted) {
+        showErrorSnackBar(
+          error.message == 'poll_has_votes'
+              ? context.l10n.cannotDeletePollHasVotes
+              : context.l10n.pollDeletionFailed,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) showErrorSnackBar(context.l10n.pollDeletionFailed);
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
     }
   }
 

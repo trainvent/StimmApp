@@ -3280,4 +3280,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noGroupFilter => 'Keine Gruppe';
+
+  @override
+  String get pollDeletionFailed =>
+      'Die Umfrage konnte nicht gelöscht werden. Bitte versuche es erneut.';
 }

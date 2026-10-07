@@ -121,6 +121,13 @@ void main() {
       expect(participants.first.displayName, user.displayName);
     });
 
+    test('delete checks current votes before removing a poll', () async {
+      final pollId = await pollRepository.createPoll(tPoll);
+      await pollRepository.vote(pollId: pollId, optionId: 'opt1', uid: 'voter');
+      await expectLater(pollRepository.delete(pollId), throwsStateError);
+      expect((await pollRepository.watch(pollId).first)!.totalVotes, 1);
+    });
+
     test('delete removes a poll', () async {
       final pollId = await pollRepository.createPoll(tPoll);
       await pollRepository.delete(pollId);

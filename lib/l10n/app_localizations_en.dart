@@ -3238,4 +3238,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noGroupFilter => 'No group';
+
+  @override
+  String get pollDeletionFailed =>
+      'Could not delete the poll. Please try again.';
 }
