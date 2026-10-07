@@ -1236,5 +1236,6 @@
   "importPdfHelp": "Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.",
   "importPdfNoText": "No selectable text found. Scanned PDFs are not supported.",
   "importPdfTooLarge": "Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.",
-  "importPdfInvalid": "Check the title, description and question format, and the form field limits."
+  "importPdfInvalid": "Check the title, description and question format, and the form field limits.",
+  "groupInfoDownload": "Download group info and logs (JSON)"
 }

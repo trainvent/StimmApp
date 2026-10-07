@@ -3220,4 +3220,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get importPdfInvalid =>
       'Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars.';
+
+  @override
+  String get groupInfoDownload =>
+      'Gruppeninfos und Protokoll herunterladen (JSON)';
 }

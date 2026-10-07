@@ -3180,4 +3180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get importPdfInvalid =>
       'Check the title, description and question format, and the form field limits.';
+
+  @override
+  String get groupInfoDownload => 'Download group info and logs (JSON)';
 }

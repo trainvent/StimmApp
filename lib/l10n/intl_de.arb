@@ -487,7 +487,7 @@
 	"tagsRequired": "Mindestens ein Tag ist erforderlich",
 	"testingWidgetsHere": "Widgets testen",
 	"thankYouForSigning": "Danke für deine Unterschrift!",
-	"theWelcomePhrase": "Der ultimative Weg, deine Meinung zu äußern",
+	"theWelcomePhrase": "Der ultimative Weg deine Meinung zu äußern",
 	"title": "Titel",
 	"titleRequired": "Titel ist erforderlich",
 	"travel": "Reisen",
@@ -1223,5 +1223,6 @@
   "importPdfHelp": "Prüfe den extrahierten Text. Erste Zeile: Titel; danach Beschreibung. Für Umfragen: nummerierte Fragen (1.) und Antworten mit Buchstaben (a)) oder Aufzählungszeichen (-). Fragen ohne Optionen erlauben Freitext. Nur PDFs mit auswählbarem Text werden unterstützt.",
   "importPdfNoText": "Kein auswählbarer Text gefunden. Gescannte PDFs werden nicht unterstützt.",
   "importPdfTooLarge": "Verwende ein PDF mit höchstens 10 MB, 50 Seiten und 100.000 Textzeichen.",
-  "importPdfInvalid": "Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars."
+  "importPdfInvalid": "Prüfe Titel, Beschreibung, Fragenformat und die Feldgrenzen des Formulars.",
+  "groupInfoDownload": "Gruppeninfos und Protokoll herunterladen (JSON)"
 }

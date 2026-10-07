@@ -5833,6 +5833,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check the title, description and question format, and the form field limits.'**
   String get importPdfInvalid;
+
+  /// No description provided for @groupInfoDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download group info and logs (JSON)'**
+  String get groupInfoDownload;
 }
 
 class _AppLocalizationsDelegate
