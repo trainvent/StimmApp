@@ -1387,7 +1387,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get viewLicenses => 'Lizenzen anzeigen';
 
   @override
-  String get viewParticipants => 'Teilnehmer anzeigen';
+  String get viewParticipants => 'Anzeigen';
 
   @override
   String get vote => 'Abstimmen';

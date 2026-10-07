@@ -400,39 +400,38 @@ class _BaseDetailPageState<T extends HomeItem>
     );
   }
 
+  TableRow _metadataRow(BuildContext context, String label, Widget value) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 12, top: 8, bottom: 8),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: value),
+      ],
+    );
+  }
+
   Widget _buildDetailMetadata(BuildContext context, T item) {
     final groupName = _groupName(item)?.trim();
-    TableRow metadataRow(String label, Widget value) {
-      return TableRow(
-        children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(
-              end: 12,
-              top: 8,
-              bottom: 8,
-            ),
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: value,
-          ),
-        ],
-      );
-    }
 
     return Table(
       columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
       defaultVerticalAlignment: TableCellVerticalAlignment.top,
       children: [
-        metadataRow(context.l10n.detailScope, _scopeValue(context, item)),
+        _metadataRow(
+          context,
+          context.l10n.detailScope,
+          _scopeValue(context, item),
+        ),
         if (groupName != null && groupName.isNotEmpty)
-          metadataRow(
+          _metadataRow(
+            context,
             context.l10n.detailGroup,
             _detailValue(
               context,
@@ -441,7 +440,8 @@ class _BaseDetailPageState<T extends HomeItem>
             ),
           ),
         if (item.tags.isNotEmpty)
-          metadataRow(
+          _metadataRow(
+            context,
             context.l10n.detailTopics,
             _detailValue(
               context,
@@ -451,6 +451,20 @@ class _BaseDetailPageState<T extends HomeItem>
               leading: const Icon(Icons.label_outline, size: 20),
             ),
           ),
+        _metadataRow(
+          context,
+          context.l10n.expiresOn,
+          KeyedSubtree(
+            key: const Key('form_expiration_metadata'),
+            child: _detailValue(
+              context,
+              item.expiresAt == null
+                  ? context.l10n.openUntilClosed
+                  : DateFormat('dd.MM.yyyy').format(item.expiresAt!),
+              leading: const Icon(Icons.schedule_outlined, size: 20),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -544,6 +558,8 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   Widget _buildHeaderCard(BuildContext context, T item) {
+    final isExpired =
+        item.status != IConst.active || item.isExpiredAt(DateTime.now());
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -571,10 +587,66 @@ class _BaseDetailPageState<T extends HomeItem>
               item.title,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            children: [_buildDetailMetadata(context, item)],
+            subtitle: isExpired
+                ? Text(
+                    context.l10n.closed,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  )
+                : null,
+            children: [
+              _buildDetailMetadata(context, item),
+              Divider(
+                height: 24,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+              _buildParticipationMetadata(context, item),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildParticipationMetadata(BuildContext context, T item) {
+    return Table(
+      key: const Key('form_participation_metadata'),
+      columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      children: [
+        _metadataRow(
+          context,
+          context.l10n.participants,
+          Row(
+            children: [
+              Expanded(
+                child: _detailValue(
+                  context,
+                  '${item.participantCount}',
+                  leading: const Icon(Icons.people_outline, size: 20),
+                ),
+              ),
+              if (widget.participantsStream != null)
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ParticipantsListPage(
+                        participantsStream: widget.participantsStream!,
+                        signaturesStream: widget.signaturesStream,
+                      ),
+                    ),
+                  ),
+                  child: Text(context.l10n.viewParticipants),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -721,48 +793,6 @@ class _BaseDetailPageState<T extends HomeItem>
                           item: item,
                           isExpired: isExpired,
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${context.l10n.participants}: ${item.participantCount}',
-                            ),
-                            if (widget.participantsStream != null)
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ParticipantsListPage(
-                                            participantsStream:
-                                                widget.participantsStream!,
-                                            signaturesStream:
-                                                widget.signaturesStream,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                child: Text(context.l10n.viewParticipants),
-                              ),
-                          ],
-                        ),
-                        Text(
-                          item.expiresAt == null
-                              ? context.l10n.openUntilClosed
-                              : '${context.l10n.expiresOn}: '
-                                    '${DateFormat('dd.MM.yyyy').format(item.expiresAt!)}',
-                        ),
-                        if (isExpired) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            context.l10n.closed,
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                          ),
-                        ],
                         const SizedBox(height: 16),
                         Expanded(
                           child: AbsorbPointer(

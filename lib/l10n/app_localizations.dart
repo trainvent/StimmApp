@@ -2675,7 +2675,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewParticipants.
   ///
   /// In en, this message translates to:
-  /// **'View Participants'**
+  /// **'Show'**
   String get viewParticipants;
 
   /// No description provided for @vote.

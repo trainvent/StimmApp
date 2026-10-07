@@ -11,12 +11,13 @@ void main() {
   testWidgets('published poll displays its question above the answer options', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final widget = createTestWidget(
       const ProviderScope(child: PollDetailPage(id: 'published')),
+      locale: const Locale('de'),
     );
     final poll = Poll(
       id: 'published',
@@ -46,5 +47,31 @@ void main() {
       tester.getTopLeft(question).dy,
       lessThan(tester.getTopLeft(answer).dy),
     );
+    expect(find.text('Teilnehmer'), findsNothing);
+    await tester.tap(find.text(poll.title));
+    await tester.pumpAndSettle();
+    final metadata = find.byKey(const Key('form_participation_metadata'));
+    expect(metadata, findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(ExpansionTile), matching: metadata),
+      findsOneWidget,
+    );
+    final expiration = find.byKey(const Key('form_expiration_metadata'));
+    expect(expiration, findsOneWidget);
+    expect(
+      tester.getTopLeft(expiration).dy,
+      lessThan(tester.getTopLeft(metadata).dy),
+    );
+    expect(
+      find.descendant(
+        of: metadata,
+        matching: find.byIcon(Icons.schedule_outlined),
+      ),
+      findsNothing,
+    );
+    expect(find.text('Teilnehmer'), findsOneWidget);
+    await tester.tap(find.text(poll.title));
+    await tester.pumpAndSettle();
+    expect(find.text('Teilnehmer'), findsNothing);
   });
 }
