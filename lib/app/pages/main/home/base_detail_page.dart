@@ -488,7 +488,6 @@ class _BaseDetailPageState<T extends HomeItem>
                   name,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
