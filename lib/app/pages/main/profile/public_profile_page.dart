@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:stimmapp/core/data/models/public_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/public_profile_provider.dart';
@@ -11,7 +12,7 @@ class PublicProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: Text(context.l10n.profile)),
+    appBar: AppBar(title: Text(context.l10n.viewPublicProfile)),
     body: ref
         .watch(publicProfileProvider(userId))
         .when(
@@ -25,20 +26,53 @@ class PublicProfilePage extends ConsumerWidget {
           data: (profile) => profile == null
               ? Center(child: Text(context.l10n.notFound))
               : ListView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(16),
                   children: [
-                    Center(child: _ProfileAvatar(profile: profile)),
-                    const SizedBox(height: 16),
-                    Text(
-                      profile.nickname?.trim().isNotEmpty == true
-                          ? profile.nickname!
-                          : context.l10n.unknownUser,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withValues(alpha: 0.28),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Row(
+                        children: [
+                          _ProfileAvatar(profile: profile),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  context.l10n.nickname,
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  profile.nickname?.trim().isNotEmpty == true
+                                      ? profile.nickname!
+                                      : context.l10n.unknownUser,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineSmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 28),
-                    const Divider(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
                     Text(
                       context.l10n.publications,
                       style: Theme.of(context).textTheme.titleMedium,
@@ -65,13 +99,37 @@ class PublicProfilePage extends ConsumerWidget {
                                   children: [
                                     for (final form in forms)
                                       ListTile(
-                                        contentPadding: EdgeInsets.zero,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                              vertical: 4,
+                                            ),
                                         leading: Icon(switch (form.type) {
                                           'petition' => Icons.draw_outlined,
                                           'poll' => Icons.how_to_vote_outlined,
                                           _ => Icons.assignment_outlined,
                                         }),
-                                        title: Text(form.title),
+                                        title: Text(
+                                          form.title,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleSmall,
+                                        ),
+                                        subtitle: Text(
+                                          [
+                                            switch (form.type) {
+                                              'petition' =>
+                                                context.l10n.petition,
+                                              'poll' => context.l10n.poll,
+                                              _ => context.l10n.surveys,
+                                            },
+                                            DateFormat.yMMMd(
+                                              Localizations.localeOf(
+                                                context,
+                                              ).toLanguageTag(),
+                                            ).format(form.createdAt),
+                                          ].join(' · '),
+                                        ),
                                         trailing: const Icon(
                                           Icons.chevron_right,
                                         ),
@@ -98,12 +156,12 @@ class _ProfileAvatar extends StatelessWidget {
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: Icon(
         Icons.person_outline,
-        size: 48,
+        size: 36,
         color: Theme.of(context).colorScheme.onSecondaryContainer,
       ),
     );
     return SizedBox.square(
-      dimension: 96,
+      dimension: 72,
       child: ClipOval(
         child: profile.imageUrl?.isNotEmpty == true
             ? Image.network(

@@ -407,6 +407,20 @@ class ProfilePage extends ConsumerWidget {
                                     : const ChangeProfilePicturePage(),
                               ),
                               children: [
+                                _buildDetailTile(
+                                  context,
+                                  context.l10n.viewPublicProfile,
+                                  userProfile.displayName,
+                                  key: const Key('view_public_profile'),
+                                  hideWhenEmpty: false,
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => PublicProfilePage(
+                                        userId: userProfile.uid,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 if (userProfile.supportsStateScope)
                                   _buildDetailTile(
                                     context,
@@ -479,18 +493,6 @@ class ProfilePage extends ConsumerWidget {
                                 ),
                               );
                             },
-                          ),
-
-                          TextButton.icon(
-                            key: const Key('view_public_profile'),
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PublicProfilePage(userId: userProfile.uid),
-                              ),
-                            ),
-                            icon: const Icon(Icons.person_outline),
-                            label: Text(context.l10n.viewPublicProfile),
                           ),
 
                           _buildDetailTile(
