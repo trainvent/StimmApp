@@ -400,11 +400,20 @@ class _BaseDetailPageState<T extends HomeItem>
     );
   }
 
-  TableRow _metadataRow(BuildContext context, String label, Widget value) {
+  TableRow _metadataRow(
+    BuildContext context,
+    String label,
+    Widget value, {
+    double verticalPadding = 8,
+  }) {
     return TableRow(
       children: [
         Padding(
-          padding: const EdgeInsetsDirectional.only(end: 12, top: 8, bottom: 8),
+          padding: EdgeInsetsDirectional.only(
+            end: 12,
+            top: verticalPadding,
+            bottom: verticalPadding,
+          ),
           child: Text(
             label,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -412,7 +421,10 @@ class _BaseDetailPageState<T extends HomeItem>
             ),
           ),
         ),
-        Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: value),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: verticalPadding),
+          child: value,
+        ),
       ],
     );
   }
@@ -582,7 +594,7 @@ class _BaseDetailPageState<T extends HomeItem>
               horizontal: 16,
               vertical: 6,
             ),
-            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             title: Text(
               item.title,
               style: Theme.of(context).textTheme.headlineSmall,
@@ -598,7 +610,7 @@ class _BaseDetailPageState<T extends HomeItem>
             children: [
               _buildDetailMetadata(context, item),
               Divider(
-                height: 24,
+                height: 8,
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),
               _buildParticipationMetadata(context, item),
@@ -631,7 +643,12 @@ class _BaseDetailPageState<T extends HomeItem>
                 TextButton(
                   style: TextButton.styleFrom(
                     textStyle: Theme.of(context).textTheme.bodyMedium,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    minimumSize: const Size(48, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -645,6 +662,7 @@ class _BaseDetailPageState<T extends HomeItem>
                 ),
             ],
           ),
+          verticalPadding: 0,
         ),
       ],
     );

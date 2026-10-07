@@ -14,7 +14,7 @@ class PetitionComments extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const SizedBox(height: 16),
+      Divider(height: 32, color: Theme.of(context).colorScheme.outlineVariant),
       Text(
         context.l10n.petitionComments,
         style: Theme.of(context).textTheme.titleMedium,
