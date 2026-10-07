@@ -1,4 +1,8 @@
 import 'dart:typed_data';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stimmapp/core/data/models/petition_draft.dart';
+import 'package:stimmapp/core/data/repositories/petition_draft_repository.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -31,6 +35,9 @@ class PetitionCreatorPage extends StatefulWidget {
 }
 
 class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
+  final _creatorKey = GlobalKey<BaseCreatorPageState>();
+  String? _savedDraftId;
+  bool _isSavingDraft = false;
   XFile? _imageFile;
   String? _templateImageUrl;
   UserProfile? _user;
@@ -41,6 +48,149 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     super.initState();
     _templateImageUrl = widget.initialTemplate?.imageUrl;
     _fetchUser();
+  }
+
+  Future<PetitionDraftRepository> _draftRepository() async {
+    final uid = authService.currentUser?.uid;
+    if (uid == null) throw StateError('Sign in required');
+    return PetitionDraftRepository(await SharedPreferences.getInstance(), uid);
+  }
+
+  Future<void> _savePetitionDraft(PollTemplate settings) async {
+    if (_isSavingDraft) return;
+    _isSavingDraft = true;
+    final imageFile = _imageFile;
+    final imageUrl = _templateImageUrl;
+    try {
+      final repository = await _draftRepository();
+      final image = imageFile == null
+          ? null
+          : base64Encode(await imageFile.readAsBytes());
+      final id =
+          _savedDraftId ?? DateTime.now().microsecondsSinceEpoch.toString();
+      final form = PollTemplate.fromJson({
+        ...settings.toJson(),
+        'id': id,
+        'name': settings.title ?? '',
+        'imageUrl': imageUrl,
+      });
+      await repository.save(PetitionDraft(form: form, imageBase64: image));
+      _savedDraftId = id;
+      if (mounted) showSuccessSnackBar(context.l10n.petitionDraftSaved);
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.petitionDraftError);
+    } finally {
+      _isSavingDraft = false;
+    }
+  }
+
+  Future<void> _chooseDraft() async {
+    if (_isSavingDraft) return;
+    try {
+      final repository = await _draftRepository();
+      final drafts = repository.load();
+      if (!mounted) return;
+      final selected = await showDialog<PetitionDraft>(
+        context: context,
+        builder: (context) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(context.l10n.savedPetitionDrafts),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(context.l10n.petitionDraftsLocal),
+                  const SizedBox(height: 12),
+                  if (drafts.isEmpty) Text(context.l10n.petitionDraftsEmpty),
+                  if (drafts.isNotEmpty)
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: drafts.length,
+                        itemBuilder: (context, index) {
+                          final draft = drafts[index];
+                          return ListTile(
+                            title: Text(
+                              draft.form.title?.trim().isNotEmpty == true
+                                  ? draft.form.title!
+                                  : context.l10n.untitledPetitionDraft,
+                            ),
+                            onTap: () => Navigator.pop(context, draft),
+                            trailing: IconButton(
+                              tooltip: context.l10n.remove,
+                              icon: const Icon(Icons.delete_outline),
+                              onPressed: () async {
+                                try {
+                                  await repository.delete(draft.form.id);
+                                  if (!context.mounted) return;
+                                  update(() => drafts.remove(draft));
+                                  if (_savedDraftId == draft.form.id) {
+                                    _savedDraftId = null;
+                                  }
+                                } catch (_) {
+                                  if (mounted) {
+                                    showErrorSnackBar(
+                                      this.context.l10n.petitionDraftError,
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.l10n.cancel),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (!mounted || selected == null) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.savedPetitionDrafts),
+          content: Text(context.l10n.petitionDraftApplyConfirmation),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      final image = selected.imageBase64 == null
+          ? null
+          : XFile.fromData(
+              base64Decode(selected.imageBase64!),
+              mimeType: 'image/jpeg',
+              name: 'draft.jpg',
+            );
+      if (!await _creatorKey.currentState!.applyTemplate(selected.form) ||
+          !mounted) {
+        return;
+      }
+      setState(() {
+        _savedDraftId = selected.form.id;
+        _imageFile = image;
+        _templateImageUrl = selected.form.imageUrl;
+      });
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.petitionDraftError);
+    }
   }
 
   Future<void> _fetchUser() async {
@@ -153,6 +303,13 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       final petitionId = await PetitionRepository.create().createPetition(
         petition,
       );
+      if (_savedDraftId != null) {
+        try {
+          await (await _draftRepository()).delete(_savedDraftId!);
+        } catch (_) {
+          // Publication succeeded; draft cleanup must not report it as failed.
+        }
+      }
       await AnalyticsService.instance.logPetitionCreated(
         scopeType: scope.firestoreType,
         hasImage: imageUrl != null,
@@ -204,12 +361,16 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
+      key: _creatorKey,
+      onSaveDraft: _savePetitionDraft,
+      onChooseDraft: _chooseDraft,
       initialTemplate: widget.initialTemplate,
       importType: 'petition',
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
       onSubmit: _createPetition,
       onResetAdditionalFields: () => setState(() {
+        _savedDraftId = null;
         _imageFile = null;
         _templateImageUrl = null;
       }),

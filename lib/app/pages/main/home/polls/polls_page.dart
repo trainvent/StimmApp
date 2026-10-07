@@ -30,6 +30,7 @@ class PollsPage extends StatefulWidget {
 }
 
 class _PollsPageState extends State<PollsPage> {
+  // null shows all groups; an empty ID selects forms without a group.
   late String? _selectedGroupId = widget.initialGroupId;
   bool _showSurveys = true;
 
@@ -167,14 +168,16 @@ class _PollsPageState extends State<PollsPage> {
           item is Survey ? 'survey:${item.id}' : 'poll:${item.id}',
       extraFilter: (item) {
         final selectedGroupId = _selectedGroupId;
-        if (selectedGroupId == null || selectedGroupId.isEmpty) {
+        if (selectedGroupId == null) {
           return true;
+        }
+        if (selectedGroupId.isEmpty) {
+          return _groupId(item)?.isEmpty ?? true;
         }
         return _groupId(item) == selectedGroupId;
       },
       extraFilterCount:
-          ((_selectedGroupId == null || _selectedGroupId!.isEmpty) ? 0 : 1) +
-          (_showSurveys ? 0 : 1),
+          (_selectedGroupId == null ? 0 : 1) + (_showSurveys ? 0 : 1),
       clearExtraFilters: () {
         if (_selectedGroupId == null && _showSurveys) {
           return;
@@ -239,13 +242,11 @@ class _PollsPageState extends State<PollsPage> {
                       ),
                     );
                   }
-                  if (groups.isEmpty) {
-                    return Text(context.l10n.groupFilterEmpty);
-                  }
                   final availableGroupIds = groups
                       .map((group) => group.id)
                       .toSet();
                   if (_selectedGroupId != null &&
+                      _selectedGroupId!.isNotEmpty &&
                       !availableGroupIds.contains(_selectedGroupId)) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
@@ -253,41 +254,56 @@ class _PollsPageState extends State<PollsPage> {
                       }
                     });
                   }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  final noGroup = _selectedGroupId == '';
+                  void selectGroup(String? value) {
+                    setState(() => _selectedGroupId = value);
+                    setDialogState(() {});
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      DropdownButtonFormField<String>(
-                        key: const Key('poll_group_filter_dropdown'),
-                        initialValue: _selectedGroupId,
-                        decoration: InputDecoration(
-                          hintText: context.l10n.filterByGroup,
-                          border: const OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                        disabledHint: Text(context.l10n.allGroups),
-                        items: groups
-                            .map(
-                              (group) => DropdownMenuItem<String>(
-                                value: group.id,
-                                child: Text(group.name),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          setDialogState(() {});
-                          setState(() => _selectedGroupId = value);
-                        },
+                      IconButton.filledTonal(
+                        key: const Key('poll_no_group_filter'),
+                        tooltip: context.l10n.noGroupFilter,
+                        isSelected: noGroup,
+                        icon: const Icon(Icons.people_outline),
+                        selectedIcon: const Icon(Icons.group_off_outlined),
+                        onPressed: () => selectGroup(noGroup ? null : ''),
                       ),
-                      if (_selectedGroupId != null) ...[
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              setDialogState(() {});
-                              setState(() => _selectedGroupId = null);
-                            },
-                            child: Text(context.l10n.clearGroupFilter),
+                      if (!noGroup) ...[
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            key: ValueKey(
+                              'poll_group_filter_${_selectedGroupId ?? 'all'}',
+                            ),
+                            initialValue: _selectedGroupId,
+                            isExpanded: true,
+                            decoration: InputDecoration(
+                              hintText: context.l10n.filterByGroup,
+                              border: const OutlineInputBorder(),
+                              isDense: true,
+                              suffixIcon: _selectedGroupId == null
+                                  ? null
+                                  : IconButton(
+                                      tooltip: context.l10n.clearGroupFilter,
+                                      icon: const Icon(Icons.close, size: 18),
+                                      onPressed: () => selectGroup(null),
+                                    ),
+                            ),
+                            items: groups
+                                .map(
+                                  (group) => DropdownMenuItem<String>(
+                                    value: group.id,
+                                    child: Text(
+                                      group.name,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: selectGroup,
                           ),
                         ),
                       ],

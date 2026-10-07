@@ -3208,4 +3208,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get createNewFormDescription =>
       'Create a petition, poll or questionnaire for your next idea.';
+
+  @override
+  String get savePetitionDraft => 'Save draft';
+
+  @override
+  String get savedPetitionDrafts => 'Saved drafts';
+
+  @override
+  String get petitionDraftSaved => 'Petition draft saved.';
+
+  @override
+  String get petitionDraftError =>
+      'Could not access petition drafts. Please try again.';
+
+  @override
+  String get petitionDraftsLocal =>
+      'Drafts are private to your account on this device.';
+
+  @override
+  String get petitionDraftsEmpty => 'No saved petition drafts yet.';
+
+  @override
+  String get untitledPetitionDraft => 'Untitled petition';
+
+  @override
+  String get petitionDraftApplyConfirmation =>
+      'Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.';
+
+  @override
+  String get noGroupFilter => 'No group';
 }

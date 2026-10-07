@@ -3249,4 +3249,35 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get createNewFormDescription =>
       'Erstelle eine Petition, Umfrage oder einen Fragebogen für deine nächste Idee.';
+
+  @override
+  String get savePetitionDraft => 'Entwurf speichern';
+
+  @override
+  String get savedPetitionDrafts => 'Gespeicherte Entwürfe';
+
+  @override
+  String get petitionDraftSaved => 'Petitionsentwurf gespeichert.';
+
+  @override
+  String get petitionDraftError =>
+      'Petitionsentwürfe konnten nicht geladen oder gespeichert werden. Bitte versuche es erneut.';
+
+  @override
+  String get petitionDraftsLocal =>
+      'Entwürfe sind nur für dein Konto auf diesem Gerät gespeichert.';
+
+  @override
+  String get petitionDraftsEmpty =>
+      'Noch keine gespeicherten Petitionsentwürfe.';
+
+  @override
+  String get untitledPetitionDraft => 'Petition ohne Titel';
+
+  @override
+  String get petitionDraftApplyConfirmation =>
+      'Diesen Entwurf öffnen? Er ersetzt das aktuelle Formular und Bild. Speichere deinen aktuellen Entwurf zuerst, wenn du ihn behalten möchtest.';
+
+  @override
+  String get noGroupFilter => 'Keine Gruppe';
 }

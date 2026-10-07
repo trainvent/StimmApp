@@ -1231,5 +1231,14 @@
 "runningFormsDescription": "Teilnahme ansehen und deine laufenden Formulare verwalten.",
 "finishedFormsDescription": "Endergebnisse ansehen, Daten exportieren oder ein Formular als Vorlage verwenden.",
 "createNewForm": "Etwas Neues starten",
-"createNewFormDescription": "Erstelle eine Petition, Umfrage oder einen Fragebogen für deine nächste Idee."
+"createNewFormDescription": "Erstelle eine Petition, Umfrage oder einen Fragebogen für deine nächste Idee.",
+  "savePetitionDraft": "Entwurf speichern",
+  "savedPetitionDrafts": "Gespeicherte Entwürfe",
+  "petitionDraftSaved": "Petitionsentwurf gespeichert.",
+  "petitionDraftError": "Petitionsentwürfe konnten nicht geladen oder gespeichert werden. Bitte versuche es erneut.",
+  "petitionDraftsLocal": "Entwürfe sind nur für dein Konto auf diesem Gerät gespeichert.",
+  "petitionDraftsEmpty": "Noch keine gespeicherten Petitionsentwürfe.",
+  "untitledPetitionDraft": "Petition ohne Titel",
+  "petitionDraftApplyConfirmation": "Diesen Entwurf öffnen? Er ersetzt das aktuelle Formular und Bild. Speichere deinen aktuellen Entwurf zuerst, wenn du ihn behalten möchtest.",
+  "noGroupFilter": "Keine Gruppe"
 }

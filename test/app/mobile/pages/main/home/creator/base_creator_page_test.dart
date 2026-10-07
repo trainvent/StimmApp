@@ -13,6 +13,53 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  testWidgets(
+    'petition menu saves incomplete form without publication validation',
+    (tester) async {
+      PollTemplate? saved;
+      var choseDraft = false;
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            title: 'Petition',
+            tutorialSteps: const [],
+            profileLoader: () async => null,
+            onSaveDraft: (form) async => saved = form,
+            onChooseDraft: () async {
+              choseDraft = true;
+            },
+            onSubmit:
+                ({
+                  required title,
+                  required description,
+                  required tags,
+                  required scope,
+                  required durationDays,
+                  required openUntilClosed,
+                }) async => false,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'Unfinished petition',
+      );
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save draft'));
+      await tester.pumpAndSettle();
+      expect(saved!.title, 'Unfinished petition');
+      expect(saved!.description, '');
+      expect(saved!.tags, isEmpty);
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Saved drafts'));
+      await tester.pumpAndSettle();
+      expect(choseDraft, isTrue);
+    },
+  );
+
   testWidgets('initial template replaces stale draft after profile loading', (
     tester,
   ) async {

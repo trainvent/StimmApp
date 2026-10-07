@@ -1244,5 +1244,14 @@
 "runningFormsDescription": "View participation and manage your active forms.",
 "finishedFormsDescription": "Explore final results, export data or reuse a form as a template.",
 "createNewForm": "Start something new",
-"createNewFormDescription": "Create a petition, poll or questionnaire for your next idea."
+"createNewFormDescription": "Create a petition, poll or questionnaire for your next idea.",
+  "savePetitionDraft": "Save draft",
+  "savedPetitionDrafts": "Saved drafts",
+  "petitionDraftSaved": "Petition draft saved.",
+  "petitionDraftError": "Could not access petition drafts. Please try again.",
+  "petitionDraftsLocal": "Drafts are private to your account on this device.",
+  "petitionDraftsEmpty": "No saved petition drafts yet.",
+  "untitledPetitionDraft": "Untitled petition",
+  "petitionDraftApplyConfirmation": "Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.",
+  "noGroupFilter": "No group"
 }

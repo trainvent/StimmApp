@@ -5881,6 +5881,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create a petition, poll or questionnaire for your next idea.'**
   String get createNewFormDescription;
+
+  /// No description provided for @savePetitionDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get savePetitionDraft;
+
+  /// No description provided for @savedPetitionDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved drafts'**
+  String get savedPetitionDrafts;
+
+  /// No description provided for @petitionDraftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Petition draft saved.'**
+  String get petitionDraftSaved;
+
+  /// No description provided for @petitionDraftError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not access petition drafts. Please try again.'**
+  String get petitionDraftError;
+
+  /// No description provided for @petitionDraftsLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts are private to your account on this device.'**
+  String get petitionDraftsLocal;
+
+  /// No description provided for @petitionDraftsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved petition drafts yet.'**
+  String get petitionDraftsEmpty;
+
+  /// No description provided for @untitledPetitionDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled petition'**
+  String get untitledPetitionDraft;
+
+  /// No description provided for @petitionDraftApplyConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.'**
+  String get petitionDraftApplyConfirmation;
+
+  /// No description provided for @noGroupFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No group'**
+  String get noGroupFilter;
 }
 
 class _AppLocalizationsDelegate

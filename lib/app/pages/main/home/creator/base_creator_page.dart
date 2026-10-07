@@ -40,8 +40,12 @@ class BaseCreatorPage extends StatefulWidget {
     this.initialTemplate,
     this.importType,
     this.onImportQuestions,
+    this.onSaveDraft,
+    this.onChooseDraft,
   });
 
+  final Future<void> Function(PollTemplate)? onSaveDraft;
+  final Future<void> Function()? onChooseDraft;
   final PollTemplate? initialTemplate;
   final String? importType;
   final Future<void> Function(List<PollTemplateQuestion>)? onImportQuestions;
@@ -107,6 +111,20 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     durationDays: _durationDays,
     openUntilClosed: _openUntilClosed,
   );
+
+  Future<void> _saveNamedDraft() async {
+    final form = PollTemplate.fromJson({
+      ...templateSettings.toJson(),
+      'title': _titleController.text,
+      'description': _descriptionController.text,
+    });
+    setState(() => _isLoading = true);
+    try {
+      await widget.onSaveDraft!(form);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   /// Refuse unavailable scope settings instead of silently broadening an audience.
   Future<bool> applyTemplate(PollTemplate template) async {
@@ -1147,21 +1165,59 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                   ? null
                   : _chooseImport,
             ),
-          if (widget.appBarActionBuilder != null) ...[
+          if (widget.appBarActionBuilder != null)
             widget.appBarActionBuilder!(
               _titleController,
               _descriptionController,
             ),
+          if (widget.appBarActionBuilder != null ||
+              widget.onSaveDraft != null) ...[
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
+              enabled: !_isLoading && !_isReviewing,
               onSelected: (action) {
-                if (action == 'reset') {
+                if (action == 'saveDraft') {
+                  _saveNamedDraft();
+                } else if (action == 'chooseDraft') {
+                  widget.onChooseDraft!();
+                } else if (action == 'reset') {
                   _confirmReset();
                 } else {
                   _helpButton().showInfoDialog(context);
                 }
               },
               itemBuilder: (context) => [
+                if (widget.onSaveDraft != null)
+                  PopupMenuItem(
+                    value: 'saveDraft',
+                    child: Row(
+                      children: [
+                        Icon(Icons.save_outlined, color: colors.onPrimary),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.savePetitionDraft,
+                          style: TextStyle(color: colors.onPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.onChooseDraft != null)
+                  PopupMenuItem(
+                    value: 'chooseDraft',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.folder_open_outlined,
+                          color: colors.onPrimary,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.savedPetitionDrafts,
+                          style: TextStyle(color: colors.onPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
                 PopupMenuItem(
                   value: 'reset',
                   child: Row(
