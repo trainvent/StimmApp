@@ -11,16 +11,17 @@ import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 
-class SurveyDetailPage extends StatefulWidget {
+class SurveyDetailPage extends ConsumerStatefulWidget {
   const SurveyDetailPage({super.key, required this.id});
   final String id;
 
   @override
-  State<SurveyDetailPage> createState() => _SurveyDetailPageState();
+  ConsumerState<SurveyDetailPage> createState() => _SurveyDetailPageState();
 }
 
-class _SurveyDetailPageState extends State<SurveyDetailPage> {
+class _SurveyDetailPageState extends ConsumerState<SurveyDetailPage> {
   final Map<String, String> _selectedOptionIds = {};
   final Map<String, TextEditingController> _textControllers = {};
 
@@ -34,6 +35,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUid = ref.watch(currentUserProvider)?.uid;
     final repo = SurveyRepository.create();
     final answerAllQuestionsMessage = context.l10n.answerAllSurveyQuestions;
     final participantIdsStream = repo.watchParticipantIds(widget.id);
@@ -96,88 +98,98 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
           ],
         );
       },
-      contentBuilder: (context, survey) {
-        return ListView.separated(
-          itemCount: survey.questions.length,
-          separatorBuilder: (context, index) => const Divider(height: 24),
-          itemBuilder: (context, index) {
-            final question = survey.questions[index];
-            if (question.isText) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    question.title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    key: ValueKey('written_answer_${question.id}'),
-                    controller: _textControllers.putIfAbsent(
-                      question.id,
-                      TextEditingController.new,
+      contentBuilder: (context, survey) => StreamBuilder<Set<String>>(
+        stream: participantIdsStream,
+        builder: (context, snapshot) {
+          final hasSubmitted =
+              currentUid != null &&
+              !snapshot.hasError &&
+              snapshot.connectionState != ConnectionState.waiting &&
+              (snapshot.data?.contains(currentUid) ?? false);
+          return ListView.separated(
+            itemCount: survey.questions.length,
+            separatorBuilder: (context, index) => const Divider(height: 24),
+            itemBuilder: (context, index) {
+              final question = survey.questions[index];
+              if (question.isText) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      question.title,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    minLines: 3,
-                    maxLines: 6,
-                    maxLength: AppLimits.maxSurveyTextAnswerLength,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.yourWrittenAnswer,
-                      helperText: context.l10n.writtenAnswerHint,
-                      helperMaxLines: 3,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  if (authService.currentUser?.uid == survey.createdBy)
-                    _WrittenResponses(
-                      surveyId: survey.id,
-                      questionId: question.id,
-                    ),
-                ],
-              );
-            }
-            final selectedOptionId = _selectedOptionIds[question.id];
-            final total = survey.totalVotesForQuestion(question.id);
-            return RadioGroup<String>(
-              groupValue: selectedOptionId,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() => _selectedOptionIds[question.id] = value);
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    question.title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  ...question.options.map((option) {
-                    final count =
-                        survey.questionVotes[question.id]?[option.id] ?? 0;
-                    final pct = total == 0 ? 0 : (count / total * 100).round();
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: Text(option.label)),
-                          Text('$count • $pct%'),
-                        ],
+                    const SizedBox(height: 8),
+                    TextField(
+                      key: ValueKey('written_answer_${question.id}'),
+                      controller: _textControllers.putIfAbsent(
+                        question.id,
+                        TextEditingController.new,
                       ),
-                      leading: Radio<String>(value: option.id),
-                      onTap: () {
-                        setState(
-                          () => _selectedOptionIds[question.id] = option.id,
-                        );
-                      },
-                    );
-                  }),
-                ],
-              ),
-            );
-          },
-        );
-      },
+                      minLines: 3,
+                      maxLines: 6,
+                      maxLength: AppLimits.maxSurveyTextAnswerLength,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.yourWrittenAnswer,
+                        helperText: context.l10n.writtenAnswerHint,
+                        helperMaxLines: 3,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    if (authService.currentUser?.uid == survey.createdBy)
+                      _WrittenResponses(
+                        surveyId: survey.id,
+                        questionId: question.id,
+                      ),
+                  ],
+                );
+              }
+              final selectedOptionId = _selectedOptionIds[question.id];
+              final total = survey.totalVotesForQuestion(question.id);
+              return RadioGroup<String>(
+                groupValue: selectedOptionId,
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _selectedOptionIds[question.id] = value);
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      question.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ...question.options.map((option) {
+                      final count =
+                          survey.questionVotes[question.id]?[option.id] ?? 0;
+                      final pct = total == 0
+                          ? 0
+                          : (count / total * 100).round();
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: Text(option.label)),
+                            if (hasSubmitted) Text('$count • $pct%'),
+                          ],
+                        ),
+                        leading: Radio<String>(value: option.id),
+                        onTap: () {
+                          setState(
+                            () => _selectedOptionIds[question.id] = option.id,
+                          );
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
       bottomAction: SignActionButton(
         submissionId: 'survey:${widget.id}',
         label: context.l10n.submitSurvey,
@@ -190,8 +202,9 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
             final answer = question.isText
                 ? _textControllers[question.id]?.text.trim()
                 : _selectedOptionIds[question.id];
-            if (answer != null && answer.isNotEmpty)
+            if (answer != null && answer.isNotEmpty) {
               answers[question.id] = answer;
+            }
           }
           if (answers.length != survey.questions.length) {
             throw StateError(answerAllQuestionsMessage);
@@ -322,8 +335,9 @@ class _WrittenResponses extends ConsumerWidget {
                     .map((response) => response[questionId])
                     .whereType<String>()
                     .toList();
-                if (answers.isEmpty)
+                if (answers.isEmpty) {
                   return ListTile(title: Text(context.l10n.noWrittenResponses));
+                }
                 return Column(
                   children: [
                     for (final answer in answers)

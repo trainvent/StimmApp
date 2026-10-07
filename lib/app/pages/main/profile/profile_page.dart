@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:stimmapp/app/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/blocked_users_page.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/publications_page.dart';
@@ -478,6 +479,18 @@ class ProfilePage extends ConsumerWidget {
                                 ),
                               );
                             },
+                          ),
+
+                          TextButton.icon(
+                            key: const Key('view_public_profile'),
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PublicProfilePage(userId: userProfile.uid),
+                              ),
+                            ),
+                            icon: const Icon(Icons.person_outline),
+                            label: Text(context.l10n.viewPublicProfile),
                           ),
 
                           _buildDetailTile(

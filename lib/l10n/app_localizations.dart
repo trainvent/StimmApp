@@ -5941,6 +5941,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete the poll. Please try again.'**
   String get pollDeletionFailed;
+
+  /// No description provided for @viewPublicProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Public profile'**
+  String get viewPublicProfile;
 }
 
 class _AppLocalizationsDelegate

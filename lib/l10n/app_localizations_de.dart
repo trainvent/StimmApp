@@ -3284,4 +3284,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pollDeletionFailed =>
       'Die Umfrage konnte nicht gelöscht werden. Bitte versuche es erneut.';
+
+  @override
+  String get viewPublicProfile => 'Öffentliches Profil';
 }

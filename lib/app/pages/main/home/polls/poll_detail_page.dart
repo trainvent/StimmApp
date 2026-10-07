@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/app/widgets/buttons/sign_action_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -8,21 +9,23 @@ import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 
-class PollDetailPage extends StatefulWidget {
+class PollDetailPage extends ConsumerStatefulWidget {
   const PollDetailPage({super.key, required this.id});
   final String id;
 
   @override
-  State<PollDetailPage> createState() => _PollDetailPageState();
+  ConsumerState<PollDetailPage> createState() => _PollDetailPageState();
 }
 
-class _PollDetailPageState extends State<PollDetailPage> {
+class _PollDetailPageState extends ConsumerState<PollDetailPage> {
   String? _selectedOptionId;
   bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
+    final currentUid = ref.watch(currentUserProvider)?.uid;
     final repo = PollRepository.create();
     final participantIdsStream = repo.watchParticipantIds(widget.id);
     return BaseDetailPage<Poll>(
@@ -84,40 +87,48 @@ class _PollDetailPageState extends State<PollDetailPage> {
           ],
         );
       },
-      contentBuilder: (context, poll) {
-        final total = poll.totalVotes;
-        return RadioGroup<String>(
-          groupValue: _selectedOptionId,
-          onChanged: (v) => setState(() => _selectedOptionId = v),
-          child: ListView(
-            children: [
-              if (poll.questionTitle.trim().isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  child: Text(
-                    poll.questionTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
+      contentBuilder: (context, poll) => StreamBuilder<Set<String>>(
+        stream: participantIdsStream,
+        builder: (context, snapshot) {
+          final hasSubmitted =
+              currentUid != null &&
+              !snapshot.hasError &&
+              snapshot.connectionState != ConnectionState.waiting &&
+              (snapshot.data?.contains(currentUid) ?? false);
+          final total = poll.totalVotes;
+          return RadioGroup<String>(
+            groupValue: _selectedOptionId,
+            onChanged: (v) => setState(() => _selectedOptionId = v),
+            child: ListView(
+              children: [
+                if (poll.questionTitle.trim().isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                    child: Text(
+                      poll.questionTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
-                ),
-              ...poll.options.map((o) {
-                final count = poll.votes[o.id] ?? 0;
-                final pct = total == 0 ? 0 : (count / total * 100).round();
-                return ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text(o.label)),
-                      Text('$count • $pct%'),
-                    ],
-                  ),
-                  leading: Radio<String>(value: o.id),
-                  onTap: () => setState(() => _selectedOptionId = o.id),
-                );
-              }),
-            ],
-          ),
-        );
-      },
+                ...poll.options.map((o) {
+                  final count = poll.votes[o.id] ?? 0;
+                  final pct = total == 0 ? 0 : (count / total * 100).round();
+                  return ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: Text(o.label)),
+                        if (hasSubmitted) Text('$count • $pct%'),
+                      ],
+                    ),
+                    leading: Radio<String>(value: o.id),
+                    onTap: () => setState(() => _selectedOptionId = o.id),
+                  );
+                }),
+              ],
+            ),
+          );
+        },
+      ),
       bottomAction: SignActionButton(
         submissionId: 'poll:${widget.id}',
         label: context.l10n.vote,

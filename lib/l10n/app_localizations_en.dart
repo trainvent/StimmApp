@@ -3242,4 +3242,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pollDeletionFailed =>
       'Could not delete the poll. Please try again.';
+
+  @override
+  String get viewPublicProfile => 'Public profile';
 }

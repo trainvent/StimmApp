@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
@@ -15,6 +16,8 @@ import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/public_profile.dart';
+import 'package:stimmapp/core/data/repositories/public_profile_repository.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
@@ -249,6 +252,7 @@ class _BaseDetailPageState<T extends HomeItem>
   late Stream<T?> _itemStream;
   late Stream<T?> _topRightItemStream;
   late Future<UserProfile?> _userProfileFuture;
+  final Map<String, Stream<PublicProfile?>> _creatorProfileStreams = {};
 
   @override
   void initState() {
@@ -270,6 +274,7 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   void _refreshItemStreams() {
+    _creatorProfileStreams.clear();
     _itemStream = widget.streamProvider(widget.id);
     _topRightItemStream = widget.streamProvider(widget.id);
   }
@@ -429,6 +434,71 @@ class _BaseDetailPageState<T extends HomeItem>
     );
   }
 
+  Widget _buildCreatorValue(BuildContext context, T item) {
+    if (item.createdBy.isEmpty) {
+      return _detailValue(
+        context,
+        context.l10n.unknownUser,
+        leading: const Icon(Icons.person_outline, size: 20),
+      );
+    }
+    return StreamBuilder<PublicProfile?>(
+      stream: _creatorProfileStreams.putIfAbsent(
+        item.createdBy,
+        () => PublicProfileRepository(_databaseService).watch(item.createdBy),
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SizedBox.square(
+              dimension: 28,
+              child: Center(child: TriangleLoadingIndicator(size: 16)),
+            ),
+          );
+        }
+        final name = snapshot.data?.nickname?.trim();
+        if (snapshot.hasError || name == null || name.isEmpty) {
+          return _detailValue(
+            context,
+            snapshot.hasError
+                ? context.l10n.erroneousProfile
+                : context.l10n.unknownUser,
+            leading: const Icon(Icons.person_outline, size: 20),
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              width: 28,
+              child: Center(child: Icon(Icons.person_outline, size: 20)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PublicProfilePage(userId: item.createdBy),
+                  ),
+                ),
+                child: Text(
+                  name,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildDetailMetadata(BuildContext context, T item) {
     final groupName = _groupName(item)?.trim();
 
@@ -436,6 +506,11 @@ class _BaseDetailPageState<T extends HomeItem>
       columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
       defaultVerticalAlignment: TableCellVerticalAlignment.top,
       children: [
+        _metadataRow(
+          context,
+          context.l10n.creator,
+          _buildCreatorValue(context, item),
+        ),
         _metadataRow(
           context,
           context.l10n.detailScope,
@@ -590,6 +665,7 @@ class _BaseDetailPageState<T extends HomeItem>
         child: Material(
           type: MaterialType.transparency,
           child: ExpansionTile(
+            maintainState: true,
             tilePadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 6,
