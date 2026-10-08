@@ -1337,19 +1337,11 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                         _saveDraft();
                       },
                     ),
-                  IconButton.outlined(
+                  ActionChip(
                     key: const Key('select_tags_button'),
                     tooltip: context.l10n.editTags,
                     onPressed: _selectTags,
-                    style: IconButton.styleFrom(
-                      fixedSize: const Size.square(32),
-                      minimumSize: const Size.square(32),
-                      maximumSize: const Size.square(32),
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    iconSize: 20,
-                    icon: const Icon(Icons.add),
+                    label: const Icon(Icons.add, size: 20),
                   ),
                 ],
               ),

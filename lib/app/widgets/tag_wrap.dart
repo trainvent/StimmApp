@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/constants/dimension_constants.dart';
+import 'package:stimmapp/core/theme/app_text_styles.dart';
 
-/// A compact tag layout that preserves the surrounding text styles.
+/// Shared typography and spacing for compact tags.
 class TagWrap extends StatelessWidget {
   const TagWrap({super.key, required this.children});
 
@@ -15,12 +17,20 @@ class TagWrap extends StatelessWidget {
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         chipTheme: theme.chipTheme.copyWith(
           padding: EdgeInsets.zero,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+          labelPadding: const EdgeInsets.symmetric(
+            horizontal: DConst.tagHorizontalPadding,
+          ),
+          labelStyle:
+              (theme.chipTheme.labelStyle ??
+                      theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ))
+                  ?.copyWith(fontSize: AppTextStyles.descriptionText.fontSize),
         ),
       ),
       child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
+        spacing: DConst.minimalPadding,
+        runSpacing: DConst.minimalPadding,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: children,
       ),
