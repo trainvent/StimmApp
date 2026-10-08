@@ -145,7 +145,9 @@
       "questionLegal": "Wo finde ich Datenschutz und Nutzungsbedingungen?",
       "privacyLink": "Datenschutzerklärung",
       "termsLink": "Nutzungsbedingungen",
-      "backLink": "Zurück zum Support"
+      "backLink": "Zurück zum Support",
+      "questionImport": "Wie kann ich ein vorbereitetes Formular verwenden?",
+      "importLink": "Öffne die JSON-Import-Anleitung und lade eine Beispieldatei herunter."
     },
     "support": {
       "title": "Support - StimmApp",
@@ -163,7 +165,8 @@
       "messageEmail": "Ihre Konto-E-Mail-Adresse",
       "messageDevice": "Ihr Gerätemodell und Ihre iOS-Version",
       "messageDescription": "Kurze Beschreibung des Problems und Schritte zur Reproduktion",
-      "meta": "Supportzeiten: Montag bis Freitag, Antwortzeiten können variieren."
+      "meta": "Supportzeiten: Montag bis Freitag, Antwortzeiten können variieren.",
+      "formImportLink": "Formulare importieren"
     },
     "license": {
       "title": "Lizenz - StimmApp",
@@ -197,6 +200,167 @@
       "invalidCredentials": "E-Mail oder Passwort ist falsch.",
       "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
       "unknownError": "Ein unbekannter Fehler ist aufgetreten"
+    },
+    "formImport": {
+      "title": "Formulare mit JSON oder PDF importieren — StimmApp",
+      "description": "Petitionen und Umfragen mit JSON oder PDF importieren: Anleitung, Beispiele und Formatvorgaben.",
+      "heading": "Vorbereitete Formulare importieren",
+      "intro": "Bereite eine Petition oder Umfrage als JSON oder PDF mit auswählbarem Text vor. Importiere sie in deinen Entwurf, prüfe Inhalt und Einstellungen und veröffentliche sie nach der Prüfung.",
+      "stepsHeading": "So funktioniert der JSON-Import",
+      "steps": [
+        "Lade unten ein Beispiel herunter oder verwende eine geteilte Datei. Speichere sie als UTF-8-Textdatei mit der Endung .json.",
+        "Öffne in der App die Erstellung einer Petition oder Umfrage passend zum Dateityp.",
+        "Öffne über das Upload-Symbol die Importauswahl, wähle „JSON-Formular importieren“ und öffne deine Datei.",
+        "Bestätige das Ersetzen der enthaltenen Entwurfsfelder. Prüfe Inhalt, Tags, Laufzeit, geografischen Geltungsbereich, ausgewählte Gruppe und ein vorhandenes Bild.",
+        "Passe den Entwurf an und veröffentliche ihn über die übliche Vorschau. Der Import allein veröffentlicht das Formular nicht."
+      ],
+      "examplesHeading": "Beispiele herunterladen",
+      "pollDownload": "Umfrage als JSON herunterladen",
+      "petitionDownload": "Petition als JSON herunterladen",
+      "exampleHint": "Bearbeite Texte und Antwortoptionen in einem Texteditor. Feldnamen und feste Werte bleiben auf Englisch, auch bei deutschsprachigen Formularen.",
+      "fieldsHeading": "JSON-Format · Version 1",
+      "fieldLabel": "Feld",
+      "ruleLabel": "Regel",
+      "fields": [
+        [
+          "version",
+          "Pflichtfeld: Ganzzahl 1."
+        ],
+        [
+          "type",
+          "Pflichtfeld: petition, poll oder survey. Muss zur Erstellung passen; die Umfrage-Erstellung akzeptiert auch survey."
+        ],
+        [
+          "title",
+          "Pflichtfeld: 5–100 Zeichen."
+        ],
+        [
+          "description",
+          "Pflichtfeld: 20–1000 Zeichen."
+        ],
+        [
+          "questions",
+          "Pflichtfeld für Umfragen; bei Petitionen weglassen. 1–20 Objekte mit title (1–200 Zeichen) und optionalem type: multipleChoice (Standard) oder text."
+        ],
+        [
+          "questions[].options",
+          "Bei multipleChoice: Pflichtliste mit 2–10 unterschiedlichen Texten mit je 1–50 Zeichen; Großschreibung allein reicht nicht als Unterschied. Bei text: options weglassen oder eine leere Liste [] verwenden. null ist nicht zulässig."
+        ],
+        [
+          "tags",
+          "Optional: 1–3 unterschiedliche Schlüssel aus der Tag-Liste unten."
+        ],
+        [
+          "durationDays",
+          "Optional: Ganzzahl 1–42 (Tage)."
+        ],
+        [
+          "openUntilClosed",
+          "Optional: true oder false. true lässt das Formular bis zum manuellen Schließen offen."
+        ],
+        [
+          "scopeType",
+          "Optional: global, countryUnion, country, stateOrRegion oder city."
+        ],
+        [
+          "countryUnion",
+          "Bei countryUnion erforderlich: EU oder UN. Bei allen anderen Geltungsbereichen weglassen."
+        ]
+      ],
+      "settingsHeading": "Veröffentlichungseinstellungen prüfen",
+      "settings": "Nicht enthaltene optionale Felder behalten ihre bisherigen Entwurfswerte. Auch die ausgewählte Gruppe und ein Petitionsbild bleiben erhalten. Geografische Angaben stammen aus deinem Profil; nicht verfügbare Bundesland- oder Staatenverbund-Geltungsbereiche werden abgelehnt. Konto-IDs, Stimmen, Unterschriften, Bilder und Veröffentlichungsstatus können nicht importiert werden.",
+      "tagsHeading": "Zulässige Tag-Schlüssel",
+      "tags": [
+        "Environment",
+        "Politics",
+        "Education",
+        "Health",
+        "Infrastructure",
+        "Economy",
+        "Social",
+        "Technology",
+        "Culture",
+        "Sports",
+        "Animal Welfare",
+        "Safety",
+        "Traffic",
+        "Housing",
+        "Human Rights",
+        "Economic Justice",
+        "Local Government",
+        "Regional Government",
+        "Family",
+        "Entertainment",
+        "Animal Rights",
+        "Criminal Justice",
+        "Children’s Rights",
+        "Education Reform",
+        "Education Infrastructure",
+        "Public Health",
+        "Migration and Integration",
+        "Access to Care",
+        "Elections and Voting Rights",
+        "Family Rights",
+        "Climate Protection",
+        "Women’s Rights",
+        "Consumer Rights",
+        "Other"
+      ],
+      "errorsHeading": "Wenn der JSON-Import fehlschlägt",
+      "errors": "Die Datei muss ein einzelnes JSON-Objekt enthalten und darf höchstens 256 KiB groß sein. Verwende doppelte Anführungszeichen, keine Kommentare und keine abschließenden Kommas. Unbekannte Felder, nicht unterstützte Versionen und Werte außerhalb der Grenzen werden abgelehnt. Leerzeichen am Textanfang und -ende werden vor der Längenprüfung entfernt. Beginne mit einem Beispiel und prüfe das in der Fehlermeldung genannte Feld. Bei einem nicht verfügbaren Geltungsbereich ergänze dein Profil oder wähle einen verfügbaren Bereich.",
+      "questionTypesHeading": "Auswahl und schriftliche Antworten",
+      "questionTypes": "Kombiniere multipleChoice- und text-Fragen in derselben Umfrage. Bei Auswahlfragen wählen Teilnehmende eine Option. Textfragen erlauben eine schriftliche Antwort mit bis zu 2.000 Zeichen. Jede Frage muss beantwortet werden. Schriftliche Antworten sind nur für die erstellende Person sichtbar. Ohne type gilt multipleChoice; bestehende Dateien der Version 1 funktionieren weiterhin.",
+      "exportsHeading": "Ergebnisse exportieren",
+      "exports": "Wähle bei einer abgeschlossenen Umfrage Speichern oder Teilen und anschließend CSV, JSON oder PDF. Exporte enthalten ausgewählte Antworttexte und schriftliche Antworten in der Reihenfolge der Fragen. Du kannst zusätzlich den Formularinhalt einschließen. Diese Ergebnisberichte sind keine wiederverwendbaren Formulardateien: Verwende für neue Entwürfe das oben beschriebene Format der Version 1. Schriftliche Antworten sind in der gespeicherten oder geteilten Datei enthalten.",
+      "pdfHeading": "PDF-Format",
+      "pdfIntro": "Verwende eine einfache PDF mit auswählbarem Text in Lesereihenfolge. Gescannte Seiten und reine Bild-PDFs werden nicht unterstützt. Vermeide Spalten, Tabellen sowie Kopf- und Fußzeilen, die den Text unterbrechen.",
+      "pdfStepsHeading": "So importierst du eine PDF",
+      "pdfSteps": [
+        "Öffne die Erstellung einer Petition oder Umfrage, tippe auf das Upload-Symbol und wähle „PDF importieren“.",
+        "Wähle die PDF aus. Prüfe und korrigiere den extrahierten Text vor der Bestätigung.",
+        "Übernimm den Inhalt in deinen Entwurf, prüfe die Einstellungen und nutze die übliche Veröffentlichungsvorschau. Der Import allein veröffentlicht nichts."
+      ],
+      "pdfRulesHeading": "Textaufbau und Grenzen",
+      "pdfRules": [
+        "Erste nicht leere Zeile: Titel (5–100 Zeichen). Alle folgenden Zeilen vor der ersten Frage bilden die Beschreibung (20–1.000 Zeichen). Leerzeilen werden ignoriert.",
+        "Bei Petitionen ist alles nach dem Titel die Beschreibung. Füge keine Umfragefragen hinzu.",
+        "Bei Umfragen beginnt jede Frage auf einer neuen Zeile mit einer Zahl, einem Punkt oder einer schließenden Klammer und einem Leerzeichen: „1. Deine Frage“ oder „2) Deine Frage“. Verwende 1–20 Fragen mit jeweils 1–200 Zeichen im Fragentitel.",
+        "Jede Antwortoption steht auf einer eigenen Zeile mit einem Buchstaben und Punkt oder schließender Klammer oder einem Aufzählungszeichen (-, •, ☐ oder □), gefolgt von einem Leerzeichen. Verwende 2–10 unterschiedliche Optionen mit jeweils 1–50 Zeichen. Großschreibung allein reicht nicht als Unterschied.",
+        "Fragen ohne Antwortoptionen erlauben Freitext. Zeilen ohne Markierung ergänzen die vorherige Frage oder die letzte Antwortoption. Prüfe umgebrochene Texte sorgfältig.",
+        "Maximal: 10 MiB, 50 Seiten und 100.000 extrahierte Textzeichen. Für Inhalte gelten dieselben Grenzen wie bei JSON.",
+        "PDF-Importe enthalten nur Titel, Beschreibung und Umfragefragen. Tags, Laufzeit und geografischen Geltungsbereich stellst du in der App ein. Die gewählte Zielgruppe und ein Petitionsbild bleiben erhalten."
+      ],
+      "pdfExampleHeading": "Beispieltext für eine Umfrage-PDF",
+      "pdfExample": "Verbesserungen im Nachbarschaftspark\nHilf uns zu entscheiden, wie wir unseren Nachbarschaftspark verbessern.\n\n1. Welche Verbesserung soll zuerst kommen?\na) Mehr Bäume\nb) Mehr Bänke\n\n2. Was würdest du außerdem vorschlagen?",
+      "pdfErrors": "Wenn kein Text gefunden wird, exportiere das Originaldokument als PDF mit auswählbarem Text. Wird das Format abgelehnt, korrigiere den extrahierten Text und prüfe die Grenzen für Titel, Beschreibung, Fragen und Optionen. Ergebnisberichte sind nicht für den automatischen erneuten Import formatiert.",
+      "guides": {
+        "json": {
+          "title": "Formulare importieren mit JSON — StimmApp",
+          "heading": "Formulare importieren mit JSON",
+          "intro": "Bereite eine Petition oder Umfrage als JSON vor und prüfe den importierten Entwurf vor der Veröffentlichung."
+        },
+        "pdf": {
+          "title": "Formulare importieren mit PDF — StimmApp",
+          "heading": "Formulare importieren mit PDF",
+          "intro": "Verwende eine einfache PDF mit auswählbarem Text in Lesereihenfolge. Gescannte Seiten und reine Bild-PDFs werden nicht unterstützt. Vermeide Spalten, Tabellen sowie Kopf- und Fußzeilen, die den Text unterbrechen."
+        }
+      },
+      "documentation": {
+        "title": "Dokumentation — StimmApp",
+        "heading": "Dokumentation",
+        "intro": "Anleitungen und Nachschlagewerk für StimmApp. Wähle ein Thema aus der Bibliothek.",
+        "overview": "Übersicht",
+        "navigation": "Dokumentationsnavigation",
+        "category": "Formulare",
+        "importHeading": "Formulare importieren",
+        "importIntro": "Erstelle Petitionen und Umfragen aus vorbereiteten Dateien. Wähle das Format, das du verwenden möchtest.",
+        "jsonSummary": "Strukturierte Formulare, Beispiele zum Herunterladen und eine vollständige Feldreferenz.",
+        "pdfSummary": "Texte aus einer PDF importieren, mit Hinweisen zum Aufbau und zu unterstützten Inhalten.",
+        "readGuide": "Anleitung lesen",
+        "back": "Gesamte Dokumentation"
+      }
     }
-  }
+  },
+  "footerFormImport": "Formulare importieren",
+  "footerDocumentation": "Dokumentation"
 }

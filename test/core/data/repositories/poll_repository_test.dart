@@ -23,6 +23,7 @@ void main() {
     final tPoll = Poll(
       id: '1',
       title: 'Test Poll',
+      questionTitle: 'Which option do you prefer?',
       description: 'A test poll',
       tags: [],
       options: [
@@ -42,7 +43,14 @@ void main() {
 
       expect(
         stream,
-        emits(predicate<Poll?>((p) => p != null && p.title == tPoll.title)),
+        emits(
+          predicate<Poll?>(
+            (p) =>
+                p != null &&
+                p.title == tPoll.title &&
+                p.questionTitle == tPoll.questionTitle,
+          ),
+        ),
       );
     });
 
@@ -111,6 +119,13 @@ void main() {
       expect(participants, hasLength(1));
       expect(participants.first.uid, user.uid);
       expect(participants.first.displayName, user.displayName);
+    });
+
+    test('delete checks current votes before removing a poll', () async {
+      final pollId = await pollRepository.createPoll(tPoll);
+      await pollRepository.vote(pollId: pollId, optionId: 'opt1', uid: 'voter');
+      await expectLater(pollRepository.delete(pollId), throwsStateError);
+      expect((await pollRepository.watch(pollId).first)!.totalVotes, 1);
     });
 
     test('delete removes a poll', () async {

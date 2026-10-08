@@ -172,6 +172,6 @@ extension AppColorThemeX on AppColorTheme {
         return theme;
       }
     }
-    return AppColorTheme.trainvent;
+    return AppColorTheme.sunset;
   }
 }

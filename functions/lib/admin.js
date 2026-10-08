@@ -46,8 +46,8 @@ const KICKED_USERS_COLLECTION = 'kickedUsers';
 const smtpMail = process.env.SMTP_MAIL || "noreply@trainvent.com";
 const smtpUser = process.env.SMTP_USER || smtpMail;
 const smtpPassword = (0, params_1.defineSecret)('SMTP_PASSWORD');
-const smtpHost = process.env.SMTP_SERVER || process.env.SMPT_SERVER || "smtp.strato.de";
-const smtpPort = Number(process.env.SMTP_PORT || 465);
+const smtpHost = process.env.SMTP_SERVER || "smtp-relay.brevo.com";
+const smtpPort = Number(process.env.SMTP_PORT || 587);
 const smtpSecure = process.env.SMTP_SECURE
     ? process.env.SMTP_SECURE === 'true'
     : smtpPort === 465;
@@ -362,6 +362,18 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
     if (!contentType || !contentId || !reportedUserId) {
         throw new https_1.HttpsError('failed-precondition', 'Report is missing required moderation fields.');
     }
+    const publicArchive = request.data.publicArchive;
+    let publicFields = null;
+    if (action === 'remove' && publicArchive != null) {
+        publicFields = {};
+        for (const key of ['title', 'summary', 'guideline', 'explanation']) {
+            const value = publicArchive[key];
+            if (typeof value !== 'string' || !value.trim() || value.trim().length > 2000) {
+                throw new https_1.HttpsError('invalid-argument', 'Public archive fields must contain 1–2000 characters.');
+            }
+            publicFields[key] = value.trim();
+        }
+    }
     const reporterEmails = await getReporterEmails(db, report);
     const sourceCollection = contentType === 'petition' ? 'petitions' : contentType === 'poll' ? 'polls' : null;
     if (!sourceCollection) {
@@ -454,6 +466,7 @@ exports.moderateReport = (0, https_1.onCall)({ secrets: [smtpPassword] }, async 
         adminMessage,
     }));
     await db.recursiveDelete(contentRef);
+    await db.collection('blockedForms').doc(removalRef.id).set(Object.assign(Object.assign({}, (publicFields !== null && publicFields !== void 0 ? publicFields : {})), { contentType, removedAt: firestore_1.FieldValue.serverTimestamp() }));
     if (creatorEmail) {
         await sendModerationNoticeEmail({
             to: creatorEmail,

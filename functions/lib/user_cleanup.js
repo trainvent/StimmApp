@@ -126,10 +126,8 @@ async function cleanupUserData(uid) {
                     }
                 }
             }
-            // Delete signatures subcollection
-            await deleteCollection(db, `petitions/${doc.id}/signatures`, 100);
-            // Delete the petition itself
-            await doc.ref.delete();
+            // Delete the petition, signatures, and nested comment likes.
+            await db.recursiveDelete(doc.ref);
         }
         // 4. Delete Polls created by the user
         const pollsSnap = await db.collection("polls").where("createdBy", "==", uid).get();
@@ -148,10 +146,19 @@ async function cleanupUserData(uid) {
             await doc.ref.delete();
         }
         // 6. Delete Signatures made by this user on OTHER petitions
-        const signaturesSnap = await db.collectionGroup("signatures").where("signerId", "==", uid).get();
-        const sigBatch = db.batch();
-        signaturesSnap.docs.forEach(doc => sigBatch.delete(doc.ref));
-        await sigBatch.commit();
+        const signaturesSnap = await db.collectionGroup("signatures").where("uid", "==", uid).get();
+        for (const signature of signaturesSnap.docs) {
+            await db.recursiveDelete(signature.ref);
+        }
+        // Remove this account's reactions on other people's comments.
+        while (true) {
+            const likes = await db.collectionGroup("commentLikes").where("uid", "==", uid).limit(400).get();
+            if (likes.empty)
+                break;
+            const batch = db.batch();
+            likes.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        }
         // 7. Delete Votes made by this user on OTHER polls
         const votesSnap = await db.collectionGroup("votes").where("voterId", "==", uid).get();
         const voteBatch = db.batch();

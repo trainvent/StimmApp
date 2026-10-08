@@ -43,6 +43,19 @@ void main() {
       );
     });
 
+    test('delete removes an unsigned petition', () async {
+      final id = await petitionRepository.createPetition(tPetition);
+      await petitionRepository.delete(id);
+      expect(await petitionRepository.get(id), isNull);
+    });
+
+    test('delete rejects a petition that has gained signatures', () async {
+      final id = await petitionRepository.createPetition(tPetition);
+      await petitionRepository.sign(id, 'signer');
+      await expectLater(petitionRepository.delete(id), throwsStateError);
+      expect((await petitionRepository.get(id))!.signatureCount, 1);
+    });
+
     test('list returns a stream of petitions', () async {
       await petitionRepository.createPetition(tPetition);
       final stream = petitionRepository.list(status: IConst.active);
@@ -95,8 +108,9 @@ void main() {
       // Sign
       await petitionRepository.sign(petitionId, user.uid);
 
-      final participants =
-          await petitionRepository.watchParticipants(petitionId).first;
+      final participants = await petitionRepository
+          .watchParticipants(petitionId)
+          .first;
 
       expect(participants, hasLength(1));
       expect(participants.first.uid, user.uid);

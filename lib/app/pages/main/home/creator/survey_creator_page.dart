@@ -1,6 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/repositories/poll_template_repository.dart';
+import 'package:stimmapp/core/providers/poll_template_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/widgets/choice_option_list_editor.dart';
@@ -22,27 +26,39 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/analytics_service.dart';
 import 'package:uuid/uuid.dart';
 
-const String _publicGroupValue = '__public__';
-const String _manageGroupsValue = '__manage_groups__';
+enum _TemplateField {
+  title,
+  description,
+  questions,
+  tags,
+  scope,
+  duration,
+  audience,
+}
 
-class SurveyCreatorPage extends StatefulWidget {
+const String _publicGroupValue = '__public__';
+
+class SurveyCreatorPage extends ConsumerStatefulWidget {
   const SurveyCreatorPage({
     super.key,
+    this.initialTemplate,
     this.presentAsPoll = false,
     this.auth,
     this.groupRepository,
   });
 
+  final PollTemplate? initialTemplate;
   final bool presentAsPoll;
   final AuthService? auth;
   final PollGroupRepository? groupRepository;
 
   @override
-  State<SurveyCreatorPage> createState() => _SurveyCreatorPageState();
+  ConsumerState<SurveyCreatorPage> createState() => _SurveyCreatorPageState();
 }
 
-class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
+class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   final _uuid = const Uuid();
+  final _creatorKey = GlobalKey<BaseCreatorPageState>();
   late final List<_QuestionDraft> _questions;
   final Map<String, PollGroup> _knownGroupsById = <String, PollGroup>{};
   String? _selectedGroupId;
@@ -60,16 +76,29 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   @override
   void initState() {
     super.initState();
-    _questions = [_createQuestionDraft()];
-    _restoreSpecificDraft();
+    final templateQuestions = widget.initialTemplate?.questions;
+    _questions = templateQuestions == null || templateQuestions.isEmpty
+        ? [_createQuestionDraft()]
+        : templateQuestions
+              .map(
+                (q) => _createQuestionDraft(
+                  title: q.title,
+                  type: q.type,
+                  options: List.of(q.options),
+                ),
+              )
+              .toList();
+    if (widget.initialTemplate == null) _restoreSpecificDraft();
   }
 
   _QuestionDraft _createQuestionDraft({
     String title = '',
+    SurveyQuestionType type = SurveyQuestionType.multipleChoice,
     List<String>? options,
   }) {
     return _QuestionDraft(
       title: title,
+      type: type,
       options: options,
       onChanged: _saveSpecificDraft,
     );
@@ -88,13 +117,17 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           .take(AppLimits.maxSurveyQuestions)
           .map((rawQuestion) {
             final question = Map<String, dynamic>.from(rawQuestion);
+            final type = question['type'] == 'text'
+                ? SurveyQuestionType.text
+                : SurveyQuestionType.multipleChoice;
             final options = (question['options'] as List?)
                 ?.whereType<String>()
                 .take(AppLimits.maxSurveyOptionsPerQuestion)
                 .toList();
             return _createQuestionDraft(
               title: question['title'] as String? ?? '',
-              options: options,
+              type: type,
+              options: type == SurveyQuestionType.text ? const [] : options,
             );
           })
           .toList();
@@ -125,6 +158,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         for (final question in _questions)
           {
             'title': question.titleController.text,
+            'type': question.type.name,
             'options': [
               for (final controller in question.optionControllers)
                 controller.text,
@@ -202,10 +236,6 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       _saveSpecificDraft();
       return;
     }
-    if (value == _manageGroupsValue) {
-      await _openManageGroups();
-      return;
-    }
 
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
@@ -240,6 +270,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     if (currentUser == null) {
       return DropdownButtonFormField<String>(
         key: const Key('survey_group_dropdown'),
+        isExpanded: true,
         initialValue: _publicGroupValue,
         decoration: InputDecoration(
           labelText: context.l10n.publishTo,
@@ -272,6 +303,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           key: ValueKey(selectedValue),
           child: DropdownButtonFormField<String>(
             key: const Key('survey_group_dropdown'),
+            isExpanded: true,
             initialValue: selectedValue,
             decoration: InputDecoration(
               labelText: context.l10n.publishTo,
@@ -285,12 +317,8 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
               ...groups.map(
                 (group) => DropdownMenuItem<String>(
                   value: group.id,
-                  child: Text(group.name),
+                  child: Text(group.name, overflow: TextOverflow.ellipsis),
                 ),
-              ),
-              DropdownMenuItem<String>(
-                value: _manageGroupsValue,
-                child: Text(context.l10n.createOrManageGroups),
               ),
             ],
             onChanged: _handleGroupSelection,
@@ -366,7 +394,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     _saveSpecificDraft();
   }
 
-  Future<void> _createSurvey({
+  Future<bool> _createSurvey({
     required String title,
     required String description,
     required List<String> tags,
@@ -377,7 +405,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
       showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
+      return false;
     }
 
     final moderationInputs = <String?>[
@@ -385,15 +413,16 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
       description,
       ..._questions.map((question) => question.titleController.text),
       ..._questions.expand(
-        (question) =>
-            question.optionControllers.map((controller) => controller.text),
+        (question) => question.type == SurveyQuestionType.text
+            ? <String>[]
+            : question.optionControllers.map((controller) => controller.text),
       ),
     ];
     if (ContentModerationService.instance.containsObjectionableContent(
       moderationInputs,
     )) {
       showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
-      return;
+      return false;
     }
 
     try {
@@ -410,17 +439,22 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
             return SurveyQuestion(
               id: _uuid.v4(),
               title: question.titleController.text.trim(),
-              options: options,
+              options: question.type == SurveyQuestionType.text
+                  ? const []
+                  : options,
+              type: question.type,
             );
           })
           .toList(growable: false);
 
       final now = DateTime.now();
-      final isSingleQuestionPoll = questions.length == 1;
+      final isSingleQuestionPoll =
+          questions.length == 1 && !questions.single.isText;
       if (isSingleQuestionPoll) {
         final question = questions.single;
         final poll = Poll(
           id: '',
+          questionTitle: question.title,
           title: title,
           description: description,
           tags: tags,
@@ -449,7 +483,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           if (mounted) {
             showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
           }
-          return;
+          return false;
         }
 
         await PublishingQuotaService.instance.ensureCanCreatePoll();
@@ -469,7 +503,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           showSuccessSnackBar('${context.l10n.createdPoll} $pollId');
           Navigator.of(context).pop();
         }
-        return;
+        return true;
       }
 
       final survey = Survey(
@@ -501,7 +535,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
           : '';
       if (matchedTitle.isNotEmpty && matchedTitle == survey.title) {
         if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
-        return;
+        return false;
       }
 
       await PublishingQuotaService.instance.ensureCanCreatePoll();
@@ -524,9 +558,10 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         showSuccessSnackBar('${context.l10n.createdSurvey} $surveyId');
         Navigator.of(context).pop();
       }
+      return true;
     } on StateError catch (error) {
       if (!mounted) {
-        return;
+        return false;
       }
       if (error.message == 'poll_daily_limit_reached') {
         showErrorSnackBar(context.l10n.dailyCreateLimitReached);
@@ -544,6 +579,467 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
         showErrorSnackBar('$failureMessage: $error');
       }
     }
+    return false;
+  }
+
+  Future<bool> _confirmReplacement(String message) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.l10n.confirm),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<void> _saveTemplate(
+    TextEditingController title,
+    TextEditingController description,
+  ) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return;
+    late final PollTemplateRepository repository;
+    try {
+      repository = await ref.read(
+        pollTemplateRepositoryProvider(userId).future,
+      );
+      repository.load();
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+      return;
+    }
+    if (!mounted) return;
+    final nameController = TextEditingController(text: title.text.trim());
+    final included = _TemplateField.values.toSet();
+    final settings = _creatorKey.currentState!.templateSettings;
+    final labels = <_TemplateField, String>{
+      _TemplateField.title: context.l10n.title,
+      _TemplateField.description: context.l10n.description,
+      _TemplateField.questions: context.l10n.pollTemplateQuestionsAndAnswers,
+      _TemplateField.tags: context.l10n.tags,
+      _TemplateField.scope: context.l10n.scope,
+      _TemplateField.duration: context.l10n.duration,
+      _TemplateField.audience: context.l10n.publishTo,
+    };
+    FocusManager.instance.primaryFocus?.unfocus();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: Text(context.l10n.savePollTemplate),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              // Outlined floating labels extend above the field's bounds.
+              // Keep them inside the scroll viewport, even with the keyboard open.
+              padding: EdgeInsets.fromLTRB(
+                4,
+                MediaQuery.textScalerOf(context).scale(12),
+                4,
+                8,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    maxLength: AppLimits.maxTitleLength,
+                    onChanged: (_) => update(() {}),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.pollTemplateName,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(context.l10n.pollTemplateIncludeFields),
+                  for (final field in _TemplateField.values)
+                    CheckboxListTile(
+                      key: ValueKey('template_field_${field.name}'),
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      title: Text(labels[field]!),
+                      value: included.contains(field),
+                      onChanged: (value) => update(() {
+                        if (value == true) {
+                          included.add(field);
+                        } else {
+                          included.remove(field);
+                        }
+                      }),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: nameController.text.trim().isEmpty || included.isEmpty
+                  ? null
+                  : () async {
+                      final name = nameController.text.trim();
+                      if (repository.containsName(name)) {
+                        final confirmed = await _confirmReplacement(
+                          context.l10n.pollTemplateOverwriteConfirmation,
+                        );
+                        if (!confirmed) return;
+                      }
+                      if (context.mounted) Navigator.pop(context, name);
+                    },
+              child: Text(
+                repository.containsName(nameController.text)
+                    ? context.l10n.pollTemplateReplaceAction
+                    : context.l10n.confirm,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    // Let the closing dialog finish using its text controller.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => nameController.dispose(),
+    );
+    if (name == null || !mounted) return;
+    final template = PollTemplate(
+      id: _uuid.v4(),
+      name: name,
+      title: included.contains(_TemplateField.title) ? title.text : null,
+      description: included.contains(_TemplateField.description)
+          ? description.text
+          : null,
+      tags: included.contains(_TemplateField.tags) ? settings.tags : null,
+      scopeType: included.contains(_TemplateField.scope)
+          ? settings.scopeType
+          : null,
+      countryUnion: included.contains(_TemplateField.scope)
+          ? settings.countryUnion
+          : null,
+      durationDays: included.contains(_TemplateField.duration)
+          ? settings.durationDays
+          : null,
+      openUntilClosed: included.contains(_TemplateField.duration)
+          ? settings.openUntilClosed
+          : null,
+      includesAudience: included.contains(_TemplateField.audience),
+      groupId: included.contains(_TemplateField.audience)
+          ? _selectedGroupId
+          : null,
+      questions: included.contains(_TemplateField.questions)
+          ? [
+              for (final question in _questions)
+                PollTemplateQuestion(
+                  title: question.titleController.text,
+                  type: question.type,
+                  options: [
+                    for (final option in question.optionControllers)
+                      option.text,
+                  ],
+                ),
+            ]
+          : null,
+    );
+    try {
+      await repository.save(template);
+      if (mounted) showSuccessSnackBar(context.l10n.pollTemplateSaved);
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+    }
+  }
+
+  String _templateSummary(PollTemplate template) {
+    final l = context.l10n;
+    return [
+      if (template.title != null) l.title,
+      if (template.description != null) l.description,
+      if (template.questions != null)
+        l.templateQuestionCount(template.questions!.length),
+      if (template.tags != null) l.tags,
+      if (template.scopeType != null) l.geographicalScope,
+      if (template.durationDays != null || template.openUntilClosed != null)
+        l.duration,
+      if (template.includesAudience) l.publishTo,
+    ].join(' · ');
+  }
+
+  Widget _buildPublicationPreview(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(
+          _selectedGroup == null ? Icons.public : Icons.group_outlined,
+        ),
+        title: Text(context.l10n.publishTo),
+        subtitle: Text(_selectedGroup?.name ?? context.l10n.public),
+      ),
+      for (var index = 0; index < _questions.length; index++)
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${index + 1}. ${_questions[index].titleController.text.trim()}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                if (_questions[index].type == SurveyQuestionType.text)
+                  Text(context.l10n.writtenAnswerHint),
+                if (_questions[index].type == SurveyQuestionType.multipleChoice)
+                  for (final option in _questions[index].optionControllers)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.radio_button_unchecked),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(option.text.trim())),
+                        ],
+                      ),
+                    ),
+              ],
+            ),
+          ),
+        ),
+    ],
+  );
+
+  Future<void> _chooseTemplate(
+    TextEditingController title,
+    TextEditingController description,
+  ) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return;
+    try {
+      final repository = await ref.read(
+        pollTemplateRepositoryProvider(userId).future,
+      );
+      final templates = repository.load();
+      if (!mounted) return;
+      final selected = await showDialog<PollTemplate>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(context.l10n.pollTemplates),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(context.l10n.pollTemplatesLocal),
+                  const SizedBox(height: 8),
+                  Text(context.l10n.templateApplyHint),
+                  const SizedBox(height: 12),
+                  if (templates.isEmpty) Text(context.l10n.pollTemplatesEmpty),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: templates.length,
+                      itemBuilder: (context, index) {
+                        final template = templates[index];
+                        return ListTile(
+                          title: Text(template.name),
+                          subtitle: Text(_templateSummary(template)),
+                          onTap: () => Navigator.pop(dialogContext, template),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: context.l10n.pollTemplateDeleteAction,
+                            onPressed: () async {
+                              if (!await _confirmReplacement(
+                                context.l10n.pollTemplateDelete,
+                              )) {
+                                return;
+                              }
+                              try {
+                                await repository.delete(template.id);
+                                if (context.mounted) {
+                                  update(() => templates.remove(template));
+                                }
+                              } catch (_) {
+                                if (mounted) {
+                                  showErrorSnackBar(
+                                    this.context.l10n.pollTemplateError,
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.cancel),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (selected == null || !mounted) return;
+      if (!await _confirmReplacement(
+            '${context.l10n.pollTemplateReplace}\n\n${selected.name}\n${_templateSummary(selected)}',
+          ) ||
+          !mounted) {
+        return;
+      }
+      if (selected.includesAudience && selected.groupId != null) {
+        final groups = await _groupRepository.watchGroupsForUser(userId).first;
+        if (!mounted) return;
+        if (!groups.any((group) => group.id == selected.groupId)) {
+          showErrorSnackBar(context.l10n.pollTemplateGroupUnavailable);
+          return;
+        }
+        _rememberGroups(groups);
+      }
+      if (!mounted) return;
+      if (!await _creatorKey.currentState!.applyTemplate(selected) ||
+          !mounted) {
+        return;
+      }
+      setState(() {
+        if (selected.includesAudience) _selectedGroupId = selected.groupId;
+        if (selected.questions != null) {
+          for (final question in _questions) {
+            question.dispose();
+          }
+          _questions
+            ..clear()
+            ..addAll(
+              selected.questions!
+                  .take(AppLimits.maxSurveyQuestions)
+                  .map(
+                    (question) => _createQuestionDraft(
+                      title: question.title,
+                      type: question.type,
+                      options: question.options
+                          .take(AppLimits.maxSurveyOptionsPerQuestion)
+                          .toList(),
+                    ),
+                  ),
+            );
+          if (_questions.isEmpty) _questions.add(_createQuestionDraft());
+        }
+      });
+      await _saveSpecificDraft();
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+    }
+  }
+
+  Widget _buildTemplateActions(
+    TextEditingController title,
+    TextEditingController description,
+  ) => Padding(
+    padding: const EdgeInsets.only(bottom: 20),
+    child: Row(
+      children: [
+        Expanded(child: _buildGroupSelector()),
+        const SizedBox(width: 8),
+        IconButton(
+          key: const Key('survey_manage_groups_button'),
+          icon: const Icon(Icons.group_outlined),
+          tooltip: context.l10n.createOrManageGroups,
+          onPressed: _auth.currentUser == null ? null : _openManageGroups,
+        ),
+        IconButton(
+          icon: const Icon(Icons.library_books_outlined),
+          tooltip: context.l10n.pollTemplates,
+          onPressed: _auth.currentUser == null
+              ? null
+              : () => _chooseTemplate(title, description),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildAnswerPresets(_QuestionDraft question) {
+    final l = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    final presets = <String, List<String>>{
+      l.presetConsent: [
+        l.presetYes,
+        l.presetUndecided,
+        l.presetNo,
+        l.presetVeto,
+      ],
+      l.presetBinary: [l.presetYes, l.presetNo],
+      l.presetAgreement: [
+        l.presetStronglyAgree,
+        l.presetAgree,
+        l.presetNeutral,
+        l.presetDisagree,
+        l.presetStronglyDisagree,
+      ],
+      l.presetSatisfaction: [
+        l.presetVerySatisfied,
+        l.presetSatisfied,
+        l.presetNeutral,
+        l.presetDissatisfied,
+        l.presetVeryDissatisfied,
+      ],
+      l.presetFrequency: [
+        l.presetAlways,
+        l.presetOften,
+        l.presetSometimes,
+        l.presetRarely,
+        l.presetNever,
+      ],
+    };
+    return PopupMenuButton<String>(
+      tooltip: l.answerPresets,
+      iconColor: colors.onPrimary,
+      itemBuilder: (_) => [
+        for (final name in presets.keys)
+          PopupMenuItem(value: name, child: Text(name)),
+      ],
+      onSelected: (name) async {
+        if (question.optionControllers.any(
+          (option) => option.text.trim().isNotEmpty,
+        )) {
+          if (!await _confirmReplacement(l.answerPresetReplace)) return;
+        }
+        if (!mounted || !_questions.contains(question)) return;
+        setState(() {
+          for (final option in question.optionControllers) {
+            option.dispose();
+          }
+          question.optionControllers.clear();
+          for (final label in presets[name]!) {
+            question.optionControllers.add(
+              TextEditingController(text: label)
+                ..addListener(_saveSpecificDraft),
+            );
+          }
+        });
+        await _saveSpecificDraft();
+      },
+      icon: const Icon(Icons.list_alt_rounded),
+      style: IconButton.styleFrom(
+        foregroundColor: colors.onPrimary,
+        backgroundColor: colors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 
   Widget _buildQuestionCard(int index) {
@@ -589,30 +1085,71 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
                   : null,
             ),
             const SizedBox(height: 8),
-            Text(
-              context.l10n.options,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            ChoiceOptionListEditor(
-              controllers: question.optionControllers,
-              maxOptionLength: AppLimits.maxSurveyOptionLength,
-              optionLabelBuilder: (optionIndex) =>
-                  context.l10n.optionNumber(optionIndex + 1),
-              optionRequiredMessage: context.l10n.optionRequired,
-              onReorder: (oldIndex, newIndex) =>
-                  _reorderOptions(question, oldIndex, newIndex),
-              onRemove: (optionIndex) => _removeOption(question, optionIndex),
-            ),
-            if (question.optionControllers.length <
-                AppLimits.maxSurveyOptionsPerQuestion)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: Text(context.l10n.addOption),
-                  onPressed: () => _addOption(question),
-                ),
+            DropdownButtonFormField<SurveyQuestionType>(
+              key: ValueKey(
+                'answer_type_${identityHashCode(question)}_${question.type.name}',
               ),
+              initialValue: question.type,
+              decoration: InputDecoration(
+                labelText: context.l10n.answerType,
+                border: const OutlineInputBorder(),
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: SurveyQuestionType.multipleChoice,
+                  child: Text(context.l10n.multipleChoiceAnswer),
+                ),
+                DropdownMenuItem(
+                  value: SurveyQuestionType.text,
+                  child: Text(context.l10n.writtenAnswer),
+                ),
+              ],
+              onChanged: (type) {
+                if (type == null) return;
+                setState(() => question.type = type);
+                _saveSpecificDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            if (question.type == SurveyQuestionType.text)
+              Text(context.l10n.writtenAnswerHint),
+            if (question.type == SurveyQuestionType.multipleChoice) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.l10n.options,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  _buildAnswerPresets(question),
+                ],
+              ),
+              ChoiceOptionListEditor(
+                controllers: question.optionControllers,
+                maxOptionLength: AppLimits.maxSurveyOptionLength,
+                optionLabelBuilder: (optionIndex) =>
+                    context.l10n.optionNumber(optionIndex + 1),
+                optionRequiredMessage: context.l10n.optionRequired,
+                onReorder: (oldIndex, newIndex) =>
+                    _reorderOptions(question, oldIndex, newIndex),
+                onRemove: (optionIndex) => _removeOption(question, optionIndex),
+              ),
+              if (question.optionControllers.length <
+                  AppLimits.maxSurveyOptionsPerQuestion)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: Text(context.l10n.addOption),
+                    onPressed: () => _addOption(question),
+                  ),
+                ),
+            ],
           ],
         ),
       ),
@@ -622,12 +1159,42 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
   @override
   Widget build(BuildContext context) {
     return BaseCreatorPage(
+      initialTemplate: widget.initialTemplate,
+      key: _creatorKey,
+      importType: widget.presentAsPoll ? 'poll' : 'survey',
+      onImportQuestions: (questions) async {
+        setState(() {
+          for (final question in _questions) {
+            question.dispose();
+          }
+          _questions
+            ..clear()
+            ..addAll(
+              questions.map(
+                (question) => _createQuestionDraft(
+                  title: question.title,
+                  type: question.type,
+                  options: question.options,
+                ),
+              ),
+            );
+        });
+        await _saveSpecificDraft();
+      },
       title: widget.presentAsPoll
           ? context.l10n.createPoll
           : context.l10n.createSurvey,
       tutorialSteps: PollTutorialHelper.getSteps(context),
       onSubmit: _createSurvey,
-      additionalTopFields: [_buildGroupSelector(), const SizedBox(height: 20)],
+      previewContentBuilder: _buildPublicationPreview,
+      contentActionsBuilder: _buildTemplateActions,
+      appBarActionBuilder: (title, description) => IconButton(
+        icon: const Icon(Icons.bookmark_add_outlined),
+        tooltip: context.l10n.savePollTemplate,
+        onPressed: _auth.currentUser == null
+            ? null
+            : () => _saveTemplate(title, description),
+      ),
       additionalDraftClearer: _clearSpecificDraft,
       onResetAdditionalFields: _resetSpecificFields,
       additionalMiddleFields: [
@@ -659,6 +1226,7 @@ class _SurveyCreatorPageState extends State<SurveyCreatorPage> {
 class _QuestionDraft {
   _QuestionDraft({
     required this.onChanged,
+    this.type = SurveyQuestionType.multipleChoice,
     String title = '',
     List<String>? options,
   }) : titleController = TextEditingController(text: title),
@@ -671,6 +1239,7 @@ class _QuestionDraft {
     }
   }
 
+  SurveyQuestionType type;
   final VoidCallback onChanged;
   final TextEditingController titleController;
   final List<TextEditingController> optionControllers;

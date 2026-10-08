@@ -1,9 +1,11 @@
+import 'package:flag/flag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/app/pages/main/home/participants_list_page.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
@@ -14,6 +16,8 @@ import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
+import 'package:stimmapp/core/data/models/public_profile.dart';
+import 'package:stimmapp/core/data/repositories/public_profile_repository.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
@@ -32,6 +36,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
     required this.contentBuilder,
     required this.sharePathSegment,
     this.bottomAction,
+    this.allowExpiredContentInteraction = false,
     this.participantsStream,
     this.participantIdsStream,
     this.signaturesStream,
@@ -48,6 +53,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   final Stream<T?> Function(String id) streamProvider;
   final Widget Function(BuildContext context, T item) contentBuilder;
   final Widget? bottomAction;
+  final bool allowExpiredContentInteraction;
   final Stream<List<UserProfile>>? participantsStream;
   final Stream<Set<String>>? participantIdsStream;
   final Stream<List<Map<String, dynamic>>>? signaturesStream;
@@ -246,6 +252,7 @@ class _BaseDetailPageState<T extends HomeItem>
   late Stream<T?> _itemStream;
   late Stream<T?> _topRightItemStream;
   late Future<UserProfile?> _userProfileFuture;
+  final Map<String, Stream<PublicProfile?>> _creatorProfileStreams = {};
 
   @override
   void initState() {
@@ -267,6 +274,7 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   void _refreshItemStreams() {
+    _creatorProfileStreams.clear();
     _itemStream = widget.streamProvider(widget.id);
     _topRightItemStream = widget.streamProvider(widget.id);
   }
@@ -357,23 +365,194 @@ class _BaseDetailPageState<T extends HomeItem>
     }
   }
 
-  List<Widget> _detailMetaChips(BuildContext context, T item) {
-    final chips = <Widget>[
-      Chip(
-        label: Text(
-          context.l10n.scopeLabelWithValue(_scopeLabel(context, item)),
-        ),
-      ),
-    ];
+  Widget _scopeValue(BuildContext context, T item) {
+    final code = item.countryCode?.trim().toLowerCase();
+    final hasCountryFlag = code != null && Flag.flagsCode.contains(code);
+    final scopeType = item.scope.type;
+    final leading = hasCountryFlag && scopeType == FormScopeType.country
+        ? Flag.fromString(
+            code,
+            width: 28,
+            height: 20,
+            borderRadius: 3,
+            fit: BoxFit.cover,
+          )
+        : Icon(switch (scopeType) {
+            FormScopeType.global => Icons.public_outlined,
+            FormScopeType.countryUnion => Icons.hub_outlined,
+            FormScopeType.continent => Icons.public_outlined,
+            FormScopeType.country => Icons.flag_outlined,
+            FormScopeType.stateOrRegion => Icons.map_outlined,
+            FormScopeType.city => Icons.location_city_outlined,
+          }, size: 20);
+    return _detailValue(context, _scopeLabel(context, item), leading: leading);
+  }
 
-    final groupName = _groupName(item);
-    if ((groupName ?? '').trim().isNotEmpty) {
-      chips.add(
-        Chip(label: Text(context.l10n.groupLabelWithValue(groupName!.trim()))),
+  Widget _detailValue(
+    BuildContext context,
+    String text, {
+    required Widget leading,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: 28, child: Center(child: leading)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+        ),
+      ],
+    );
+  }
+
+  TableRow _metadataRow(
+    BuildContext context,
+    String label,
+    Widget value, {
+    double verticalPadding = 8,
+  }) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: EdgeInsetsDirectional.only(
+            end: 12,
+            top: verticalPadding,
+            bottom: verticalPadding,
+          ),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: verticalPadding),
+          child: value,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCreatorValue(BuildContext context, T item) {
+    if (item.createdBy.isEmpty) {
+      return _detailValue(
+        context,
+        context.l10n.unknownUser,
+        leading: const Icon(Icons.person_outline, size: 20),
       );
     }
+    return StreamBuilder<PublicProfile?>(
+      stream: _creatorProfileStreams.putIfAbsent(
+        item.createdBy,
+        () => PublicProfileRepository(_databaseService).watch(item.createdBy),
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SizedBox.square(
+              dimension: 28,
+              child: Center(child: TriangleLoadingIndicator(size: 16)),
+            ),
+          );
+        }
+        final name = snapshot.data?.nickname?.trim();
+        if (snapshot.hasError || name == null || name.isEmpty) {
+          return _detailValue(
+            context,
+            snapshot.hasError
+                ? context.l10n.erroneousProfile
+                : context.l10n.unknownUser,
+            leading: const Icon(Icons.person_outline, size: 20),
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              width: 28,
+              child: Center(child: Icon(Icons.person_outline, size: 20)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PublicProfilePage(userId: item.createdBy),
+                  ),
+                ),
+                child: Text(
+                  name,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-    return chips;
+  Widget _buildDetailMetadata(BuildContext context, T item) {
+    final groupName = _groupName(item)?.trim();
+
+    return Table(
+      columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
+      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+      children: [
+        _metadataRow(
+          context,
+          context.l10n.creator,
+          _buildCreatorValue(context, item),
+        ),
+        _metadataRow(
+          context,
+          context.l10n.detailScope,
+          _scopeValue(context, item),
+        ),
+        if (groupName != null && groupName.isNotEmpty)
+          _metadataRow(
+            context,
+            context.l10n.detailGroup,
+            _detailValue(
+              context,
+              groupName,
+              leading: const Icon(Icons.groups_2_outlined, size: 20),
+            ),
+          ),
+        if (item.tags.isNotEmpty)
+          _metadataRow(
+            context,
+            context.l10n.detailTopics,
+            _detailValue(
+              context,
+              item.tags
+                  .map((tag) => AppTagsHelper.getLocalizedTag(context, tag))
+                  .join(', '),
+              leading: const Icon(Icons.label_outline, size: 20),
+            ),
+          ),
+        _metadataRow(
+          context,
+          context.l10n.expiresOn,
+          KeyedSubtree(
+            key: const Key('form_expiration_metadata'),
+            child: _detailValue(
+              context,
+              item.expiresAt == null
+                  ? context.l10n.openUntilClosed
+                  : DateFormat('dd.MM.yyyy').format(item.expiresAt!),
+              leading: const Icon(Icons.schedule_outlined, size: 20),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   String? _groupName(T item) {
@@ -465,7 +644,8 @@ class _BaseDetailPageState<T extends HomeItem>
   }
 
   Widget _buildHeaderCard(BuildContext context, T item) {
-    final hasTags = item.tags.isNotEmpty;
+    final isExpired =
+        item.status != IConst.active || item.isExpiredAt(DateTime.now());
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -484,60 +664,82 @@ class _BaseDetailPageState<T extends HomeItem>
         child: Material(
           type: MaterialType.transparency,
           child: ExpansionTile(
+            maintainState: true,
             tilePadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 6,
             ),
-            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    item.title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            title: Text(
+              item.title,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
+            subtitle: isExpired
+                ? Text(
+                    context.l10n.closed,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  )
+                : null,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _detailMetaChips(context, item),
-                ),
+              _buildDetailMetadata(context, item),
+              Divider(
+                height: 8,
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
-              if (hasTags) ...[
-                const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: item.tags.map((tagKey) {
-                      return Chip(
-                        label: Text(
-                          AppTagsHelper.getLocalizedTag(context, tagKey),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
+              _buildParticipationMetadata(context, item),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildParticipationMetadata(BuildContext context, T item) {
+    return Table(
+      key: const Key('form_participation_metadata'),
+      columnWidths: const {0: FractionColumnWidth(0.32), 1: FlexColumnWidth()},
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      children: [
+        _metadataRow(
+          context,
+          context.l10n.participants,
+          Row(
+            children: [
+              Expanded(
+                child: _detailValue(
+                  context,
+                  '${item.participantCount}',
+                  leading: const Icon(Icons.people_outline, size: 20),
+                ),
+              ),
+              if (widget.participantsStream != null)
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    minimumSize: const Size(48, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ParticipantsListPage(
+                        participantsStream: widget.participantsStream!,
+                        signaturesStream: widget.signaturesStream,
+                      ),
+                    ),
+                  ),
+                  child: Text(context.l10n.viewParticipants),
+                ),
+            ],
+          ),
+          verticalPadding: 0,
+        ),
+      ],
     );
   }
 
@@ -677,14 +879,6 @@ class _BaseDetailPageState<T extends HomeItem>
                       children: [
                         _buildHeaderCard(context, item),
                         const SizedBox(height: 12),
-                        if (item.state != null && item.state!.isNotEmpty) ...[
-                          Chip(
-                            label: Text(
-                              context.l10n.relatedToState(item.state!),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
                         Text(item.description),
                         const SizedBox(height: 12),
                         _buildDiscoveryStatusBanner(
@@ -693,51 +887,11 @@ class _BaseDetailPageState<T extends HomeItem>
                           isExpired: isExpired,
                         ),
                         const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${context.l10n.participants}: ${item.participantCount}',
-                            ),
-                            if (widget.participantsStream != null)
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ParticipantsListPage(
-                                            participantsStream:
-                                                widget.participantsStream!,
-                                            signaturesStream:
-                                                widget.signaturesStream,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                child: Text(context.l10n.viewParticipants),
-                              ),
-                          ],
-                        ),
-                        Text(
-                          item.expiresAt == null
-                              ? context.l10n.openUntilClosed
-                              : '${context.l10n.expiresOn}: '
-                                    '${DateFormat('dd.MM.yyyy').format(item.expiresAt!)}',
-                        ),
-                        if (isExpired) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            context.l10n.closed,
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
                         Expanded(
                           child: AbsorbPointer(
-                            absorbing: isExpired,
+                            absorbing:
+                                isExpired &&
+                                !widget.allowExpiredContentInteraction,
                             child: widget.contentBuilder(context, item),
                           ),
                         ),

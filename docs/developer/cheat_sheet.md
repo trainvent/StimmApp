@@ -138,3 +138,18 @@ adb shell pm set-app-links-user-selection \
   --user 0 \
   --package de.lemarq.stimmapp \
   true vivot.net stimmapp.net
+
+## test mail
+swaks \
+  --server smtp-relay.brevo.com \
+  --port 587 \
+  --tls \
+  --auth LOGIN \
+  --auth-user <SMTP_USER> \
+  --from <SMTP_MAIL> \
+  --to <TEST_MAIL> \
+  --header 'Subject: StimmApp Brevo SMTP test' \
+  --body 'Test email sent through Brevo SMTP.' \
+  --protect-prompt \
+  --auth-hide-password \
+  --auth-password

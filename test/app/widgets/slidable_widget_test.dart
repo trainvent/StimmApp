@@ -6,6 +6,7 @@ import 'package:stimmapp/app/widgets/slidable_widget.dart';
 void main() {
   Future<void> pumpSlidable(
     WidgetTester tester, {
+    bool showSwipeHint = false,
     required Future<void> Function() onStartSwipe,
     required Future<void> Function() onEndSwipe,
   }) async {
@@ -17,6 +18,7 @@ void main() {
               width: 400,
               child: AppSlidable(
                 key: const Key('slidable'),
+                showSwipeHint: showSwipeHint,
                 startAction: const AppSlidableAction(
                   icon: Icons.dashboard_outlined,
                   label: 'Dashboard',
@@ -45,6 +47,61 @@ void main() {
     await gesture.up();
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'hint reveals left then right actions once without executing them',
+    (tester) async {
+      var actions = 0;
+      await pumpSlidable(
+        tester,
+        showSwipeHint: true,
+        onStartSwipe: () async => actions++,
+        onEndSwipe: () async => actions++,
+      );
+      final tile = find.byType(AppSlidable);
+      final originalBounds = tester.getRect(tile);
+      final controller = tester
+          .widget<Slidable>(find.byType(Slidable))
+          .controller!;
+      for (var frame = 0; frame < 80 && controller.ratio > -0.12; frame++) {
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(controller.ratio, inInclusiveRange(-0.145, -0.12));
+      expect(find.text('Leave'), findsOneWidget);
+      expect(tester.getRect(tile), originalBounds);
+      for (var frame = 0; frame < 80 && controller.ratio < 0.12; frame++) {
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(controller.ratio, inInclusiveRange(0.12, 0.145));
+      expect(find.text('Dashboard'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 220));
+      await tester.pumpAndSettle();
+      expect(controller.ratio, 0);
+      expect(actions, 0);
+      await pumpSlidable(
+        tester,
+        showSwipeHint: true,
+        onStartSwipe: () async => actions++,
+        onEndSwipe: () async => actions++,
+      );
+      await tester.pump(const Duration(seconds: 2));
+      expect(controller.ratio, 0);
+      expect(actions, 0);
+    },
+  );
+
+  testWidgets('touching a tile cancels its pending hint', (tester) async {
+    await pumpSlidable(
+      tester,
+      showSwipeHint: true,
+      onStartSwipe: () async {},
+      onEndSwipe: () async {},
+    );
+    await tester.tap(find.byType(AppSlidable));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(tester.widget<Slidable>(find.byType(Slidable)).controller!.ratio, 0);
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('start swipe action triggers after 30 percent drag', (
     tester,

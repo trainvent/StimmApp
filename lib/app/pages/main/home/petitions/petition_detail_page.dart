@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/pages/main/home/petitions/petition_comments.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
 import 'package:stimmapp/app/pages/main/profile/pid_verification_gate.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -10,21 +11,28 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 
-class PetitionDetailPage extends StatelessWidget {
+class PetitionDetailPage extends StatefulWidget {
   const PetitionDetailPage({super.key, required this.id});
   final String id;
 
   @override
+  State<PetitionDetailPage> createState() => _PetitionDetailPageState();
+}
+
+class _PetitionDetailPageState extends State<PetitionDetailPage> {
+  bool _isDeleting = false;
+
+  @override
   Widget build(BuildContext context) {
     final repo = PetitionRepository.create();
-    final participantIdsStream = repo.watchParticipantIds(id);
+    final participantIdsStream = repo.watchParticipantIds(widget.id);
     return BaseDetailPage<Petition>(
-      id: id,
+      id: widget.id,
       appBarTitle: context.l10n.petitionDetails,
       streamProvider: repo.watch,
-      participantsStream: repo.watchParticipants(id),
+      participantsStream: repo.watchParticipants(widget.id),
       participantIdsStream: participantIdsStream,
-      signaturesStream: repo.watchSignatures(id),
+      signaturesStream: repo.watchSignatures(widget.id),
       sharePathSegment: 'petition',
       topRightActionBuilder: (context, petition) {
         final currentUid = authService.currentUser?.uid;
@@ -78,14 +86,15 @@ class PetitionDetailPage extends StatelessWidget {
           ],
         );
       },
-      contentBuilder: (context, p) {
-        if (p.imageUrl != null) {
-          return Image.network(p.imageUrl!);
-        }
-        return const SizedBox.shrink();
-      },
+      allowExpiredContentInteraction: true,
+      contentBuilder: (context, p) => ListView(
+        children: [
+          if (p.imageUrl != null) Image.network(p.imageUrl!),
+          PetitionComments(petitionId: widget.id),
+        ],
+      ),
       bottomAction: SignActionButton(
-        submissionId: 'petition:$id',
+        submissionId: 'petition:${widget.id}',
         label: context.l10n.sign,
         participantIdsStream: participantIdsStream,
         askForReason: true,
@@ -95,7 +104,7 @@ class PetitionDetailPage extends StatelessWidget {
         ),
         onAction: ({String? reason}) async {
           final user = authService.currentUser!;
-          await repo.sign(id, user.uid, reason: reason);
+          await repo.sign(widget.id, user.uid, reason: reason);
           if (context.mounted) Navigator.pop(context);
         },
         successMessage: context.l10n.signed,
@@ -104,6 +113,7 @@ class PetitionDetailPage extends StatelessWidget {
   }
 
   Future<void> _deletePetition(BuildContext context, Petition petition) async {
+    if (_isDeleting) return;
     if (petition.signatureCount != 0) {
       showErrorSnackBar(context.l10n.cannotDeletePetitionHasSignatures);
       return;
@@ -131,11 +141,29 @@ class PetitionDetailPage extends StatelessWidget {
       return;
     }
 
-    await PetitionRepository.create().delete(petition.id);
-    QuotaUpdateNotifier.instance.notify();
-    if (context.mounted) {
-      showSuccessSnackBar(context.l10n.petitionDeleted);
-      Navigator.of(context).pop();
+    if (!context.mounted || _isDeleting) return;
+    setState(() => _isDeleting = true);
+    try {
+      await PetitionRepository.create().delete(petition.id);
+      QuotaUpdateNotifier.instance.notify();
+      if (context.mounted) {
+        showSuccessSnackBar(context.l10n.petitionDeleted);
+        Navigator.of(context).pop();
+      }
+    } on StateError catch (error) {
+      if (context.mounted) {
+        showErrorSnackBar(
+          error.message == 'petition_has_signatures'
+              ? context.l10n.cannotDeletePetitionHasSignatures
+              : context.l10n.petitionDeletionFailed,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        showErrorSnackBar(context.l10n.petitionDeletionFailed);
+      }
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
     }
   }
 

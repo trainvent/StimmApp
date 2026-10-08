@@ -287,7 +287,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkMode => 'Dark Mode';
 
   @override
-  String get design => 'Design';
+  String get structure => 'Structure';
 
   @override
   String get dateOfBirth => 'Date of Birth';
@@ -587,6 +587,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportSuccess => 'Export created';
+
+  @override
+  String get exportPdf => 'PDF';
+
+  @override
+  String get exportPdfVerbose => 'PDF (verbose)';
+
+  @override
+  String get exportPdfSlim => 'PDF (slim)';
+
+  @override
+  String get exportJson => 'JSON';
+
+  @override
+  String get exportSignatures => 'Signatures';
+
+  @override
+  String get exportResults => 'Results';
+
+  @override
+  String get exportSignature => 'Signature';
+
+  @override
+  String get exportPetition => 'Petition';
+
+  @override
+  String get exportPoll => 'Poll';
+
+  @override
+  String get exportSurvey => 'Survey';
+
+  @override
+  String get exportSigned => 'signed';
+
+  @override
+  String get exportSubmitted => 'submitted';
+
+  @override
+  String get exportType => 'Type';
+
+  @override
+  String get exportId => 'ID';
+
+  @override
+  String get exportHeader => 'Header';
+
+  @override
+  String get exportBody => 'Body';
+
+  @override
+  String get exportTags => 'Tags';
+
+  @override
+  String get exportSignatureCount => 'Signature count';
+
+  @override
+  String get exportCreatedBy => 'Created by';
+
+  @override
+  String get exportCreatedAt => 'Created at';
+
+  @override
+  String get exportExpiresAt => 'Expires at';
+
+  @override
+  String get exportOpenUntilClosed => 'Open until closed';
+
+  @override
+  String get exportStatus => 'Status';
+
+  @override
+  String get exportScopeType => 'Scope type';
+
+  @override
+  String get exportContinent => 'Continent';
+
+  @override
+  String get exportCountry => 'Country';
+
+  @override
+  String get exportStateOrRegion => 'State or region';
+
+  @override
+  String get exportTown => 'Town';
+
+  @override
+  String get exportImageUrl => 'Image URL';
+
+  @override
+  String get exportOptions => 'Options';
+
+  @override
+  String get exportVotes => 'Votes';
+
+  @override
+  String get exportTotalVotes => 'Total votes';
+
+  @override
+  String get exportResponseCount => 'Response count';
+
+  @override
+  String get exportGroupId => 'Group ID';
+
+  @override
+  String get exportGroupName => 'Group name';
+
+  @override
+  String get exportVisibility => 'Visibility';
+
+  @override
+  String get exportReason => 'Reason';
 
   @override
   String get failedToCreatePoll => 'Failed to create poll';
@@ -1269,7 +1380,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewLicenses => 'View licenses';
 
   @override
-  String get viewParticipants => 'View Participants';
+  String get viewParticipants => 'Show';
 
   @override
   String get vote => 'Vote';
@@ -1445,6 +1556,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterYourDetails => 'Please enter your details.';
 
   @override
+  String get furtherHelpingHands => 'Further helping hands';
+
+  @override
   String get thisAppWasDevelopedBy => 'This app was developed by';
 
   @override
@@ -1488,7 +1602,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tagSports => 'Sports';
 
   @override
-  String get tagAnimalWelfare => 'Animal Welfare';
+  String get tagAnimalWelfare => 'Welfare';
 
   @override
   String get tagSafety => 'Safety';
@@ -2830,4 +2944,492 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pidProfile => 'Profile:';
+
+  @override
+  String get pollTemplates => 'Poll templates';
+
+  @override
+  String get savePollTemplate => 'Save as template';
+
+  @override
+  String get pollTemplateName => 'Template name';
+
+  @override
+  String get pollTemplatesLocal => 'Saved on this device.';
+
+  @override
+  String get pollTemplatesEmpty => 'No saved templates yet.';
+
+  @override
+  String get pollTemplateSaved => 'Template saved.';
+
+  @override
+  String get pollTemplateError =>
+      'Could not save or load templates. Please try again.';
+
+  @override
+  String get pollTemplateReplace => 'Apply the selected template fields?';
+
+  @override
+  String get pollTemplateDelete => 'Delete this saved template?';
+
+  @override
+  String get pollTemplateDeleteAction => 'Delete template';
+
+  @override
+  String get answerPresets => 'Answer presets';
+
+  @override
+  String get answerPresetReplace => 'Replace the answers for this question?';
+
+  @override
+  String get presetConsent => 'Consent: Yes / Undecided / No / Veto';
+
+  @override
+  String get presetBinary => 'Yes / No';
+
+  @override
+  String get presetAgreement => 'Agreement scale';
+
+  @override
+  String get presetSatisfaction => 'Satisfaction scale';
+
+  @override
+  String get presetFrequency => 'Frequency';
+
+  @override
+  String get presetYes => 'Yes';
+
+  @override
+  String get presetNo => 'No';
+
+  @override
+  String get presetUndecided => 'Undecided';
+
+  @override
+  String get presetVeto => 'Veto';
+
+  @override
+  String get presetStronglyAgree => 'Strongly agree';
+
+  @override
+  String get presetAgree => 'Agree';
+
+  @override
+  String get presetNeutral => 'Neutral';
+
+  @override
+  String get presetDisagree => 'Disagree';
+
+  @override
+  String get presetStronglyDisagree => 'Strongly disagree';
+
+  @override
+  String get presetVerySatisfied => 'Very satisfied';
+
+  @override
+  String get presetSatisfied => 'Satisfied';
+
+  @override
+  String get presetDissatisfied => 'Dissatisfied';
+
+  @override
+  String get presetVeryDissatisfied => 'Very dissatisfied';
+
+  @override
+  String get presetAlways => 'Always';
+
+  @override
+  String get presetOften => 'Often';
+
+  @override
+  String get presetSometimes => 'Sometimes';
+
+  @override
+  String get presetRarely => 'Rarely';
+
+  @override
+  String get presetNever => 'Never';
+
+  @override
+  String get resetCreatorDraft => 'Reset draft';
+
+  @override
+  String get creatorHelp => 'Help';
+
+  @override
+  String get pollTemplateIncludeFields => 'Include';
+
+  @override
+  String get pollTemplateQuestionsAndAnswers => 'Questions and answers';
+
+  @override
+  String get pollTemplateScopeUnavailable =>
+      'This scope is unavailable for your profile.';
+
+  @override
+  String get pollTemplateGroupUnavailable =>
+      'This group is no longer available.';
+
+  @override
+  String get pollTemplateReplaceAction => 'Update template';
+
+  @override
+  String get pollTemplateOverwriteConfirmation =>
+      'Overwrite existing template?';
+
+  @override
+  String tagSelectionCount(int selected, int max) {
+    return '$selected of $max selected';
+  }
+
+  @override
+  String get tagSelectionLimit => 'Deselect a tag to choose another.';
+
+  @override
+  String get editTags => 'Select tags';
+
+  @override
+  String get reviewPublication => 'Preview';
+
+  @override
+  String get backToEditing => 'Continue editing';
+
+  @override
+  String get publishNow => 'Publish';
+
+  @override
+  String get geographicalScope => 'Geographical scope';
+
+  @override
+  String templateQuestionCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count questions with answers',
+      one: '1 question with answers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get templateApplyHint =>
+      'Only the listed fields will be replaced. Other settings stay as they are.';
+
+  @override
+  String get showExplanations => 'Show explanations';
+
+  @override
+  String get hideExplanations => 'Hide explanations';
+
+  @override
+  String get groupPicture => 'Group picture';
+
+  @override
+  String get chooseGroupPicture => 'Choose picture';
+
+  @override
+  String get removeGroupPicture => 'Remove group picture';
+
+  @override
+  String get groupPicturePickFailed =>
+      'Could not open this picture. Choose an image smaller than 5 MB.';
+
+  @override
+  String get groupPictureSaveFailed =>
+      'The group was saved, but its picture could not be saved. Please try saving again.';
+
+  @override
+  String get settingsLookAndFeel => 'Look & Feel';
+
+  @override
+  String get settingsBehaviour => 'Behaviour';
+
+  @override
+  String get detailScope => 'Scope';
+
+  @override
+  String get detailGroup => 'Group';
+
+  @override
+  String get detailTopics => 'Topics';
+
+  @override
+  String get showBlockedForms => 'blocked forms mode';
+
+  @override
+  String get blockedFormsSettingDescription => 'Read-only archive';
+
+  @override
+  String get banned => 'Banned';
+
+  @override
+  String get blockedModeHint =>
+      'You’re viewing only blocked forms. You can turn this off in Settings.';
+
+  @override
+  String get blockedFormsEmpty => 'No blocked forms to show.';
+
+  @override
+  String get blockedFormsError => 'Blocked forms could not be loaded.';
+
+  @override
+  String get blockedFormsInfo => 'About blocked forms';
+
+  @override
+  String get blockedFormsNotice =>
+      'These forms were removed for violating our community guidelines. Participation and sharing are disabled.';
+
+  @override
+  String get blockedSafeSummary =>
+      'The original content is withheld. Only moderator-approved public information is shown.';
+
+  @override
+  String get blockedGuideline => 'Violated guideline';
+
+  @override
+  String get blockedExplanation => 'Moderation explanation';
+
+  @override
+  String get blockedRemovedAt => 'Removed on';
+
+  @override
+  String get publicArchiveTitle => 'Public archive title (safe to publish)';
+
+  @override
+  String get publicArchiveSummary => 'Public safe summary';
+
+  @override
+  String get publicArchiveGuideline => 'Public violated guideline';
+
+  @override
+  String get publicArchiveExplanation => 'Public moderation explanation';
+
+  @override
+  String get publicArchiveHelp =>
+      'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.';
+
+  @override
+  String get tagHumanRights => 'Rights';
+
+  @override
+  String get tagEconomicJustice => 'Equity';
+
+  @override
+  String get tagLocalGovernment => 'Municipalities';
+
+  @override
+  String get tagRegionalGovernment => 'Regions';
+
+  @override
+  String get tagFamily => 'Family';
+
+  @override
+  String get tagEntertainment => 'Entertainment';
+
+  @override
+  String get tagAnimalRights => 'Animals';
+
+  @override
+  String get tagCriminalJustice => 'Justice';
+
+  @override
+  String get tagChildrensRights => 'Children';
+
+  @override
+  String get tagEducationReform => 'Reforms';
+
+  @override
+  String get tagEducationInfrastructure => 'Schools';
+
+  @override
+  String get tagPublicHealth => 'Prevention';
+
+  @override
+  String get tagMigrationIntegration => 'Migration';
+
+  @override
+  String get tagAccessToCare => 'Care';
+
+  @override
+  String get tagVotingRights => 'Elections';
+
+  @override
+  String get tagFamilyRights => 'Parenthood';
+
+  @override
+  String get tagClimateProtection => 'Climate';
+
+  @override
+  String get tagWomensRights => 'Women';
+
+  @override
+  String get tagConsumerRights => 'Consumers';
+
+  @override
+  String get petitionComments => 'Why people signed';
+
+  @override
+  String get petitionCommentsEmpty => 'No comments yet.';
+
+  @override
+  String get petitionCommentsError =>
+      'Comments could not be loaded. Tap to retry.';
+
+  @override
+  String get likeComment => 'Like comment';
+
+  @override
+  String get unlikeComment => 'Remove like';
+
+  @override
+  String get commentLikeError =>
+      'Your like could not be saved. Please try again.';
+
+  @override
+  String get commentLikesError => 'Likes unavailable. Tap to retry.';
+
+  @override
+  String get signInToLikeComment => 'Sign in to like comments';
+
+  @override
+  String get signatureReasonPublic =>
+      'Your comment will appear publicly with your display name.';
+
+  @override
+  String get importFormJson => 'Import JSON form';
+
+  @override
+  String get importFormConfirmation =>
+      'Apply this form to your draft? Included fields will be replaced. You can edit and review it before publishing. Fields not included, your audience and any image stay as currently selected.';
+
+  @override
+  String get importFormSuccess =>
+      'Form imported. Review your settings before publishing.';
+
+  @override
+  String get importFormInvalid =>
+      'Invalid form JSON. Check the format, form type and field limits.';
+
+  @override
+  String get importFormError => 'Could not import the file. Please try again.';
+
+  @override
+  String get answerType => 'Answer type';
+
+  @override
+  String get multipleChoiceAnswer => 'Multiple choice';
+
+  @override
+  String get writtenAnswer => 'Written answer';
+
+  @override
+  String get writtenAnswerHint =>
+      'Participants write their own answer. Only the creator can read written responses.';
+
+  @override
+  String get yourWrittenAnswer => 'Your answer';
+
+  @override
+  String get writtenResponses => 'Written responses';
+
+  @override
+  String get noWrittenResponses => 'No written responses yet.';
+
+  @override
+  String get writtenResponsesError => 'Could not load written responses.';
+
+  @override
+  String get importFormFormatHelp => 'Input format and examples';
+
+  @override
+  String get importFormLabel => 'Import form';
+
+  @override
+  String get importFormPdf => 'Import PDF';
+
+  @override
+  String get importPdfHelp =>
+      'Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.';
+
+  @override
+  String get importPdfNoText =>
+      'No selectable text found. Scanned PDFs are not supported.';
+
+  @override
+  String get importPdfTooLarge =>
+      'Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.';
+
+  @override
+  String get importPdfInvalid =>
+      'Check the title, description and question format, and the form field limits.';
+
+  @override
+  String get groupInfoDownload => 'Download group info and logs (JSON)';
+
+  @override
+  String get useAsTemplate => 'Use as template';
+
+  @override
+  String get publicationsHubTitle => 'Your ideas in action';
+
+  @override
+  String get publicationsHubDescription =>
+      'Manage your forms, explore their results and build on what you have already started.';
+
+  @override
+  String get runningFormsDescription =>
+      'View participation and manage your active forms.';
+
+  @override
+  String get finishedFormsDescription =>
+      'Explore final results, export data or reuse a form as a template.';
+
+  @override
+  String get createNewForm => 'Start something new';
+
+  @override
+  String get createNewFormDescription =>
+      'Create a petition, poll or questionnaire for your next idea.';
+
+  @override
+  String get savePetitionDraft => 'Save draft';
+
+  @override
+  String get savedPetitionDrafts => 'Saved drafts';
+
+  @override
+  String get petitionDraftSaved => 'Petition draft saved.';
+
+  @override
+  String get petitionDraftError =>
+      'Could not access petition drafts. Please try again.';
+
+  @override
+  String get petitionDraftsLocal =>
+      'Drafts are private to your account on this device.';
+
+  @override
+  String get petitionDraftsEmpty => 'No saved petition drafts yet.';
+
+  @override
+  String get untitledPetitionDraft => 'Untitled petition';
+
+  @override
+  String get petitionDraftApplyConfirmation =>
+      'Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.';
+
+  @override
+  String get noGroupFilter => 'No group';
+
+  @override
+  String get petitionDeletionFailed =>
+      'Could not delete the petition. Please try again.';
+
+  @override
+  String get pollDeletionFailed =>
+      'Could not delete the poll. Please try again.';
+
+  @override
+  String get viewPublicProfile => 'Public profile';
 }

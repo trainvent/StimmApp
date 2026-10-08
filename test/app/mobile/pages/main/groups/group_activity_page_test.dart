@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:stimmapp/core/data/services/file_output/group_activity_export.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_activity_page.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
@@ -47,6 +51,48 @@ void main() {
     importedMemberCount: 0,
   );
 
+  test('exports structured activity fields and UTC timestamps as JSON', () {
+    final date = DateTime.utc(2026, 8, 9, 12);
+    final activity = PollGroupActivity(
+      id: 'published',
+      type: PollGroupActivityType.publicationPublished,
+      actorUid: 'owner',
+      actorDisplayName: 'Alex',
+      targetTitle: 'Priorities "2026"',
+      createdAt: date,
+    );
+    final data =
+        jsonDecode(
+              buildGroupActivityExport(
+                group,
+                [activity],
+                exportedAt: date,
+                members: [
+                  PollGroupMember(
+                    uid: 'owner',
+                    role: PollGroupRole.admin,
+                    nickname: 'Alex',
+                    joinedAt: date,
+                    joinedBy: 'owner',
+                  ),
+                ],
+              ),
+            )
+            as Map<String, dynamic>;
+    expect(data['schemaVersion'], 1);
+    expect(data['group']['name'], 'Ops Team');
+    expect(data['group']['joinCode'], 'OPS-1');
+    expect(data['group']['accessMode'], 'private');
+    expect(data['members'][0]['role'], 'admin');
+    expect(data['exportedAt'], '2026-08-09T12:00:00.000Z');
+    final entry = (data['activities'] as List).single;
+    expect(entry['id'], 'published');
+    expect(entry['type'], 'publication_published');
+    expect(entry['targetTitle'], 'Priorities "2026"');
+    expect(entry['createdAt'], '2026-08-09T12:00:00.000Z');
+    expect(entry['subjectUid'], isNull);
+  });
+
   testWidgets('shows localized group activity newest first', (tester) async {
     final activities = [
       PollGroupActivity(
@@ -78,6 +124,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Group activity'), findsOneWidget);
+    final download = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.file_download_outlined),
+    );
+    expect(download.onPressed, isNotNull);
     expect(find.text('Alex published “Quarterly priorities”.'), findsOneWidget);
     expect(find.text('Sam joined the group.'), findsOneWidget);
   });
@@ -94,6 +144,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.file_download_outlined),
+          )
+          .onPressed,
+      isNotNull,
+    );
     expect(
       find.text('No group activity has been recorded yet.'),
       findsOneWidget,

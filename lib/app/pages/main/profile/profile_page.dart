@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:stimmapp/app/pages/main/admin/admin_dashboard_page.dart';
 import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/blocked_users_page.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/export_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/inbox_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/publications_page.dart';
@@ -407,6 +408,20 @@ class ProfilePage extends ConsumerWidget {
                                     : const ChangeProfilePicturePage(),
                               ),
                               children: [
+                                _buildDetailTile(
+                                  context,
+                                  context.l10n.viewPublicProfile,
+                                  userProfile.displayName,
+                                  key: const Key('view_public_profile'),
+                                  hideWhenEmpty: false,
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => PublicProfilePage(
+                                        userId: userProfile.uid,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 if (userProfile.supportsStateScope)
                                   _buildDetailTile(
                                     context,
@@ -652,21 +667,6 @@ class ProfilePage extends ConsumerWidget {
                     topPadding: 0,
                   ),
                   PointingListTile(
-                    key: keys.profilePage.userHistoryPageListTile,
-                    title: Text(context.l10n.activityHistory),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const UserHistoryPage();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-
-                  PointingListTile(
                     key: keys.profilePage.publicationsListTile,
                     title: Text(context.l10n.publications),
                     onTap: () {
@@ -689,24 +689,23 @@ class ProfilePage extends ConsumerWidget {
                       );
                     },
                   ),
+                  PointingListTile(
+                    key: keys.profilePage.userHistoryPageListTile,
+                    title: Text(context.l10n.activityHistory),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const UserHistoryPage();
+                          },
+                        ),
+                      );
+                    },
+                  ),
                   _buildSettingsSectionHeader(
                     context,
                     context.l10n.privacyAndData,
-                  ),
-                  PointingListTile(
-                    key: keys.profilePage.blockedUsersListTile,
-                    title: Text(context.l10n.blockedUsers),
-                    onTap: currentUser == null
-                        ? null
-                        : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BlockedUsersPage(userId: currentUser.uid),
-                              ),
-                            );
-                          },
                   ),
                   PointingListTile(
                     title: Text(context.l10n.privacy),
@@ -755,6 +754,21 @@ class ProfilePage extends ConsumerWidget {
                     context,
                     context.l10n.accountAndSecurity,
                   ),
+                  PointingListTile(
+                    key: keys.profilePage.blockedUsersListTile,
+                    title: Text(context.l10n.blockedUsers),
+                    onTap: currentUser == null
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BlockedUsersPage(userId: currentUser.uid),
+                              ),
+                            );
+                          },
+                  ),
                   if (hasPasswordProvider)
                     PointingListTile(
                       key: keys.profilePage.changePasswordListTile,
@@ -770,6 +784,7 @@ class ProfilePage extends ConsumerWidget {
                         );
                       },
                     ),
+
                   PointingListTile(
                     key: keys.profilePage.logoutListTile,
                     title: Text(context.l10n.logout, style: AppTextStyles.red),

@@ -30,12 +30,14 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contributors = [
+    final team = [
       const Contributor(
         name: 'Leon',
         role: 'Core Development',
         email: 'contact@trainvent.com',
       ),
+    ];
+    final helpingHands = [
       const Contributor(
         name: 'Yannic',
         role: 'Lead Developer',
@@ -53,40 +55,78 @@ class AboutPage extends StatelessWidget {
       child: AppPaddingScaffold(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 40),
-          Center(child: Image.asset("assets/images/LeLogo.png")),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Center(
-            child: Text(context.localizedAppName, style: AppTextStyles.xxlBold),
+            child: Image.asset(
+              'assets/images/LeLogo.png',
+              width: 64,
+              height: 64,
+              fit: BoxFit.contain,
+            ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(context.localizedAppName, style: AppTextStyles.xlBold),
+          ),
+          const SizedBox(height: 12),
           NeonPaddingWidget(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 4,
+                  ),
                   child: Text(
                     "${S.of(context).thisAppWasDevelopedBy} Team Trainvent",
                     textAlign: TextAlign.center,
                     style: AppTextStyles.m,
                   ),
                 ),
-                const Divider(),
-                ...contributors.map((c) => _buildContributorTile(context, c)),
+                const Divider(height: 12),
+                ...team.map((c) => _buildContributorTile(context, c)),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
+          NeonPaddingWidget(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    context.l10n.furtherHelpingHands,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.m,
+                  ),
+                ),
+                const Divider(height: 12),
+                ...helpingHands.map((c) => _buildContributorTile(context, c)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           NeonPaddingWidget(
             child: ListTile(
+              dense: true,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+              visualDensity: VisualDensity.compact,
               title: Text(context.l10n.licenses),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {
+              onTap: () async {
+                final packageInfo = await PackageInfo.fromPlatform();
+                if (!context.mounted) return;
+
                 showLicensePage(
                   context: context,
                   applicationName: context.localizedAppName,
-                  applicationVersion: '1.0.0',
+                  applicationVersion:
+                      '${packageInfo.version} (${packageInfo.buildNumber})',
                   applicationLegalese:
                       context.l10n.publishedUnderTheGnuGeneralPublicLicenseV30,
                   applicationIcon: Padding(
@@ -101,7 +141,7 @@ class AboutPage extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 12),
           Center(
             child: FutureBuilder<PackageInfo>(
               future: PackageInfo.fromPlatform(),
@@ -116,7 +156,7 @@ class AboutPage extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -124,6 +164,9 @@ class AboutPage extends StatelessWidget {
 
   Widget _buildContributorTile(BuildContext context, Contributor contributor) {
     return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+      visualDensity: VisualDensity.compact,
       title: Text(contributor.name, style: AppTextStyles.mBold),
       subtitle: Text(contributor.role, style: AppTextStyles.descriptionText),
       trailing: Row(

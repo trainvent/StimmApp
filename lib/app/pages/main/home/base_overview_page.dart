@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/search_text_field.dart';
-import 'package:stimmapp/app/widgets/tag_selector.dart';
+import 'package:stimmapp/app/widgets/overview_filter_dialog.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
@@ -25,7 +25,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     this.participationKeyProvider,
     this.extraFilter,
     this.extraFilterCount = 0,
-    this.designFilterSectionBuilder,
+    this.structureFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
     this.appBarTitle,
@@ -44,7 +44,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   final bool Function(T item)? extraFilter;
   final int extraFilterCount;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
-  designFilterSectionBuilder;
+  structureFilterSectionBuilder;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
   filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
@@ -152,14 +152,6 @@ class _DiscoveryChip extends StatelessWidget {
 class _BaseOverviewPageState<T extends HomeItem>
     extends State<BaseOverviewPage<T>>
     with SingleTickerProviderStateMixin {
-  static const List<FormScopeType> _scopeFilterOrder = [
-    FormScopeType.global,
-    FormScopeType.countryUnion,
-    FormScopeType.country,
-    FormScopeType.stateOrRegion,
-    FormScopeType.city,
-  ];
-
   late TabController _tabController;
   String _query = '';
   List<String> _selectedTags = [];
@@ -248,146 +240,28 @@ class _BaseOverviewPageState<T extends HomeItem>
         ),
       );
 
-  void _showFilterDialog() {
-    showDialog(
+  Future<void> _showFilterDialog() async {
+    final selection = await showDialog<OverviewFilterSelection>(
       context: context,
-      builder: (context) {
-        // Use a local state for the dialog to allow updating selection before confirming
-        List<String> tempSelectedTags = List.from(_selectedTags);
-        Set<FormScopeType> tempSelectedScopes = Set.from(_selectedScopes);
-        Set<CountryUnion> tempSelectedCountryUnions = Set.from(
-          _selectedCountryUnions,
-        );
-        bool tempOnlyMyPublications = _onlyMyPublications;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(context.l10n.filter), // Using "Settings" or "Filter"
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ExpansionTile(
-                      initiallyExpanded: false,
-                      tilePadding: EdgeInsets.zero,
-                      childrenPadding: const EdgeInsets.only(bottom: 8),
-                      title: Text(
-                        context.l10n.scope,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      children: [
-                        _buildScopeTargetSelector(
-                          selectedScopes: tempSelectedScopes,
-                          selectedCountryUnions: tempSelectedCountryUnions,
-                          onToggle: (scope) {
-                            setState(() {
-                              if (tempSelectedScopes.contains(scope)) {
-                                tempSelectedScopes.remove(scope);
-                              } else {
-                                tempSelectedScopes.add(scope);
-                              }
-                            });
-                          },
-                          onCountryUnionToggle: (union) {
-                            setState(() {
-                              if (tempSelectedCountryUnions.contains(union)) {
-                                tempSelectedCountryUnions.remove(union);
-                              } else {
-                                tempSelectedCountryUnions.add(union);
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    ExpansionTile(
-                      initiallyExpanded: false,
-                      tilePadding: EdgeInsets.zero,
-                      childrenPadding: const EdgeInsets.only(bottom: 8),
-                      title: Text(
-                        context.l10n.tags,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      children: [
-                        TagSelector(
-                          selectedTags: tempSelectedTags,
-                          maxTags: 10, // Allow more tags for filtering
-                          onChanged: (newTags) {
-                            setState(() {
-                              tempSelectedTags = newTags;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    if (widget.designFilterSectionBuilder != null) ...[
-                      const Divider(),
-                      ExpansionTile(
-                        initiallyExpanded: false,
-                        tilePadding: EdgeInsets.zero,
-                        childrenPadding: const EdgeInsets.only(bottom: 8),
-                        title: Text(
-                          context.l10n.design,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        children: [
-                          widget.designFilterSectionBuilder!(context, setState),
-                        ],
-                      ),
-                    ],
-                    if (widget.filterDialogSectionBuilder != null) ...[
-                      const Divider(),
-                      ExpansionTile(
-                        initiallyExpanded: false,
-                        tilePadding: EdgeInsets.zero,
-                        childrenPadding: const EdgeInsets.only(bottom: 8),
-                        title: Text(
-                          context.l10n.groupsLabel,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        children: [
-                          widget.filterDialogSectionBuilder!(context, setState),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    // Clear filters
-                    setState(() {
-                      tempSelectedTags = [];
-                      tempSelectedScopes = {};
-                      tempSelectedCountryUnions = {};
-                      tempOnlyMyPublications = false;
-                    });
-                    widget.clearExtraFilters?.call();
-                  },
-                  child: Text(context.l10n.remove),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    this.setState(() {
-                      _selectedTags = tempSelectedTags;
-                      _selectedScopes = tempSelectedScopes;
-                      _selectedCountryUnions = tempSelectedCountryUnions;
-                      _onlyMyPublications = tempOnlyMyPublications;
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Text(context.l10n.confirm),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (context) => OverviewFilterDialog(
+        initialSelection: OverviewFilterSelection(
+          tags: _selectedTags,
+          scopes: _selectedScopes,
+          countryUnions: _selectedCountryUnions,
+          onlyMyPublications: _onlyMyPublications,
+        ),
+        structureFilterSectionBuilder: widget.structureFilterSectionBuilder,
+        filterDialogSectionBuilder: widget.filterDialogSectionBuilder,
+        clearExtraFilters: widget.clearExtraFilters,
+      ),
     );
+    if (!mounted || selection == null) return;
+    setState(() {
+      _selectedTags = selection.tags;
+      _selectedScopes = selection.scopes;
+      _selectedCountryUnions = selection.countryUnions;
+      _onlyMyPublications = selection.onlyMyPublications;
+    });
   }
 
   bool _matchesSelectedScopes(T item) {
@@ -448,177 +322,6 @@ class _BaseOverviewPageState<T extends HomeItem>
         groupName,
       _ => null,
     };
-  }
-
-  String _scopeLabel(FormScopeType scope) {
-    switch (scope) {
-      case FormScopeType.global:
-        return context.l10n.scopeGlobal;
-      case FormScopeType.countryUnion:
-        return context.l10n.scopeCountryUnion;
-      case FormScopeType.continent:
-        return context.l10n.scopeContinent;
-      case FormScopeType.country:
-        return context.l10n.scopeCountry;
-      case FormScopeType.stateOrRegion:
-        return context.l10n.scopeStateRegion;
-      case FormScopeType.city:
-        return context.l10n.scopeCity;
-    }
-  }
-
-  String _countryUnionLabel(CountryUnion union) => switch (union) {
-    CountryUnion.eu => context.l10n.scopeEu,
-    CountryUnion.un => context.l10n.scopeUn,
-  };
-
-  Widget _buildScopeTargetSelector({
-    required Set<FormScopeType> selectedScopes,
-    required Set<CountryUnion> selectedCountryUnions,
-    required ValueChanged<FormScopeType> onToggle,
-    required ValueChanged<CountryUnion> onCountryUnionToggle,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-    const sizes = <FormScopeType, double>{
-      FormScopeType.global: 220,
-      FormScopeType.countryUnion: 180,
-      FormScopeType.country: 140,
-      FormScopeType.stateOrRegion: 100,
-      FormScopeType.city: 60,
-    };
-
-    return Column(
-      children: [
-        Center(
-          child: SizedBox(
-            width: sizes[FormScopeType.global],
-            height: sizes[FormScopeType.global],
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                for (final scope in _scopeFilterOrder)
-                  _buildScopeRing(
-                    scope: scope,
-                    size: sizes[scope]!,
-                    isSelected: selectedScopes.contains(scope),
-                    onTap: () => onToggle(scope),
-                    color: _scopeColor(colorScheme, scope),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final scope in _scopeFilterOrder)
-              FilterChip(
-                selected: selectedScopes.contains(scope),
-                onSelected: (_) => onToggle(scope),
-                avatar: CircleAvatar(
-                  radius: 8,
-                  backgroundColor: _scopeColor(colorScheme, scope),
-                ),
-                label: Text(_scopeLabel(scope)),
-              ),
-          ],
-        ),
-        if (selectedScopes.contains(FormScopeType.countryUnion)) ...[
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.selectCountryUnion,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            children: [
-              for (final union in CountryUnion.values)
-                FilterChip(
-                  selected: selectedCountryUnions.contains(union),
-                  onSelected: (_) => onCountryUnionToggle(union),
-                  label: Text(_countryUnionLabel(union)),
-                ),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildScopeRing({
-    required FormScopeType scope,
-    required double size,
-    required bool isSelected,
-    required VoidCallback onTap,
-    required Color color,
-  }) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isSelected
-                  ? color.withValues(alpha: 0.22)
-                  : color.withValues(alpha: 0.08),
-              border: Border.all(
-                color: isSelected ? color : color.withValues(alpha: 0.45),
-                width: isSelected ? 3 : 1.5,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: color.withValues(alpha: 0.18),
-                        blurRadius: 12,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : null,
-            ),
-            alignment: Alignment.center,
-            child: size <= 72
-                ? Text(
-                    _scopeLabel(scope),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
-                  )
-                : null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Color _scopeColor(ColorScheme colorScheme, FormScopeType scope) {
-    switch (scope) {
-      case FormScopeType.global:
-        return colorScheme.primary;
-      case FormScopeType.countryUnion:
-        return Colors.indigo;
-      case FormScopeType.continent:
-        return colorScheme.secondary;
-      case FormScopeType.country:
-        return Colors.teal;
-      case FormScopeType.stateOrRegion:
-        return Colors.orange;
-      case FormScopeType.city:
-        return Colors.redAccent;
-    }
   }
 
   Widget _buildItemList(String status) {

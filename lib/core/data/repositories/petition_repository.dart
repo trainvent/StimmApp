@@ -265,7 +265,16 @@ class PetitionRepository {
   }
 
   Future<void> delete(String id) async {
-    await _col().doc(id).delete();
+    final reference = _col().doc(id);
+    await _fs.instance.runTransaction((transaction) async {
+      final snapshot = await transaction.get(reference);
+      final petition = snapshot.data();
+      if (petition == null) return;
+      if (petition.signatureCount != 0) {
+        throw StateError('petition_has_signatures');
+      }
+      transaction.delete(reference);
+    });
   }
 
   // Upload title image for petition and set imageUrl on the petition document.

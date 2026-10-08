@@ -1,11 +1,20 @@
+import 'package:stimmapp/core/data/services/pdf_form_import.dart';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:stimmapp/core/data/models/form_import.dart';
 import 'package:flag/flag.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
+import 'package:stimmapp/app/widgets/tag_wrap.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
+import 'package:stimmapp/core/constants/internal_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/country_union_memberships.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
@@ -21,16 +30,29 @@ class BaseCreatorPage extends StatefulWidget {
     required this.tutorialSteps,
     required this.onSubmit,
     this.additionalTopFields,
+    this.contentActionsBuilder,
+    this.appBarActionBuilder,
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
     this.additionalDraftClearer,
     this.onResetAdditionalFields,
+    this.previewContentBuilder,
+    this.initialTemplate,
+    this.importType,
+    this.onImportQuestions,
+    this.onSaveDraft,
+    this.onChooseDraft,
   });
 
+  final Future<void> Function(PollTemplate)? onSaveDraft;
+  final Future<void> Function()? onChooseDraft;
+  final PollTemplate? initialTemplate;
+  final String? importType;
+  final Future<void> Function(List<PollTemplateQuestion>)? onImportQuestions;
   final String title;
   final List<dynamic> tutorialSteps; // Can be String or PollTutorialStep
-  final Future<void> Function({
+  final Future<bool> Function({
     required String title,
     required String description,
     required List<String> tags,
@@ -40,18 +62,32 @@ class BaseCreatorPage extends StatefulWidget {
   })
   onSubmit;
   final List<Widget>? additionalTopFields;
+  final Widget Function(
+    TextEditingController title,
+    TextEditingController description,
+  )?
+  contentActionsBuilder;
+  final Widget Function(
+    TextEditingController title,
+    TextEditingController description,
+  )?
+  appBarActionBuilder;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
   final Future<void> Function()? additionalDraftClearer;
   final VoidCallback? onResetAdditionalFields;
+  final WidgetBuilder? previewContentBuilder;
 
   @override
-  State<BaseCreatorPage> createState() => _BaseCreatorPageState();
+  State<BaseCreatorPage> createState() => BaseCreatorPageState();
 }
 
-class _BaseCreatorPageState extends State<BaseCreatorPage> {
+class BaseCreatorPageState extends State<BaseCreatorPage> {
   final _formKey = GlobalKey<FormState>();
+  String? _openScopePicker;
+  final _scopeAnchorKey = GlobalKey();
+  final _unionAnchorKey = GlobalKey();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   List<String> _selectedTags = [];
@@ -62,8 +98,288 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   String? _profileStateOrRegion;
   String? _profileTown;
   bool _isLoading = false;
+  bool _isReviewing = false;
   int _durationDays = AppLimits.defaultFormDurationDays;
   bool _openUntilClosed = false;
+
+  /// A snapshot of settings for the template save dialog.
+  PollTemplate get templateSettings => PollTemplate(
+    id: '',
+    name: '',
+    tags: List.of(_selectedTags),
+    scopeType: _selectedScope.name,
+    countryUnion: _selectedCountryUnion?.code,
+    durationDays: _durationDays,
+    openUntilClosed: _openUntilClosed,
+  );
+
+  Future<void> _saveNamedDraft() async {
+    final form = PollTemplate.fromJson({
+      ...templateSettings.toJson(),
+      'title': _titleController.text,
+      'description': _descriptionController.text,
+    });
+    setState(() => _isLoading = true);
+    try {
+      await widget.onSaveDraft!(form);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  /// Refuse unavailable scope settings instead of silently broadening an audience.
+  Future<bool> applyTemplate(PollTemplate template) async {
+    final scope = template.scopeType == null
+        ? null
+        : parseFormScopeType(template.scopeType);
+    final union = parseCountryUnion(template.countryUnion);
+    if ((scope == FormScopeType.stateOrRegion && !_supportsStateScope) ||
+        (scope == FormScopeType.countryUnion &&
+            !_availableCountryUnions.contains(union))) {
+      showErrorSnackBar(context.l10n.pollTemplateScopeUnavailable);
+      return false;
+    }
+    setState(() {
+      if (template.title != null) _titleController.text = template.title!;
+      if (template.description != null) {
+        _descriptionController.text = template.description!;
+      }
+      if (template.tags != null) _selectedTags = List.of(template.tags!);
+      if (scope != null) {
+        _selectedScope = scope;
+        _selectedCountryUnion = union;
+      }
+      if (template.durationDays != null) _durationDays = template.durationDays!;
+      if (template.openUntilClosed != null) {
+        _openUntilClosed = template.openUntilClosed!;
+      }
+    });
+    await _saveDraft();
+    return true;
+  }
+
+  bool _isImporting = false;
+
+  Future<void> _openImportGuide() async {
+    final uri = Uri.parse(
+      IConst.documentationUrlForLocale(Localizations.localeOf(context)),
+    );
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        showErrorSnackBar(context.l10n.couldNotOpenLink);
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.couldNotOpenLink);
+    }
+  }
+
+  Future<void> _chooseImport() async {
+    final pdf = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.l10n.importFormLabel,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _openImportGuide(),
+                    tooltip: context.l10n.importFormFormatHelp,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    icon: const Icon(Icons.menu_book_outlined, size: 20),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              leading: const Icon(Icons.picture_as_pdf_outlined),
+              title: const Text('PDF'),
+              onTap: () => Navigator.pop(context, true),
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              leading: const Icon(Icons.code),
+              title: const Text('JSON'),
+              onTap: () => Navigator.pop(context, false),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || pdf == null) return;
+    if (pdf) {
+      await _importPdf();
+    } else {
+      await _importJson();
+    }
+  }
+
+  Future<void> _importPdf() async {
+    if (_isImporting) return;
+    setState(() => _isImporting = true);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      if (!mounted || file == null) return;
+      if ((await file.length() ?? 0) > PdfFormImport.maxBytes) {
+        throw const FormatException('size');
+      }
+      final text = await PdfFormImport.extract(await file.readAsBytes());
+      if (!mounted) return;
+      final controller = TextEditingController(text: text);
+      PollTemplate? template;
+      try {
+        final route = DialogRoute<PollTemplate>(
+          context: context,
+          builder: (context) {
+            String? error;
+            return StatefulBuilder(
+              builder: (context, update) => AlertDialog(
+                title: Text(context.l10n.importFormPdf),
+                content: SizedBox(
+                  width: 600,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(context.l10n.importPdfHelp),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: controller,
+                          minLines: 8,
+                          maxLines: 16,
+                          decoration: InputDecoration(
+                            errorText: error,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(context.l10n.importFormConfirmation),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(context.l10n.cancel),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      try {
+                        final result = PdfFormImport.parse(
+                          controller.text,
+                          type: widget.importType!,
+                        );
+                        Navigator.pop(context, result);
+                      } on FormatException {
+                        update(() => error = context.l10n.importPdfInvalid);
+                      }
+                    },
+                    child: Text(context.l10n.confirm),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+        template = await Navigator.of(context).push(route);
+        await route.completed;
+      } finally {
+        controller.dispose();
+      }
+      if (!mounted || template == null) return;
+      if (!await applyTemplate(template) || !mounted) return;
+      if (template.questions != null) {
+        await widget.onImportQuestions!(template.questions!);
+      }
+      if (mounted) showSuccessSnackBar(context.l10n.importFormSuccess);
+    } on FormatException catch (error) {
+      if (mounted) {
+        showErrorSnackBar(
+          error.message == 'empty'
+              ? context.l10n.importPdfNoText
+              : error.message == 'size'
+              ? context.l10n.importPdfTooLarge
+              : context.l10n.importFormError,
+        );
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.importFormError);
+    } finally {
+      if (mounted) setState(() => _isImporting = false);
+    }
+  }
+
+  Future<void> _importJson() async {
+    if (_isImporting) return;
+    setState(() => _isImporting = true);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (!mounted || file == null) return;
+      if ((await file.length() ?? 0) > FormImport.maxBytes) {
+        throw const FormatException('file');
+      }
+      final bytes = await file.readAsBytes();
+      if (!mounted) return;
+      final template = FormImport.parse(
+        utf8.decode(bytes),
+        expectedType: widget.importType!,
+        allowedTags: AppTagsHelper.getTags(context).keys.toSet(),
+      );
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.importFormJson),
+          content: Text(
+            '${template.title}\n\n${context.l10n.importFormConfirmation}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      if (!await applyTemplate(template) || !mounted) return;
+      if (template.questions != null) {
+        await widget.onImportQuestions!(template.questions!);
+      }
+      if (mounted) showSuccessSnackBar(context.l10n.importFormSuccess);
+    } on FormatException catch (error) {
+      if (mounted) {
+        showErrorSnackBar(
+          '${context.l10n.importFormInvalid} (${error.message})',
+        );
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.importFormError);
+    } finally {
+      if (mounted) setState(() => _isImporting = false);
+    }
+  }
 
   Set<CountryUnion> get _availableCountryUnions =>
       countryUnionsForCountry(_profileCountryCode);
@@ -74,10 +390,19 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   @override
   void initState() {
     super.initState();
-    _loadStateScope();
-    _loadDraft();
+    _initializeContent();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
+  }
+
+  Future<void> _initializeContent() async {
+    await _loadStateScope();
+    if (!mounted) return;
+    if (widget.initialTemplate case final template?) {
+      await applyTemplate(template);
+    } else {
+      await _loadDraft();
+    }
   }
 
   @override
@@ -125,7 +450,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         _selectedScope = FormScopeType.country;
       }
     });
-    await _loadDraft();
+    if (widget.initialTemplate == null) await _loadDraft();
   }
 
   Future<UserProfile?> _loadCurrentUserProfile() async {
@@ -241,7 +566,124 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
     widget.onResetAdditionalFields?.call();
   }
 
+  Future<void> _selectTags() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    var pendingTags = List<String>.of(_selectedTags);
+    final selectedTags = await showDialog<List<String>>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(context.l10n.tags),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: TagSelector(
+                selectedTags: pendingTags,
+                onChanged: (tags) => setDialogState(() => pendingTags = tags),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(pendingTags),
+              child: Text(context.l10n.confirm),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || selectedTags == null) return;
+    setState(() => _selectedTags = selectedTags);
+    await _saveDraft();
+  }
+
+  String get _scopeSummary => [
+    _scopeLabel(_selectedScope),
+    if (_selectedScope == FormScopeType.countryUnion &&
+        _selectedCountryUnion != null)
+      _countryUnionLabel(_selectedCountryUnion!)
+    else if (_scopeValue(_selectedScope) != null)
+      _scopeValue(_selectedScope)!,
+  ].join(' · ');
+
+  Future<bool> _reviewPublication() async {
+    setState(() => _isReviewing = true);
+    final confirmed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text(context.l10n.reviewPublication)),
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              Text(
+                _titleController.text.trim(),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 12),
+              Text(_descriptionController.text.trim()),
+              const SizedBox(height: 16),
+              TagWrap(
+                children: [
+                  for (final tag in _selectedTags)
+                    Chip(
+                      label: Text(AppTagsHelper.getLocalizedTag(context, tag)),
+                    ),
+                ],
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.schedule),
+                title: Text(context.l10n.duration),
+                subtitle: Text(
+                  _openUntilClosed
+                      ? context.l10n.openUntilClosed
+                      : context.l10n.durationDays(_durationDays),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: _scopeLeading(_selectedScope),
+                title: Text(context.l10n.geographicalScope),
+                subtitle: Text(_scopeSummary),
+              ),
+              if (widget.previewContentBuilder != null)
+                widget.previewContentBuilder!(context),
+            ],
+          ),
+          bottomNavigationBar: SafeArea(
+            minimum: const EdgeInsets.all(16),
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(context.l10n.backToEditing),
+                ),
+                FilledButton.icon(
+                  key: const Key('confirm_publication'),
+                  onPressed: () => Navigator.pop(context, true),
+                  icon: const Icon(Icons.publish),
+                  label: Text(context.l10n.publishNow),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (!mounted) return false;
+    setState(() => _isReviewing = false);
+    return confirmed == true;
+  }
+
   Future<void> _handleSubmit() async {
+    if (_isLoading || _isReviewing) return;
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -253,11 +695,6 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
 
-    final currentUser = authService.currentUser;
-    if (currentUser == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
-      return;
-    }
     if (_selectedScope == FormScopeType.stateOrRegion &&
         (!_supportsStateScope || _profileStateOrRegion == null)) {
       showErrorSnackBar(context.l10n.pleaseSelectState);
@@ -278,11 +715,12 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
     final scope = _buildSelectedScope();
+    if (!await _reviewPublication() || !mounted) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await widget.onSubmit(
+      final published = await widget.onSubmit(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         tags: _selectedTags,
@@ -290,7 +728,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         durationDays: _durationDays,
         openUntilClosed: _openUntilClosed,
       );
-      await _clearDraft(); // Clear draft on successful submission
+      if (published) await _clearDraft();
     } catch (e) {
       // Error handling is mostly done in the callback, but catch here just in case
       if (mounted) showErrorSnackBar(e.toString());
@@ -457,17 +895,20 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
   }
 
   Widget _scopeLocationCard({
+    Key? key,
     required Widget leading,
     required String title,
     required String? value,
     required String? missingMessage,
     Widget? trailing,
+    VoidCallback? onTap,
   }) {
     final hasValue = value != null && value.isNotEmpty;
     final isMissing = !hasValue && missingMessage != null;
     final color = isMissing ? Theme.of(context).colorScheme.error : null;
 
     return Card(
+      key: key,
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: leading,
@@ -478,18 +919,96 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
             ? null
             : Text(missingMessage),
         trailing: trailing,
+        onTap: onTap,
         textColor: color,
         iconColor: color,
       ),
     );
   }
 
+  Future<void> _showScopePicker<T>({
+    required String id,
+    required GlobalKey anchorKey,
+    required String title,
+    required List<T> options,
+    required T? selected,
+    required String Function(T) label,
+    required Widget Function(T) leading,
+    required ValueChanged<T> onSelected,
+  }) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _openScopePicker = id);
+    final overlay =
+        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final menuWidth = (overlay.size.width - 32).clamp(0.0, 320.0);
+    final value = await showMenu<T>(
+      context: context,
+      semanticLabel: title,
+      constraints: BoxConstraints.tightFor(width: menuWidth),
+      positionBuilder: (context, constraints) {
+        final anchor =
+            anchorKey.currentContext!.findRenderObject() as RenderBox;
+        final rect =
+            anchor.localToGlobal(Offset.zero, ancestor: overlay) & anchor.size;
+        final menuHeight = options.length * 56.0 + 16;
+        final safePadding = MediaQuery.paddingOf(context);
+        final spaceBelow =
+            overlay.size.height - safePadding.bottom - rect.bottom - 8;
+        final spaceAbove = rect.top - safePadding.top - 8;
+        final top = spaceBelow < menuHeight && spaceAbove > spaceBelow
+            ? rect.top - menuHeight - 4
+            : rect.bottom + 4;
+        return RelativeRect.fromRect(
+          Rect.fromLTWH(rect.center.dx - menuWidth / 2, top, menuWidth, 0),
+          Offset.zero & overlay.size,
+        );
+      },
+      items: [
+        for (final option in options)
+          PopupMenuItem<T>(
+            value: option,
+            height: 56,
+            child: IconTheme.merge(
+              data: IconThemeData(
+                color:
+                    Theme.of(context).popupMenuTheme.textStyle?.color ??
+                    Theme.of(context).colorScheme.onSurface,
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 40, child: Center(child: leading(option))),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      label(option),
+                      style: TextStyle(
+                        fontFamily: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.fontFamily,
+                      ),
+                    ),
+                  ),
+                  if (option == selected) const Icon(Icons.check),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+    if (!mounted) return;
+    setState(() => _openScopePicker = null);
+    if (value != null) onSelected(value);
+  }
+
   Widget _scopeSelectorCard() {
-    return PopupMenuButton<FormScopeType>(
-      key: const Key('scopeSelectorCard'),
-      initialValue: _selectedScope,
-      tooltip: context.l10n.scope,
-      onOpened: () => FocusManager.instance.primaryFocus?.unfocus(),
+    void openPicker() => _showScopePicker<FormScopeType>(
+      id: 'scope',
+      anchorKey: _scopeAnchorKey,
+      title: context.l10n.scope,
+      options: _availableScopes,
+      selected: _selectedScope,
+      label: _scopeLabel,
+      leading: (scope) => _scopeLeading(scope),
       onSelected: (value) {
         setState(() {
           _selectedScope = value;
@@ -500,29 +1019,26 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         });
         _saveDraft();
       },
-      itemBuilder: (context) => _availableScopes
-          .map(
-            (scope) => PopupMenuItem<FormScopeType>(
-              value: scope,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 40,
-                    child: Center(child: _scopeLeading(scope)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(_scopeLabel(scope)),
-                ],
-              ),
-            ),
-          )
-          .toList(),
+    );
+
+    return KeyedSubtree(
+      key: const Key('scopeSelectorCard'),
       child: _scopeLocationCard(
+        key: _scopeAnchorKey,
         leading: _scopeLeading(_selectedScope, showResolvedValue: true),
         title: _scopeLabel(_selectedScope),
         value: _scopeValue(_selectedScope),
         missingMessage: _scopeMissingMessage(_selectedScope),
-        trailing: const Icon(Icons.arrow_drop_down),
+        onTap: openPicker,
+        trailing: IconButton(
+          tooltip: context.l10n.scope,
+          onPressed: openPicker,
+          icon: Icon(
+            _openScopePicker == 'scope'
+                ? Icons.arrow_left
+                : Icons.arrow_drop_down,
+          ),
+        ),
       ),
     );
   }
@@ -539,34 +1055,31 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
 
   Widget _countryUnionSelectorCard() {
     final selected = _selectedCountryUnion;
-    return PopupMenuButton<CountryUnion>(
-      key: const Key('countryUnionSelectorCard'),
-      initialValue: selected,
-      tooltip: context.l10n.selectCountryUnion,
+    void openPicker() => _showScopePicker<CountryUnion>(
+      id: 'union',
+      anchorKey: _unionAnchorKey,
+      title: context.l10n.selectCountryUnion,
+      options: CountryUnion.values
+          .where(_availableCountryUnions.contains)
+          .toList(),
+      selected: selected,
+      label: _countryUnionLabel,
+      leading: (union) => Flag.fromCode(
+        _countryUnionFlag(union),
+        width: 32,
+        height: 22,
+        borderRadius: 2,
+      ),
       onSelected: (value) {
         setState(() => _selectedCountryUnion = value);
         _saveDraft();
       },
-      itemBuilder: (context) => [
-        for (final union in CountryUnion.values)
-          if (_availableCountryUnions.contains(union))
-            PopupMenuItem<CountryUnion>(
-              value: union,
-              child: Row(
-                children: [
-                  Flag.fromCode(
-                    _countryUnionFlag(union),
-                    width: 32,
-                    height: 22,
-                    borderRadius: 2,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(_countryUnionLabel(union)),
-                ],
-              ),
-            ),
-      ],
+    );
+
+    return KeyedSubtree(
+      key: const Key('countryUnionSelectorCard'),
       child: _scopeLocationCard(
+        key: _unionAnchorKey,
         leading: selected == null
             ? const Icon(Icons.hub_outlined)
             : Flag.fromCode(
@@ -580,49 +1093,165 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
         missingMessage: selected == null
             ? context.l10n.countryUnionScopeOnlyForMembers
             : null,
-        trailing: const Icon(Icons.arrow_drop_down),
+        onTap: openPicker,
+        trailing: IconButton(
+          tooltip: context.l10n.selectCountryUnion,
+          onPressed: openPicker,
+          icon: Icon(
+            _openScopePicker == 'union'
+                ? Icons.arrow_left
+                : Icons.arrow_drop_down,
+          ),
+        ),
       ),
     );
   }
 
+  void _confirmReset() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.delete),
+        content: Text(S.of(context).areYouSureYouWantToClearThisDraft),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              _resetForm();
+              Navigator.pop(context);
+            },
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  InfoDialogButton _helpButton() => InfoDialogButton(
+    title: widget.title,
+    content: _buildTutorialContent(),
+    cornerImagePath: 'assets/images/Lemm_teaching.png',
+  );
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(context.l10n.delete),
-                  content: Text(
-                    S.of(context).areYouSureYouWantToClearThisDraft,
+          if (widget.importType != null)
+            IconButton(
+              key: const Key('import_form_json'),
+              tooltip: context.l10n.importFormLabel,
+              icon: _isImporting
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: TriangleLoadingIndicator(
+                          size: 18,
+                          showFill: false,
+                          strokeColor: colors.onSurface,
+                        ),
+                      ),
+                    )
+                  : const Icon(Icons.file_upload_outlined),
+              onPressed: _isImporting || _isLoading || _isReviewing
+                  ? null
+                  : _chooseImport,
+            ),
+          if (widget.appBarActionBuilder != null)
+            widget.appBarActionBuilder!(
+              _titleController,
+              _descriptionController,
+            ),
+          if (widget.appBarActionBuilder != null ||
+              widget.onSaveDraft != null) ...[
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              enabled: !_isLoading && !_isReviewing,
+              onSelected: (action) {
+                if (action == 'saveDraft') {
+                  _saveNamedDraft();
+                } else if (action == 'chooseDraft') {
+                  widget.onChooseDraft!();
+                } else if (action == 'reset') {
+                  _confirmReset();
+                } else {
+                  _helpButton().showInfoDialog(context);
+                }
+              },
+              itemBuilder: (context) => [
+                if (widget.onSaveDraft != null)
+                  PopupMenuItem(
+                    value: 'saveDraft',
+                    child: Row(
+                      children: [
+                        Icon(Icons.save_outlined, color: colors.onPrimary),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.savePetitionDraft,
+                          style: TextStyle(color: colors.onPrimary),
+                        ),
+                      ],
+                    ),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(context.l10n.cancel),
+                if (widget.onChooseDraft != null)
+                  PopupMenuItem(
+                    value: 'chooseDraft',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.folder_open_outlined,
+                          color: colors.onPrimary,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.savedPetitionDrafts,
+                          style: TextStyle(color: colors.onPrimary),
+                        ),
+                      ],
                     ),
-                    FilledButton(
-                      onPressed: () {
-                        _resetForm();
-                        Navigator.pop(context);
-                      },
-                      child: Text(context.l10n.confirm),
-                    ),
-                  ],
+                  ),
+                PopupMenuItem(
+                  value: 'reset',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outline, color: colors.onPrimary),
+                      const SizedBox(width: 12),
+                      Text(
+                        context.l10n.resetCreatorDraft,
+                        style: TextStyle(color: colors.onPrimary),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
-          ),
-          InfoDialogButton(
-            title: widget.title,
-            content: _buildTutorialContent(),
-            cornerImagePath: "assets/images/Lemm_teaching.png",
-          ),
+                PopupMenuItem(
+                  value: 'help',
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: colors.onPrimary),
+                      const SizedBox(width: 12),
+                      Text(
+                        context.l10n.creatorHelp,
+                        style: TextStyle(color: colors.onPrimary),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: _confirmReset,
+            ),
+            _helpButton(),
+          ],
         ],
       ),
       body: Padding(
@@ -632,6 +1261,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
           child: ListView(
             children: [
               const SizedBox(height: 30),
+              if (widget.contentActionsBuilder != null)
+                widget.contentActionsBuilder!(
+                  _titleController,
+                  _descriptionController,
+                ),
               if (widget.additionalTopFields != null)
                 ...widget.additionalTopFields!,
               TextFormField(
@@ -693,14 +1327,23 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              TagSelector(
-                selectedTags: _selectedTags,
-                onChanged: (newTags) {
-                  setState(() {
-                    _selectedTags = newTags;
-                  });
-                  _saveDraft();
-                },
+              TagWrap(
+                children: [
+                  for (final tag in _selectedTags)
+                    InputChip(
+                      label: Text(AppTagsHelper.getLocalizedTag(context, tag)),
+                      onDeleted: () {
+                        setState(() => _selectedTags.remove(tag));
+                        _saveDraft();
+                      },
+                    ),
+                  ActionChip(
+                    key: const Key('select_tags_button'),
+                    tooltip: context.l10n.editTags,
+                    onPressed: _selectTags,
+                    label: const Icon(Icons.add, size: 20),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Text(
@@ -806,6 +1449,11 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                 ),
               ),
               const SizedBox(height: 10),
+              Text(
+                context.l10n.geographicalScope,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
               _scopeSelectorCard(),
               if (_selectedScope == FormScopeType.countryUnion) ...[
                 const SizedBox(height: 10),
@@ -817,7 +1465,9 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
               Builder(
                 builder: (context) {
                   return ElevatedButton(
-                    onPressed: _isLoading ? null : _handleSubmit,
+                    onPressed: _isLoading || _isReviewing
+                        ? null
+                        : _handleSubmit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -830,7 +1480,7 @@ class _BaseCreatorPageState extends State<BaseCreatorPage> {
                             ).colorScheme.onPrimary,
                           )
                         : Text(
-                            widget.title,
+                            context.l10n.reviewPublication,
                             style: const TextStyle(fontSize: 16),
                           ),
                   );

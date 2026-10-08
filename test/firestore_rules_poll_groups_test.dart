@@ -20,5 +20,11 @@ void main() {
       expect(rules, contains('match /pollGroups/{groupId} {'));
       expect(rules, contains('allow create: if isAdmin();'));
     });
+
+    test('allows owner and admin group picture updates', () {
+      expect(rules, contains('function hasValidGroupPictureUpdate(groupId)'));
+      expect(rules, contains("hasOnly(['profilePictureUrl'])"));
+      expect(rules, contains('hasValidGroupPictureUpdate(groupId)'));
+    });
   });
 }

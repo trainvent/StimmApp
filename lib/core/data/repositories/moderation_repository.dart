@@ -190,12 +190,14 @@ class ModerationRepository {
     required String reportId,
     required String action,
     String? adminMessage,
+    Map<String, String>? publicArchive,
   }) async {
     await FirebaseFunctions.instance
         .httpsCallable('moderateReport')
         .call(<String, Object?>{
           'reportId': reportId,
           'action': action,
+          'publicArchive': ?publicArchive,
           'adminMessage': adminMessage?.trim().isEmpty ?? true
               ? null
               : adminMessage?.trim(),

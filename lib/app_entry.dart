@@ -16,6 +16,7 @@ import 'package:stimmapp/app/layout/init_app_layout.dart';
 import 'package:stimmapp/app/pages/main/home/petitions/petition_detail_page.dart';
 import 'package:stimmapp/app/pages/main/home/polls/poll_detail_page.dart';
 import 'package:stimmapp/app/pages/main/home/polls/survey_detail_page.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:stimmapp/app/pages/main/profile/list/delete_account_page.dart';
 import 'package:stimmapp/app/pages/main/profile/pid_verification_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
@@ -254,6 +255,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         return PollDetailPage(id: id);
       case 'survey':
         return SurveyDetailPage(id: id);
+      case 'profile':
+        return PublicProfilePage(userId: id);
       default:
         return null;
     }
@@ -283,7 +286,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final themeMode = ref.watch(themeModeProvider);
     final themeScheme = ref.watch(themeSchemeProvider);
     final locale = ref.watch(appLocaleProvider);
-    final selectedTheme = themeScheme ?? AppColorTheme.trainvent;
+    final selectedTheme = themeScheme ?? AppColorTheme.sunset;
 
     final app = MaterialApp(
       navigatorKey: navigatorKey,

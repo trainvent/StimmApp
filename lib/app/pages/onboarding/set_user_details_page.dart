@@ -844,11 +844,19 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         spacing: 8,
                         children: [
                           TextButton(
-                            onPressed: () => _openUrl(IConst.termsOfServiceUrl),
+                            onPressed: () => _openUrl(
+                              IConst.termsOfServiceUrlForLocale(
+                                Localizations.localeOf(context),
+                              ),
+                            ),
                             child: Text(context.l10n.terms),
                           ),
                           TextButton(
-                            onPressed: () => _openUrl(IConst.privacyPolicyUrl),
+                            onPressed: () => _openUrl(
+                              IConst.privacyPolicyUrlForLocale(
+                                Localizations.localeOf(context),
+                              ),
+                            ),
                             child: Text(context.l10n.privacy),
                           ),
                         ],

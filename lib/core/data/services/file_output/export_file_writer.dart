@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/services/file_output/export_content_service.dart';
+import 'package:stimmapp/core/data/services/file_output/export_document.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
 import 'package:universal_io/io.dart';
 
@@ -27,6 +30,26 @@ class ExportFileWriter {
     String content,
     ExportContentService contentService,
   ) async {
+    return _saveBytes(baseName, contentService, contentService.bytes(content));
+  }
+
+  Future<String> saveDocument(
+    String baseName,
+    ExportDocument document,
+    ExportContentService contentService,
+  ) async {
+    return _saveBytes(
+      baseName,
+      contentService,
+      await contentService.buildBytes(document),
+    );
+  }
+
+  Future<String> _saveBytes(
+    String baseName,
+    ExportContentService contentService,
+    Uint8List bytes,
+  ) async {
     final fileName = _fileName(baseName, contentService);
     await _disableNetwork();
 
@@ -36,7 +59,7 @@ class ExportFileWriter {
         fileName: fileName,
         type: FileType.custom,
         allowedExtensions: [contentService.format.extension],
-        bytes: contentService.bytes(content),
+        bytes: bytes,
       );
       if (uri == null) {
         throw const CsvExportCanceledException();
@@ -52,10 +75,30 @@ class ExportFileWriter {
     String content,
     ExportContentService contentService,
   ) async {
+    return _shareBytes(baseName, contentService, contentService.bytes(content));
+  }
+
+  Future<String> shareDocument(
+    String baseName,
+    ExportDocument document,
+    ExportContentService contentService,
+  ) async {
+    return _shareBytes(
+      baseName,
+      contentService,
+      await contentService.buildBytes(document),
+    );
+  }
+
+  Future<String> _shareBytes(
+    String baseName,
+    ExportContentService contentService,
+    Uint8List bytes,
+  ) async {
     final fileName = _fileName(baseName, contentService);
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/$fileName');
-    await file.writeAsBytes(contentService.bytes(content));
+    await file.writeAsBytes(bytes);
     await _disableNetwork();
 
     try {

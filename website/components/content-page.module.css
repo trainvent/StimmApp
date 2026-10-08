@@ -178,3 +178,47 @@
     border-radius: 24px;
   }
 }
+
+.jsonExample {
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+
+.jsonExample code {
+  padding: 0;
+}
+
+.tableScroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.fieldTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.fieldTable th,
+.fieldTable td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.tagKeys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.tagKeys code {
+  overflow-wrap: anywhere;
+}

@@ -20,6 +20,10 @@ class AppBootstrap {
   StreamSubscription<User?>? _authSub;
 
   Future<void> init(WidgetRef ref) async {
+    final prefs = await SharedPreferences.getInstance();
+    ref
+        .read(showBlockedFormsProvider.notifier)
+        .initialize(prefs.getBool('showBlockedForms') ?? false);
     ref.read(themeModeProvider.notifier).initialize(await _loadThemeMode());
     ref.read(themeSchemeProvider.notifier).initialize(await _loadThemeScheme());
     ref.read(appLocaleProvider.notifier).initialize(await _loadLocale());

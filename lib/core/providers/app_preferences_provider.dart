@@ -55,7 +55,7 @@ class ThemeModeController extends Notifier<ThemeMode> {
 
 class ThemeSchemeController extends Notifier<AppColorTheme?> {
   @override
-  AppColorTheme? build() => AppColorTheme.trainvent;
+  AppColorTheme? build() => AppColorTheme.sunset;
 
   void initialize(AppColorTheme? theme) {
     state = theme;
@@ -201,4 +201,22 @@ Future<void> _persistCrashLogs(bool enabled) async {
   await prefs.setBool(IConst.crashLogsEnabledKey, enabled);
   await CrashReportingService.instance.setCollectionEnabled(enabled);
   await _updateCurrentUser({'sendCrashLogs': enabled});
+}
+
+final showBlockedFormsProvider =
+    NotifierProvider<ShowBlockedFormsController, bool>(
+      ShowBlockedFormsController.new,
+    );
+
+class ShowBlockedFormsController extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void initialize(bool enabled) => state = enabled;
+
+  Future<void> setEnabled(bool enabled) async {
+    state = enabled;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('showBlockedForms', enabled);
+  }
 }

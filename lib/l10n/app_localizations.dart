@@ -620,11 +620,11 @@ abstract class AppLocalizations {
   /// **'Dark Mode'**
   String get darkMode;
 
-  /// No description provided for @design.
+  /// No description provided for @structure.
   ///
   /// In en, this message translates to:
-  /// **'Design'**
-  String get design;
+  /// **'Structure'**
+  String get structure;
 
   /// No description provided for @dateOfBirth.
   ///
@@ -1165,6 +1165,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export created'**
   String get exportSuccess;
+
+  /// No description provided for @exportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get exportPdf;
+
+  /// No description provided for @exportPdfVerbose.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF (verbose)'**
+  String get exportPdfVerbose;
+
+  /// No description provided for @exportPdfSlim.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF (slim)'**
+  String get exportPdfSlim;
+
+  /// No description provided for @exportJson.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON'**
+  String get exportJson;
+
+  /// No description provided for @exportSignatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Signatures'**
+  String get exportSignatures;
+
+  /// No description provided for @exportResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get exportResults;
+
+  /// No description provided for @exportSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get exportSignature;
+
+  /// No description provided for @exportPetition.
+  ///
+  /// In en, this message translates to:
+  /// **'Petition'**
+  String get exportPetition;
+
+  /// No description provided for @exportPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll'**
+  String get exportPoll;
+
+  /// No description provided for @exportSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey'**
+  String get exportSurvey;
+
+  /// No description provided for @exportSigned.
+  ///
+  /// In en, this message translates to:
+  /// **'signed'**
+  String get exportSigned;
+
+  /// No description provided for @exportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'submitted'**
+  String get exportSubmitted;
+
+  /// No description provided for @exportType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get exportType;
+
+  /// No description provided for @exportId.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get exportId;
+
+  /// No description provided for @exportHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Header'**
+  String get exportHeader;
+
+  /// No description provided for @exportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get exportBody;
+
+  /// No description provided for @exportTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get exportTags;
+
+  /// No description provided for @exportSignatureCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature count'**
+  String get exportSignatureCount;
+
+  /// No description provided for @exportCreatedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get exportCreatedBy;
+
+  /// No description provided for @exportCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get exportCreatedAt;
+
+  /// No description provided for @exportExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires at'**
+  String get exportExpiresAt;
+
+  /// No description provided for @exportOpenUntilClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Open until closed'**
+  String get exportOpenUntilClosed;
+
+  /// No description provided for @exportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get exportStatus;
+
+  /// No description provided for @exportScopeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope type'**
+  String get exportScopeType;
+
+  /// No description provided for @exportContinent.
+  ///
+  /// In en, this message translates to:
+  /// **'Continent'**
+  String get exportContinent;
+
+  /// No description provided for @exportCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get exportCountry;
+
+  /// No description provided for @exportStateOrRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'State or region'**
+  String get exportStateOrRegion;
+
+  /// No description provided for @exportTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Town'**
+  String get exportTown;
+
+  /// No description provided for @exportImageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get exportImageUrl;
+
+  /// No description provided for @exportOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get exportOptions;
+
+  /// No description provided for @exportVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes'**
+  String get exportVotes;
+
+  /// No description provided for @exportTotalVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Total votes'**
+  String get exportTotalVotes;
+
+  /// No description provided for @exportResponseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Response count'**
+  String get exportResponseCount;
+
+  /// No description provided for @exportGroupId.
+  ///
+  /// In en, this message translates to:
+  /// **'Group ID'**
+  String get exportGroupId;
+
+  /// No description provided for @exportGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get exportGroupName;
+
+  /// No description provided for @exportVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get exportVisibility;
+
+  /// No description provided for @exportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get exportReason;
 
   /// No description provided for @failedToCreatePoll.
   ///
@@ -2459,7 +2681,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewParticipants.
   ///
   /// In en, this message translates to:
-  /// **'View Participants'**
+  /// **'Show'**
   String get viewParticipants;
 
   /// No description provided for @vote.
@@ -2786,6 +3008,12 @@ abstract class AppLocalizations {
   /// **'Please enter your details.'**
   String get pleaseEnterYourDetails;
 
+  /// No description provided for @furtherHelpingHands.
+  ///
+  /// In en, this message translates to:
+  /// **'Further helping hands'**
+  String get furtherHelpingHands;
+
   /// No description provided for @thisAppWasDevelopedBy.
   ///
   /// In en, this message translates to:
@@ -2873,7 +3101,7 @@ abstract class AppLocalizations {
   /// No description provided for @tagAnimalWelfare.
   ///
   /// In en, this message translates to:
-  /// **'Animal Welfare'**
+  /// **'Welfare'**
   String get tagAnimalWelfare;
 
   /// No description provided for @tagSafety.
@@ -5155,6 +5383,900 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile:'**
   String get pidProfile;
+
+  /// No description provided for @pollTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll templates'**
+  String get pollTemplates;
+
+  /// No description provided for @savePollTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as template'**
+  String get savePollTemplate;
+
+  /// No description provided for @pollTemplateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Template name'**
+  String get pollTemplateName;
+
+  /// No description provided for @pollTemplatesLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this device.'**
+  String get pollTemplatesLocal;
+
+  /// No description provided for @pollTemplatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved templates yet.'**
+  String get pollTemplatesEmpty;
+
+  /// No description provided for @pollTemplateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template saved.'**
+  String get pollTemplateSaved;
+
+  /// No description provided for @pollTemplateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save or load templates. Please try again.'**
+  String get pollTemplateError;
+
+  /// No description provided for @pollTemplateReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply the selected template fields?'**
+  String get pollTemplateReplace;
+
+  /// No description provided for @pollTemplateDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this saved template?'**
+  String get pollTemplateDelete;
+
+  /// No description provided for @pollTemplateDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete template'**
+  String get pollTemplateDeleteAction;
+
+  /// No description provided for @answerPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer presets'**
+  String get answerPresets;
+
+  /// No description provided for @answerPresetReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the answers for this question?'**
+  String get answerPresetReplace;
+
+  /// No description provided for @presetConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent: Yes / Undecided / No / Veto'**
+  String get presetConsent;
+
+  /// No description provided for @presetBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes / No'**
+  String get presetBinary;
+
+  /// No description provided for @presetAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement scale'**
+  String get presetAgreement;
+
+  /// No description provided for @presetSatisfaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Satisfaction scale'**
+  String get presetSatisfaction;
+
+  /// No description provided for @presetFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get presetFrequency;
+
+  /// No description provided for @presetYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get presetYes;
+
+  /// No description provided for @presetNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get presetNo;
+
+  /// No description provided for @presetUndecided.
+  ///
+  /// In en, this message translates to:
+  /// **'Undecided'**
+  String get presetUndecided;
+
+  /// No description provided for @presetVeto.
+  ///
+  /// In en, this message translates to:
+  /// **'Veto'**
+  String get presetVeto;
+
+  /// No description provided for @presetStronglyAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongly agree'**
+  String get presetStronglyAgree;
+
+  /// No description provided for @presetAgree.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree'**
+  String get presetAgree;
+
+  /// No description provided for @presetNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get presetNeutral;
+
+  /// No description provided for @presetDisagree.
+  ///
+  /// In en, this message translates to:
+  /// **'Disagree'**
+  String get presetDisagree;
+
+  /// No description provided for @presetStronglyDisagree.
+  ///
+  /// In en, this message translates to:
+  /// **'Strongly disagree'**
+  String get presetStronglyDisagree;
+
+  /// No description provided for @presetVerySatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Very satisfied'**
+  String get presetVerySatisfied;
+
+  /// No description provided for @presetSatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Satisfied'**
+  String get presetSatisfied;
+
+  /// No description provided for @presetDissatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Dissatisfied'**
+  String get presetDissatisfied;
+
+  /// No description provided for @presetVeryDissatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'Very dissatisfied'**
+  String get presetVeryDissatisfied;
+
+  /// No description provided for @presetAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get presetAlways;
+
+  /// No description provided for @presetOften.
+  ///
+  /// In en, this message translates to:
+  /// **'Often'**
+  String get presetOften;
+
+  /// No description provided for @presetSometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes'**
+  String get presetSometimes;
+
+  /// No description provided for @presetRarely.
+  ///
+  /// In en, this message translates to:
+  /// **'Rarely'**
+  String get presetRarely;
+
+  /// No description provided for @presetNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get presetNever;
+
+  /// No description provided for @resetCreatorDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset draft'**
+  String get resetCreatorDraft;
+
+  /// No description provided for @creatorHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get creatorHelp;
+
+  /// No description provided for @pollTemplateIncludeFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Include'**
+  String get pollTemplateIncludeFields;
+
+  /// No description provided for @pollTemplateQuestionsAndAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions and answers'**
+  String get pollTemplateQuestionsAndAnswers;
+
+  /// No description provided for @pollTemplateScopeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This scope is unavailable for your profile.'**
+  String get pollTemplateScopeUnavailable;
+
+  /// No description provided for @pollTemplateGroupUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This group is no longer available.'**
+  String get pollTemplateGroupUnavailable;
+
+  /// No description provided for @pollTemplateReplaceAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Update template'**
+  String get pollTemplateReplaceAction;
+
+  /// No description provided for @pollTemplateOverwriteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite existing template?'**
+  String get pollTemplateOverwriteConfirmation;
+
+  /// No description provided for @tagSelectionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{selected} of {max} selected'**
+  String tagSelectionCount(int selected, int max);
+
+  /// No description provided for @tagSelectionLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect a tag to choose another.'**
+  String get tagSelectionLimit;
+
+  /// No description provided for @editTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Select tags'**
+  String get editTags;
+
+  /// No description provided for @reviewPublication.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get reviewPublication;
+
+  /// No description provided for @backToEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue editing'**
+  String get backToEditing;
+
+  /// No description provided for @publishNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get publishNow;
+
+  /// No description provided for @geographicalScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Geographical scope'**
+  String get geographicalScope;
+
+  /// No description provided for @templateQuestionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 question with answers} other{{count} questions with answers}}'**
+  String templateQuestionCount(int count);
+
+  /// No description provided for @templateApplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the listed fields will be replaced. Other settings stay as they are.'**
+  String get templateApplyHint;
+
+  /// No description provided for @showExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Show explanations'**
+  String get showExplanations;
+
+  /// No description provided for @hideExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide explanations'**
+  String get hideExplanations;
+
+  /// No description provided for @groupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Group picture'**
+  String get groupPicture;
+
+  /// No description provided for @chooseGroupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose picture'**
+  String get chooseGroupPicture;
+
+  /// No description provided for @removeGroupPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove group picture'**
+  String get removeGroupPicture;
+
+  /// No description provided for @groupPicturePickFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this picture. Choose an image smaller than 5 MB.'**
+  String get groupPicturePickFailed;
+
+  /// No description provided for @groupPictureSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The group was saved, but its picture could not be saved. Please try saving again.'**
+  String get groupPictureSaveFailed;
+
+  /// No description provided for @settingsLookAndFeel.
+  ///
+  /// In en, this message translates to:
+  /// **'Look & Feel'**
+  String get settingsLookAndFeel;
+
+  /// No description provided for @settingsBehaviour.
+  ///
+  /// In en, this message translates to:
+  /// **'Behaviour'**
+  String get settingsBehaviour;
+
+  /// No description provided for @detailScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get detailScope;
+
+  /// No description provided for @detailGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get detailGroup;
+
+  /// No description provided for @detailTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics'**
+  String get detailTopics;
+
+  /// No description provided for @showBlockedForms.
+  ///
+  /// In en, this message translates to:
+  /// **'blocked forms mode'**
+  String get showBlockedForms;
+
+  /// No description provided for @blockedFormsSettingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only archive'**
+  String get blockedFormsSettingDescription;
+
+  /// No description provided for @banned.
+  ///
+  /// In en, this message translates to:
+  /// **'Banned'**
+  String get banned;
+
+  /// No description provided for @blockedModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re viewing only blocked forms. You can turn this off in Settings.'**
+  String get blockedModeHint;
+
+  /// No description provided for @blockedFormsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No blocked forms to show.'**
+  String get blockedFormsEmpty;
+
+  /// No description provided for @blockedFormsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked forms could not be loaded.'**
+  String get blockedFormsError;
+
+  /// No description provided for @blockedFormsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'About blocked forms'**
+  String get blockedFormsInfo;
+
+  /// No description provided for @blockedFormsNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'These forms were removed for violating our community guidelines. Participation and sharing are disabled.'**
+  String get blockedFormsNotice;
+
+  /// No description provided for @blockedSafeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'The original content is withheld. Only moderator-approved public information is shown.'**
+  String get blockedSafeSummary;
+
+  /// No description provided for @blockedGuideline.
+  ///
+  /// In en, this message translates to:
+  /// **'Violated guideline'**
+  String get blockedGuideline;
+
+  /// No description provided for @blockedExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderation explanation'**
+  String get blockedExplanation;
+
+  /// No description provided for @blockedRemovedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed on'**
+  String get blockedRemovedAt;
+
+  /// No description provided for @publicArchiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public archive title (safe to publish)'**
+  String get publicArchiveTitle;
+
+  /// No description provided for @publicArchiveSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Public safe summary'**
+  String get publicArchiveSummary;
+
+  /// No description provided for @publicArchiveGuideline.
+  ///
+  /// In en, this message translates to:
+  /// **'Public violated guideline'**
+  String get publicArchiveGuideline;
+
+  /// No description provided for @publicArchiveExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Public moderation explanation'**
+  String get publicArchiveExplanation;
+
+  /// No description provided for @publicArchiveHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: complete all four fields to publish a safe archive entry. Never include personal information or abusive text.'**
+  String get publicArchiveHelp;
+
+  /// No description provided for @tagHumanRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Rights'**
+  String get tagHumanRights;
+
+  /// No description provided for @tagEconomicJustice.
+  ///
+  /// In en, this message translates to:
+  /// **'Equity'**
+  String get tagEconomicJustice;
+
+  /// No description provided for @tagLocalGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Municipalities'**
+  String get tagLocalGovernment;
+
+  /// No description provided for @tagRegionalGovernment.
+  ///
+  /// In en, this message translates to:
+  /// **'Regions'**
+  String get tagRegionalGovernment;
+
+  /// No description provided for @tagFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get tagFamily;
+
+  /// No description provided for @tagEntertainment.
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get tagEntertainment;
+
+  /// No description provided for @tagAnimalRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Animals'**
+  String get tagAnimalRights;
+
+  /// No description provided for @tagCriminalJustice.
+  ///
+  /// In en, this message translates to:
+  /// **'Justice'**
+  String get tagCriminalJustice;
+
+  /// No description provided for @tagChildrensRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Children'**
+  String get tagChildrensRights;
+
+  /// No description provided for @tagEducationReform.
+  ///
+  /// In en, this message translates to:
+  /// **'Reforms'**
+  String get tagEducationReform;
+
+  /// No description provided for @tagEducationInfrastructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Schools'**
+  String get tagEducationInfrastructure;
+
+  /// No description provided for @tagPublicHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get tagPublicHealth;
+
+  /// No description provided for @tagMigrationIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'Migration'**
+  String get tagMigrationIntegration;
+
+  /// No description provided for @tagAccessToCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get tagAccessToCare;
+
+  /// No description provided for @tagVotingRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Elections'**
+  String get tagVotingRights;
+
+  /// No description provided for @tagFamilyRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Parenthood'**
+  String get tagFamilyRights;
+
+  /// No description provided for @tagClimateProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Climate'**
+  String get tagClimateProtection;
+
+  /// No description provided for @tagWomensRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Women'**
+  String get tagWomensRights;
+
+  /// No description provided for @tagConsumerRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumers'**
+  String get tagConsumerRights;
+
+  /// No description provided for @petitionComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Why people signed'**
+  String get petitionComments;
+
+  /// No description provided for @petitionCommentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet.'**
+  String get petitionCommentsEmpty;
+
+  /// No description provided for @petitionCommentsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments could not be loaded. Tap to retry.'**
+  String get petitionCommentsError;
+
+  /// No description provided for @likeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Like comment'**
+  String get likeComment;
+
+  /// No description provided for @unlikeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove like'**
+  String get unlikeComment;
+
+  /// No description provided for @commentLikeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your like could not be saved. Please try again.'**
+  String get commentLikeError;
+
+  /// No description provided for @commentLikesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes unavailable. Tap to retry.'**
+  String get commentLikesError;
+
+  /// No description provided for @signInToLikeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to like comments'**
+  String get signInToLikeComment;
+
+  /// No description provided for @signatureReasonPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Your comment will appear publicly with your display name.'**
+  String get signatureReasonPublic;
+
+  /// No description provided for @importFormJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Import JSON form'**
+  String get importFormJson;
+
+  /// No description provided for @importFormConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply this form to your draft? Included fields will be replaced. You can edit and review it before publishing. Fields not included, your audience and any image stay as currently selected.'**
+  String get importFormConfirmation;
+
+  /// No description provided for @importFormSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Form imported. Review your settings before publishing.'**
+  String get importFormSuccess;
+
+  /// No description provided for @importFormInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid form JSON. Check the format, form type and field limits.'**
+  String get importFormInvalid;
+
+  /// No description provided for @importFormError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not import the file. Please try again.'**
+  String get importFormError;
+
+  /// No description provided for @answerType.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer type'**
+  String get answerType;
+
+  /// No description provided for @multipleChoiceAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice'**
+  String get multipleChoiceAnswer;
+
+  /// No description provided for @writtenAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Written answer'**
+  String get writtenAnswer;
+
+  /// No description provided for @writtenAnswerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants write their own answer. Only the creator can read written responses.'**
+  String get writtenAnswerHint;
+
+  /// No description provided for @yourWrittenAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer'**
+  String get yourWrittenAnswer;
+
+  /// No description provided for @writtenResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Written responses'**
+  String get writtenResponses;
+
+  /// No description provided for @noWrittenResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'No written responses yet.'**
+  String get noWrittenResponses;
+
+  /// No description provided for @writtenResponsesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load written responses.'**
+  String get writtenResponsesError;
+
+  /// No description provided for @importFormFormatHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Input format and examples'**
+  String get importFormFormatHelp;
+
+  /// No description provided for @importFormLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Import form'**
+  String get importFormLabel;
+
+  /// No description provided for @importFormPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Import PDF'**
+  String get importFormPdf;
+
+  /// No description provided for @importPdfHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the extracted text. First line: title; then description. For polls, use numbered questions (1.) and lettered (a)) or bulleted (-) choices. Questions without choices accept written answers. Only selectable-text PDFs are supported.'**
+  String get importPdfHelp;
+
+  /// No description provided for @importPdfNoText.
+  ///
+  /// In en, this message translates to:
+  /// **'No selectable text found. Scanned PDFs are not supported.'**
+  String get importPdfNoText;
+
+  /// No description provided for @importPdfTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a PDF with at most 10 MB, 50 pages and 100,000 text characters.'**
+  String get importPdfTooLarge;
+
+  /// No description provided for @importPdfInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the title, description and question format, and the form field limits.'**
+  String get importPdfInvalid;
+
+  /// No description provided for @groupInfoDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download group info and logs (JSON)'**
+  String get groupInfoDownload;
+
+  /// No description provided for @useAsTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as template'**
+  String get useAsTemplate;
+
+  /// No description provided for @publicationsHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ideas in action'**
+  String get publicationsHubTitle;
+
+  /// No description provided for @publicationsHubDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your forms, explore their results and build on what you have already started.'**
+  String get publicationsHubDescription;
+
+  /// No description provided for @runningFormsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'View participation and manage your active forms.'**
+  String get runningFormsDescription;
+
+  /// No description provided for @finishedFormsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore final results, export data or reuse a form as a template.'**
+  String get finishedFormsDescription;
+
+  /// No description provided for @createNewForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start something new'**
+  String get createNewForm;
+
+  /// No description provided for @createNewFormDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a petition, poll or questionnaire for your next idea.'**
+  String get createNewFormDescription;
+
+  /// No description provided for @savePetitionDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get savePetitionDraft;
+
+  /// No description provided for @savedPetitionDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved drafts'**
+  String get savedPetitionDrafts;
+
+  /// No description provided for @petitionDraftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Petition draft saved.'**
+  String get petitionDraftSaved;
+
+  /// No description provided for @petitionDraftError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not access petition drafts. Please try again.'**
+  String get petitionDraftError;
+
+  /// No description provided for @petitionDraftsLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts are private to your account on this device.'**
+  String get petitionDraftsLocal;
+
+  /// No description provided for @petitionDraftsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved petition drafts yet.'**
+  String get petitionDraftsEmpty;
+
+  /// No description provided for @untitledPetitionDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled petition'**
+  String get untitledPetitionDraft;
+
+  /// No description provided for @petitionDraftApplyConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this draft? It will replace the current form and image. Save your current draft first if you want to keep it.'**
+  String get petitionDraftApplyConfirmation;
+
+  /// No description provided for @noGroupFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No group'**
+  String get noGroupFilter;
+
+  /// No description provided for @petitionDeletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the petition. Please try again.'**
+  String get petitionDeletionFailed;
+
+  /// No description provided for @pollDeletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the poll. Please try again.'**
+  String get pollDeletionFailed;
+
+  /// No description provided for @viewPublicProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Public profile'**
+  String get viewPublicProfile;
 }
 
 class _AppLocalizationsDelegate

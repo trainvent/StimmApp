@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/group_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -159,7 +160,7 @@ class PollGroupSummaryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.groups_2_outlined),
+                GroupAvatar(url: group.profilePictureUrl),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

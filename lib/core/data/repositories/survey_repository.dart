@@ -111,24 +111,51 @@ class SurveyRepository {
       final survey = Survey.fromFirestore(surveySnap, null);
       _validateAnswers(survey: survey, answers: answers);
 
+      final choiceAnswers = <String, String>{};
+      final textAnswers = <String, String>{};
+      for (final question in survey.questions) {
+        (question.isText ? textAnswers : choiceAnswers)[question.id] =
+            answers[question.id]!.trim();
+      }
       final update = <String, Object>{'responseCount': FieldValue.increment(1)};
-      for (final entry in answers.entries) {
+      for (final entry in choiceAnswers.entries) {
         update['questionVotes.${entry.key}.${entry.value}'] =
             FieldValue.increment(1);
       }
 
       txn.set(responseRef, {
         'uid': uid,
-        'answers': answers,
+        'answers': choiceAnswers,
+        'textAnswers': textAnswers,
         'submittedAt': FieldValue.serverTimestamp(),
       });
       txn.update(surveyRef, update);
       txn.set(userRef.collection('completedSurveys').doc(surveyId), {
         'surveyId': surveyId,
-        'answers': answers,
+        'answers': choiceAnswers,
+        'textAnswers': textAnswers,
         'submittedAt': FieldValue.serverTimestamp(),
       });
     });
+  }
+
+  Stream<List<Map<String, String>>> watchTextResponses(String surveyId) {
+    return _fs.instance
+        .collection(DatabaseCollections.surveys)
+        .doc(surveyId)
+        .collection(DatabaseCollections.responses)
+        .orderBy('submittedAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Map<String, String>.from(
+                  doc.data()['textAnswers'] as Map? ?? const {},
+                ),
+              )
+              .where((answers) => answers.isNotEmpty)
+              .toList(),
+        );
   }
 
   Future<void> delete(String id) async {
@@ -270,7 +297,8 @@ class SurveyRepository {
           return SurveyQuestion(
             id: question.id,
             title: normalizedQuestionTitle,
-            options: normalizedOptions,
+            options: question.isText ? const [] : normalizedOptions,
+            type: question.type,
           );
         })
         .where((question) => question.title.isNotEmpty)
@@ -296,7 +324,7 @@ class SurveyRepository {
           (question) =>
               question.id.trim().isEmpty ||
               question.title.length > AppLimits.maxSurveyQuestionLength ||
-              question.options.length < 2 ||
+              (!question.isText && question.options.length < 2) ||
               question.options.length > AppLimits.maxSurveyOptionsPerQuestion ||
               question.options.any(
                 (option) =>
@@ -344,7 +372,10 @@ class SurveyRepository {
     for (final question in survey.questions) {
       final optionId = answers[question.id];
       if (optionId == null ||
-          !question.options.any((option) => option.id == optionId)) {
+          (question.isText
+              ? optionId.trim().isEmpty ||
+                    optionId.length > AppLimits.maxSurveyTextAnswerLength
+              : !question.options.any((option) => option.id == optionId))) {
         throw StateError('invalid_survey_answers');
       }
     }

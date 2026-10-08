@@ -166,6 +166,8 @@ class _ModerationReportReviewPageState
 
   Future<void> _removeContent({required bool contentMissing}) async {
     final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final publicControllers = List.generate(4, (_) => TextEditingController());
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -174,28 +176,53 @@ class _ModerationReportReviewPageState
               ? 'Dismiss missing report'
               : 'Remove content and kick user out',
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              contentMissing
-                  ? 'The reported content no longer exists. This will resolve the report and remove it from the admin queue.'
-                  : 'This removes the live content, archives it in Firestore, resolves the report, emails the creator, and deletes their account.',
-            ),
-            if (!contentMissing) ...[
-              const SizedBox(height: 16),
-              TextField(
-                controller: controller,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Optional message',
-                  hintText: 'Add an extra note for the user',
-                  border: OutlineInputBorder(),
+        content: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  contentMissing
+                      ? 'The reported content no longer exists. This will resolve the report and remove it from the admin queue.'
+                      : 'This removes the live content, archives it in Firestore, resolves the report, emails the creator, and deletes their account.',
                 ),
-              ),
-            ],
-          ],
+                if (!contentMissing) ...[
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: controller,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: 'Optional message',
+                      hintText: 'Add an extra note for the user',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(context.l10n.publicArchiveHelp),
+                  for (final (index, label) in [
+                    context.l10n.publicArchiveTitle,
+                    context.l10n.publicArchiveSummary,
+                    context.l10n.publicArchiveGuideline,
+                    context.l10n.publicArchiveExplanation,
+                  ].indexed)
+                    TextFormField(
+                      validator: (value) =>
+                          publicControllers.any(
+                                (c) => c.text.trim().isNotEmpty,
+                              ) &&
+                              (value?.trim().isEmpty ?? true)
+                          ? context.l10n.publicArchiveHelp
+                          : null,
+                      controller: publicControllers[index],
+                      maxLength: 2000,
+                      decoration: InputDecoration(labelText: label),
+                    ),
+                ],
+              ],
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -203,7 +230,11 @@ class _ModerationReportReviewPageState
             child: Text(context.l10n.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? true) {
+                Navigator.of(context).pop(true);
+              }
+            },
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: Text(contentMissing ? 'Dismiss' : 'Remove'),
           ),
@@ -213,6 +244,18 @@ class _ModerationReportReviewPageState
 
     final adminMessage = controller.text;
     controller.dispose();
+    final values = publicControllers.map((c) => c.text.trim()).toList();
+    for (final c in publicControllers) {
+      c.dispose();
+    }
+    final publicArchive = values.any((v) => v.isNotEmpty)
+        ? {
+            'title': values[0],
+            'summary': values[1],
+            'guideline': values[2],
+            'explanation': values[3],
+          }
+        : null;
     if (confirmed != true) return;
 
     setState(() => _submitting = true);
@@ -220,6 +263,7 @@ class _ModerationReportReviewPageState
       await _moderationRepo.moderateReport(
         reportId: widget.report.id,
         action: 'remove',
+        publicArchive: contentMissing ? null : publicArchive,
         adminMessage: contentMissing ? null : adminMessage,
       );
       if (!mounted) return;

@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:stimmapp/app/widgets/snackbar_utils.dart';
+import 'package:stimmapp/core/data/services/file_output/group_activity_export.dart';
 import 'package:stimmapp/core/data/models/poll_group.dart';
 import 'package:stimmapp/core/data/models/poll_group_activity.dart';
 import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
@@ -7,7 +13,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 
-class GroupActivityPage extends StatelessWidget {
+class GroupActivityPage extends StatefulWidget {
   const GroupActivityPage({
     super.key,
     required this.group,
@@ -19,9 +25,57 @@ class GroupActivityPage extends StatelessWidget {
   final PollGroupRepository? repository;
   final AuthService? auth;
 
+  @override
+  State<GroupActivityPage> createState() => _GroupActivityPageState();
+}
+
+class _GroupActivityPageState extends State<GroupActivityPage> {
+  late final Stream<List<PollGroupActivity>> _activities = _repository
+      .watchActivities(widget.group.id);
+  bool _exporting = false;
+
+  Future<void> _download(List<PollGroupActivity> activities) async {
+    setState(() => _exporting = true);
+    try {
+      final (group, members) = await (
+        _repository.getGroup(widget.group.id),
+        _repository.watchMembers(widget.group.id).first,
+      ).wait;
+      if (!mounted) return;
+      if (group == null) throw StateError('Group no longer exists');
+      final now = DateTime.now().toUtc();
+      final groupId = widget.group.id.replaceAll(
+        RegExp(r'[^a-zA-Z0-9_-]'),
+        '_',
+      );
+      await FilePicker.saveFile(
+        dialogTitle: context.l10n.exportJson,
+        fileName:
+            'group_${groupId}_info_${DateFormat('yyyyMMdd_HHmmss').format(now)}.json',
+        mimeType: 'application/json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        bytes: Uint8List.fromList(
+          utf8.encode(
+            buildGroupActivityExport(
+              group,
+              activities,
+              exportedAt: now,
+              members: members,
+            ),
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context.l10n.exportFailed);
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
   PollGroupRepository get _repository =>
-      repository ?? PollGroupRepository.create();
-  AuthService get _auth => auth ?? authService;
+      widget.repository ?? PollGroupRepository.create();
+  AuthService get _auth => widget.auth ?? authService;
 
   IconData _icon(PollGroupActivityType type) => switch (type) {
     PollGroupActivityType.groupCreated => Icons.group_add_outlined,
@@ -91,58 +145,82 @@ class GroupActivityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.groupActivityTitle)),
-      body: _auth.currentUser == null
-          ? Center(child: Text(context.l10n.pleaseSignInToViewYourGroups))
-          : StreamBuilder<List<PollGroupActivity>>(
-              stream: _repository.watchActivities(group.id),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        context.l10n.groupActivityLoadFailed,
-                        textAlign: TextAlign.center,
+    if (_auth.currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.groupActivityTitle)),
+        body: Center(child: Text(context.l10n.pleaseSignInToViewYourGroups)),
+      );
+    }
+    return StreamBuilder<List<PollGroupActivity>>(
+      stream: _activities,
+      builder: (context, snapshot) => Scaffold(
+        appBar: AppBar(
+          title: Text(context.l10n.groupActivityTitle),
+          actions: [
+            IconButton(
+              tooltip: context.l10n.groupInfoDownload,
+              onPressed: _exporting || snapshot.hasError || !snapshot.hasData
+                  ? null
+                  : () => _download(List.of(snapshot.data!)),
+              icon: _exporting
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: TriangleLoadingIndicator(showFill: false),
                       ),
-                    ),
-                  );
-                }
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: TriangleLoadingIndicator(showFill: false),
-                  );
-                }
-                final activities = snapshot.data!;
-                if (activities.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        context.l10n.noGroupActivity,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: activities.length,
-                  separatorBuilder: (_, _) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final activity = activities[index];
-                    return ListTile(
-                      leading: CircleAvatar(child: Icon(_icon(activity.type))),
-                      title: Text(_message(context, activity)),
-                      subtitle: Text(
-                        _formattedDate(context, activity.createdAt),
-                      ),
-                    );
-                  },
-                );
-              },
+                    )
+                  : const Icon(Icons.file_download_outlined),
             ),
+          ],
+        ),
+        body: _buildActivities(context, snapshot),
+      ),
+    );
+  }
+
+  Widget _buildActivities(
+    BuildContext context,
+    AsyncSnapshot<List<PollGroupActivity>> snapshot,
+  ) {
+    if (snapshot.hasError) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            context.l10n.groupActivityLoadFailed,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    if (!snapshot.hasData) {
+      return const Center(child: TriangleLoadingIndicator(showFill: false));
+    }
+    final activities = snapshot.data!;
+    if (activities.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            context.l10n.noGroupActivity,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: activities.length,
+      separatorBuilder: (_, _) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final activity = activities[index];
+        return ListTile(
+          leading: CircleAvatar(child: Icon(_icon(activity.type))),
+          title: Text(_message(context, activity)),
+          subtitle: Text(_formattedDate(context, activity.createdAt)),
+        );
+      },
     );
   }
 }

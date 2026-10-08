@@ -1,3 +1,7 @@
+import 'package:stimmapp/app/pages/main/home/creator/petition_creator_page.dart';
+import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
+import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -125,6 +129,25 @@ class _FormExportPageState extends State<FormExportPage> {
       );
       return;
     }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: petition.title,
+        title: petition.title,
+        description: petition.description,
+        imageUrl: petition.imageUrl,
+        tags: List.of(petition.tags),
+        scopeType: petition.scope.type.name,
+        countryUnion: petition.scope.countryUnion?.code,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PetitionCreatorPage(initialTemplate: template),
+        ),
+      );
+      return;
+    }
     await _exportPetition(petition, action);
   }
 
@@ -136,6 +159,31 @@ class _FormExportPageState extends State<FormExportPage> {
         context,
         MaterialPageRoute(
           builder: (context) => FormResultPage.poll(poll: poll),
+        ),
+      );
+      return;
+    }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: poll.title,
+        title: poll.title,
+        description: poll.description,
+        tags: List.of(poll.tags),
+        scopeType: poll.scope.type.name,
+        countryUnion: poll.scope.countryUnion?.code,
+        questions: [
+          PollTemplateQuestion(
+            title: poll.questionTitle.isEmpty ? poll.title : poll.questionTitle,
+            options: poll.options.map((o) => o.label).toList(),
+          ),
+        ],
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              SurveyCreatorPage(presentAsPoll: true, initialTemplate: template),
         ),
       );
       return;
@@ -155,6 +203,36 @@ class _FormExportPageState extends State<FormExportPage> {
       );
       return;
     }
+    if (action == _FormAction.useAsTemplate) {
+      final template = PollTemplate(
+        id: '',
+        name: survey.title,
+        title: survey.title,
+        description: survey.description,
+        tags: List.of(survey.tags),
+        scopeType: survey.scope.type.name,
+        countryUnion: survey.scope.countryUnion?.code,
+        questions: survey.questions
+            .map(
+              (q) => PollTemplateQuestion(
+                title: q.title,
+                type: q.type,
+                options: q.options.map((o) => o.label).toList(),
+              ),
+            )
+            .toList(),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SurveyCreatorPage(
+            presentAsPoll: false,
+            initialTemplate: template,
+          ),
+        ),
+      );
+      return;
+    }
     await _exportSurvey(survey, action);
   }
 
@@ -162,7 +240,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: false);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: true);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -198,7 +276,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -234,7 +312,7 @@ class _FormExportPageState extends State<FormExportPage> {
     final exportContext = context;
     final includeContent = await _selectIncludeContent(isPoll: true);
     if (includeContent == null || !exportContext.mounted) return;
-    final format = await _selectExportFormat();
+    final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
 
     try {
@@ -311,6 +389,11 @@ class _FormExportPageState extends State<FormExportPage> {
                 onTap: () => Navigator.pop(context, _FormAction.viewResults),
               ),
               ListTile(
+                leading: const Icon(Icons.copy_outlined),
+                title: Text(context.l10n.useAsTemplate),
+                onTap: () => Navigator.pop(context, _FormAction.useAsTemplate),
+              ),
+              ListTile(
                 leading: const Icon(Icons.save_alt),
                 title: Text(_downloadLabel(context)),
                 onTap: () => Navigator.pop(context, _FormAction.save),
@@ -327,7 +410,7 @@ class _FormExportPageState extends State<FormExportPage> {
     );
   }
 
-  Future<ExportFileFormat?> _selectExportFormat() {
+  Future<ExportFileFormat?> _selectExportFormat({required bool isPetition}) {
     return showModalBottomSheet<ExportFileFormat>(
       context: context,
       showDragHandle: true,
@@ -338,22 +421,29 @@ class _FormExportPageState extends State<FormExportPage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.table_chart),
-                title: const Text('CSV'),
+                title: Text(context.l10n.exportCsv),
                 subtitle: const Text('.csv'),
                 onTap: () => Navigator.pop(context, ExportFileFormat.csv),
               ),
               ListTile(
                 leading: const Icon(Icons.data_object),
-                title: const Text('JSON'),
+                title: Text(context.l10n.exportJson),
                 subtitle: const Text('.json'),
                 onTap: () => Navigator.pop(context, ExportFileFormat.json),
               ),
               ListTile(
-                leading: const Icon(Icons.description),
-                title: const Text('Plain text'),
-                subtitle: const Text('.txt'),
-                onTap: () => Navigator.pop(context, ExportFileFormat.plainText),
+                leading: const Icon(Icons.picture_as_pdf),
+                title: Text(context.l10n.exportPdfVerbose),
+                subtitle: const Text('.pdf'),
+                onTap: () => Navigator.pop(context, ExportFileFormat.pdf),
               ),
+              if (isPetition)
+                ListTile(
+                  leading: const Icon(Icons.view_list_outlined),
+                  title: Text(context.l10n.exportPdfSlim),
+                  subtitle: const Text('.pdf'),
+                  onTap: () => Navigator.pop(context, ExportFileFormat.pdfSlim),
+                ),
             ],
           ),
         );
@@ -574,4 +664,4 @@ class _FormExportPageState extends State<FormExportPage> {
   }
 }
 
-enum _FormAction { viewResults, save, share }
+enum _FormAction { viewResults, useAsTemplate, save, share }

@@ -108,6 +108,8 @@ class SignActionButton extends ConsumerWidget {
               onChanged: (value) => tempReason = value,
               decoration: InputDecoration(
                 hintText: S.of(context).enterYourReasonHere,
+                helperText: context.l10n.signatureReasonPublic,
+                helperMaxLines: 3,
               ),
             ),
             actions: [

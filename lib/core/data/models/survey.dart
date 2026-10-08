@@ -20,21 +20,30 @@ class SurveyOption {
   Map<String, dynamic> toMap() => {'id': id, 'label': label};
 }
 
+enum SurveyQuestionType { multipleChoice, text }
+
 class SurveyQuestion {
   final String id;
   final String title;
   final List<SurveyOption> options;
+  final SurveyQuestionType type;
+
+  bool get isText => type == SurveyQuestionType.text;
 
   const SurveyQuestion({
     required this.id,
     required this.title,
     required this.options,
+    this.type = SurveyQuestionType.multipleChoice,
   });
 
   factory SurveyQuestion.fromMap(Map<String, dynamic> map) {
     return SurveyQuestion(
       id: (map['id'] ?? '') as String,
       title: (map['title'] ?? '') as String,
+      type: map['type'] == 'text'
+          ? SurveyQuestionType.text
+          : SurveyQuestionType.multipleChoice,
       options:
           (map['options'] as List?)
               ?.map(
@@ -48,6 +57,7 @@ class SurveyQuestion {
   Map<String, dynamic> toMap() => {
     'id': id,
     'title': title,
+    'type': type.name,
     'options': options.map((option) => option.toMap()).toList(),
   };
 }

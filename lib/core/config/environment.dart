@@ -33,24 +33,42 @@ class Environment {
   static String get appName => config.appName;
   static String get supportEmail => config.supportEmail;
   static String get privacyPolicyUrl => config.privacyPolicyUrl;
-  static String privacyPolicyUrlForLocale(Locale locale) {
-    if (!isStimmapp) return privacyPolicyUrl;
-    return locale.languageCode.toLowerCase() == 'de'
-        ? 'https://www.stimmapp.net/datenschutzerklaerung'
-        : 'https://www.stimmapp.net/privacy-policy';
+  static String websiteUrlForLocale(
+    Locale locale, {
+    required String germanPath,
+    required String englishPath,
+  }) {
+    final german = locale.languageCode.toLowerCase() == 'de';
+    return 'https://${german ? 'stimmapp.net' : 'vivot.net'}/${german ? germanPath : englishPath}/';
   }
+
+  static String privacyPolicyUrlForLocale(Locale locale) => websiteUrlForLocale(
+    locale,
+    germanPath: 'datenschutzerklaerung',
+    englishPath: 'privacy-policy',
+  );
+  static String privacyPolicyCrashDataUrlForLocale(Locale locale) =>
+      websiteUrlForLocale(
+        locale,
+        germanPath: 'datenschutzerklaerung-absturzdaten',
+        englishPath: 'privacy-policy-crash-data',
+      );
+  static String termsOfServiceUrlForLocale(Locale locale) =>
+      websiteUrlForLocale(
+        locale,
+        germanPath: 'nutzungsbedingungen',
+        englishPath: 'terms-of-service',
+      );
+  static String documentationUrlForLocale(Locale locale) => websiteUrlForLocale(
+    locale,
+    germanPath: 'dokumentation',
+    englishPath: 'documentation',
+  );
 
   static String get privacyPolicyCrashDataUrl =>
       config.privacyPolicyCrashDataUrl;
   static String get privacyPolicyCookiesUrl => config.privacyPolicyCookiesUrl;
   static String get termsOfServiceUrl => config.termsOfServiceUrl;
-  static String termsOfServiceUrlForLocale(Locale locale) {
-    if (!isStimmapp) return termsOfServiceUrl;
-    return locale.languageCode.toLowerCase() == 'de'
-        ? 'https://www.stimmapp.net/nutzungsbedingungen'
-        : 'https://www.stimmapp.net/terms-of-service';
-  }
-
   static String get faqUrl => config.faqUrl;
   static String get shareHost => config.shareHost;
   static String get shareBaseUrl => config.shareBaseUrl;

@@ -152,3 +152,7 @@ if (process.env.GCLOUD_PROJECT !== PROD_PROJECT_ID) {
         exports[key] = testDataSeeder[key];
     });
 }
+
+export { cleanupGroupPictures } from "./group_picture_cleanup";
+
+export { cleanupPetitionCommentLikes } from "./petition_comment_cleanup";

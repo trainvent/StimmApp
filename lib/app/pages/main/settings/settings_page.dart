@@ -177,6 +177,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   },
                 ),
               ),
+              _buildSectionHeader(context, context.l10n.settingsLookAndFeel),
               ListTile(
                 title: Text(context.l10n.colorTheme),
                 onTap: () {
@@ -219,7 +220,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     builder: (context) =>
                         SelectionNotifierDialog<AppColorTheme>(
                           notifier: ValueNotifier<AppColorTheme?>(
-                            themeScheme ?? AppColorTheme.trainvent,
+                            themeScheme ?? AppColorTheme.sunset,
                           ),
                           options: AppColorTheme.values,
                           optionLabel: _themeSchemeLabel,
@@ -242,12 +243,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     Text(
                       _themeSchemeLabel(
                         context,
-                        themeScheme ?? AppColorTheme.trainvent,
+                        themeScheme ?? AppColorTheme.sunset,
                       ),
                     ),
                     const SizedBox(width: 10),
                     _themePreview(
-                      themeScheme ?? AppColorTheme.trainvent,
+                      themeScheme ?? AppColorTheme.sunset,
                       size: 12,
                       spacing: 4,
                     ),
@@ -295,6 +296,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                 },
               ),
+              _buildSectionHeader(context, context.l10n.settingsBehaviour),
               ListTile(
                 title: Text(S.of(context).signatureReasoning),
                 trailing: Row(
@@ -330,6 +332,40 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ),
               ),
               ListTile(
+                key: const Key('showBlockedForms'),
+                title: Text(context.l10n.showBlockedForms),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      tooltip: context.l10n.blockedFormsInfo,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(context.l10n.blockedFormsInfo),
+                          content: Text(context.l10n.blockedFormsNotice),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(context.l10n.close),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: ref.watch(showBlockedFormsProvider),
+                      onChanged: (value) => ref
+                          .read(showBlockedFormsProvider.notifier)
+                          .setEnabled(value),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Divider(),
+              ListTile(
                 title: Text(context.l10n.aboutThisApp),
                 onTap: () {
                   Navigator.push(
@@ -342,14 +378,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   );
                 },
               ),
-              Divider(
-                color: Theme.of(context).colorScheme.primary,
-                thickness: 5,
-              ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+Widget _buildSectionHeader(BuildContext context, String title) {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
+    child: Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
+  );
 }

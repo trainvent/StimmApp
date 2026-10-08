@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/app/pages/main/home/blocked_forms_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/main/home/creator/petition_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
@@ -22,13 +24,16 @@ class WidgetTree extends ConsumerWidget {
     final currentUrl =
         ref.watch(profilePictureUrlProvider) ??
         authService.currentUser?.photoURL;
+    final blockedOnly = ref.watch(showBlockedFormsProvider);
     final selectedPage = ref.watch(selectedMainPageProvider);
     final pages = mainPagesConfig(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(pages[selectedPage].title),
-        leading: selectedPage == 0
+        leading: blockedOnly
+            ? const BannedModeMarker()
+            : selectedPage == 0
             ? CreationIconButton(
                 type: CreationType.petition,
                 pageBuilder: (context) => const PetitionCreatorPage(),
@@ -91,7 +96,11 @@ class WidgetTree extends ConsumerWidget {
           ),
         ],
       ),
-      body: pages[selectedPage].page,
+      body: blockedOnly
+          ? BlockedFormsPage(
+              contentType: selectedPage == 0 ? 'petition' : 'poll',
+            )
+          : pages[selectedPage].page,
       bottomNavigationBar: const NavbarWidget(),
     );
   }

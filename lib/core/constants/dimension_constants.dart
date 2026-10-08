@@ -6,6 +6,8 @@ class AppRadii {
 }
 
 class DConst {
+  static const double minimalPadding = 4.0;
+  static const double tagHorizontalPadding = 6.0;
   static const double pad5 = 5.0;
   static const double pad10 = 10.0;
   static const double pad15 = 15.0;

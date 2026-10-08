@@ -28,6 +28,7 @@ class AppSlidable extends StatefulWidget {
     this.startAction,
     this.endAction,
     this.enabled = true,
+    this.showSwipeHint = false,
     this.onStartSwipe,
     this.onEndSwipe,
   });
@@ -36,6 +37,9 @@ class AppSlidable extends StatefulWidget {
   final AppSlidableAction? startAction;
   final AppSlidableAction? endAction;
   final bool enabled;
+
+  /// Reveal both swipe actions once when this tile first appears.
+  final bool showSwipeHint;
   final Future<void> Function()? onStartSwipe;
   final Future<void> Function()? onEndSwipe;
 
@@ -46,6 +50,9 @@ class AppSlidable extends StatefulWidget {
 class _AppSlidableState extends State<AppSlidable>
     with SingleTickerProviderStateMixin {
   SlidableController? _controller;
+  Timer? _hintTimer;
+  bool _hintCancelled = false;
+  bool _hintRunning = false;
   int? _activePointer;
   Offset? _pointerDownPosition;
   bool _pointerStartedClosed = true;
@@ -54,12 +61,56 @@ class _AppSlidableState extends State<AppSlidable>
   void initState() {
     super.initState();
     _controller = SlidableController(this);
+    if (widget.showSwipeHint) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted ||
+            _hintCancelled ||
+            MediaQuery.disableAnimationsOf(context)) {
+          return;
+        }
+        _hintTimer = Timer(const Duration(milliseconds: 300), _playSwipeHint);
+      });
+    }
   }
 
   @override
   void dispose() {
+    _hintCancelled = true;
+    _hintTimer?.cancel();
     _controller?.dispose();
     super.dispose();
+  }
+
+  bool get _canContinueHint =>
+      mounted &&
+      !_hintCancelled &&
+      widget.enabled &&
+      !MediaQuery.disableAnimationsOf(context);
+
+  Future<void> _playSwipeHint() async {
+    if (!_canContinueHint) return;
+    _hintRunning = true;
+    final isLtr = Directionality.of(context) == TextDirection.ltr;
+    final leftAction = isLtr ? widget.endAction : widget.startAction;
+    final rightAction = isLtr ? widget.startAction : widget.endAction;
+    for (final (action, ratio) in [
+      (leftAction, isLtr ? -0.125 : 0.125),
+      (rightAction, isLtr ? 0.125 : -0.125),
+    ]) {
+      if (action == null) continue;
+      await _slidableController.openTo(
+        ratio,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutBack,
+      );
+      if (!_canContinueHint) return;
+      await _slidableController.close(
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeInCubic,
+      );
+      if (!_canContinueHint) return;
+    }
+    _hintRunning = false;
   }
 
   SlidableController get _slidableController =>
@@ -108,6 +159,12 @@ class _AppSlidableState extends State<AppSlidable>
 
   void _handlePointerDown(PointerDownEvent event) {
     if (!widget.enabled || _activePointer != null) return;
+    _hintCancelled = true;
+    _hintTimer?.cancel();
+    if (_hintRunning) {
+      _hintRunning = false;
+      unawaited(_slidableController.close(duration: Duration.zero));
+    }
     _activePointer = event.pointer;
     _pointerDownPosition = event.localPosition;
     _pointerStartedClosed = _slidableController.ratio.abs() < 0.001;
