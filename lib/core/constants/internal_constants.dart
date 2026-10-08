@@ -20,9 +20,17 @@ class IConst {
     'OWNER_EMAIL',
     defaultValue: '',
   );
+  static const String _additionalProEmails = String.fromEnvironment(
+    'ALWAYS_PRO_EMAILS',
+    defaultValue: '',
+  );
   static Set<String> get alwaysProEmails => <String>{
     if (adminEmail.isNotEmpty) adminEmail.toLowerCase(),
     if (ownerEmail.isNotEmpty) ownerEmail.toLowerCase(),
+    ..._additionalProEmails
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .where((email) => email.isNotEmpty),
   };
   static const String noreplyEmail = String.fromEnvironment(
     'NOREPLY_EMAIL',

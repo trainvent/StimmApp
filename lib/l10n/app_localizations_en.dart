@@ -3240,6 +3240,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noGroupFilter => 'No group';
 
   @override
+  String get petitionDeletionFailed =>
+      'Could not delete the petition. Please try again.';
+
+  @override
   String get pollDeletionFailed =>
       'Could not delete the poll. Please try again.';
 

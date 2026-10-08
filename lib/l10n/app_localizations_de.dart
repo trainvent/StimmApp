@@ -3282,6 +3282,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noGroupFilter => 'Keine Gruppe';
 
   @override
+  String get petitionDeletionFailed =>
+      'Die Petition konnte nicht gelöscht werden. Bitte versuche es erneut.';
+
+  @override
   String get pollDeletionFailed =>
       'Die Umfrage konnte nicht gelöscht werden. Bitte versuche es erneut.';
 

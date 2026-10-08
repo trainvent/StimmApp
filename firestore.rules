@@ -274,8 +274,10 @@ service cloud.firestore {
     // Petitions & Polls
     match /petitions/{petitionId} {
       allow read: if true;
-      allow write: if isAdmin() ||
+      allow create, update: if isAdmin() ||
                     (isAuthenticated() && hasValidContentState(request.resource.data));
+      allow delete: if isAdmin() ||
+                    (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
 
     match /petitions/{petitionId}/signatures/{signerId} {

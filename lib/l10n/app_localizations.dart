@@ -5936,6 +5936,12 @@ abstract class AppLocalizations {
   /// **'No group'**
   String get noGroupFilter;
 
+  /// No description provided for @petitionDeletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the petition. Please try again.'**
+  String get petitionDeletionFailed;
+
   /// No description provided for @pollDeletionFailed.
   ///
   /// In en, this message translates to:
