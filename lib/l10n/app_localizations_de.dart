@@ -288,7 +288,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get darkMode => 'Dunkler Modus';
 
   @override
-  String get design => 'Design';
+  String get structure => 'Struktur';
 
   @override
   String get dateOfBirth => 'Geburtsdatum';

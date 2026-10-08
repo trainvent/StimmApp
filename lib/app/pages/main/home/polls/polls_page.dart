@@ -187,7 +187,7 @@ class _PollsPageState extends State<PollsPage> {
           _showSurveys = true;
         });
       },
-      designFilterSectionBuilder: (dialogContext, setDialogState) {
+      structureFilterSectionBuilder: (dialogContext, setDialogState) {
         return CheckboxListTile(
           key: const Key('show_surveys_filter_checkbox'),
           contentPadding: EdgeInsets.zero,

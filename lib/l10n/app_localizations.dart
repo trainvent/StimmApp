@@ -620,11 +620,11 @@ abstract class AppLocalizations {
   /// **'Dark Mode'**
   String get darkMode;
 
-  /// No description provided for @design.
+  /// No description provided for @structure.
   ///
   /// In en, this message translates to:
-  /// **'Design'**
-  String get design;
+  /// **'Structure'**
+  String get structure;
 
   /// No description provided for @dateOfBirth.
   ///

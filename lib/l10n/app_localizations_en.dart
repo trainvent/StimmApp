@@ -287,7 +287,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkMode => 'Dark Mode';
 
   @override
-  String get design => 'Design';
+  String get structure => 'Structure';
 
   @override
   String get dateOfBirth => 'Date of Birth';
