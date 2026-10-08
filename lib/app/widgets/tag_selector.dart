@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/widgets/tag_wrap.dart';
 import 'package:stimmapp/core/constants/app_tags_helper.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -54,9 +55,7 @@ class _TagSelectorState extends State<TagSelector> {
         ),
         if (atLimit) Text(context.l10n.tagSelectionLimit),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 4.0,
+        TagWrap(
           children: tagsMap.entries.map((entry) {
             final tagKey = entry.key;
             final localizedTag = entry.value;

@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/widgets/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
+import 'package:stimmapp/app/widgets/tag_wrap.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -625,9 +626,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
               const SizedBox(height: 12),
               Text(_descriptionController.text.trim()),
               const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
+              TagWrap(
                 children: [
                   for (final tag in _selectedTags)
                     Chip(
@@ -1328,10 +1327,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              TagWrap(
                 children: [
                   for (final tag in _selectedTags)
                     InputChip(
