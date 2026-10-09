@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.pidVerificationRequestPreview = exports.pidVerifier = exports.pidVerifierApp = void 0;
 exports.ensurePidVerifierAgent = ensurePidVerifierAgent;
 exports.shutdownPidVerifierAgent = shutdownPidVerifierAgent;
+exports.createPidAuthorizationRequest = createPidAuthorizationRequest;
 const pid_verification_result_page_js_1 = require("./pid_verification_result_page.js");
 const pid_verification_routes_js_1 = require("./pid_verification_routes.js");
 const pid_verifier_trust_js_1 = require("./pid_verifier_trust.js");
@@ -195,11 +196,10 @@ async function shutdownPidVerifierAgent() {
     await agent.shutdown();
     pidVerifierAgentPromise = undefined;
 }
-async function createPidVerificationRequest(options, ownerUid) {
-    var _a, _b, _c, _d, _e, _f;
-    const { agent, accessCertificate, registrationCertificate, verifierRecord } = await ensurePidVerifierAgent();
-    const resultNonce = (0, node_crypto_1.randomUUID)();
-    const { authorizationRequest, verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
+// Shared by the production session flow and real Credo request regressions.
+async function createPidAuthorizationRequest(context, resultNonce) {
+    const { agent, accessCertificate, registrationCertificate, verifierRecord } = context;
+    return agent.openid4vc.verifier.createAuthorizationRequest({
         requestSigner: {
             method: 'x5c',
             x5c: [accessCertificate],
@@ -210,7 +210,6 @@ async function createPidVerificationRequest(options, ownerUid) {
             {
                 format: 'registration_cert',
                 data: registrationCertificate,
-                credential_ids: ['pid-sd-jwt'],
             },
         ],
         version: 'v1',
@@ -220,6 +219,12 @@ async function createPidVerificationRequest(options, ownerUid) {
         responseMode: 'direct_post.jwt',
         authorizationResponseRedirectUri: `${PID_VERIFIER_BASE_URL}/result/${resultNonce}`,
     });
+}
+async function createPidVerificationRequest(options, ownerUid) {
+    var _a, _b, _c, _d, _e, _f;
+    const context = await ensurePidVerifierAgent();
+    const resultNonce = (0, node_crypto_1.randomUUID)();
+    const { authorizationRequest, verificationSession } = await createPidAuthorizationRequest(context, resultNonce);
     const sessionInfo = verificationSession;
     const verificationSessionId = String((_c = (_b = (_a = sessionInfo.id) !== null && _a !== void 0 ? _a : sessionInfo.verificationSessionId) !== null && _b !== void 0 ? _b : sessionInfo.authorizationRequestId) !== null && _c !== void 0 ? _c : 'unknown-session');
     const state = (_e = (_d = sessionInfo.authorizationRequestPayload) === null || _d === void 0 ? void 0 : _d.state) !== null && _e !== void 0 ? _e : verificationSessionId;
@@ -233,6 +238,7 @@ async function createPidVerificationRequest(options, ownerUid) {
         resultNonce,
         returnTarget: options.returnTarget,
         returnOrigin: options.returnOrigin,
+        brand: options.brand,
     });
     return {
         authorizationRequest,
@@ -305,7 +311,7 @@ function normalizeVerifiedPidClaimsForProfile(claims) {
     };
 }
 exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
-    var _a;
+    var _a, _b;
     const startedAt = Date.now();
     try {
         const user = await requireFirebaseUser(request);
@@ -316,7 +322,7 @@ exports.pidVerifierApp.post('/oid4vp/start', async (request, response) => {
             'Registration verification';
         const returnTarget = ((_a = request.body) === null || _a === void 0 ? void 0 : _a.returnTarget) === 'web' ? 'web' : 'native';
         const returnOrigin = returnTarget === 'web' ? allowedWebReturnOrigin(request) : undefined;
-        const result = await createPidVerificationRequest({ mode, purpose, returnTarget, returnOrigin }, user.uid);
+        const result = await createPidVerificationRequest({ mode, purpose, returnTarget, returnOrigin, brand: ((_b = request.body) === null || _b === void 0 ? void 0 : _b.brand) === 'vivot' ? 'vivot' : 'stimmapp' }, user.uid);
         (0, pid_verifier_logging_js_1.logPidVerifierEvent)({
             traceId: result.traceId,
             event: 'request_created',
@@ -371,7 +377,7 @@ function pidResultReturnUrl(session) {
 exports.pidVerifierApp.get('/oid4vp/result/:nonce', async (request, response) => {
     const session = await (0, pid_verification_session_js_1.getPidVerificationSessionByResultNonce)(request.params.nonce);
     const returnUrl = session ? pidResultReturnUrl(session) : 'stimmapp://pid-verification';
-    response.status(200).type('html').send((0, pid_verification_result_page_js_1.pidResultPage)(returnUrl, request.acceptsLanguages('en', 'de') === 'de' ? 'de' : 'en'));
+    response.status(200).type('html').send((0, pid_verification_result_page_js_1.pidResultPage)(returnUrl, (0, pid_verification_result_page_js_1.pidResultLanguage)(session === null || session === void 0 ? void 0 : session.brand)));
 });
 const pidVerifierSecrets = [
     pidAccessCertificateSecret,

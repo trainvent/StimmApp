@@ -1,4 +1,4 @@
-import { pidResultPage } from './pid_verification_result_page.js';
+import { pidResultLanguage, pidResultPage } from './pid_verification_result_page.js';
 import { registerPidSessionRoutes } from './pid_verification_routes.js';
 import { getPidSandboxTrustedIssuers } from './pid_verifier_trust.js';
 import { createPidSdJwtVcModule } from './pid_verifier_issuer.js';
@@ -104,6 +104,7 @@ type PidVerificationRequestInput = {
   purpose: string;
   returnTarget: PidVerificationReturnTarget;
   returnOrigin?: string;
+  brand: 'stimmapp' | 'vivot';
 };
 
 type CreatePidVerificationRequestResult = {
@@ -306,6 +307,7 @@ async function createPidVerificationRequest(
     resultNonce,
     returnTarget: options.returnTarget,
     returnOrigin: options.returnOrigin,
+    brand: options.brand,
   });
 
   return {
@@ -393,7 +395,7 @@ pidVerifierApp.post('/oid4vp/start', async (request, response) => {
     const returnTarget = request.body?.returnTarget === 'web' ? 'web' : 'native';
     const returnOrigin = returnTarget === 'web' ? allowedWebReturnOrigin(request) : undefined;
     const result = await createPidVerificationRequest(
-      { mode, purpose, returnTarget, returnOrigin },
+      { mode, purpose, returnTarget, returnOrigin, brand: request.body?.brand === 'vivot' ? 'vivot' : 'stimmapp' },
       user.uid,
     );
     logPidVerifierEvent({
@@ -454,7 +456,7 @@ function pidResultReturnUrl(session: {
 pidVerifierApp.get('/oid4vp/result/:nonce', async (request, response) => {
   const session = await getPidVerificationSessionByResultNonce(request.params.nonce);
   const returnUrl = session ? pidResultReturnUrl(session) : 'stimmapp://pid-verification';
-  response.status(200).type('html').send(pidResultPage(returnUrl, request.acceptsLanguages('en', 'de') === 'de' ? 'de' : 'en'));
+  response.status(200).type('html').send(pidResultPage(returnUrl, pidResultLanguage(session?.brand)));
 });
 
 const pidVerifierSecrets = [

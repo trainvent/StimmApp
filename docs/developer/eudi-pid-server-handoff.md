@@ -164,3 +164,17 @@ raw PID claims, credentials, tokens, secrets, or complete protocol messages.
 - `functions/src/pid_verification.ts`
 - `functions/test/pid_request_audience.test.mjs`
 - `deploy/pid-verifier/README.md`
+
+## Follow-up: brand language for the wallet return page
+
+The callback previously selected German/English from the wallet browser's
+`Accept-Language` header. That can be English even when StimmApp is German.
+The local change now sends `brand` in the app's `/oid4vp/start` request, persists
+it in the PID session, and renders German for `stimmapp`, English for `vivot`.
+Sessions or requests without a brand default to German (StimmApp).
+
+Deploy the updated verifier backend and rebuild/distribute the Flutter app so
+Vivot can send its brand. The backend alone gives existing StimmApp clients the
+German fallback. Use fresh sessions to check both brands; changing the wallet
+browser language must not change the callback language. No deployment was
+performed by the local agent for this follow-up.

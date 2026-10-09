@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { pidResultPage } from '../lib/pid_verification_result_page.js';
+import { pidResultLanguage, pidResultPage } from '../lib/pid_verification_result_page.js';
+
+test('callback uses German for StimmApp and English for Vivot, with a German fallback', () => {
+  for (const [brand, language] of [['stimmapp', 'de'], ['vivot', 'en'], [undefined, 'de']]) {
+    assert.match(pidResultPage('stimmapp://pid-verification', pidResultLanguage(brand)),
+      new RegExp(`lang="${language}"`));
+  }
+});
 
 test('wallet return page localizes recovery without claiming verified or saved data', () => {
   const german = pidResultPage('stimmapp://pid-verification', 'de');

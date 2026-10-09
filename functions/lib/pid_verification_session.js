@@ -57,20 +57,21 @@ function parseSession(sessionId, value) {
         resultNonce: value.resultNonce,
         returnTarget: value.returnTarget,
         returnOrigin: value.returnOrigin,
+        brand: value.brand === 'vivot' ? 'vivot' : 'stimmapp',
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
         expiresAt: value.expiresAt,
         verifiedAt: value.verifiedAt instanceof firestore_1.Timestamp ? value.verifiedAt : undefined,
     };
 }
-async function createPidVerificationSession({ sessionId, ownerUid, mode, purpose, expiresAt, resultNonce, returnTarget, returnOrigin, }) {
+async function createPidVerificationSession({ sessionId, ownerUid, mode, purpose, expiresAt, resultNonce, returnTarget, returnOrigin, brand, }) {
     const traceId = (0, node_crypto_1.randomUUID)();
     const now = firestore_1.Timestamp.now();
     await sessionReference(sessionId).create(Object.assign(Object.assign({ ownerUid,
         traceId,
         mode,
         purpose, state: 'pending', credentialFormat: 'dc+sd-jwt', credentialType: 'urn:eudi:pid:de:1', invocationMethod: 'same-device', policyVersion: 'pid-profile-v1', resultNonce,
-        returnTarget }, (returnOrigin ? { returnOrigin } : {})), { createdAt: now, updatedAt: now, expiresAt: firestore_1.Timestamp.fromDate(expiresAt) }));
+        returnTarget }, (returnOrigin ? { returnOrigin } : {})), { brand: brand !== null && brand !== void 0 ? brand : 'stimmapp', createdAt: now, updatedAt: now, expiresAt: firestore_1.Timestamp.fromDate(expiresAt) }));
     return traceId;
 }
 async function getPidVerificationSessionByResultNonce(resultNonce) {

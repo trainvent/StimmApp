@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pidResultLanguage = pidResultLanguage;
 exports.pidResultPage = pidResultPage;
+/** Brand owns the callback language, independent of wallet browser headers. */
+function pidResultLanguage(brand) {
+    return brand === 'vivot' ? 'en' : 'de';
+}
 /** The public callback confirms receipt, never verification or profile saving. */
 function pidResultPage(returnUrl, language) {
     const text = language === 'de' ? {

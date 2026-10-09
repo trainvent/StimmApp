@@ -1,3 +1,8 @@
+/** Brand owns the callback language, independent of wallet browser headers. */
+export function pidResultLanguage(brand: unknown): 'de' | 'en' {
+  return brand === 'vivot' ? 'en' : 'de';
+}
+
 /** The public callback confirms receipt, never verification or profile saving. */
 export function pidResultPage(returnUrl: string, language: 'de' | 'en') {
   const text = language === 'de' ? {

@@ -9,6 +9,8 @@ import { randomUUID } from 'node:crypto';
 const PID_VERIFICATION_SESSIONS_COLLECTION = 'pidVerificationSessions';
 const PID_VERIFICATION_REVIEW_WINDOW_MS = 30 * 60 * 1000;
 
+export type PidVerificationBrand = 'stimmapp' | 'vivot';
+
 export type PidVerificationMode = 'registration' | 'reverification';
 export type PidVerificationReturnTarget = 'native' | 'web';
 
@@ -34,6 +36,7 @@ export type PidVerificationSession = {
   resultNonce: string;
   returnTarget: PidVerificationReturnTarget;
   returnOrigin?: string;
+  brand?: PidVerificationBrand;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   expiresAt: Timestamp;
@@ -95,6 +98,7 @@ function parseSession(
     resultNonce: value.resultNonce,
     returnTarget: value.returnTarget,
     returnOrigin: value.returnOrigin,
+    brand: value.brand === 'vivot' ? 'vivot' : 'stimmapp',
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
     expiresAt: value.expiresAt,
@@ -111,6 +115,7 @@ export async function createPidVerificationSession({
   resultNonce,
   returnTarget,
   returnOrigin,
+  brand,
 }: {
   sessionId: string;
   ownerUid: string;
@@ -120,6 +125,7 @@ export async function createPidVerificationSession({
   resultNonce: string;
   returnTarget: PidVerificationReturnTarget;
   returnOrigin?: string;
+  brand?: PidVerificationBrand;
 }) {
   const traceId = randomUUID();
   const now = Timestamp.now();
@@ -137,6 +143,7 @@ export async function createPidVerificationSession({
     resultNonce,
     returnTarget,
     ...(returnOrigin ? { returnOrigin } : {}),
+    brand: brand ?? 'stimmapp',
     createdAt: now,
     updatedAt: now,
     expiresAt: Timestamp.fromDate(expiresAt),

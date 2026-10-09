@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
+import 'package:stimmapp/core/config/environment.dart';
 
 final pidVerificationServiceProvider = Provider<PidVerificationService>((ref) {
   final service = PidVerificationService();
@@ -114,6 +115,7 @@ class PidVerificationService {
         // The verifier persists this constrained source choice and only ever
         // returns to a server-approved destination.
         'returnTarget': kIsWeb ? 'web' : 'native',
+        'brand': Environment.isVivot ? 'vivot' : 'stimmapp',
       }),
       unavailableMessage: 'The PID verifier is unavailable. Please try again.',
     );
