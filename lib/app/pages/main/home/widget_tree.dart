@@ -52,6 +52,7 @@ class WidgetTree extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(name: '/profile'),
                   builder: (context) => ProfilePage(
                     settingsPageBuilder: (context) =>
                         SettingsPage(title: context.l10n.settings),

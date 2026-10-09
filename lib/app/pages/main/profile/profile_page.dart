@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/pages/main/profile/pid_verification_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -638,6 +639,10 @@ class ProfilePage extends ConsumerWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
+                                      settings: const RouteSettings(
+                                        name:
+                                            PidVerificationNavigation.routeName,
+                                      ),
                                       builder: (context) => PidVerificationPage(
                                         reverify: userProfile
                                             .hasIdentityVerificationHistory,

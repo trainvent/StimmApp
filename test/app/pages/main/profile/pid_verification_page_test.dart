@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/profile/pid_verification_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_navigation.dart';
 import 'package:stimmapp/core/data/services/pid_verification_service.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
@@ -56,6 +57,7 @@ Future<void> _showPage(
   WidgetTester tester,
   _Service service, {
   String language = 'de',
+  bool profileBelow = false,
 }) async {
   await tester.binding.setSurfaceSize(const Size(390, 844));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -70,15 +72,111 @@ Future<void> _showPage(
         locale: Locale(language),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const PidVerificationPage(),
+        home: profileBelow
+            ? const Scaffold(body: Text('Profile'))
+            : const PidVerificationPage(),
       ),
     ),
   );
+  if (profileBelow) {
+    final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+    navigator.pushReplacement<void, void>(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/profile'),
+        builder: (_) => const Scaffold(body: Text('Profile')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    navigator.push<void>(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/pid-verification'),
+        builder: (_) => const PidVerificationPage(),
+      ),
+    );
+  }
   await tester.pump();
   await tester.pump();
 }
 
 void main() {
+  testWidgets('close stays on PID and clears the completed review', (
+    tester,
+  ) async {
+    await _showPage(tester, _Service(), language: 'en');
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Confirm verified identity'));
+    await tester.tap(find.text('Confirm verified identity'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Close'));
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PidVerificationPage), findsOneWidget);
+    expect(find.text('Identity verified and saved'), findsNothing);
+    expect(find.text('Confirm verified identity'), findsNothing);
+  });
+
+  testWidgets('wallet callback reuses PID route and removes routes above it', (
+    tester,
+  ) async {
+    final navigation = PidVerificationNavigation();
+    final key = GlobalKey<NavigatorState>();
+    var returns = 0;
+    navigation.walletReturns.addListener(() => returns++);
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: key,
+        navigatorObservers: [navigation],
+        home: const Scaffold(body: Text('Profile')),
+      ),
+    );
+    key.currentState!.push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(
+          name: PidVerificationNavigation.routeName,
+        ),
+        builder: (_) => const Scaffold(body: Text('Original PID')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    key.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) => const Scaffold(body: Text('Other page')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(navigation.resumeExisting(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('Original PID'), findsOneWidget);
+    expect(returns, 1);
+    expect(navigation.resumeExisting(), isTrue);
+    await tester.pumpAndSettle();
+    key.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Profile'), findsOneWidget);
+    expect(navigation.resumeExisting(), isFalse);
+  });
+
+  testWidgets('back from accepted pops to profile without reopening review', (
+    tester,
+  ) async {
+    final service = _Service();
+    await _showPage(tester, service, language: 'en', profileBelow: true);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Confirm verified identity'));
+    await tester.tap(find.text('Confirm verified identity'));
+    await tester.pumpAndSettle();
+    expect(find.text('Identity verified and saved'), findsOneWidget);
+    expect(find.text('Confirm verified identity'), findsNothing);
+    final context = tester.element(find.byType(PidVerificationPage));
+    await Navigator.of(context).maybePop();
+    await tester.pumpAndSettle();
+    expect(find.text('Identity verified and saved'), findsNothing);
+    expect(find.text('Confirm verified identity'), findsNothing);
+    expect(find.byType(PidVerificationPage), findsNothing);
+    expect(find.text('Profile'), findsOneWidget);
+    expect(service.checks, 1);
+  });
+
   testWidgets(
     'waiting for the wallet offers recovery without claiming failure',
     (tester) async {

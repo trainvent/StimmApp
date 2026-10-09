@@ -169,6 +169,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        settings: const RouteSettings(name: '/profile'),
                         builder: (context) {
                           return const ProfilePage(settingsRouteIsBelow: true);
                         },

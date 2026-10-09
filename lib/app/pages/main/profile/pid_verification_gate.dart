@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/pages/main/profile/pid_verification_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/profile/pid_verification_page.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -50,6 +51,9 @@ Future<bool> ensureCurrentPidVerification(
   if (openVerification == true && context.mounted) {
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
+        settings: const RouteSettings(
+          name: PidVerificationNavigation.routeName,
+        ),
         builder: (_) => PidVerificationPage(
           reverify: profile?.hasIdentityVerificationHistory == true,
         ),

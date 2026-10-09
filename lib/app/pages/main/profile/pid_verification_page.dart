@@ -1,3 +1,5 @@
+import 'package:stimmapp/app/pages/main/profile/profile_page.dart';
+import 'package:stimmapp/app/pages/main/profile/pid_verification_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -62,6 +64,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    pidVerificationNavigation.walletReturns.addListener(_walletReturned);
     // A web wallet callback cold-loads the app. Firebase Auth can still be
     // restoring its persisted session when this page first appears, so wait
     // for a signed-in user instead of treating the transient null as final.
@@ -77,6 +80,7 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
 
   @override
   void dispose() {
+    pidVerificationNavigation.walletReturns.removeListener(_walletReturned);
     _currentUserSubscription.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -89,6 +93,48 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
         !_busy &&
         !_closed) {
       _pollVerificationStatus();
+    }
+  }
+
+  void _walletReturned() {
+    if (!mounted ||
+        ModalRoute.of(context)?.isCurrent != true ||
+        _busy ||
+        _closed) {
+      return;
+    }
+    _pollVerificationStatus();
+  }
+
+  void _returnToStart() {
+    _operation++;
+    setState(() {
+      _verificationSessionId = null;
+      _verificationStatus = null;
+      _authorizationRequest = null;
+      _verifiedClaims = const {};
+      _normalizedVerifiedClaims = const {};
+      _expiresAt = null;
+      _error = null;
+      _waitingForWallet = false;
+    });
+  }
+
+  void _returnToProfile() {
+    _operation++;
+    final navigator = Navigator.of(context);
+    var foundProfile = false;
+    navigator.popUntil((route) {
+      foundProfile = route.settings.name == '/profile';
+      return foundProfile || route.isFirst;
+    });
+    if (!foundProfile) {
+      navigator.push<void>(
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/profile'),
+          builder: (_) => const ProfilePage(),
+        ),
+      );
     }
   }
 
@@ -248,6 +294,9 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
       if (!mounted) return;
       setState(() {
         _verificationStatus = 'accepted';
+        _verifiedClaims = const {};
+        _normalizedVerifiedClaims = const {};
+        _authorizationRequest = null;
       });
     } on PidVerificationException catch (error) {
       if (mounted) {
@@ -401,8 +450,10 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
         }
         setState(() {
           _verificationStatus = result.status;
-          _verifiedClaims = result.claims;
-          _normalizedVerifiedClaims = result.normalizedClaims;
+          _verifiedClaims = _closed ? const {} : result.claims;
+          _normalizedVerifiedClaims = _closed
+              ? const {}
+              : result.normalizedClaims;
           if (result.status == 'failed') {
             _error = context.l10n.pidFailed;
           } else if (result.status == 'expired') {
@@ -475,311 +526,327 @@ class _PidVerificationPageState extends ConsumerState<PidVerificationPage>
     final requestedMode =
         _mode ?? (hasVerificationHistory ? 'reverification' : 'registration');
 
-    return AppBarScaffold(
-      title: context.l10n.pidTitle,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.pidHeading,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.pidIntro,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      if (kIsWeb) ...[
+    return PopScope(
+      canPop: _verificationStatus != 'accepted',
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _verificationStatus == 'accepted') _returnToProfile();
+      },
+      child: AppBarScaffold(
+        title: context.l10n.pidTitle,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.pidHeading,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                         const SizedBox(height: 8),
                         Text(
-                          context.l10n.pidWebHint,
+                          context.l10n.pidIntro,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      ],
-                      const SizedBox(height: 16),
-                      Text(
-                        requestedMode == 'reverification'
-                            ? context.l10n.pidReverification
-                            : context.l10n.pidRegistration,
-                      ),
-                      if (_expiresAt != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          context.l10n.pidExpiry(
-                            DateFormat.yMd(
-                              Localizations.localeOf(context).toLanguageTag(),
-                            ).add_Hm().format(_expiresAt!.toLocal()),
+                        if (kIsWeb) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.pidWebHint,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (_waitingForWallet)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(context.l10n.pidWaitingHint),
-                ),
-              if (_error != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(_error!),
-                )
-              else if (_verificationSessionId == null)
-                const SizedBox.shrink(),
-              if (_error != null && _verificationSessionId == null)
-                TextButton(
-                  onPressed: _busy ? null : _restoreResumableVerification,
-                  child: Text(context.l10n.pidRestore),
-                ),
-              if (_verificationSessionId != null && !_closed)
-                TextButton(
-                  onPressed: _busy ? null : _cancelVerification,
-                  child: Text(
-                    _isCancelling
-                        ? context.l10n.pidCancelling
-                        : context.l10n.pidCancel,
-                  ),
-                ),
-              if (_verificationSessionId != null) ...[
-                if (_verificationStatus != null) ...[
-                  const SizedBox(height: 8),
-                  Card(
-                    color:
-                        _verificationStatus == 'verified' ||
-                            _verificationStatus == 'accepted'
-                        ? Theme.of(context).colorScheme.primaryContainer
-                        : null,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                _verificationStatus == 'verified' ||
-                                        _verificationStatus == 'accepted'
-                                    ? Icons.verified_rounded
-                                    : Icons.hourglass_top_rounded,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _verificationStatus == 'accepted'
-                                      ? context.l10n.pidAccepted
-                                      : _verificationStatus == 'verified'
-                                      ? context.l10n.pidVerified
-                                      : _verificationStatus == 'expired'
-                                      ? context.l10n.pidExpired
-                                      : _verificationStatus == 'cancelled'
-                                      ? context.l10n.pidCancelled
-                                      : _verificationStatus == 'failed'
-                                      ? context.l10n.pidFailed
-                                      : context.l10n.pidWaiting,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (_verificationStatus == 'verified') ...[
-                            if (_error != null)
-                              TextButton(
-                                onPressed: _busy || _isCheckingStatus
-                                    ? null
-                                    : _pollVerificationStatus,
-                                child: Text(context.l10n.pidCheck),
-                              ),
-                            const SizedBox(height: 12),
-                            Builder(
-                              builder: (context) {
-                                final comparisons = _comparisons(userProfile);
-                                final hasMismatch = comparisons.any(
-                                  (comparison) => !_valuesMatch(comparison),
-                                );
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Text(
-                                      hasMismatch
-                                          ? context.l10n.pidMismatch
-                                          : context.l10n.pidMatch,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyLarge,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    ...comparisons.map((comparison) {
-                                      final matches = _valuesMatch(comparison);
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              matches
-                                                  ? Icons.check_circle_outline
-                                                  : Icons.warning_amber_rounded,
-                                              color: matches
-                                                  ? Theme.of(
-                                                      context,
-                                                    ).colorScheme.primary
-                                                  : Theme.of(
-                                                      context,
-                                                    ).colorScheme.error,
-                                              size: 20,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: _PidComparisonDetails(
-                                                comparison: comparison,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                                    const SizedBox(height: 16),
-                                    FilledButton(
-                                      onPressed: _busy || _isCheckingStatus
-                                          ? null
-                                          : _acceptVerifiedCredentials,
-                                      child: _isAcceptingCredentials
-                                          ? LoadingInfo(
-                                              text: hasMismatch
-                                                  ? context.l10n.pidUseDetails
-                                                  : context.l10n.pidConfirm,
-                                              indicatorColor: Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimary,
-                                              size: 18,
-                                            )
-                                          : Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(
-                                                  Icons.person_pin_rounded,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Flexible(
-                                                  child: Text(
-                                                    hasMismatch
-                                                        ? context
-                                                              .l10n
-                                                              .pidUseDetails
-                                                        : context
-                                                              .l10n
-                                                              .pidConfirm,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                          if (_verificationStatus == 'accepted') ...[
-                            const SizedBox(height: 12),
-                            Text(context.l10n.pidSaved),
-                          ],
                         ],
-                      ),
+                        const SizedBox(height: 16),
+                        Text(
+                          requestedMode == 'reverification'
+                              ? context.l10n.pidReverification
+                              : context.l10n.pidRegistration,
+                        ),
+                        if (_expiresAt != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.pidExpiry(
+                              DateFormat.yMd(
+                                Localizations.localeOf(context).toLanguageTag(),
+                              ).add_Hm().format(_expiresAt!.toLocal()),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                ],
-                if (_verificationStatus != 'verified' &&
-                    _verificationStatus != 'accepted') ...[
-                  if (_authorizationRequest != null && !_closed) ...[
-                    FilledButton.icon(
-                      onPressed: _busy ? null : () => _openWallet(),
-                      icon: const Icon(Icons.open_in_new_rounded),
-                      label: Text(context.l10n.pidOpenWallet),
+                ),
+                const SizedBox(height: 16),
+                if (_waitingForWallet)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(context.l10n.pidWaitingHint),
+                  ),
+                if (_error != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(_error!),
+                  )
+                else if (_verificationSessionId == null)
+                  const SizedBox.shrink(),
+                if (_error != null && _verificationSessionId == null)
+                  TextButton(
+                    onPressed: _busy ? null : _restoreResumableVerification,
+                    child: Text(context.l10n.pidRestore),
+                  ),
+                if (_verificationSessionId != null && !_closed)
+                  TextButton(
+                    onPressed: _busy ? null : _cancelVerification,
+                    child: Text(
+                      _isCancelling
+                          ? context.l10n.pidCancelling
+                          : context.l10n.pidCancel,
+                    ),
+                  ),
+                if (_verificationSessionId != null) ...[
+                  if (_verificationStatus != null) ...[
+                    const SizedBox(height: 8),
+                    Card(
+                      color:
+                          _verificationStatus == 'verified' ||
+                              _verificationStatus == 'accepted'
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : null,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _verificationStatus == 'verified' ||
+                                          _verificationStatus == 'accepted'
+                                      ? Icons.verified_rounded
+                                      : Icons.hourglass_top_rounded,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _verificationStatus == 'accepted'
+                                        ? context.l10n.pidAccepted
+                                        : _verificationStatus == 'verified'
+                                        ? context.l10n.pidVerified
+                                        : _verificationStatus == 'expired'
+                                        ? context.l10n.pidExpired
+                                        : _verificationStatus == 'cancelled'
+                                        ? context.l10n.pidCancelled
+                                        : _verificationStatus == 'failed'
+                                        ? context.l10n.pidFailed
+                                        : context.l10n.pidWaiting,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_verificationStatus == 'verified') ...[
+                              if (_error != null)
+                                TextButton(
+                                  onPressed: _busy || _isCheckingStatus
+                                      ? null
+                                      : _pollVerificationStatus,
+                                  child: Text(context.l10n.pidCheck),
+                                ),
+                              const SizedBox(height: 12),
+                              Builder(
+                                builder: (context) {
+                                  final comparisons = _comparisons(userProfile);
+                                  final hasMismatch = comparisons.any(
+                                    (comparison) => !_valuesMatch(comparison),
+                                  );
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text(
+                                        hasMismatch
+                                            ? context.l10n.pidMismatch
+                                            : context.l10n.pidMatch,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      ...comparisons.map((comparison) {
+                                        final matches = _valuesMatch(
+                                          comparison,
+                                        );
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                matches
+                                                    ? Icons.check_circle_outline
+                                                    : Icons
+                                                          .warning_amber_rounded,
+                                                color: matches
+                                                    ? Theme.of(
+                                                        context,
+                                                      ).colorScheme.primary
+                                                    : Theme.of(
+                                                        context,
+                                                      ).colorScheme.error,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: _PidComparisonDetails(
+                                                  comparison: comparison,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }),
+                                      const SizedBox(height: 16),
+                                      FilledButton(
+                                        onPressed: _busy || _isCheckingStatus
+                                            ? null
+                                            : _acceptVerifiedCredentials,
+                                        child: _isAcceptingCredentials
+                                            ? LoadingInfo(
+                                                text: hasMismatch
+                                                    ? context.l10n.pidUseDetails
+                                                    : context.l10n.pidConfirm,
+                                                indicatorColor: Theme.of(
+                                                  context,
+                                                ).colorScheme.onPrimary,
+                                                size: 18,
+                                              )
+                                            : Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.person_pin_rounded,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Flexible(
+                                                    child: Text(
+                                                      hasMismatch
+                                                          ? context
+                                                                .l10n
+                                                                .pidUseDetails
+                                                          : context
+                                                                .l10n
+                                                                .pidConfirm,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                            if (_verificationStatus == 'accepted') ...[
+                              const SizedBox(height: 12),
+                              Text(context.l10n.pidSaved),
+                              const SizedBox(height: 12),
+                              FilledButton(
+                                onPressed: _returnToStart,
+                                child: Text(context.l10n.close),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (_verificationStatus != 'verified' &&
+                      _verificationStatus != 'accepted') ...[
+                    if (_authorizationRequest != null && !_closed) ...[
+                      FilledButton.icon(
+                        onPressed: _busy ? null : () => _openWallet(),
+                        icon: const Icon(Icons.open_in_new_rounded),
+                        label: Text(context.l10n.pidOpenWallet),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _isCheckingStatus || _busy || _closed
+                            ? null
+                            : _pollVerificationStatus,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: _isCheckingStatus
+                            ? LoadingInfo(
+                                text: context.l10n.pidChecking,
+                                indicatorColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
+                                size: 18,
+                              )
+                            : Text(context.l10n.pidCheck),
+                      ),
                     ),
                     const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _busy || _isCheckingStatus
+                                ? null
+                                : _startVerification,
+                            icon: const Icon(Icons.refresh),
+                            label: Text(context.l10n.pidRestart),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
+                ] else ...[
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _isCheckingStatus || _busy || _closed
+                    child: FilledButton(
+                      onPressed: _isLoading || _isRestoringSession
                           ? null
-                          : _pollVerificationStatus,
-                      icon: const Icon(Icons.refresh_rounded),
-                      label: _isCheckingStatus
+                          : _startVerification,
+                      child: _isLoading || _isRestoringSession
                           ? LoadingInfo(
-                              text: context.l10n.pidChecking,
+                              text: _isRestoringSession
+                                  ? context.l10n.pidRestoring
+                                  : context.l10n.pidGenerating,
                               indicatorColor: Theme.of(
                                 context,
-                              ).colorScheme.primary,
+                              ).colorScheme.onSurface,
                               size: 18,
                             )
-                          : Text(context.l10n.pidCheck),
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.verified_user_outlined),
+                                SizedBox(width: 8),
+                                Flexible(child: Text(context.l10n.pidStart)),
+                              ],
+                            ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _busy || _isCheckingStatus
-                              ? null
-                              : _startVerification,
-                          icon: const Icon(Icons.refresh),
-                          label: Text(context.l10n.pidRestart),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
-              ] else ...[
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _isLoading || _isRestoringSession
-                        ? null
-                        : _startVerification,
-                    child: _isLoading || _isRestoringSession
-                        ? LoadingInfo(
-                            text: _isRestoringSession
-                                ? context.l10n.pidRestoring
-                                : context.l10n.pidGenerating,
-                            indicatorColor: Theme.of(
-                              context,
-                            ).colorScheme.onSurface,
-                            size: 18,
-                          )
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.verified_user_outlined),
-                              SizedBox(width: 8),
-                              Flexible(child: Text(context.l10n.pidStart)),
-                            ],
-                          ),
-                  ),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ),

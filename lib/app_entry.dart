@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/pages/main/profile/pid_verification_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart'
@@ -199,6 +200,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     _openingDeepLink = true;
     try {
+      if (Uri.parse(routeName).path == PidVerificationNavigation.routeName &&
+          pidVerificationNavigation.resumeExisting()) {
+        return;
+      }
       navigator.pushNamed<void>(routeName);
     } finally {
       _openingDeepLink = false;
@@ -297,6 +302,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     final app = MaterialApp(
       navigatorKey: navigatorKey,
+      navigatorObservers: [pidVerificationNavigation],
       title: (locale?.languageCode.toLowerCase() == 'en')
           ? 'Vivot'
           : 'StimmApp',
