@@ -28,6 +28,7 @@ import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/errors/error_log_tool.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
+import 'package:stimmapp/core/providers/screen_corner_radius_provider.dart';
 import 'package:stimmapp/core/services/crash_reporting_service.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
 import 'package:stimmapp/core/theme/app_color_scheme.dart';
@@ -275,6 +276,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeMetrics() {
+    ref.invalidate(screenCornerRadiusProvider);
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _bootstrap.dispose();
@@ -287,14 +293,15 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final themeScheme = ref.watch(themeSchemeProvider);
     final locale = ref.watch(appLocaleProvider);
     final selectedTheme = themeScheme ?? AppColorTheme.sunset;
+    final cornerRadii = ref.watch(appCornerRadiiProvider);
 
     final app = MaterialApp(
       navigatorKey: navigatorKey,
       title: (locale?.languageCode.toLowerCase() == 'en')
           ? 'Vivot'
           : 'StimmApp',
-      theme: AppTheme.lightFor(selectedTheme),
-      darkTheme: AppTheme.darkFor(selectedTheme),
+      theme: AppTheme.lightFor(selectedTheme, cornerRadii: cornerRadii),
+      darkTheme: AppTheme.darkFor(selectedTheme, cornerRadii: cornerRadii),
       themeMode: themeMode,
       locale: locale,
       builder: (context, child) {

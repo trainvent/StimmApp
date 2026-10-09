@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:stimmapp/app/widgets/loading_info.dart';
 
 class ButtonWidget extends StatelessWidget {
@@ -17,9 +16,6 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadii.small),
-    );
     Widget widget;
     if (isFilled) {
       widget = ElevatedButton(
@@ -29,7 +25,6 @@ class ButtonWidget extends StatelessWidget {
           foregroundColor:
               Colors.black, // Ensure text is black on filled buttons
           minimumSize: const Size(double.infinity, 50),
-          shape: shape,
         ),
         child: _buttonContent(context, Colors.black),
       );
@@ -40,7 +35,6 @@ class ButtonWidget extends StatelessWidget {
           foregroundColor: Theme.of(context).colorScheme.primary,
           side: BorderSide(color: Theme.of(context).colorScheme.primary),
           minimumSize: const Size(double.infinity, 50),
-          shape: shape,
         ),
         child: _buttonContent(context, Theme.of(context).colorScheme.primary),
       );

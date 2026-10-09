@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import '../constants/dimension_constants.dart';
 import 'app_text_styles.dart';
+import 'app_corner_radii.dart';
 import 'app_color_scheme.dart';
 
 class AppTheme {
-  static ThemeData lightFor(AppColorTheme theme) {
+  static ThemeData lightFor(
+    AppColorTheme theme, {
+    AppCornerRadii cornerRadii = const AppCornerRadii(),
+  }) {
     return _buildTheme(
       theme: theme,
+      cornerRadii: cornerRadii,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.light,
@@ -15,9 +20,13 @@ class AppTheme {
     );
   }
 
-  static ThemeData darkFor(AppColorTheme theme) {
+  static ThemeData darkFor(
+    AppColorTheme theme, {
+    AppCornerRadii cornerRadii = const AppCornerRadii(),
+  }) {
     return _buildTheme(
       theme: theme,
+      cornerRadii: cornerRadii,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.dark,
@@ -30,6 +39,7 @@ class AppTheme {
     required AppColorTheme theme,
     required ColorScheme scheme,
     required bool isDark,
+    required AppCornerRadii cornerRadii,
   }) {
     final previewColors = theme.data.previewColors;
     final primary = previewColors.first;
@@ -61,8 +71,11 @@ class AppTheme {
       onTertiaryContainer: onQuaternary,
     );
 
+    final buttonShape = RoundedRectangleBorder(borderRadius: cornerRadii.large);
+
     return ThemeData(
       useMaterial3: true,
+      extensions: <ThemeExtension<dynamic>>[cornerRadii],
       fontFamily: AppTextStyles.fontFamily,
       colorScheme: themedScheme,
       textSelectionTheme: TextSelectionThemeData(
@@ -108,30 +121,29 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
+          shape: buttonShape,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
-        ),
+        style: OutlinedButton.styleFrom(shape: buttonShape),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
+          shape: buttonShape,
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: buttonShape),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(shape: buttonShape),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: secondary,
         foregroundColor: onSecondary,
+        shape: buttonShape,
       ),
     );
   }

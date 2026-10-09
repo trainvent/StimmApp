@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 class BlurrableButton extends StatelessWidget {
   final IconData icon;
@@ -8,7 +9,7 @@ class BlurrableButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isBlurred;
   final double blurSigma;
-  final double borderRadius;
+  final double? borderRadius;
   final String descriptionIfBlurred;
 
   const BlurrableButton({
@@ -19,17 +20,20 @@ class BlurrableButton extends StatelessWidget {
     required this.onPressed,
     required this.isBlurred,
     this.blurSigma = 6.0,
-    this.borderRadius = 16.0,
+    this.borderRadius,
     this.descriptionIfBlurred = '',
   });
 
   @override
   Widget build(BuildContext context) {
+    final corners = borderRadius == null
+        ? context.largeBorderRadius
+        : BorderRadius.circular(borderRadius!);
     final buttonContent = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: corners,
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withAlpha(3),
         ),
@@ -71,7 +75,7 @@ class BlurrableButton extends StatelessWidget {
         Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: corners,
             onTap: isBlurred ? null : onPressed,
             child: buttonContent,
           ),
@@ -80,7 +84,7 @@ class BlurrableButton extends StatelessWidget {
         if (isBlurred)
           Positioned.fill(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: corners,
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
                 child: Container(
@@ -98,7 +102,8 @@ class BlurrableButton extends StatelessWidget {
                           child: Text(
                             descriptionIfBlurred,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
                                 ),

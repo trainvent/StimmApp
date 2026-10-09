@@ -6,7 +6,7 @@ import 'package:flag/flag.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stimmapp/app/widgets/info_dialog_button.dart';
+import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:stimmapp/app/widgets/tag_wrap.dart';

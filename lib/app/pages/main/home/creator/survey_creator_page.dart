@@ -1037,7 +1037,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       style: IconButton.styleFrom(
         foregroundColor: colors.onPrimary,
         backgroundColor: colors.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
