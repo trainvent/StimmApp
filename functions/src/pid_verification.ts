@@ -253,14 +253,13 @@ export async function shutdownPidVerifierAgent() {
   pidVerifierAgentPromise = undefined;
 }
 
-async function createPidVerificationRequest(
-  options: PidVerificationRequestInput,
-  ownerUid: string,
-): Promise<CreatePidVerificationRequestResult> {
-  const { agent, accessCertificate, registrationCertificate, verifierRecord } = await ensurePidVerifierAgent();
-  const resultNonce = randomUUID();
-
-  const { authorizationRequest, verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
+// Shared by the production session flow and real Credo request regressions.
+export async function createPidAuthorizationRequest(
+  context: Awaited<ReturnType<typeof initializePidVerifierAgent>>,
+  resultNonce: string,
+) {
+  const { agent, accessCertificate, registrationCertificate, verifierRecord } = context;
+  return agent.openid4vc.verifier.createAuthorizationRequest({
     requestSigner: {
       method: 'x5c',
       x5c: [accessCertificate],
@@ -271,7 +270,6 @@ async function createPidVerificationRequest(
       {
         format: 'registration_cert',
         data: registrationCertificate,
-        credential_ids: ['pid-sd-jwt'],
       },
     ],
     version: 'v1',
@@ -282,6 +280,15 @@ async function createPidVerificationRequest(
     authorizationResponseRedirectUri:
       `${PID_VERIFIER_BASE_URL}/result/${resultNonce}`,
   });
+}
+
+async function createPidVerificationRequest(
+  options: PidVerificationRequestInput,
+  ownerUid: string,
+): Promise<CreatePidVerificationRequestResult> {
+  const context = await ensurePidVerifierAgent();
+  const resultNonce = randomUUID();
+  const { authorizationRequest, verificationSession } = await createPidAuthorizationRequest(context, resultNonce);
 
   const sessionInfo = verificationSession as any;
   const verificationSessionId = String(

@@ -4,6 +4,7 @@ import { generateKeyPairSync, randomUUID, sign, verify } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { pathToFileURL, URL } from 'node:url';
 import test from 'node:test';
+import { createPidAuthorizationRequest } from '../lib/pid_verification.js';
 
 // Resolve the exact copy used by Credo, including if npm nests dependencies.
 const credoRequire = createRequire(import.meta.resolve('@credo-ts/openid4vc'));
@@ -87,7 +88,7 @@ test('an explicit wallet audience is preserved for other discovery flows', async
   assert.equal(claims.aud, 'https://wallet.example');
 });
 
-test('Credo signs and persists the correct audience through its X.509/Askar path', async () => {
+test('production PID requests preserve audience and DCQL without registration credential IDs', async () => {
   const [core, node, askarModule, openid, native] = await Promise.all([
     import('@credo-ts/core'), import('@credo-ts/node'), import('@credo-ts/askar'),
     import('@credo-ts/openid4vc'), import('@openwallet-foundation/askar-nodejs'),
@@ -117,16 +118,10 @@ test('Credo signs and persists the correct audience through its X.509/Askar path
     const certificate = await agent.x509.createCertificate({ authorityKey, issuer: 'CN=Audience Test' });
     certificate.keyId = imported.keyId;
     const verifier = await agent.openid4vc.verifier.createVerifier({ verifierId: 'audience-test' });
-    const { verificationSession } = await agent.openid4vc.verifier.createAuthorizationRequest({
-      requestSigner: { method: 'x5c', x5c: [certificate], clientIdPrefix: 'x509_hash' },
-      verifierId: verifier.verifierId,
-      version: 'v1', responseMode: 'direct_post.jwt', expirationInSeconds: 300,
-      dcql: { query: { credentials: [{
-        id: 'pid-sd-jwt', format: 'dc+sd-jwt',
-        meta: { vct_values: ['urn:eudi:pid:de:1'] },
-        claims: [{ path: ['given_name'] }],
-      }] } },
-    });
+    const registrationCertificate = 'test-registration-certificate';
+    const { verificationSession } = await createPidAuthorizationRequest({
+      agent, accessCertificate: certificate, registrationCertificate, verifierRecord: verifier,
+    }, randomUUID());
     const persisted = await agent.openid4vc.verifier.getVerificationSessionById(verificationSession.id);
     assert.equal(persisted.authorizationRequestJwt, verificationSession.authorizationRequestJwt);
     const [header, body, signature] = persisted.authorizationRequestJwt.split('.');
@@ -140,8 +135,25 @@ test('Credo signs and persists the correct audience through its X.509/Askar path
     assert.equal(claims.aud, walletAudience);
     assert.match(claims.client_id, /^x509_hash:/);
     assert.equal(claims.response_mode, 'direct_post.jwt');
-    assert.equal(claims.exp - claims.iat, 300);
+    assert.ok(claims.exp > claims.iat);
     assert.ok(claims.nonce && claims.state);
+    assert.deepEqual(claims.verifier_info, [{
+      format: 'registration_cert', data: registrationCertificate,
+    }]);
+    assert.equal(Object.hasOwn(claims.verifier_info[0], 'credential_ids'), false);
+    assert.deepEqual(claims.dcql_query, {
+      credential_sets: [{ required: true, options: [['pid-sd-jwt']] }],
+      credentials: [{
+        id: 'pid-sd-jwt', format: 'dc+sd-jwt',
+        meta: { vct_values: ['urn:eudi:pid:de:1'] },
+        claims: [
+          { path: ['given_name'] }, { path: ['family_name'] },
+          { path: ['birthdate'] }, { path: ['address', 'street_address'] },
+          { path: ['address', 'postal_code'] }, { path: ['address', 'locality'] },
+          { path: ['address', 'country'] },
+        ],
+      }],
+    });
   } finally {
     await agent.shutdown();
   }
