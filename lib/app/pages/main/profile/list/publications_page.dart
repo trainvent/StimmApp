@@ -5,6 +5,7 @@ import 'package:stimmapp/app/pages/main/profile/list/finished_forms/form_export_
 import 'package:stimmapp/app/pages/main/profile/list/running_forms_page.dart';
 import 'package:stimmapp/app/scaffolds/app_bar_scaffold.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 class PublicationsPage extends StatelessWidget {
   const PublicationsPage({super.key});
@@ -28,7 +29,7 @@ class PublicationsPage extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: context.largeBorderRadius,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

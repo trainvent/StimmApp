@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.12.1")
+        classpath("com.android.tools.build:gradle:9.1.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
     }
 }
@@ -33,6 +33,14 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+
+    if (name == "corner_radius_plugin") {
+        // This plugin expects built-in Kotlin. Flutter currently opts out of it,
+        // so compile its Kotlin sources with the same external plugin as the app.
+        plugins.withId("com.android.library") {
+            pluginManager.apply("org.jetbrains.kotlin.android")
+        }
+    }
 
     tasks.withType<JavaCompile>().configureEach {
         if (project.name == "cloud_firestore" || project.name == "firebase_auth") {
@@ -61,17 +69,6 @@ subprojects {
                     jvmTarget.set(JvmTarget.JVM_17)
                 }
             }
-        }
-    }
-
-    // Force stable versions of AndroidX libraries to avoid AGP 8.9.1 requirement
-    project.configurations.all {
-        resolutionStrategy {
-            force("androidx.core:core:1.13.1")
-            force("androidx.core:core-ktx:1.13.1")
-            force("androidx.activity:activity:1.9.3")
-            force("androidx.activity:activity-ktx:1.9.3")
-            force("androidx.activity:activity-compose:1.9.3")
         }
     }
 }

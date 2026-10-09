@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import '../constants/dimension_constants.dart';
 import 'app_text_styles.dart';
+import 'app_corner_radii.dart';
 import 'app_color_scheme.dart';
 
 class AppTheme {
-  static ThemeData lightFor(AppColorTheme theme) {
+  static ThemeData lightFor(
+    AppColorTheme theme, {
+    AppCornerRadii cornerRadii = const AppCornerRadii(),
+  }) {
     return _buildTheme(
       theme: theme,
+      cornerRadii: cornerRadii,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.light,
@@ -15,9 +20,13 @@ class AppTheme {
     );
   }
 
-  static ThemeData darkFor(AppColorTheme theme) {
+  static ThemeData darkFor(
+    AppColorTheme theme, {
+    AppCornerRadii cornerRadii = const AppCornerRadii(),
+  }) {
     return _buildTheme(
       theme: theme,
+      cornerRadii: cornerRadii,
       scheme: ColorScheme.fromSeed(
         seedColor: theme.data.seedColor,
         brightness: Brightness.dark,
@@ -30,6 +39,7 @@ class AppTheme {
     required AppColorTheme theme,
     required ColorScheme scheme,
     required bool isDark,
+    required AppCornerRadii cornerRadii,
   }) {
     final previewColors = theme.data.previewColors;
     final primary = previewColors.first;
@@ -63,8 +73,20 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      extensions: <ThemeExtension<dynamic>>[cornerRadii],
       fontFamily: AppTextStyles.fontFamily,
       colorScheme: themedScheme,
+      dialogTheme: DialogThemeData(
+        shape: RoundedRectangleBorder(borderRadius: cornerRadii.large),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: cornerRadii.large.topLeft,
+            topRight: cornerRadii.large.topRight,
+          ),
+        ),
+      ),
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: isDark
             ? const Color(0x33FFFFFF)

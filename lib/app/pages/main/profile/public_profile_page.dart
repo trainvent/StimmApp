@@ -5,6 +5,7 @@ import 'package:stimmapp/core/data/models/public_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/public_profile_provider.dart';
 import 'package:trainvent_general/trainvent_general.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 class PublicProfilePage extends ConsumerWidget {
   const PublicProfilePage({super.key, required this.userId});
@@ -38,7 +39,7 @@ class PublicProfilePage extends ConsumerWidget {
                         border: Border.all(
                           color: Theme.of(context).colorScheme.outlineVariant,
                         ),
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: context.largeBorderRadius,
                       ),
                       child: Row(
                         children: [

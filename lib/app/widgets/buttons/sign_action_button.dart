@@ -9,6 +9,7 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
 import 'package:stimmapp/generated/l10n.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 
 class SignActionButton extends ConsumerWidget {
@@ -173,8 +174,9 @@ class _LoginBottomSheet extends StatelessWidget {
             ),
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
+                borderRadius: BorderRadius.only(
+                  topLeft: context.largeBorderRadius.topLeft,
+                  topRight: context.largeBorderRadius.topRight,
                 ),
                 child: const _LoginContent(),
               ),

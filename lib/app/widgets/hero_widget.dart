@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/providers/profile_picture_provider.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 class HeroWidget extends ConsumerWidget {
   const HeroWidget({super.key, this.title, this.nextPage});
@@ -43,7 +44,7 @@ class HeroWidget extends ConsumerWidget {
                   Hero(
                     tag: 'profile_picture',
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: context.largeBorderRadius,
                       child: (currentUrl != null && currentUrl.isNotEmpty)
                           ? Image.network(
                               currentUrl,

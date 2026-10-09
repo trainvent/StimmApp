@@ -84,6 +84,7 @@ dependencies:
   flag: ^7.0.2
   pdf: ^3.12.0
   pdfrx: ^2.4.8
+  corner_radius_plugin: ^0.1.1
 
 dev_dependencies:
   flutter_test:

@@ -33,6 +33,7 @@ import 'package:stimmapp/core/providers/profile_picture_provider.dart';
 import 'package:stimmapp/generated/l10n.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 enum _UsernameAvailability {
   unchecked,
@@ -672,7 +673,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                           side: BorderSide(
                             color: Theme.of(context).colorScheme.outlineVariant,
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: context.largeBorderRadius,
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: Padding(
