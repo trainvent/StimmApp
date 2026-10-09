@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stimmapp/app/widgets/info_dialog_button.dart';
+import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:trainvent_general/trainvent_general.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/base_overview_page.dart';
 import 'package:stimmapp/app/widgets/form_list_tile_widget.dart';
-import 'package:stimmapp/app/widgets/info_dialog_button.dart';
+import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';

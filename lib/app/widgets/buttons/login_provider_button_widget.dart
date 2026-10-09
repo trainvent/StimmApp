@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/constants/app_assets.dart';
-import 'package:stimmapp/core/constants/dimension_constants.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 
 enum LoginProvider { google, apple }
@@ -48,9 +47,6 @@ class LoginProviderButtonWidget extends StatelessWidget {
             disabledForegroundColor: foregroundColor.withValues(alpha: 0.5),
             side: BorderSide(color: borderColor),
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadii.small),
-            ),
             textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w600,

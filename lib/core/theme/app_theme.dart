@@ -71,22 +71,13 @@ class AppTheme {
       onTertiaryContainer: onQuaternary,
     );
 
+    final buttonShape = RoundedRectangleBorder(borderRadius: cornerRadii.large);
+
     return ThemeData(
       useMaterial3: true,
       extensions: <ThemeExtension<dynamic>>[cornerRadii],
       fontFamily: AppTextStyles.fontFamily,
       colorScheme: themedScheme,
-      dialogTheme: DialogThemeData(
-        shape: RoundedRectangleBorder(borderRadius: cornerRadii.large),
-      ),
-      bottomSheetTheme: BottomSheetThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: cornerRadii.large.topLeft,
-            topRight: cornerRadii.large.topRight,
-          ),
-        ),
-      ),
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: isDark
             ? const Color(0x33FFFFFF)
@@ -130,30 +121,29 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
+          shape: buttonShape,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
-        ),
+        style: OutlinedButton.styleFrom(shape: buttonShape),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.small),
-          ),
+          shape: buttonShape,
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: buttonShape),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(shape: buttonShape),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: secondary,
         foregroundColor: onSecondary,
+        shape: buttonShape,
       ),
     );
   }

@@ -26,7 +26,6 @@ import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/form_scope_eligibility.dart';
-import 'package:stimmapp/core/theme/app_corner_radii.dart';
 
 class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   BaseDetailPage({
@@ -653,7 +652,7 @@ class _BaseDetailPageState<T extends HomeItem>
         color: Theme.of(
           context,
         ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.28),
-        borderRadius: context.largeBorderRadius,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: Theme.of(
             context,
