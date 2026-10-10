@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +13,75 @@ import '../../../../../../test_helper.dart';
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+  });
+
+  testWidgets('publishing returns immediately from preview to overview', (
+    tester,
+  ) async {
+    final publication = Completer<bool>();
+    final key = GlobalKey<BaseCreatorPageState>();
+    await tester.pumpWidget(
+      createTestWidget(
+        Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => BaseCreatorPage(
+                    key: key,
+                    title: 'Editor',
+                    tutorialSteps: const [],
+                    profileLoader: () async => null,
+                    previewContentBuilder: (_) => const Text('Preview content'),
+                    onSubmit: ({
+                      required title,
+                      required description,
+                      required tags,
+                      required scope,
+                      required durationDays,
+                      required openUntilClosed,
+                    }) => publication.future,
+                  ),
+                ),
+              ),
+              child: const Text('Overview'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Overview'));
+    await tester.pumpAndSettle();
+    await key.currentState!.applyTemplate(
+      const PollTemplate(
+        id: 'publish',
+        name: 'Publish',
+        title: 'A useful title',
+        description: 'A description long enough to publish.',
+        tags: ['Environment'],
+        scopeType: 'global',
+      ),
+    );
+    await tester.pumpAndSettle();
+    final preview = find.widgetWithText(ElevatedButton, 'Preview');
+    await tester.scrollUntilVisible(
+      preview,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(preview);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm_publication')));
+    await tester.pump();
+    expect(find.text('Preview content'), findsOneWidget);
+    expect(find.text('Overview'), findsNothing);
+    publication.complete(true);
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Overview'), findsOneWidget);
+    expect(find.byType(BaseCreatorPage), findsNothing);
+    expect(find.text('Preview content'), findsNothing);
+    await tester.pumpAndSettle();
   });
 
   testWidgets(

@@ -613,75 +613,111 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       _scopeValue(_selectedScope)!,
   ].join(' · ');
 
-  Future<bool> _reviewPublication() async {
+  Future<bool> _reviewPublication(FormScope scope) async {
     setState(() => _isReviewing = true);
-    final confirmed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(context.l10n.reviewPublication)),
-          body: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              Text(
-                _titleController.text.trim(),
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 12),
-              Text(_descriptionController.text.trim()),
-              const SizedBox(height: 16),
-              TagWrap(
+    final navigator = Navigator.of(context);
+    final editorRoute = ModalRoute.of(context);
+    late MaterialPageRoute<bool> previewRoute;
+    previewRoute = MaterialPageRoute<bool>(
+      builder: (context) => StatefulBuilder(
+        builder: (context, updatePreview) => PopScope(
+          canPop: !_isLoading,
+          child: Scaffold(
+            appBar: AppBar(title: Text(context.l10n.reviewPublication)),
+            body: ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                Text(
+                  _titleController.text.trim(),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 12),
+                Text(_descriptionController.text.trim()),
+                const SizedBox(height: 16),
+                TagWrap(
+                  children: [
+                    for (final tag in _selectedTags)
+                      Chip(
+                        label: Text(
+                          AppTagsHelper.getLocalizedTag(context, tag),
+                        ),
+                      ),
+                  ],
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.schedule),
+                  title: Text(context.l10n.duration),
+                  subtitle: Text(
+                    _openUntilClosed
+                        ? context.l10n.openUntilClosed
+                        : context.l10n.durationDays(_durationDays),
+                  ),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: _scopeLeading(_selectedScope),
+                  title: Text(context.l10n.geographicalScope),
+                  subtitle: Text(_scopeSummary),
+                ),
+                if (widget.previewContentBuilder != null)
+                  widget.previewContentBuilder!(context),
+              ],
+            ),
+            bottomNavigationBar: SafeArea(
+              minimum: const EdgeInsets.all(16),
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 12,
+                runSpacing: 8,
                 children: [
-                  for (final tag in _selectedTags)
-                    Chip(
-                      label: Text(AppTagsHelper.getLocalizedTag(context, tag)),
-                    ),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () => Navigator.pop(context, false),
+                    child: Text(context.l10n.backToEditing),
+                  ),
+                  FilledButton.icon(
+                    key: const Key('confirm_publication'),
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            updatePreview(() => _isLoading = true);
+                            final published = await _publish(scope);
+                            if (!mounted || !context.mounted) return;
+                            if (published) {
+                              // Remove both routes in one frame, with no reverse transitions.
+                              if (editorRoute != null && !editorRoute.isFirst) {
+                                navigator.removeRoute(editorRoute);
+                              }
+                              navigator.removeRoute(previewRoute, true);
+                            } else {
+                              navigator.pop(false);
+                            }
+                          },
+                    icon: _isLoading
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: Center(
+                              child: TriangleLoadingIndicator(size: 16),
+                            ),
+                          )
+                        : const Icon(Icons.publish),
+                    label: Text(context.l10n.publishNow),
+                  ),
                 ],
               ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.schedule),
-                title: Text(context.l10n.duration),
-                subtitle: Text(
-                  _openUntilClosed
-                      ? context.l10n.openUntilClosed
-                      : context.l10n.durationDays(_durationDays),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: _scopeLeading(_selectedScope),
-                title: Text(context.l10n.geographicalScope),
-                subtitle: Text(_scopeSummary),
-              ),
-              if (widget.previewContentBuilder != null)
-                widget.previewContentBuilder!(context),
-            ],
-          ),
-          bottomNavigationBar: SafeArea(
-            minimum: const EdgeInsets.all(16),
-            child: Wrap(
-              alignment: WrapAlignment.end,
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(context.l10n.backToEditing),
-                ),
-                FilledButton.icon(
-                  key: const Key('confirm_publication'),
-                  onPressed: () => Navigator.pop(context, true),
-                  icon: const Icon(Icons.publish),
-                  label: Text(context.l10n.publishNow),
-                ),
-              ],
             ),
           ),
         ),
       ),
     );
+    final confirmed = await navigator.push<bool>(previewRoute);
     if (!mounted) return false;
-    setState(() => _isReviewing = false);
+    setState(() {
+      _isReviewing = false;
+      _isLoading = false;
+    });
     return confirmed == true;
   }
 
@@ -718,10 +754,10 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       return;
     }
     final scope = _buildSelectedScope();
-    if (!await _reviewPublication() || !mounted) return;
+    await _reviewPublication(scope);
+  }
 
-    setState(() => _isLoading = true);
-
+  Future<bool> _publish(FormScope scope) async {
     try {
       final published = await widget.onSubmit(
         title: _titleController.text.trim(),
@@ -732,11 +768,11 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         openUntilClosed: _openUntilClosed,
       );
       if (published) await _clearDraft();
+      return published;
     } catch (e) {
       // Error handling is mostly done in the callback, but catch here just in case
       if (mounted) showErrorSnackBar(e.toString());
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      return false;
     }
   }
 

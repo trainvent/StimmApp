@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/data/models/petition_draft.dart';
 import 'package:stimmapp/core/data/repositories/petition_draft_repository.dart';
@@ -317,7 +318,6 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
 
       if (mounted) {
         showSuccessSnackBar(context.l10n.createdPetition + petitionId);
-        Navigator.of(context).pop();
       }
       return true;
     } on StateError catch (e) {

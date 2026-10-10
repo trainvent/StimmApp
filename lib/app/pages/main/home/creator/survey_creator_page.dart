@@ -501,7 +501,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
         if (mounted) {
           showSuccessSnackBar('${context.l10n.createdPoll} $pollId');
-          Navigator.of(context).pop();
         }
         return true;
       }
@@ -556,7 +555,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
       if (mounted) {
         showSuccessSnackBar('${context.l10n.createdSurvey} $surveyId');
-        Navigator.of(context).pop();
       }
       return true;
     } on StateError catch (error) {
@@ -1229,9 +1227,9 @@ class _QuestionDraft {
     String title = '',
     List<String>? options,
   }) : titleController = TextEditingController(text: title),
-       optionControllers = _normalizedOptions(
-         options,
-       ).map((text) => TextEditingController(text: text)).toList() {
+       optionControllers = _normalizedOptions(options)
+           .map((text) => TextEditingController(text: text))
+           .toList() {
     titleController.addListener(onChanged);
     for (final controller in optionControllers) {
       controller.addListener(onChanged);

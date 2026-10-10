@@ -87,7 +87,8 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
   }) {
     if (switchValue == null) {
       return ListTile(
-        leading: IconButton(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        trailing: IconButton(
           tooltip: context.l10n.about,
           onPressed: () => _openPolicyUrl(url),
           icon: const Icon(Icons.open_in_browser),
@@ -99,6 +100,7 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
     }
 
     return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Text(title),
       subtitle: Text(subtitle),
       value: switchValue,
@@ -136,20 +138,13 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
             children: [
               SwitchListTile(
                 key: const ValueKey('sign_anonymously'),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 title: Text(context.l10n.signAnonymously),
                 subtitle: Text(context.l10n.signAnonymouslyDescription),
                 value: profile.signAnonymously,
                 onChanged: _savingAnonymousSigning
                     ? null
                     : (value) => _toggleAnonymousSigning(value, profile),
-                secondary: const Icon(Icons.person_off_outlined),
-              ),
-              _buildPolicyTile(
-                title: context.l10n.privacyPolicyEssentialTitle,
-                subtitle: context.l10n.privacyPolicyEssentialDescription,
-                url: IConst.privacyPolicyUrlForLocale(
-                  Localizations.localeOf(context),
-                ),
               ),
               _buildPolicyTile(
                 title: context.l10n.analyticsData,
@@ -171,6 +166,13 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
                 switchValue: sendCrashLogs,
                 onChanged: (value) => _toggleCrashLogs(value, profile),
                 showInfoButton: false,
+              ),
+              _buildPolicyTile(
+                title: context.l10n.privacyPolicyEssentialTitle,
+                subtitle: context.l10n.privacyPolicyEssentialDescription,
+                url: IConst.privacyPolicyUrlForLocale(
+                  Localizations.localeOf(context),
+                ),
               ),
             ],
           );
