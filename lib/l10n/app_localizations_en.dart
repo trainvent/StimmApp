@@ -3250,4 +3250,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewPublicProfile => 'Public profile';
+
+  @override
+  String get participationFilter => 'Participation';
+
+  @override
+  String get participationNotYet => 'Not participated';
+
+  @override
+  String get participationAll => 'All';
+
+  @override
+  String get participationOnly => 'Participated';
+
+  @override
+  String get participationLoadError =>
+      'Could not load your participation records. Please try again.';
 }

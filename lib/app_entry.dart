@@ -111,16 +111,9 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
 
   SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
 
-  // Debug: log Firebase app state early to diagnose duplicate-app on device.
-  debugPrint(
-    'Firebase apps before init: ${Firebase.apps.map((a) => a.name).toList()}',
-  );
   // Initialize Firebase once, even if startApp is triggered twice.
   _firebaseInit ??= _initFirebase(firebaseOptions);
   await _firebaseInit;
-  debugPrint(
-    'Firebase apps after init: ${Firebase.apps.map((a) => a.name).toList()}',
-  );
 
   await _configureCrashReporting();
   await _configureFirestore();

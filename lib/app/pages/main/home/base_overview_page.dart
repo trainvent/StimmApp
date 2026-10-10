@@ -4,6 +4,7 @@ import 'package:stimmapp/app/widgets/overview_filter_dialog.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
+import 'package:stimmapp/core/data/models/participation_filter.dart';
 import 'package:stimmapp/core/data/models/home_item.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
@@ -138,10 +139,8 @@ class _DiscoveryChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -158,6 +157,7 @@ class _BaseOverviewPageState<T extends HomeItem>
   Set<FormScopeType> _selectedScopes = {};
   Set<CountryUnion> _selectedCountryUnions = {};
   bool _onlyMyPublications = false;
+  ParticipationFilter _participation = ParticipationFilter.notParticipated;
   Future<UserProfile?>? _userProfileFuture;
   bool _hasLoggedSearchForSession = false;
   final Map<String, Stream<List<T>>> _itemStreams = {};
@@ -249,7 +249,9 @@ class _BaseOverviewPageState<T extends HomeItem>
           scopes: _selectedScopes,
           countryUnions: _selectedCountryUnions,
           onlyMyPublications: _onlyMyPublications,
+          participation: _participation,
         ),
+        showParticipationFilter: widget.participatedIdsStreamProvider != null,
         structureFilterSectionBuilder: widget.structureFilterSectionBuilder,
         filterDialogSectionBuilder: widget.filterDialogSectionBuilder,
         clearExtraFilters: widget.clearExtraFilters,
@@ -261,6 +263,7 @@ class _BaseOverviewPageState<T extends HomeItem>
       _selectedScopes = selection.scopes;
       _selectedCountryUnions = selection.countryUnions;
       _onlyMyPublications = selection.onlyMyPublications;
+      _participation = selection.participation;
     });
   }
 
@@ -350,6 +353,17 @@ class _BaseOverviewPageState<T extends HomeItem>
                 return StreamBuilder<Set<String>>(
                   stream: participatedIdsStream,
                   builder: (context, participatedSnap) {
+                    final filtersParticipation =
+                        widget.participatedIdsStreamProvider != null &&
+                        _participation != ParticipationFilter.all;
+                    if (filtersParticipation && !participatedSnap.hasData) {
+                      if (participatedSnap.hasError) {
+                        return Center(
+                          child: Text(context.l10n.participationLoadError),
+                        );
+                      }
+                      return const Center(child: TriangleLoadingIndicator());
+                    }
                     final participatedIds =
                         participatedSnap.data ?? const <String>{};
                     return StreamBuilder<List<T>>(
@@ -404,6 +418,16 @@ class _BaseOverviewPageState<T extends HomeItem>
                           items = items.where(widget.extraFilter!).toList();
                         }
 
+                        if (widget.participatedIdsStreamProvider != null) {
+                          items = items.where((item) {
+                            final hasParticipated = participatedIds.contains(
+                              widget.participationKeyProvider?.call(item) ??
+                                  item.id,
+                            );
+                            return _participation.matches(hasParticipated);
+                          }).toList();
+                        }
+
                         if (items.isEmpty) {
                           return Center(child: Text(context.l10n.noData));
                         }
@@ -456,18 +480,20 @@ class _BaseOverviewPageState<T extends HomeItem>
       filterCount += _selectedCountryUnions.length;
     }
     if (_onlyMyPublications) filterCount++;
+    if (widget.participatedIdsStreamProvider != null &&
+        _participation != ParticipationFilter.all) {
+      filterCount++;
+    }
     filterCount += widget.extraFilterCount;
 
     final tabBar = TabBar(
       controller: _tabController,
       labelColor: Theme.of(context).colorScheme.onSurface,
-      unselectedLabelColor: Theme.of(
-        context,
-      ).colorScheme.onSurface.withValues(alpha: 0.7),
+      unselectedLabelColor: Theme.of(context).colorScheme.onSurface
+          .withValues(alpha: 0.7),
       indicatorColor: Theme.of(context).colorScheme.onSurface,
-      dividerColor: Theme.of(
-        context,
-      ).colorScheme.onSurface.withValues(alpha: 0.18),
+      dividerColor: Theme.of(context).colorScheme.onSurface
+          .withValues(alpha: 0.18),
       tabs: [
         Tab(text: context.l10n.active),
         Tab(text: context.l10n.closed),

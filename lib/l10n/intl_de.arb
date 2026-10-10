@@ -1243,5 +1243,10 @@
   "noGroupFilter": "Keine Gruppe",
   "petitionDeletionFailed": "Die Petition konnte nicht gelöscht werden. Bitte versuche es erneut.",
   "pollDeletionFailed": "Die Umfrage konnte nicht gelöscht werden. Bitte versuche es erneut.",
-  "viewPublicProfile": "Öffentliches Profil"
+  "viewPublicProfile": "Öffentliches Profil",
+  "participationFilter": "Teilnahme",
+  "participationNotYet": "Noch nicht teilgenommen",
+  "participationAll": "Alle",
+  "participationOnly": "Teilgenommen",
+  "participationLoadError": "Deine Teilnahmen konnten nicht geladen werden. Bitte versuche es erneut."
 }

@@ -5953,6 +5953,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public profile'**
   String get viewPublicProfile;
+
+  /// No description provided for @participationFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Participation'**
+  String get participationFilter;
+
+  /// No description provided for @participationNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not participated'**
+  String get participationNotYet;
+
+  /// No description provided for @participationAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get participationAll;
+
+  /// No description provided for @participationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Participated'**
+  String get participationOnly;
+
+  /// No description provided for @participationLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your participation records. Please try again.'**
+  String get participationLoadError;
 }
 
 class _AppLocalizationsDelegate

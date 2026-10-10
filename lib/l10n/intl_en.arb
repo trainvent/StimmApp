@@ -1256,5 +1256,10 @@
   "noGroupFilter": "No group",
   "petitionDeletionFailed": "Could not delete the petition. Please try again.",
   "pollDeletionFailed": "Could not delete the poll. Please try again.",
-  "viewPublicProfile": "Public profile"
+  "viewPublicProfile": "Public profile",
+  "participationFilter": "Participation",
+  "participationNotYet": "Not participated",
+  "participationAll": "All",
+  "participationOnly": "Participated",
+  "participationLoadError": "Could not load your participation records. Please try again."
 }

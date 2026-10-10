@@ -52,6 +52,12 @@ class PurchasesService {
   static const String _proEntitlementId = 'pro';
   static const String _basicEntitlementId = 'basic';
 
+  // Enable only when diagnosing billing: --dart-define=VERBOSE_BILLING_LOGS=true.
+  static const bool _verboseBillingLogs = bool.fromEnvironment(
+    'VERBOSE_BILLING_LOGS',
+  );
+  String? _lastCustomerInfoDiagnostic;
+
   bool _isInitialized = false;
   String? _appUserId;
   bool get isInitialized => _isInitialized;
@@ -67,7 +73,9 @@ class PurchasesService {
       return;
     }
     try {
-      await Purchases.setLogLevel(LogLevel.debug);
+      await Purchases.setLogLevel(
+        kDebugMode && _verboseBillingLogs ? LogLevel.debug : LogLevel.warn,
+      );
       await Purchases.configure(
         PurchasesConfiguration(apiKey)..appUserID = appUserId,
       );
@@ -98,15 +106,17 @@ class PurchasesService {
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
     try {
-      if (!kReleaseMode) {
+      if (kDebugMode && _verboseBillingLogs) {
         final message =
             'RC customerInfo: appUserId=${info.originalAppUserId} '
             'activeEntitlements=${info.entitlements.active.keys.toList()} '
             'allEntitlements=${info.entitlements.all.keys.toList()} '
             'activeSubscriptions=${info.activeSubscriptions.toList()} '
             'allPurchasedProductIds=${info.allPurchasedProductIdentifiers.toList()}';
-        log(message);
-        debugPrint(message);
+        if (_lastCustomerInfoDiagnostic != message) {
+          _lastCustomerInfoDiagnostic = message;
+          debugPrint(message);
+        }
       }
       EntitlementTier tier = EntitlementTier.free;
 

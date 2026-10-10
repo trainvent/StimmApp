@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/tag_selector.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
+import 'package:stimmapp/core/data/models/participation_filter.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class OverviewFilterSelection {
@@ -9,11 +10,13 @@ class OverviewFilterSelection {
     required this.scopes,
     required this.countryUnions,
     this.onlyMyPublications = false,
+    this.participation = ParticipationFilter.notParticipated,
   });
   final List<String> tags;
   final Set<FormScopeType> scopes;
   final Set<CountryUnion> countryUnions;
   final bool onlyMyPublications;
+  final ParticipationFilter participation;
 }
 
 class OverviewFilterDialog extends StatefulWidget {
@@ -23,8 +26,10 @@ class OverviewFilterDialog extends StatefulWidget {
     this.structureFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
+    this.showParticipationFilter = false,
   });
   final OverviewFilterSelection initialSelection;
+  final bool showParticipationFilter;
   final Widget Function(BuildContext, StateSetter)?
   structureFilterSectionBuilder;
   final Widget Function(BuildContext, StateSetter)? filterDialogSectionBuilder;
@@ -46,6 +51,7 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
   late Set<FormScopeType> _selectedScopes;
   late Set<CountryUnion> _selectedCountryUnions;
   late bool _onlyMyPublications;
+  late ParticipationFilter _participation;
 
   @override
   void initState() {
@@ -54,6 +60,7 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
     _selectedScopes = Set.of(widget.initialSelection.scopes);
     _selectedCountryUnions = Set.of(widget.initialSelection.countryUnions);
     _onlyMyPublications = widget.initialSelection.onlyMyPublications;
+    _participation = widget.initialSelection.participation;
   }
 
   @override
@@ -68,6 +75,35 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.showParticipationFilter) ...[
+              Text(
+                context.l10n.participationFilter,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final option in ParticipationFilter.values)
+                    ChoiceChip(
+                      key: ValueKey('participation_filter_${option.name}'),
+                      label: Text(switch (option) {
+                        ParticipationFilter.notParticipated =>
+                          context.l10n.participationNotYet,
+                        ParticipationFilter.all =>
+                          context.l10n.participationAll,
+                        ParticipationFilter.participated =>
+                          context.l10n.participationOnly,
+                      }),
+                      selected: _participation == option,
+                      onSelected: (_) =>
+                          setState(() => _participation = option),
+                    ),
+                ],
+              ),
+              const Divider(),
+            ],
             ExpansionTile(
               initiallyExpanded: false,
               tilePadding: EdgeInsets.zero,
@@ -164,6 +200,7 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
               _selectedScopes = {};
               _selectedCountryUnions = {};
               _onlyMyPublications = false;
+              _participation = ParticipationFilter.all;
             });
             widget.clearExtraFilters?.call();
           },
@@ -178,6 +215,7 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                 scopes: _selectedScopes,
                 countryUnions: _selectedCountryUnions,
                 onlyMyPublications: _onlyMyPublications,
+                participation: _participation,
               ),
             );
           },
@@ -329,10 +367,8 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                 ? Text(
                     _scopeLabel(scope),
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w700, color: color),
                   )
                 : null,
           ),

@@ -3292,4 +3292,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get viewPublicProfile => 'Öffentliches Profil';
+
+  @override
+  String get participationFilter => 'Teilnahme';
+
+  @override
+  String get participationNotYet => 'Noch nicht teilgenommen';
+
+  @override
+  String get participationAll => 'Alle';
+
+  @override
+  String get participationOnly => 'Teilgenommen';
+
+  @override
+  String get participationLoadError =>
+      'Deine Teilnahmen konnten nicht geladen werden. Bitte versuche es erneut.';
 }
