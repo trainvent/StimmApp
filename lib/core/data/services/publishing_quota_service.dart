@@ -22,12 +22,10 @@ class PublishingQuotaService {
 
   @visibleForTesting
   PublishingQuotaService.forTest({
-    required FirebaseFirestore firestore,
-    required FirebaseAuth auth,
+    required this._firestore,
+    required this._auth,
     DateTime Function()? now,
-  }) : _firestore = firestore,
-       _auth = auth,
-       _now = now ?? DateTime.now;
+  }) : _now = now ?? DateTime.now;
 
   static final PublishingQuotaService instance = PublishingQuotaService._();
 

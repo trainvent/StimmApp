@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/home/base_overview_page.dart';
 import 'package:stimmapp/app/pages/main/home/polls/polls_page.dart';

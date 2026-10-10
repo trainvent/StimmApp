@@ -20,9 +20,10 @@ pluginManagement {
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "9.1.1" apply false
+    // Supply the compiler version to AGP without applying the legacy plugin.
+    id("org.jetbrains.kotlin.android") version "2.4.0" apply false
     id("com.google.gms.google-services") version "4.4.4" apply false
     id("com.google.firebase.crashlytics") version "3.0.6" apply false
-    id("org.jetbrains.kotlin.android") version "2.4.0" apply false
 }
 
 include(":app")

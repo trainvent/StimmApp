@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class GroupPictureService {
-  GroupPictureService({FirebaseStorage? storage}) : _storage = storage;
+  GroupPictureService({this._storage});
   final FirebaseStorage? _storage;
   FirebaseStorage get storage => _storage ?? FirebaseStorage.instance;
 

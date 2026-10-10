@@ -1,6 +1,6 @@
 # iOS builds with Swift Package Manager
 
-Use Flutter **3.44.5** (recorded in `.flutter-version`) and Xcode **27.0**. Keep the Flutter version in `codemagic.yaml` synchronized with `.flutter-version`. Xcode Cloud installs the version from `.flutter-version`; select Xcode 27.0 in the hosted workflow settings.
+Use Flutter **3.47.7** (recorded in `.flutter-version`) and Xcode **27.0**. Keep the Flutter version in `codemagic.yaml` synchronized with `.flutter-version`. Xcode Cloud installs the version from `.flutter-version`; select Xcode 27.0 in the hosted workflow settings.
 
 SwiftPM is enabled in `pubspec.yaml` for this project. Do not install Firebase separately in Xcode or run `pod install`. Flutter generates the local plugin packages under `ios/Flutter/ephemeral/Packages`. The workspace remains `ios/Runner.xcworkspace`.
 

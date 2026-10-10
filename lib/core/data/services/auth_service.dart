@@ -12,12 +12,10 @@ final AuthService authService = AuthService();
 
 class AuthService {
   AuthService({
-    FirebaseAuth? firebaseAuth,
-    FirebaseFunctions? functions,
+    this._firebaseAuth,
+    this._functions,
     GoogleAuthClient? googleAuthClient,
-  }) : _firebaseAuth = firebaseAuth,
-       _functions = functions,
-       _googleAuthClient = googleAuthClient ?? GoogleSignInClient();
+  }) : _googleAuthClient = googleAuthClient ?? GoogleSignInClient();
 
   final FirebaseAuth? _firebaseAuth;
   final FirebaseFunctions? _functions;

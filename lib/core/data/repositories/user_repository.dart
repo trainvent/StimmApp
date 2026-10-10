@@ -89,7 +89,7 @@ class UserRepository implements UserInterface {
           .get();
       final uid = usernameSnapshot.data()?['uid'] as String?;
       if (uid == null || uid.isEmpty) return null;
-      return getById(uid);
+      return await getById(uid);
     } on FirebaseException catch (e) {
       throw DatabaseException(e);
     }

@@ -8,8 +8,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     // END: FlutterFire Configuration
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 val keystoreProperties = Properties()
@@ -30,12 +29,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
     }
 
     defaultConfig {
@@ -104,6 +97,12 @@ android {
     // testOptions {
     //     execution = "ANDROIDX_TEST_ORCHESTRATOR"
     // }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 flutter {

@@ -15,7 +15,7 @@ workflows:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "prod"
       # Keep in sync with .flutter-version.
-      flutter: 3.44.5
+      flutter: 3.47.7
       xcode: "27.0"
     scripts: &ios_release_scripts
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
@@ -61,7 +61,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       # Keep in sync with .flutter-version.
-      flutter: 3.44.5
+      flutter: 3.47.7
       xcode: "27.0"
     scripts:
       - name: Configure Flutter Swift Package Manager

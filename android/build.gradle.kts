@@ -10,6 +10,8 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:9.1.1")
+        // Override AGP's bundled compiler to meet Flutter's minimum version.
+        // Built-in Kotlin remains enabled; do not apply kotlin-android.
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
     }
 }
@@ -33,14 +35,6 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
-
-    if (name == "corner_radius_plugin") {
-        // This plugin expects built-in Kotlin. Flutter currently opts out of it,
-        // so compile its Kotlin sources with the same external plugin as the app.
-        plugins.withId("com.android.library") {
-            pluginManager.apply("org.jetbrains.kotlin.android")
-        }
-    }
 
     tasks.withType<JavaCompile>().configureEach {
         if (project.name == "cloud_firestore" || project.name == "firebase_auth") {

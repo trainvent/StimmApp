@@ -21,6 +21,11 @@ analyzer:
     # Patrol is intentionally not part of the production app's dependency graph.
     - "integration_test/**"
     - "test_bundle.dart"
+    - android/**
+    - ios/**
+    - web/**
+    - macos/**
+    - linux/**
 
 linter:
   # The lint rules applied to this project can be customized in the
