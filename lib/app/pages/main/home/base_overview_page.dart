@@ -480,10 +480,6 @@ class _BaseOverviewPageState<T extends HomeItem>
       filterCount += _selectedCountryUnions.length;
     }
     if (_onlyMyPublications) filterCount++;
-    if (widget.participatedIdsStreamProvider != null &&
-        _participation != ParticipationFilter.all) {
-      filterCount++;
-    }
     filterCount += widget.extraFilterCount;
 
     final tabBar = TabBar(

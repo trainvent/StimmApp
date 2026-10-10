@@ -75,35 +75,6 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.showParticipationFilter) ...[
-              Text(
-                context.l10n.participationFilter,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final option in ParticipationFilter.values)
-                    ChoiceChip(
-                      key: ValueKey('participation_filter_${option.name}'),
-                      label: Text(switch (option) {
-                        ParticipationFilter.notParticipated =>
-                          context.l10n.participationNotYet,
-                        ParticipationFilter.all =>
-                          context.l10n.participationAll,
-                        ParticipationFilter.participated =>
-                          context.l10n.participationOnly,
-                      }),
-                      selected: _participation == option,
-                      onSelected: (_) =>
-                          setState(() => _participation = option),
-                    ),
-                ],
-              ),
-              const Divider(),
-            ],
             ExpansionTile(
               initiallyExpanded: false,
               tilePadding: EdgeInsets.zero,
@@ -188,6 +159,63 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                 ],
               ),
             ],
+            if (widget.showParticipationFilter) ...[
+              const Divider(),
+              ExpansionTile(
+                key: const ValueKey('other_filters'),
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.only(bottom: 16),
+                title: Text(
+                  context.l10n.other,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                children: [
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      context.l10n.participationFilter,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: Text(context.l10n.participationNotYet)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          context.l10n.participationOnly,
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    key: const ValueKey('participation_filter_slider'),
+                    value: _participation.index.toDouble(),
+                    min: 0,
+                    max: 2,
+                    divisions: 2,
+                    label: _participationLabel(_participation),
+                    semanticFormatterCallback: (value) => _participationLabel(
+                      ParticipationFilter.values[value.round()],
+                    ),
+                    onChanged: (value) => setState(() {
+                      _participation =
+                          ParticipationFilter.values[value.round()];
+                    }),
+                  ),
+                  Text(
+                    _participationLabel(_participation),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -224,6 +252,12 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
       ],
     );
   }
+
+  String _participationLabel(ParticipationFilter filter) => switch (filter) {
+    ParticipationFilter.notParticipated => context.l10n.participationNotYet,
+    ParticipationFilter.all => context.l10n.participationAll,
+    ParticipationFilter.participated => context.l10n.participationOnly,
+  };
 
   String _scopeLabel(FormScopeType scope) {
     switch (scope) {

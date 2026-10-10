@@ -38,20 +38,25 @@ void main() {
       );
       await tester.tap(find.text('Open filter'));
       await tester.pumpAndSettle();
-      ChoiceChip chip(ParticipationFilter filter) => tester.widget<ChoiceChip>(
-        find.byKey(ValueKey('participation_filter_${filter.name}')),
+      final other = find.byKey(const ValueKey('other_filters'));
+      final sliderFinder = find.byKey(
+        const ValueKey('participation_filter_slider'),
       );
-      expect(chip(ParticipationFilter.notParticipated).selected, isTrue);
-      for (final option in [
-        ParticipationFilter.all,
-        ParticipationFilter.participated,
-      ]) {
-        await tester.tap(
-          find.byKey(ValueKey('participation_filter_${option.name}')),
+      expect(sliderFinder, findsNothing);
+      await tester.tap(other);
+      await tester.pumpAndSettle();
+      Slider slider() => tester.widget<Slider>(sliderFinder);
+      expect(slider().value, 0);
+      for (final value in [1.0, 2.0]) {
+        final rect = tester.getRect(sliderFinder);
+        await tester.tapAt(
+          Offset(
+            rect.left + 24 + (rect.width - 48) * value / 2,
+            rect.center.dy,
+          ),
         );
         await tester.pumpAndSettle();
-        expect(chip(option).selected, isTrue);
-        expect(chip(ParticipationFilter.notParticipated).selected, isFalse);
+        expect(slider().value, value);
       }
       expect(initial.participation, ParticipationFilter.notParticipated);
       await tester.tap(find.byType(FilledButton));
@@ -60,6 +65,8 @@ void main() {
 
       await tester.tap(find.text('Open filter'));
       await tester.pumpAndSettle();
+      await tester.tap(other);
+      await tester.pumpAndSettle();
       await tester.tap(
         find.widgetWithText(
           TextButton,
@@ -67,7 +74,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(chip(ParticipationFilter.all).selected, isTrue);
+      expect(slider().value, 1);
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
       expect(result!.participation, ParticipationFilter.all);
