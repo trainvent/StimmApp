@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -23,6 +24,12 @@ class ParticipantsListPage extends StatelessWidget {
     );
   }
 
+  void _openProfile(BuildContext context, String uid) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => PublicProfilePage(userId: uid)),
+    );
+  }
+
   Widget _buildSimple(BuildContext context) {
     return StreamBuilder<List<UserProfile>>(
       stream: participantsStream,
@@ -42,6 +49,9 @@ class ParticipantsListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = participants[index];
             return ListTile(
+              onTap: user.uid.isEmpty
+                  ? null
+                  : () => _openProfile(context, user.uid),
               leading: _ParticipantAvatar(user: user),
               title: Text(
                 user.hasLoadError
@@ -91,6 +101,7 @@ class ParticipantsListPage extends StatelessWidget {
                 final user = userMap[uid];
 
                 return ListTile(
+                  onTap: uid.isEmpty ? null : () => _openProfile(context, uid),
                   leading: _ParticipantAvatar(user: user),
                   title: Text(
                     user?.hasLoadError == true

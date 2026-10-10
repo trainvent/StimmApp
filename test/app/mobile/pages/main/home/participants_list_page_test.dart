@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
+import 'package:stimmapp/core/providers/public_profile_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/home/participants_list_page.dart';
@@ -70,6 +73,54 @@ void main() {
         expect(find.text('Without picture'), findsOneWidget);
         expect(find.byIcon(Icons.person), findsWidgets);
         expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  for (final withSignatures in [false, true]) {
+    testWidgets(
+      'participant tile opens its public profile (signatures: $withSignatures)',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              publicProfileProvider('participant')
+                  .overrideWith((ref) => Stream.value(null)),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: ParticipantsListPage(
+                participantsStream: Stream.value(const [
+                  UserProfile(uid: 'participant', displayName: 'Participant'),
+                ]),
+                signaturesStream: withSignatures
+                    ? Stream.value([
+                        {'uid': 'participant'},
+                      ])
+                    : null,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ListTile, 'Participant'));
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<PublicProfilePage>(find.byType(PublicProfilePage))
+              .userId,
+          'participant',
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(ListTile, 'Participant'), findsOneWidget);
       },
     );
   }
