@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/providers/public_profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
@@ -27,11 +28,15 @@ class _PollDetailPageState extends ConsumerState<PollDetailPage> {
   Widget build(BuildContext context) {
     final currentUid = ref.watch(currentUserProvider)?.uid;
     final repo = PollRepository.create();
-    final participantIdsStream = repo.watchParticipantIds(widget.id);
+    final participantIdsStream = repo.watchParticipantIds(
+      widget.id,
+      uid: currentUid,
+    );
     return BaseDetailPage<Poll>(
       id: widget.id,
       appBarTitle: context.l10n.pollDetails,
       streamProvider: repo.watch,
+      publicProfileRepository: ref.watch(publicProfileRepositoryProvider),
       participantsStream: repo.watchParticipants(widget.id),
       participantIdsStream: participantIdsStream,
       sharePathSegment: 'poll',

@@ -1248,5 +1248,7 @@
   "participationNotYet": "Noch nicht teilgenommen",
   "participationAll": "Alle",
   "participationOnly": "Teilgenommen",
-  "participationLoadError": "Deine Teilnahmen konnten nicht geladen werden. Bitte versuche es erneut."
+  "participationLoadError": "Deine Teilnahmen konnten nicht geladen werden. Bitte versuche es erneut.",
+  "signAnonymously": "Anonym unterschreiben",
+  "signAnonymouslyDescription": "Zeige in öffentlichen Teilnehmerlisten „Anonym“ ohne dein Bild oder Profil-Link, auch für bestehende Unterschriften. Die Auswertung erhält weiterhin deine vollständigen Angaben."
 }

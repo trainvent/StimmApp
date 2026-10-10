@@ -1,3 +1,6 @@
+import 'package:stimmapp/core/providers/public_profile_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/petitions/petition_comments.dart';
 import 'package:stimmapp/app/pages/main/home/base_detail_page.dart';
@@ -10,25 +13,29 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 
-class PetitionDetailPage extends StatefulWidget {
+class PetitionDetailPage extends ConsumerStatefulWidget {
   const PetitionDetailPage({super.key, required this.id});
   final String id;
 
   @override
-  State<PetitionDetailPage> createState() => _PetitionDetailPageState();
+  ConsumerState<PetitionDetailPage> createState() => _PetitionDetailPageState();
 }
 
-class _PetitionDetailPageState extends State<PetitionDetailPage> {
+class _PetitionDetailPageState extends ConsumerState<PetitionDetailPage> {
   bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
     final repo = PetitionRepository.create();
-    final participantIdsStream = repo.watchParticipantIds(widget.id);
+    final participantIdsStream = repo.watchParticipantIds(
+      widget.id,
+      uid: ref.watch(currentUserProvider)?.uid,
+    );
     return BaseDetailPage<Petition>(
       id: widget.id,
       appBarTitle: context.l10n.petitionDetails,
       streamProvider: repo.watch,
+      publicProfileRepository: ref.watch(publicProfileRepositoryProvider),
       participantsStream: repo.watchParticipants(widget.id),
       participantIdsStream: participantIdsStream,
       signaturesStream: repo.watchSignatures(widget.id),

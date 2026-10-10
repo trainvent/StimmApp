@@ -3266,4 +3266,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get participationLoadError =>
       'Could not load your participation records. Please try again.';
+
+  @override
+  String get signAnonymously => 'Sign anonymously';
+
+  @override
+  String get signAnonymouslyDescription =>
+      'Show “Anonymous” without your picture or profile link in public participant lists, including existing signatures. Result evaluators still receive your full details.';
 }

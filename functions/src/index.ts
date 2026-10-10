@@ -154,3 +154,5 @@ if (process.env.GCLOUD_PROJECT !== PROD_PROJECT_ID) {
 export { cleanupGroupPictures } from "./group_picture_cleanup";
 
 export { cleanupPetitionCommentLikes } from "./petition_comment_cleanup";
+
+export * from './participant_privacy';

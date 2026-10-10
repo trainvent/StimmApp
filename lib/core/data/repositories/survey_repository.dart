@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
@@ -5,19 +6,13 @@ import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
-import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 
 class SurveyRepository {
-  SurveyRepository(
-    this._fs, {
-    ParticipantProfileLoader? participantProfileLoader,
-  }) : _participantProfileLoader =
-           participantProfileLoader ??
-           ParticipantProfileLoader(UserRepository(_fs));
+  SurveyRepository(this._fs, {ParticipantAccessService? access})
+    : participantAccess = access ?? ParticipantAccessService();
   final DatabaseService _fs;
-  final ParticipantProfileLoader _participantProfileLoader;
+  final ParticipantAccessService participantAccess;
 
   static SurveyRepository create() => SurveyRepository(locator.databaseService);
 
@@ -163,18 +158,24 @@ class SurveyRepository {
   }
 
   Stream<List<UserProfile>> watchParticipants(String surveyId) {
-    return watchParticipantIds(
-      surveyId,
-    ).asyncMap(_participantProfileLoader.load);
+    return participantAccess
+        .watch('survey', surveyId)
+        .map(
+          (entries) =>
+              entries.map((entry) => entry['profile'] as UserProfile).toList(),
+        );
   }
 
-  Stream<Set<String>> watchParticipantIds(String surveyId) {
+  Stream<Set<String>> watchParticipantIds(String surveyId, {String? uid}) {
+    if (uid == null) return Stream.value(<String>{}).asBroadcastStream();
     return _fs.instance
-        .collection(DatabaseCollections.surveys)
+        .collection('surveys')
         .doc(surveyId)
-        .collection(DatabaseCollections.responses)
+        .collection('responses')
+        .doc(uid)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+        .map((snapshot) => snapshot.exists ? {uid} : <String>{})
+        .asBroadcastStream();
   }
 
   Stream<Set<String>> watchCompletedSurveyIds(String uid) {

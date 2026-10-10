@@ -49,12 +49,15 @@ class ParticipantsListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = participants[index];
             return ListTile(
-              onTap: user.uid.isEmpty
+              onTap:
+                  user.uid.isEmpty || user.hasLoadError || user.signAnonymously
                   ? null
                   : () => _openProfile(context, user.uid),
               leading: _ParticipantAvatar(user: user),
               title: Text(
-                user.hasLoadError
+                user.signAnonymously
+                    ? context.l10n.anonymous
+                    : user.hasLoadError
                     ? context.l10n.erroneousProfile
                     : user.displayName ?? context.l10n.anonymous,
               ),
@@ -101,14 +104,27 @@ class ParticipantsListPage extends StatelessWidget {
                 final user = userMap[uid];
 
                 return ListTile(
-                  onTap: uid.isEmpty ? null : () => _openProfile(context, uid),
+                  onTap:
+                      uid.isEmpty ||
+                          user == null ||
+                          user.hasLoadError ||
+                          user.signAnonymously
+                      ? null
+                      : () => _openProfile(context, uid),
                   leading: _ParticipantAvatar(user: user),
                   title: Text(
-                    user?.hasLoadError == true
+                    user?.signAnonymously == true
+                        ? context.l10n.anonymous
+                        : user?.hasLoadError == true
                         ? context.l10n.erroneousProfile
                         : user?.displayName ?? context.l10n.anonymous,
                   ),
-                  subtitle: reason != null && reason.isNotEmpty
+                  subtitle:
+                      user != null &&
+                          !user.hasLoadError &&
+                          !user.signAnonymously &&
+                          reason != null &&
+                          reason.isNotEmpty
                       ? Text('Reason: $reason')
                       : null,
                 );
@@ -128,7 +144,7 @@ class _ParticipantAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final url = user?.hasLoadError == true
+    final url = user?.hasLoadError == true || user?.signAnonymously == true
         ? null
         : user?.profilePictureUrl?.trim();
     const fallback = CircleAvatar(child: Icon(Icons.person));

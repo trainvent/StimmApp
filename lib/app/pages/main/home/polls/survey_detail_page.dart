@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/providers/public_profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -38,11 +39,15 @@ class _SurveyDetailPageState extends ConsumerState<SurveyDetailPage> {
     final currentUid = ref.watch(currentUserProvider)?.uid;
     final repo = SurveyRepository.create();
     final answerAllQuestionsMessage = context.l10n.answerAllSurveyQuestions;
-    final participantIdsStream = repo.watchParticipantIds(widget.id);
+    final participantIdsStream = repo.watchParticipantIds(
+      widget.id,
+      uid: currentUid,
+    );
     return BaseDetailPage<Survey>(
       id: widget.id,
       appBarTitle: context.l10n.surveyDetails,
       streamProvider: repo.watch,
+      publicProfileRepository: ref.watch(publicProfileRepositoryProvider),
       participantsStream: repo.watchParticipants(widget.id),
       participantIdsStream: participantIdsStream,
       sharePathSegment: 'survey',

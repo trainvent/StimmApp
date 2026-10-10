@@ -1,3 +1,5 @@
+import '../../../helpers/participant_access.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +11,10 @@ void main() {
   late PetitionCommentRepository repo;
   setUp(() async {
     db = FakeFirebaseFirestore();
-    repo = PetitionCommentRepository(DatabaseService(db));
+    repo = PetitionCommentRepository(
+      DatabaseService(db),
+      access: fakeParticipantAccess(db),
+    );
     await db.doc('petitions/p').set({'title': 'Petition'});
     await db.doc('users/author').set({'displayName': 'Test author'});
     await db.doc('petitions/p/signatures/author').set({

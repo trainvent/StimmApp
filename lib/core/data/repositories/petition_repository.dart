@@ -1,23 +1,18 @@
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
-import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 import 'package:universal_io/io.dart';
 
 class PetitionRepository {
-  PetitionRepository(
-    this._fs, {
-    ParticipantProfileLoader? participantProfileLoader,
-  }) : _participantProfileLoader =
-           participantProfileLoader ??
-           ParticipantProfileLoader(UserRepository(_fs));
+  PetitionRepository(this._fs, {ParticipantAccessService? access})
+    : participantAccess = access ?? ParticipantAccessService();
   final DatabaseService _fs;
-  final ParticipantProfileLoader _participantProfileLoader;
+  final ParticipantAccessService participantAccess;
 
   static PetitionRepository create() =>
       PetitionRepository(locator.databaseService);
@@ -120,63 +115,53 @@ class PetitionRepository {
   }
 
   Stream<List<Map<String, dynamic>>> watchSignatures(String petitionId) {
-    return _fs.instance
-        .collection('petitions')
-        .doc(petitionId)
-        .collection('signatures')
-        .snapshots()
-        .map((snap) => snap.docs.map((d) => d.data()).toList());
+    return participantAccess
+        .watch('petition', petitionId)
+        .map(
+          (entries) => [
+            for (final entry in entries)
+              {
+                'uid': (entry['profile'] as UserProfile).uid,
+                'reason': entry['reason'],
+              },
+          ],
+        );
   }
 
   Stream<List<UserProfile>> watchParticipants(String petitionId) {
-    return watchParticipantIds(
-      petitionId,
-    ).asyncMap(_participantProfileLoader.load);
+    return participantAccess
+        .watch('petition', petitionId)
+        .map(
+          (entries) =>
+              entries.map((entry) => entry['profile'] as UserProfile).toList(),
+        );
   }
 
-  Stream<Set<String>> watchParticipantIds(String petitionId) {
+  Stream<Set<String>> watchParticipantIds(String petitionId, {String? uid}) {
+    if (uid == null) return Stream.value(<String>{}).asBroadcastStream();
     return _fs.instance
         .collection('petitions')
         .doc(petitionId)
         .collection('signatures')
+        .doc(uid)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+        .map((snapshot) => snapshot.exists ? {uid} : <String>{})
+        .asBroadcastStream();
   }
 
   // Fetch participants once (used by CSV export)
   Future<List<Map<String, dynamic>>> getParticipantsWithSignaturesOnce(
     String petitionId,
-  ) async {
-    final snap = await _fs.instance
-        .collection('petitions')
-        .doc(petitionId)
-        .collection('signatures')
-        .get();
-
-    if (snap.docs.isEmpty) return [];
-
-    final profiles = await _participantProfileLoader.load(
-      snap.docs.map((doc) => doc.id),
-    );
-    return [
-      for (var index = 0; index < snap.docs.length; index++)
-        {
-          'profile': profiles[index],
-          'reason': snap.docs[index].data()['reason'],
-        },
-    ];
-  }
+  ) => participantAccess.fetch('petition', petitionId, evaluator: true);
 
   // Fetch participants once (used by CSV export)
   Future<List<UserProfile>> getParticipantsOnce(String petitionId) async {
-    final snap = await _fs.instance
-        .collection('petitions')
-        .doc(petitionId)
-        .collection('signatures')
-        .get();
-    final uids = snap.docs.map((d) => d.id).toList();
-    if (uids.isEmpty) return [];
-    return _participantProfileLoader.load(uids);
+    final entries = await participantAccess.fetch(
+      'petition',
+      petitionId,
+      evaluator: true,
+    );
+    return entries.map((entry) => entry['profile'] as UserProfile).toList();
   }
 
   // Remove all signatures by a user and decrement petition counts (used by user deletion)

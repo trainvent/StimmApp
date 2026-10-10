@@ -1,6 +1,5 @@
 import 'package:stimmapp/core/data/services/file_output/survey_export_answers.dart';
 import 'package:flutter/material.dart';
-import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
@@ -9,7 +8,7 @@ import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/petition_repository.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:stimmapp/core/data/services/file_output/export_content_service.dart';
 import 'package:stimmapp/core/data/services/file_output/export_document.dart';
 import 'package:stimmapp/core/data/services/file_output/export_file_format.dart';
@@ -27,7 +26,6 @@ class FileFormatRouter {
 
   final PollRepository _pollRepo = PollRepository.create();
   final PetitionRepository _petitionRepo = PetitionRepository.create();
-  final UserRepository _userRepo = UserRepository.create();
   final ExportFileWriter _writer = ExportFileWriter(locator.databaseService);
 
   ExportContentService _serviceFor(ExportFileFormat format) {
@@ -305,11 +303,11 @@ class FileFormatRouter {
     Survey survey,
     String surveyId,
   ) async {
-    final responseSnap = await locator.database
-        .collection(DatabaseCollections.surveys)
-        .doc(surveyId)
-        .collection(DatabaseCollections.responses)
-        .get();
+    final responses = await ParticipantAccessService().fetch(
+      'survey',
+      surveyId,
+      evaluator: true,
+    );
     final rows = <List<String>>[
       [
         labels.result,
@@ -321,17 +319,16 @@ class FileFormatRouter {
       ],
     ];
 
-    if (responseSnap.docs.isNotEmpty) {
-      for (final doc in responseSnap.docs) {
-        final data = doc.data();
-        final profile = await _userRepo.getById(doc.id);
+    if (responses.isNotEmpty) {
+      for (final data in responses) {
+        final profile = data['profile'] as UserProfile;
 
         rows.add([
           labels.submitted,
-          profile?.givenName ?? '',
-          profile?.surname ?? '',
-          profile?.email ?? '',
-          profile?.address ?? '',
+          profile.givenName ?? '',
+          profile.surname ?? '',
+          profile.email ?? '',
+          profile.address ?? '',
           ...surveyExportAnswers(survey.questions, data),
         ]);
       }

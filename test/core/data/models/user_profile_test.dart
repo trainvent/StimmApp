@@ -48,10 +48,28 @@ void main() {
       'isGoogleSyncActive': null,
       'googleSyncLastAt': null,
       'showPetitionReason': null,
+      'signAnonymously': false,
       'themeMode': null,
       'themeScheme': null,
       'locale': null,
     };
+
+    test('anonymous signing defaults off and survives round trips', () {
+      expect(UserProfile.fromJson({}, 'legacy').signAnonymously, isFalse);
+      final anonymous = userProfile.copyWith(signAnonymously: true);
+      expect(
+        UserProfile.fromJson(anonymous.toJson(), anonymous.uid).signAnonymously,
+        isTrue,
+      );
+      expect(
+        anonymous.copyWith(displayName: 'Changed').signAnonymously,
+        isTrue,
+      );
+      expect(
+        anonymous.copyWith(signAnonymously: false).signAnonymously,
+        isFalse,
+      );
+    });
 
     test('fromJson creates a UserProfile object from a map', () {
       final result = UserProfile.fromJson(userProfileJson, '123');

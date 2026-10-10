@@ -1,3 +1,5 @@
+import '../../../helpers/participant_access.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +11,10 @@ void main() {
     'profile publications include only public forms from the requested creator',
     () async {
       final db = FakeFirebaseFirestore();
-      final repo = PublicProfileRepository(DatabaseService(db));
+      final repo = PublicProfileRepository(
+        DatabaseService(db),
+        access: fakeParticipantAccess(db),
+      );
       final examples = [
         ('petitions', 'petition', 'author', 'public', 'active', 1),
         ('polls', 'poll', 'author', 'public', 'closed', 2),

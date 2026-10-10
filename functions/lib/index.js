@@ -156,4 +156,5 @@ var group_picture_cleanup_1 = require("./group_picture_cleanup");
 Object.defineProperty(exports, "cleanupGroupPictures", { enumerable: true, get: function () { return group_picture_cleanup_1.cleanupGroupPictures; } });
 var petition_comment_cleanup_1 = require("./petition_comment_cleanup");
 Object.defineProperty(exports, "cleanupPetitionCommentLikes", { enumerable: true, get: function () { return petition_comment_cleanup_1.cleanupPetitionCommentLikes; } });
+__exportStar(require("./participant_privacy"), exports);
 //# sourceMappingURL=index.js.map

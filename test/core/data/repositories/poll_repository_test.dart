@@ -1,3 +1,5 @@
+import '../../../helpers/participant_access.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
@@ -15,7 +17,10 @@ void main() {
   setUp(() {
     fakeFirebaseFirestore = FakeFirebaseFirestore();
     databaseService = DatabaseService(fakeFirebaseFirestore);
-    pollRepository = PollRepository(databaseService);
+    pollRepository = PollRepository(
+      databaseService,
+      access: fakeParticipantAccess(fakeFirebaseFirestore),
+    );
     locator.setDatabaseForTest(fakeFirebaseFirestore);
   });
 

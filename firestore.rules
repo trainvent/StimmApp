@@ -199,8 +199,8 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
-      // Main Profile: Public Read, Owner Write
-      allow read: if true;
+      // Full identity documents are private. Public views use sanitized callables.
+      allow read: if isOwner(userId) || isAdmin();
       allow create: if isAdmin() ||
                     (isOwner(userId) &&
                      hasValidUserStateCountry(request.resource.data) &&
@@ -274,14 +274,25 @@ service cloud.firestore {
     // Petitions & Polls
     match /petitions/{petitionId} {
       allow read: if true;
-      allow create, update: if isAdmin() ||
-                    (isAuthenticated() && hasValidContentState(request.resource.data));
+      allow create: if isAdmin() ||
+                    (isAuthenticated() && request.resource.data.createdBy == request.auth.uid &&
+                     hasValidContentState(request.resource.data));
+      allow update: if isAdmin() ||
+                    (isAuthenticated() && request.resource.data.createdBy == resource.data.createdBy &&
+                     hasValidContentState(request.resource.data));
       allow delete: if isAdmin() ||
                     (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
 
     match /petitions/{petitionId}/signatures/{signerId} {
-      allow read: if true;
+      function isPublicSigner() {
+        return exists(/databases/$(database)/documents/users/$(signerId)) &&
+          get(/databases/$(database)/documents/users/$(signerId)).data.get('signAnonymously', false) == false;
+      }
+      allow get: if isOwner(signerId) || isAdmin() || isPublicSigner();
+      allow list: if isAdmin() ||
+        (isAuthenticated() &&
+         get(/databases/$(database)/documents/petitions/$(petitionId)).data.createdBy == request.auth.uid);
       allow delete: if isAdmin() || isOwner(signerId);
       allow create, update: if isAdmin() ||
                     (isOwner(signerId) && hasValidContentState(request.resource.data));
@@ -293,8 +304,8 @@ service cloud.firestore {
                  signature.data.reason is string &&
                  signature.data.reason.matches('(?s).*\\S.*');
         }
-        allow read: if hasComment();
-        allow create: if isOwner(userId) && hasComment() &&
+        allow read: if hasComment() && isPublicSigner();
+        allow create: if isOwner(userId) && hasComment() && isPublicSigner() &&
                       request.resource.data.keys().hasOnly(['uid', 'createdAt']) &&
                       request.resource.data.uid == userId &&
                       request.resource.data.createdAt == request.time;
@@ -303,17 +314,23 @@ service cloud.firestore {
       }
     }
 
-    match /polls/{document=**} {
-      allow read: if true;
-      allow delete: if isAdmin();
-      allow create, update: if isAdmin() ||
-                    (isAuthenticated() && hasValidContentState(request.resource.data));
-    }
-
     match /polls/{pollId} {
-      // A delete has no request.resource; check ownership on the stored poll.
+      allow read: if true;
+      allow create: if isAdmin() ||
+        (isAuthenticated() && request.resource.data.createdBy == request.auth.uid &&
+         hasValidContentState(request.resource.data));
+      allow update: if isAdmin() ||
+        (isAuthenticated() && request.resource.data.createdBy == resource.data.createdBy &&
+         hasValidContentState(request.resource.data));
       allow delete: if isAdmin() ||
-                    (isAuthenticated() && resource.data.createdBy == request.auth.uid);
+        (isAuthenticated() && resource.data.createdBy == request.auth.uid);
+      match /votes/{uid} {
+        allow get: if isOwner(uid) || isAdmin();
+        allow list: if isAdmin() ||
+          (isAuthenticated() &&
+           get(/databases/$(database)/documents/polls/$(pollId)).data.createdBy == request.auth.uid);
+        allow create, update, delete: if isOwner(uid) || isAdmin();
+      }
     }
 
     match /surveys/{surveyId} {
@@ -325,9 +342,10 @@ service cloud.firestore {
       allow update: if isAdmin() ||
                     (isAuthenticated() &&
                      resource.data.createdBy == request.auth.uid &&
+                     request.resource.data.createdBy == resource.data.createdBy &&
                      hasValidContentState(request.resource.data)) ||
                     (isAuthenticated() &&
-                     request.resource.data.diff(resource.data).changedKeys()
+                     request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['questionVotes', 'responseCount']) &&
                      !exists(/databases/$(database)/documents/surveys/$(surveyId)/responses/$(request.auth.uid)) &&
                      existsAfter(/databases/$(database)/documents/surveys/$(surveyId)/responses/$(request.auth.uid)));

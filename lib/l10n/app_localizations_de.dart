@@ -3308,4 +3308,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get participationLoadError =>
       'Deine Teilnahmen konnten nicht geladen werden. Bitte versuche es erneut.';
+
+  @override
+  String get signAnonymously => 'Anonym unterschreiben';
+
+  @override
+  String get signAnonymouslyDescription =>
+      'Zeige in öffentlichen Teilnehmerlisten „Anonym“ ohne dein Bild oder Profil-Link, auch für bestehende Unterschriften. Die Auswertung erhält weiterhin deine vollständigen Angaben.';
 }

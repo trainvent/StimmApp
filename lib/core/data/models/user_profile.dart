@@ -26,6 +26,7 @@ class UserProfile {
 
   // Settings
   final bool? showPetitionReason;
+  final bool signAnonymously;
   final String? themeMode; // 'light', 'dark', or null (system)
   final String? themeScheme; // 'stimm', 'ocean', etc.
   final String? locale; // 'en', 'de', etc.
@@ -97,6 +98,7 @@ class UserProfile {
     this.isGoogleSyncActive,
     this.googleSyncLastAt,
     this.showPetitionReason,
+    this.signAnonymously = false,
     this.themeMode,
     this.themeScheme,
     this.locale,
@@ -136,6 +138,7 @@ class UserProfile {
     bool? isGoogleSyncActive,
     DateTime? googleSyncLastAt,
     bool? showPetitionReason,
+    bool? signAnonymously,
     String? themeMode,
     String? themeScheme,
     String? locale,
@@ -180,6 +183,7 @@ class UserProfile {
       isGoogleSyncActive: isGoogleSyncActive ?? this.isGoogleSyncActive,
       googleSyncLastAt: googleSyncLastAt ?? this.googleSyncLastAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
+      signAnonymously: signAnonymously ?? this.signAnonymously,
       themeMode: themeMode ?? this.themeMode,
       themeScheme: themeScheme ?? this.themeScheme,
       locale: locale ?? this.locale,
@@ -223,6 +227,7 @@ class UserProfile {
       isGoogleSyncActive: json['isGoogleSyncActive'] as bool?,
       googleSyncLastAt: (json['googleSyncLastAt'] as Timestamp?)?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
+      signAnonymously: json['signAnonymously'] as bool? ?? false,
       themeMode: json['themeMode'] as String?,
       themeScheme: json['themeScheme'] as String?,
       locale: json['locale'] as String?,
@@ -266,6 +271,7 @@ class UserProfile {
           ? Timestamp.fromDate(googleSyncLastAt!)
           : null,
       'showPetitionReason': showPetitionReason,
+      'signAnonymously': signAnonymously,
       'themeMode': themeMode,
       'themeScheme': themeScheme,
       'locale': locale,

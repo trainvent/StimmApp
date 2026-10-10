@@ -5983,6 +5983,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load your participation records. Please try again.'**
   String get participationLoadError;
+
+  /// No description provided for @signAnonymously.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign anonymously'**
+  String get signAnonymously;
+
+  /// No description provided for @signAnonymouslyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show “Anonymous” without your picture or profile link in public participant lists, including existing signatures. Result evaluators still receive your full details.'**
+  String get signAnonymouslyDescription;
 }
 
 class _AppLocalizationsDelegate

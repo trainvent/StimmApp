@@ -18,6 +18,7 @@ class PrivacyPage extends ConsumerStatefulWidget {
 
 class _PrivacyPageState extends ConsumerState<PrivacyPage> {
   final _userRepo = UserRepository.create();
+  bool _savingAnonymousSigning = false;
 
   Future<void> _openPolicyUrl(String url) async {
     final ok = await launchUrl(
@@ -37,9 +38,8 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
       ref.read(crashLogsEnabledProvider.notifier).setEnabled(value);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     }
   }
@@ -56,10 +56,23 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
       ref.read(analyticsCollectionEnabledProvider.notifier).setEnabled(value);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
+    }
+  }
+
+  Future<void> _toggleAnonymousSigning(bool value, UserProfile profile) async {
+    setState(() => _savingAnonymousSigning = true);
+    try {
+      await _userRepo.setSignAnonymously(profile.uid, value);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(context.l10n.error)));
+      }
+    } finally {
+      if (mounted) setState(() => _savingAnonymousSigning = false);
     }
   }
 
@@ -121,6 +134,16 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
 
           return ListView(
             children: [
+              SwitchListTile(
+                key: const ValueKey('sign_anonymously'),
+                title: Text(context.l10n.signAnonymously),
+                subtitle: Text(context.l10n.signAnonymouslyDescription),
+                value: profile.signAnonymously,
+                onChanged: _savingAnonymousSigning
+                    ? null
+                    : (value) => _toggleAnonymousSigning(value, profile),
+                secondary: const Icon(Icons.person_off_outlined),
+              ),
               _buildPolicyTile(
                 title: context.l10n.privacyPolicyEssentialTitle,
                 subtitle: context.l10n.privacyPolicyEssentialDescription,

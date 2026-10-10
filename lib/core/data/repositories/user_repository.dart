@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -42,7 +43,13 @@ class UserRepository implements UserInterface {
 
   @override
   Future<UserProfile?> getById(String uid) async {
-    return _fs.getDoc(_doc(uid));
+    try {
+      return await _fs.getDoc(_doc(uid));
+    } on DatabaseException catch (error) {
+      if (error.code != 'permission-denied') rethrow;
+      // Cross-user displays receive only the server's public allowlist.
+      return ParticipantAccessService().publicProfile(uid);
+    }
   }
 
   Future<bool?> getPersistedProStatus(String uid) async {
@@ -59,6 +66,13 @@ class UserRepository implements UserInterface {
       _doc(profile.uid),
       profile.copyWith(updatedAt: DateTime.now()),
     );
+  }
+
+  Future<void> setSignAnonymously(String uid, bool value) async {
+    await _fs.instance.collection(DatabaseCollections.users).doc(uid).update({
+      'signAnonymously': value,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<bool> isUsernameAvailable(String username, {String? forUserId}) async {

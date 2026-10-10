@@ -33,6 +33,23 @@ void main() {
       updatedAt: DateTime(2023),
     );
 
+    test(
+      'anonymous signing setting updates without overwriting identity',
+      () async {
+        await userRepository.upsert(tUserProfile);
+        await userRepository.setSignAnonymously(tUserProfile.uid, true);
+        final anonymous = (await userRepository.getById(tUserProfile.uid))!;
+        expect(anonymous.signAnonymously, isTrue);
+        expect(anonymous.displayName, tUserProfile.displayName);
+        expect(anonymous.email, tUserProfile.email);
+        await userRepository.setSignAnonymously(tUserProfile.uid, false);
+        expect(
+          (await userRepository.getById(tUserProfile.uid))!.signAnonymously,
+          isFalse,
+        );
+      },
+    );
+
     test('upsert and getById work correctly', () async {
       await userRepository.upsert(tUserProfile);
       final result = await userRepository.getById('1');

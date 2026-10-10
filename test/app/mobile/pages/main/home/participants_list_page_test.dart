@@ -125,6 +125,58 @@ void main() {
     );
   }
 
+  for (final language in ['en', 'de']) {
+    for (final withSignatures in [false, true]) {
+      testWidgets(
+        'anonymous identity stays hidden ($language, signatures: $withSignatures)',
+        (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              locale: Locale(language),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: ParticipantsListPage(
+                participantsStream: Stream.value(const [
+                  UserProfile(
+                    uid: 'private',
+                    displayName: 'Private Name',
+                    profilePictureUrl: 'https://example.com/private.jpg',
+                    signAnonymously: true,
+                  ),
+                  UserProfile(uid: 'public', displayName: 'Public Name'),
+                ]),
+                signaturesStream: withSignatures
+                    ? Stream.value([
+                        {'uid': 'private', 'reason': 'Identifying reason'},
+                        {'uid': 'public'},
+                      ])
+                    : null,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          final anonymous = language == 'en' ? 'Anonymous' : 'Anonym';
+          expect(find.text(anonymous), findsOneWidget);
+          expect(find.text('Private Name'), findsNothing);
+          expect(find.text('Public Name'), findsOneWidget);
+          expect(find.byType(Image), findsNothing);
+          expect(find.textContaining('Identifying reason'), findsNothing);
+          final tile = find.widgetWithText(ListTile, anonymous);
+          expect(tester.widget<ListTile>(tile).onTap, isNull);
+          await tester.tap(tile);
+          await tester.pumpAndSettle();
+          expect(find.byType(PublicProfilePage), findsNothing);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('shows a localized placeholder for an erroneous profile', (
     tester,
   ) async {

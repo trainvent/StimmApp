@@ -38,6 +38,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
     this.bottomAction,
     this.allowExpiredContentInteraction = false,
     this.participantsStream,
+    this.publicProfileRepository,
     this.participantIdsStream,
     this.signaturesStream,
     this.actions,
@@ -55,6 +56,7 @@ class BaseDetailPage<T extends HomeItem> extends StatefulWidget {
   final Widget? bottomAction;
   final bool allowExpiredContentInteraction;
   final Stream<List<UserProfile>>? participantsStream;
+  final PublicProfileRepository? publicProfileRepository;
   final Stream<Set<String>>? participantIdsStream;
   final Stream<List<Map<String, dynamic>>>? signaturesStream;
   final List<Widget>? actions;
@@ -201,10 +203,8 @@ class _DiscoveryStatusBanner extends StatelessWidget {
           Icon(icon, size: 18, color: color),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(context).textTheme.labelLarge
+                ?.copyWith(color: color, fontWeight: FontWeight.w800),
           ),
           ?trailing,
         ],
@@ -236,10 +236,8 @@ class _DiscoveryStatusPill extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -445,7 +443,10 @@ class _BaseDetailPageState<T extends HomeItem>
     return StreamBuilder<PublicProfile?>(
       stream: _creatorProfileStreams.putIfAbsent(
         item.createdBy,
-        () => PublicProfileRepository(_databaseService).watch(item.createdBy),
+        () =>
+            (widget.publicProfileRepository ??
+                    PublicProfileRepository(_databaseService))
+                .watch(item.createdBy),
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -486,9 +487,8 @@ class _BaseDetailPageState<T extends HomeItem>
                 ),
                 child: Text(
                   name,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
             ),
@@ -649,14 +649,12 @@ class _BaseDetailPageState<T extends HomeItem>
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.28),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.28),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Theme.of(
-            context,
-          ).colorScheme.outlineVariant.withValues(alpha: 0.8),
+          color: Theme.of(context).colorScheme.outlineVariant
+              .withValues(alpha: 0.8),
         ),
       ),
       child: Theme(
@@ -677,9 +675,8 @@ class _BaseDetailPageState<T extends HomeItem>
             subtitle: isExpired
                 ? Text(
                     context.l10n.closed,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
                   )
                 : null,
             children: [

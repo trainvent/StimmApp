@@ -1,21 +1,18 @@
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
-import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
 import 'package:universal_io/io.dart';
 
 class PollRepository {
-  PollRepository(this._fs, {ParticipantProfileLoader? participantProfileLoader})
-    : _participantProfileLoader =
-          participantProfileLoader ??
-          ParticipantProfileLoader(UserRepository(_fs));
+  PollRepository(this._fs, {ParticipantAccessService? access})
+    : participantAccess = access ?? ParticipantAccessService();
   final DatabaseService _fs;
-  final ParticipantProfileLoader _participantProfileLoader;
+  final ParticipantAccessService participantAccess;
 
   static PollRepository create() => PollRepository(locator.databaseService);
 
@@ -135,16 +132,24 @@ class PollRepository {
   }
 
   Stream<List<UserProfile>> watchParticipants(String pollId) {
-    return watchParticipantIds(pollId).asyncMap(_participantProfileLoader.load);
+    return participantAccess
+        .watch('poll', pollId)
+        .map(
+          (entries) =>
+              entries.map((entry) => entry['profile'] as UserProfile).toList(),
+        );
   }
 
-  Stream<Set<String>> watchParticipantIds(String pollId) {
+  Stream<Set<String>> watchParticipantIds(String pollId, {String? uid}) {
+    if (uid == null) return Stream.value(<String>{}).asBroadcastStream();
     return _fs.instance
         .collection('polls')
         .doc(pollId)
         .collection('votes')
+        .doc(uid)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.id).toSet());
+        .map((snapshot) => snapshot.exists ? {uid} : <String>{})
+        .asBroadcastStream();
   }
 
   Stream<Set<String>> watchVotedPollIds(String uid) {
@@ -158,14 +163,12 @@ class PollRepository {
 
   // Fetch participants once (used by CSV export)
   Future<List<UserProfile>> getParticipantsOnce(String pollId) async {
-    final snap = await _fs.instance
-        .collection('polls')
-        .doc(pollId)
-        .collection('votes')
-        .get();
-    final uids = snap.docs.map((d) => d.id).toList();
-    if (uids.isEmpty) return [];
-    return _participantProfileLoader.load(uids);
+    final entries = await participantAccess.fetch(
+      'poll',
+      pollId,
+      evaluator: true,
+    );
+    return entries.map((entry) => entry['profile'] as UserProfile).toList();
   }
 
   // Remove all votes by a user and decrement poll counts (used by user deletion)

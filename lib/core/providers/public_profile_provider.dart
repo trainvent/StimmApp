@@ -9,9 +9,11 @@ final publicProfileRepositoryProvider = Provider<PublicProfileRepository>(
 final publicProfileProvider = StreamProvider.autoDispose
     .family<PublicProfile?, String>(
       (ref, uid) => ref.watch(publicProfileRepositoryProvider).watch(uid),
+      dependencies: [publicProfileRepositoryProvider],
     );
 final publicProfileFormsProvider = FutureProvider.autoDispose
     .family<List<PublicProfileForm>, String>(
       (ref, uid) =>
           ref.watch(publicProfileRepositoryProvider).publications(uid),
+      dependencies: [publicProfileRepositoryProvider],
     );

@@ -1,18 +1,23 @@
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:stimmapp/core/data/models/public_profile.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 class PublicProfileRepository {
-  PublicProfileRepository(this.database);
+  PublicProfileRepository(this.database, {ParticipantAccessService? access})
+    : participantAccess = access ?? ParticipantAccessService();
+  final ParticipantAccessService participantAccess;
   final DatabaseService database;
 
-  Stream<PublicProfile?> watch(String uid) => database.instance
-      .collection('users')
-      .doc(uid)
-      .snapshots()
+  Stream<PublicProfile?> watch(String uid) => participantAccess
+      .watchPublicProfile(uid)
       .map(
-        (snapshot) => snapshot.exists
-            ? PublicProfile.fromMap(uid, snapshot.data()!)
-            : null,
+        (profile) => profile == null
+            ? null
+            : PublicProfile(
+                uid: uid,
+                nickname: profile.displayName,
+                imageUrl: profile.profilePictureUrl,
+              ),
       );
 
   Future<List<PublicProfileForm>> publications(String uid) async {

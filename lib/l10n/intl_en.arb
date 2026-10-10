@@ -1261,5 +1261,7 @@
   "participationNotYet": "Not participated",
   "participationAll": "All",
   "participationOnly": "Participated",
-  "participationLoadError": "Could not load your participation records. Please try again."
+  "participationLoadError": "Could not load your participation records. Please try again.",
+  "signAnonymously": "Sign anonymously",
+  "signAnonymouslyDescription": "Show “Anonymous” without your picture or profile link in public participant lists, including existing signatures. Result evaluators still receive your full details."
 }

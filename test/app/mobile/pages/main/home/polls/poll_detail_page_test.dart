@@ -66,7 +66,7 @@ void main() {
         .doc('author')
         .update({'displayName': 'Updated Creator'});
     await tester.pumpAndSettle();
-    await tester.pump();
+    await tester.pump(const Duration(seconds: 15));
     await tester.pumpAndSettle();
     expect(find.text('Updated Creator'), findsOneWidget);
     expect(find.text('Poll Creator'), findsNothing);

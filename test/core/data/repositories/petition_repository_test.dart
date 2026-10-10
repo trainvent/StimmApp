@@ -1,3 +1,5 @@
+import '../../../helpers/participant_access.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/petition.dart';
@@ -15,7 +17,10 @@ void main() {
   setUp(() {
     fakeFirebaseFirestore = FakeFirebaseFirestore();
     firestoreService = DatabaseService(fakeFirebaseFirestore);
-    petitionRepository = PetitionRepository(firestoreService);
+    petitionRepository = PetitionRepository(
+      firestoreService,
+      access: fakeParticipantAccess(fakeFirebaseFirestore),
+    );
     locator.setDatabaseForTest(fakeFirebaseFirestore);
   });
 
@@ -30,6 +35,34 @@ void main() {
       createdAt: DateTime(2023),
       expiresAt: DateTime(2024),
     );
+
+    test('evaluator retains full details for anonymous signers', () async {
+      final id = await petitionRepository.createPetition(tPetition);
+      final profile = UserProfile(
+        uid: 'anonymous-signer',
+        displayName: 'Nickname',
+        givenName: 'Full',
+        surname: 'Name',
+        email: 'signer@example.com',
+        address: 'Full address',
+        profilePictureUrl: 'https://example.com/avatar.jpg',
+        signAnonymously: true,
+      );
+      await fakeFirebaseFirestore
+          .collection('users')
+          .doc(profile.uid)
+          .set(profile.toJson());
+      await petitionRepository.sign(id, profile.uid, reason: 'My reason');
+      final results = await petitionRepository
+          .getParticipantsWithSignaturesOnce(id);
+      final exported = results.single['profile'] as UserProfile;
+      expect(exported.signAnonymously, isTrue);
+      expect(exported.givenName, 'Full');
+      expect(exported.surname, 'Name');
+      expect(exported.email, 'signer@example.com');
+      expect(exported.address, 'Full address');
+      expect(results.single['reason'], 'My reason');
+    });
 
     test('createPetition and watch work correctly', () async {
       final petitionId = await petitionRepository.createPetition(tPetition);

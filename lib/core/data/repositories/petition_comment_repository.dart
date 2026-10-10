@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
-import 'package:stimmapp/core/data/services/participant_profile_loader.dart';
-import 'package:stimmapp/core/data/repositories/user_repository.dart';
+import 'package:stimmapp/core/data/services/participant_access_service.dart';
+import 'package:stimmapp/core/data/models/user_profile.dart';
 
 class PetitionComment {
   const PetitionComment({
@@ -17,41 +17,40 @@ class PetitionComment {
 }
 
 class PetitionCommentRepository {
-  PetitionCommentRepository(this.database);
+  PetitionCommentRepository(this.database, {ParticipantAccessService? access})
+    : participantAccess = access ?? ParticipantAccessService();
+  final ParticipantAccessService participantAccess;
   final DatabaseService database;
 
-  Stream<List<PetitionComment>> watchComments(String petitionId) => database
-      .instance
-      .collection('petitions')
-      .doc(petitionId)
-      .collection('signatures')
-      .snapshots()
-      .asyncMap((snapshot) async {
-        final docs = snapshot.docs
-            .where(
-              (doc) =>
-                  doc.data()['reason'] is String &&
-                  (doc.data()['reason'] as String).trim().isNotEmpty,
-            )
-            .toList();
-        final profiles = await ParticipantProfileLoader(
-          UserRepository(database),
-        ).load(docs.map((doc) => doc.id));
-        final comments = [
-          for (var i = 0; i < docs.length; i++)
+  Stream<List<PetitionComment>> watchComments(String petitionId) =>
+      participantAccess.watch('petition', petitionId).map((entries) {
+        final comments = <PetitionComment>[];
+        for (final entry in entries) {
+          final profile = entry['profile'] as UserProfile;
+          final reason = entry['reason'];
+          if (profile.signAnonymously ||
+              reason is! String ||
+              reason.trim().isEmpty) {
+            continue;
+          }
+          comments.add(
             PetitionComment(
-              signerId: docs[i].id,
-              text: (docs[i].data()['reason'] as String).trim(),
-              displayName: profiles[i].displayName,
-              signedAt: (docs[i].data()['signedAt'] as Timestamp?)?.toDate(),
+              signerId: profile.uid,
+              text: reason.trim(),
+              displayName: profile.displayName,
+              signedAt: entry['signedAt'] == null
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      (entry['signedAt'] as num).toInt(),
+                    ),
             ),
-        ];
-        comments.sort((a, b) {
-          final order = (b.signedAt?.millisecondsSinceEpoch ?? 0).compareTo(
-            a.signedAt?.millisecondsSinceEpoch ?? 0,
           );
-          return order != 0 ? order : a.signerId.compareTo(b.signerId);
-        });
+        }
+        comments.sort(
+          (a, b) => (b.signedAt?.millisecondsSinceEpoch ?? 0).compareTo(
+            a.signedAt?.millisecondsSinceEpoch ?? 0,
+          ),
+        );
         return comments;
       });
 

@@ -5,6 +5,8 @@ const {doc, setDoc, getDoc, deleteDoc, updateDoc, serverTimestamp} = require('fi
   try {
     await env.withSecurityRulesDisabled(async ctx => {
       const db = ctx.firestore();
+      await setDoc(doc(db, 'users/author'), {signAnonymously: false});
+      await setDoc(doc(db, 'users/empty'), {signAnonymously: false});
       await setDoc(doc(db, 'petitions/p'), {title: 'Petition'});
       await setDoc(doc(db, 'petitions/p/signatures/author'), {reason: 'First line\nSecond line'});
       await setDoc(doc(db, 'petitions/p/signatures/empty'), {reason: '  '});
