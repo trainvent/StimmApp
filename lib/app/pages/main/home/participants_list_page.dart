@@ -42,7 +42,7 @@ class ParticipantsListPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = participants[index];
             return ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
+              leading: _ParticipantAvatar(user: user),
               title: Text(
                 user.hasLoadError
                     ? context.l10n.erroneousProfile
@@ -91,7 +91,7 @@ class ParticipantsListPage extends StatelessWidget {
                 final user = userMap[uid];
 
                 return ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
+                  leading: _ParticipantAvatar(user: user),
                   title: Text(
                     user?.hasLoadError == true
                         ? context.l10n.erroneousProfile
@@ -106,6 +106,34 @@ class ParticipantsListPage extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class _ParticipantAvatar extends StatelessWidget {
+  const _ParticipantAvatar({required this.user});
+
+  final UserProfile? user;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = user?.hasLoadError == true
+        ? null
+        : user?.profilePictureUrl?.trim();
+    const fallback = CircleAvatar(child: Icon(Icons.person));
+    if (url == null || url.isEmpty) return fallback;
+
+    return SizedBox.square(
+      dimension: 40,
+      child: ClipOval(
+        child: Image.network(
+          url,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => fallback,
+          frameBuilder: (_, child, frame, _) =>
+              frame == null ? fallback : child,
+        ),
+      ),
     );
   }
 }

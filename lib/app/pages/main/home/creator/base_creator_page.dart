@@ -1,10 +1,13 @@
 import 'package:stimmapp/core/data/services/pdf_form_import.dart';
+
 import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
 import 'package:flag/flag.dart';
 import 'package:stimmapp/core/data/models/poll_template.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
@@ -941,59 +944,125 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     final overlay =
         Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
     final menuWidth = (overlay.size.width - 32).clamp(0.0, 320.0);
-    final value = await showMenu<T>(
+    final value = await showGeneralDialog<T>(
       context: context,
-      semanticLabel: title,
-      constraints: BoxConstraints.tightFor(width: menuWidth),
-      positionBuilder: (context, constraints) {
-        final anchor =
-            anchorKey.currentContext!.findRenderObject() as RenderBox;
-        final rect =
-            anchor.localToGlobal(Offset.zero, ancestor: overlay) & anchor.size;
-        final menuHeight = options.length * 56.0 + 16;
-        final safePadding = MediaQuery.paddingOf(context);
-        final spaceBelow =
-            overlay.size.height - safePadding.bottom - rect.bottom - 8;
-        final spaceAbove = rect.top - safePadding.top - 8;
-        final top = spaceBelow < menuHeight && spaceAbove > spaceBelow
-            ? rect.top - menuHeight - 4
-            : rect.bottom + 4;
-        return RelativeRect.fromRect(
-          Rect.fromLTWH(rect.center.dx - menuWidth / 2, top, menuWidth, 0),
-          Offset.zero & overlay.size,
-        );
-      },
-      items: [
-        for (final option in options)
-          PopupMenuItem<T>(
-            value: option,
-            height: 56,
-            child: IconTheme.merge(
-              data: IconThemeData(
-                color:
-                    Theme.of(context).popupMenuTheme.textStyle?.color ??
-                    Theme.of(context).colorScheme.onSurface,
-              ),
-              child: Row(
-                children: [
-                  SizedBox(width: 40, child: Center(child: leading(option))),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      label(option),
-                      style: TextStyle(
-                        fontFamily: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge?.fontFamily,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 200),
+      transitionBuilder: (context, animation, secondaryAnimation, child) =>
+          child,
+      pageBuilder: (menuContext, animation, secondaryAnimation) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final anchor =
+                anchorKey.currentContext!.findRenderObject() as RenderBox;
+            final rect =
+                anchor.localToGlobal(Offset.zero, ancestor: overlay) &
+                anchor.size;
+            final safePadding = MediaQuery.paddingOf(context);
+            final bottom = (overlay.size.height - rect.top + 4).clamp(
+              safePadding.bottom + 8,
+              overlay.size.height - safePadding.top - 8,
+            );
+            final maxHeight =
+                overlay.size.height - bottom - safePadding.top - 8;
+            final left = (rect.center.dx - menuWidth / 2).clamp(
+              8.0,
+              overlay.size.width - menuWidth - 8,
+            );
+            final theme = Theme.of(context);
+            return Stack(
+              children: [
+                Positioned(
+                  left: left,
+                  bottom: bottom,
+                  width: menuWidth,
+                  child: SizeTransition(
+                    sizeFactor: CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                      reverseCurve: Curves.easeInCubic,
+                    ),
+                    alignment: Alignment.bottomCenter,
+                    child: Material(
+                      color:
+                          theme.popupMenuTheme.color ??
+                          theme.colorScheme.surfaceContainer,
+                      shape:
+                          theme.popupMenuTheme.shape ??
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                      elevation: theme.popupMenuTheme.elevation ?? 8,
+                      clipBehavior: Clip.antiAlias,
+                      child: Semantics(
+                        role: SemanticsRole.menu,
+                        scopesRoute: true,
+                        explicitChildNodes: true,
+                        namesRoute: true,
+                        label: title,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: maxHeight),
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                for (final option in options)
+                                  PopupMenuItem<T>(
+                                    value: option,
+                                    height: 56,
+                                    child: IconTheme.merge(
+                                      data: IconThemeData(
+                                        color:
+                                            Theme.of(context)
+                                                .popupMenuTheme
+                                                .textStyle
+                                                ?.color ??
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 40,
+                                            child: Center(
+                                              child: leading(option),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              label(option),
+                                              style: TextStyle(
+                                                fontFamily: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge
+                                                    ?.fontFamily,
+                                              ),
+                                            ),
+                                          ),
+                                          if (option == selected)
+                                            const Icon(Icons.check),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  if (option == selected) const Icon(Icons.check),
-                ],
-              ),
-            ),
-          ),
-      ],
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
     if (!mounted) return;
     setState(() => _openScopePicker = null);
@@ -1036,7 +1105,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
           icon: Icon(
             _openScopePicker == 'scope'
                 ? Icons.arrow_left
-                : Icons.arrow_drop_down,
+                : Icons.arrow_drop_up,
           ),
         ),
       ),
@@ -1100,7 +1169,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
           icon: Icon(
             _openScopePicker == 'union'
                 ? Icons.arrow_left
-                : Icons.arrow_drop_down,
+                : Icons.arrow_drop_up,
           ),
         ),
       ),
@@ -1392,9 +1461,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                     style: IconButton.styleFrom(
                       backgroundColor: _openUntilClosed
                           ? Theme.of(context).colorScheme.primary
-                          : Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
+                          : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                       foregroundColor: _openUntilClosed
                           ? Theme.of(context).colorScheme.onPrimary
                           : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1475,9 +1544,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                         ? TriangleLoadingIndicator(
                             size: 20,
                             showFill: false,
-                            strokeColor: Theme.of(
-                              context,
-                            ).colorScheme.onPrimary,
+                            strokeColor: Theme.of(context)
+                                .colorScheme
+                                .onPrimary,
                           )
                         : Text(
                             context.l10n.reviewPublication,

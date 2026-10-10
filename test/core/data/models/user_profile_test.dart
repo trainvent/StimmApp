@@ -20,6 +20,7 @@ void main() {
 
     final userProfileJson = {
       'displayName': 'Test User',
+      'profilePictureUrl': null,
       'usernameKey': 'test user',
       'email': 'test@example.com',
       'state': 'Hessen',

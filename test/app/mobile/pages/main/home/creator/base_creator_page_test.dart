@@ -28,15 +28,14 @@ void main() {
             onChooseDraft: () async {
               choseDraft = true;
             },
-            onSubmit:
-                ({
-                  required title,
-                  required description,
-                  required tags,
-                  required scope,
-                  required durationDays,
-                  required openUntilClosed,
-                }) async => false,
+            onSubmit: ({
+              required title,
+              required description,
+              required tags,
+              required scope,
+              required durationDays,
+              required openUntilClosed,
+            }) async => false,
           ),
         ),
       );
@@ -83,15 +82,14 @@ void main() {
             description: 'Reused description',
             tags: ['Environment'],
           ),
-          onSubmit:
-              ({
-                required title,
-                required description,
-                required tags,
-                required scope,
-                required durationDays,
-                required openUntilClosed,
-              }) async => true,
+          onSubmit: ({
+            required title,
+            required description,
+            required tags,
+            required scope,
+            required durationDays,
+            required openUntilClosed,
+          }) async => true,
         ),
       ),
     );
@@ -115,15 +113,14 @@ void main() {
             key: key,
             title: 'Tag draft',
             tutorialSteps: const [],
-            onSubmit:
-                ({
-                  required title,
-                  required description,
-                  required tags,
-                  required scope,
-                  required durationDays,
-                  required openUntilClosed,
-                }) async => true,
+            onSubmit: ({
+              required title,
+              required description,
+              required tags,
+              required scope,
+              required durationDays,
+              required openUntilClosed,
+            }) async => true,
           ),
         ),
       );
@@ -252,15 +249,14 @@ void main() {
         BaseCreatorPage(
           title: 'Create form',
           tutorialSteps: const [],
-          onSubmit:
-              ({
-                required title,
-                required description,
-                required tags,
-                required scope,
-                required durationDays,
-                required openUntilClosed,
-              }) async => true,
+          onSubmit: ({
+            required title,
+            required description,
+            required tags,
+            required scope,
+            required durationDays,
+            required openUntilClosed,
+          }) async => true,
         ),
       ),
     );
@@ -294,8 +290,24 @@ void main() {
       findsNothing,
     );
 
+    expect(
+      find.descendant(
+        of: scopeSelector,
+        matching: find.byIcon(Icons.arrow_drop_up),
+      ),
+      findsOneWidget,
+    );
+    final anchorTop = tester.getTopLeft(scopeSelector).dy;
     await tester.tap(scopeSelector);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 60));
+    final reveal = find.byType(SizeTransition).last;
+    final partial = tester.getRect(reveal);
     await tester.pumpAndSettle();
+    final expanded = tester.getRect(reveal);
+    expect(expanded.bottom, closeTo(anchorTop - 4, 0.1));
+    expect(partial.bottom, closeTo(expanded.bottom, 0.1));
+    expect(partial.top, greaterThan(expanded.top));
 
     expect(titleEditable.focusNode.hasFocus, isFalse);
 
@@ -327,15 +339,14 @@ void main() {
             tutorialSteps: const [],
             profileLoader: () async =>
                 const UserProfile(uid: 'german-user', countryCode: 'DE'),
-            onSubmit:
-                ({
-                  required title,
-                  required description,
-                  required tags,
-                  required scope,
-                  required durationDays,
-                  required openUntilClosed,
-                }) async => true,
+            onSubmit: ({
+              required title,
+              required description,
+              required tags,
+              required scope,
+              required durationDays,
+              required openUntilClosed,
+            }) async => true,
           ),
         ),
       );
@@ -372,15 +383,14 @@ void main() {
         BaseCreatorPage(
           title: 'Create form',
           tutorialSteps: const [],
-          onSubmit:
-              ({
-                required title,
-                required description,
-                required tags,
-                required scope,
-                required durationDays,
-                required openUntilClosed,
-              }) async => true,
+          onSubmit: ({
+            required title,
+            required description,
+            required tags,
+            required scope,
+            required durationDays,
+            required openUntilClosed,
+          }) async => true,
         ),
       ),
     );
@@ -424,15 +434,14 @@ void main() {
         BaseCreatorPage(
           title: 'Create form',
           tutorialSteps: const [],
-          onSubmit:
-              ({
-                required title,
-                required description,
-                required tags,
-                required scope,
-                required durationDays,
-                required openUntilClosed,
-              }) async => true,
+          onSubmit: ({
+            required title,
+            required description,
+            required tags,
+            required scope,
+            required durationDays,
+            required openUntilClosed,
+          }) async => true,
         ),
       ),
     );
@@ -488,15 +497,14 @@ void main() {
             title: 'Template settings',
             tutorialSteps: const [],
             profileLoader: () async => null,
-            onSubmit:
-                ({
-                  required title,
-                  required description,
-                  required tags,
-                  required scope,
-                  required durationDays,
-                  required openUntilClosed,
-                }) async => true,
+            onSubmit: ({
+              required title,
+              required description,
+              required tags,
+              required scope,
+              required durationDays,
+              required openUntilClosed,
+            }) async => true,
           ),
         ),
       );

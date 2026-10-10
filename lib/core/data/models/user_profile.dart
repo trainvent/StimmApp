@@ -6,6 +6,7 @@ const Object _unset = Object();
 class UserProfile {
   final String uid;
   final String? displayName;
+  final String? profilePictureUrl;
   final String? usernameKey;
   final String? email;
   final String? state;
@@ -68,6 +69,7 @@ class UserProfile {
   const UserProfile({
     required this.uid,
     this.displayName,
+    this.profilePictureUrl,
     this.usernameKey,
     this.email,
     this.state,
@@ -106,6 +108,7 @@ class UserProfile {
   UserProfile copyWith({
     String? uid,
     String? displayName,
+    Object? profilePictureUrl = _unset,
     String? usernameKey,
     String? email,
     Object? state = _unset,
@@ -143,6 +146,9 @@ class UserProfile {
     return UserProfile(
       uid: uid ?? this.uid,
       displayName: displayName ?? this.displayName,
+      profilePictureUrl: identical(profilePictureUrl, _unset)
+          ? this.profilePictureUrl
+          : profilePictureUrl as String?,
       usernameKey: usernameKey ?? this.usernameKey,
       email: resolvedEmail,
       state: identical(state, _unset) ? this.state : state as String?,
@@ -188,6 +194,7 @@ class UserProfile {
     return UserProfile(
       uid: uid,
       displayName: json['displayName'] as String?,
+      profilePictureUrl: json['profilePictureUrl'] as String?,
       usernameKey: json['usernameKey'] as String?,
       email: email,
       state: json['state'] as String?,
@@ -225,6 +232,7 @@ class UserProfile {
   Map<String, Object?> toJson() {
     return <String, Object?>{
       'displayName': displayName,
+      'profilePictureUrl': profilePictureUrl,
       'usernameKey': usernameKey,
       'email': email,
       'state': state,

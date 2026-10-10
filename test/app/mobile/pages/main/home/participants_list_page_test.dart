@@ -6,6 +6,74 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/l10n/app_localizations.dart';
 
 void main() {
+  test('profile picture URL survives parsing, copying and serialization', () {
+    final profile = UserProfile.fromJson({
+      'displayName': 'Participant',
+      'profilePictureUrl': 'https://example.com/avatar.jpg',
+    }, 'participant');
+    expect(profile.profilePictureUrl, 'https://example.com/avatar.jpg');
+    expect(
+      profile.copyWith(displayName: 'Updated').profilePictureUrl,
+      profile.profilePictureUrl,
+    );
+    expect(profile.toJson()['profilePictureUrl'], profile.profilePictureUrl);
+    expect(profile.copyWith(profilePictureUrl: null).profilePictureUrl, isNull);
+  });
+
+  for (final withSignatures in [false, true]) {
+    testWidgets(
+      'loads participant avatar with fallback (signatures: $withSignatures)',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParticipantsListPage(
+              participantsStream: Stream.value(const [
+                UserProfile(
+                  uid: 'picture',
+                  displayName: 'With picture',
+                  profilePictureUrl: 'https://example.com/avatar.jpg',
+                ),
+                UserProfile(uid: 'missing', displayName: 'Without picture'),
+              ]),
+              signaturesStream: withSignatures
+                  ? Stream.value([
+                      {'uid': 'picture', 'reason': ''},
+                      {'uid': 'missing', 'reason': ''},
+                      {'uid': 'unknown', 'reason': ''},
+                    ])
+                  : null,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final image = tester.widget<Image>(find.byType(Image));
+        expect(
+          (image.image as NetworkImage).url,
+          'https://example.com/avatar.jpg',
+        );
+        expect(
+          image.errorBuilder!(
+            tester.element(find.byType(Image)),
+            Exception('failed download'),
+            null,
+          ),
+          isA<CircleAvatar>(),
+        );
+        expect(find.text('With picture'), findsOneWidget);
+        expect(find.text('Without picture'), findsOneWidget);
+        expect(find.byIcon(Icons.person), findsWidgets);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('shows a localized placeholder for an erroneous profile', (
     tester,
   ) async {
