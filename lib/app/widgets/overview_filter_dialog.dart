@@ -177,20 +177,6 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: Text(context.l10n.participationNotYet)),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          context.l10n.participationOnly,
-                          textAlign: TextAlign.end,
-                        ),
-                      ),
-                    ],
-                  ),
                   Slider(
                     key: const ValueKey('participation_filter_slider'),
                     value: _participation.index.toDouble(),
