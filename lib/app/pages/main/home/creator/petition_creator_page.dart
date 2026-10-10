@@ -251,14 +251,14 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
   }) async {
     final currentUser = authService.currentUser;
     if (currentUser == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return false;
     }
 
     if (ContentModerationService.instance.containsObjectionableContent(
       <String?>[title, description],
     )) {
-      showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
+      showUserMistakeSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
       return false;
     }
 
@@ -295,7 +295,9 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
           ? matchedTitles.first.title
           : '';
       if (matchedTitle.isNotEmpty && matchedTitle == petition.title) {
-        if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
+        if (mounted) {
+          showUserMistakeSnackBar(context.l10n.petitionTitleInUseAlready);
+        }
         return false;
       }
 
@@ -323,7 +325,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     } on StateError catch (e) {
       if (mounted) {
         if (e.message == 'petition_daily_limit_reached') {
-          showErrorSnackBar(context.l10n.dailyCreateLimitReached);
+          showUserMistakeSnackBar(context.l10n.dailyCreateLimitReached);
         } else {
           showErrorSnackBar(context.l10n.errorCreatingPetition + e.toString());
         }

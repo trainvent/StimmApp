@@ -149,7 +149,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
     final isUsername =
         !identifier.contains('@') && hasValidUsernameLength(identifier);
     if (!isEmail && !isUsername) {
-      showErrorSnackBar(
+      showUserMistakeSnackBar(
         context.l10n.pleaseEnterValidEmailOrUsernameForEveryInvitedMember,
       );
       return;
@@ -365,7 +365,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
     final trimmed = identifier.trim();
     if (_looksLikeEmail(trimmed)) return trimmed.toLowerCase();
     if (trimmed.contains('@') || !hasValidUsernameLength(trimmed)) {
-      showErrorSnackBar(
+      showUserMistakeSnackBar(
         context.l10n.pleaseEnterValidEmailOrUsernameForEveryInvitedMember,
       );
       return null;
@@ -409,13 +409,13 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
   Future<void> _sendInvitations() async {
     final user = _auth.currentUser;
     if (user == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     final newMembers = await _buildAllowedMembers(user.uid);
     if (!mounted || newMembers == null) return;
     if (newMembers.isEmpty) {
-      showErrorSnackBar(context.l10n.pleaseAddMemberToInvite);
+      showUserMistakeSnackBar(context.l10n.pleaseAddMemberToInvite);
       return;
     }
     final mergedMembers = PollGroupRepository.normalizeAllowedMembers([

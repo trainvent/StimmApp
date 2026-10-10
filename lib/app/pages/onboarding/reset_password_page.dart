@@ -73,7 +73,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Future<void> _verifyCode() async {
     final code = _codeController.text.trim();
     if (code.length != 6) {
-      showErrorSnackBar(S.of(context).pleaseEnterAValid6digitCode);
+      showUserMistakeSnackBar(S.of(context).pleaseEnterAValid6digitCode);
       return;
     }
 

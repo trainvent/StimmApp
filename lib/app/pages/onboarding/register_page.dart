@@ -40,7 +40,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> register() async {
     if (controllerPw.text != controllerConfirmPw.text) {
-      showErrorSnackBar(context.l10n.passwordsDoNotMatch);
+      showUserMistakeSnackBar(context.l10n.passwordsDoNotMatch);
       return;
     }
 

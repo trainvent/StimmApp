@@ -115,7 +115,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   Future<void> _requestAccess(PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     final fallbackDisplayName = context.l10n.aUser;
@@ -146,7 +146,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   Future<void> _joinOpenGroup(PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     setState(() => _isSaving = true);

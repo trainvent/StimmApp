@@ -22,7 +22,7 @@ class _GroupAccessQrScannerPageState extends State<GroupAccessQrScannerPage> {
     final uri = Uri.tryParse(rawValue);
     final groupId = uri?.queryParameters['groupId'];
     if (groupId == null || groupId.isEmpty) {
-      showErrorSnackBar(context.l10n.invalidGroupInviteQrCode);
+      showUserMistakeSnackBar(context.l10n.invalidGroupInviteQrCode);
       return;
     }
     _handledScan = true;

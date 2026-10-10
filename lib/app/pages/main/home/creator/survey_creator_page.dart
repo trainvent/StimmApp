@@ -330,7 +330,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
   void _addQuestion() {
     if (_questions.length >= AppLimits.maxSurveyQuestions) {
-      showErrorSnackBar(
+      showUserMistakeSnackBar(
         context.l10n.maximumSurveyQuestionsAllowed(
           AppLimits.maxSurveyQuestions,
         ),
@@ -365,7 +365,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   void _addOption(_QuestionDraft question) {
     if (question.optionControllers.length >=
         AppLimits.maxSurveyOptionsPerQuestion) {
-      showErrorSnackBar(
+      showUserMistakeSnackBar(
         context.l10n.maximumPollOptionsAllowed(
           AppLimits.maxSurveyOptionsPerQuestion,
         ),
@@ -404,7 +404,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   }) async {
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return false;
     }
 
@@ -421,7 +421,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     if (ContentModerationService.instance.containsObjectionableContent(
       moderationInputs,
     )) {
-      showErrorSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
+      showUserMistakeSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
       return false;
     }
 
@@ -481,7 +481,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             : '';
         if (matchedTitle.isNotEmpty && matchedTitle == poll.title) {
           if (mounted) {
-            showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
+            showUserMistakeSnackBar(context.l10n.petitionTitleInUseAlready);
           }
           return false;
         }
@@ -533,7 +533,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           ? matchedTitles.first.title
           : '';
       if (matchedTitle.isNotEmpty && matchedTitle == survey.title) {
-        if (mounted) showErrorSnackBar(context.l10n.petitionTitleInUseAlready);
+        if (mounted) {
+          showUserMistakeSnackBar(context.l10n.petitionTitleInUseAlready);
+        }
         return false;
       }
 
@@ -562,7 +564,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         return false;
       }
       if (error.message == 'poll_daily_limit_reached') {
-        showErrorSnackBar(context.l10n.dailyCreateLimitReached);
+        showUserMistakeSnackBar(context.l10n.dailyCreateLimitReached);
       } else {
         final failureMessage = _questions.length == 1
             ? context.l10n.failedToCreatePoll
@@ -904,7 +906,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         final groups = await _groupRepository.watchGroupsForUser(userId).first;
         if (!mounted) return;
         if (!groups.any((group) => group.id == selected.groupId)) {
-          showErrorSnackBar(context.l10n.pollTemplateGroupUnavailable);
+          showUserMistakeSnackBar(context.l10n.pollTemplateGroupUnavailable);
           return;
         }
         _rememberGroups(groups);

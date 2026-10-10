@@ -76,7 +76,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
   Future<void> _leaveGroup(BuildContext context, PollGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
 
@@ -134,7 +134,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
   Future<void> _openCreateGroup(BuildContext context) async {
     final authenticatedUser = authService.currentUser;
     if (authenticatedUser == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     final uid = authenticatedUser.uid;

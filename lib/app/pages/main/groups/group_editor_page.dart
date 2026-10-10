@@ -257,7 +257,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         continue;
       }
       if (normalizedDomain == null) {
-        showErrorSnackBar(context.l10n.pleaseEnterValidEmailDomains);
+        showUserMistakeSnackBar(context.l10n.pleaseEnterValidEmailDomains);
         return null;
       }
       domains.add(
@@ -277,16 +277,16 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     final wasEditing = _isEditing;
     final user = _auth.currentUser;
     if (user == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
     final groupName = _nameController.text.trim();
     if (groupName.isEmpty) {
-      showErrorSnackBar(context.l10n.pleaseEnterGroupName);
+      showUserMistakeSnackBar(context.l10n.pleaseEnterGroupName);
       return;
     }
     if (groupName.length > AppLimits.maxGroupNameLength) {
-      showErrorSnackBar(context.l10n.pleaseEnterGroupName);
+      showUserMistakeSnackBar(context.l10n.pleaseEnterGroupName);
       return;
     }
 

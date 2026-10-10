@@ -68,7 +68,7 @@ class _CreationIconButtonState extends State<CreationIconButton> {
 
   Future<void> _handlePressed() async {
     if (!_canCreate) {
-      showErrorSnackBar(context.l10n.dailyCreateLimitReached);
+      showUserMistakeSnackBar(context.l10n.dailyCreateLimitReached);
       return;
     }
     await Navigator.push(

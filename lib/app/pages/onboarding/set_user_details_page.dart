@@ -288,12 +288,12 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
 
       if (controllerAddress.text.trim().isEmpty) {
-        showErrorSnackBar(S.of(context).faultyInput);
+        showUserMistakeSnackBar(S.of(context).faultyInput);
         return;
       }
 
       if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
-        showErrorSnackBar('Please select an address with a town');
+        showUserMistakeSnackBar('Please select an address with a town');
         return;
       }
 
@@ -305,14 +305,14 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
       }
 
       if (!_acceptedCommunityRules) {
-        showErrorSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
+        showUserMistakeSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
         return;
       }
 
       if (ContentModerationService.instance.containsObjectionableContent(
         <String?>[controllerDisplayName.text],
       )) {
-        showErrorSnackBar(context.l10n.removeAbusiveLanguageFromPublicName);
+        showUserMistakeSnackBar(context.l10n.removeAbusiveLanguageFromPublicName);
         return;
       }
 
@@ -899,7 +899,7 @@ class _SetUserDetailsPageState extends ConsumerState<SetUserDetailsPage> {
                         if (!mounted) return;
 
                         if (controllerAddress.text.trim().isEmpty) {
-                          showErrorSnackBar(faultyInput);
+                          showUserMistakeSnackBar(faultyInput);
                           // Force validation to show error on address field if it has a validator
                           _formKey.currentState!.validate();
                           return;

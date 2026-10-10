@@ -38,7 +38,22 @@ void showSuccessSnackBar([String? message]) {
   );
 }
 
-/// Show a floating error snackbar. [message] is optional.
+/// Show a brief validation message without a technical-error copy action.
+void showUserMistakeSnackBar([String? message]) {
+  final ctx = navigatorKey.currentContext;
+  if (ctx == null) return;
+  _showSnackBarSafely(
+    SnackBar(
+      backgroundColor: Theme.of(ctx).colorScheme.error,
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(seconds: 2),
+      persist: false,
+      content: Text(message ?? '', style: AppTextStyles.m),
+    ),
+  );
+}
+
+/// Show a floating technical error snackbar. [message] is optional.
 void showErrorSnackBar([String? message]) {
   final ctx = navigatorKey.currentContext;
   if (ctx == null) return;
@@ -48,6 +63,7 @@ void showErrorSnackBar([String? message]) {
       backgroundColor: Theme.of(ctx).colorScheme.error,
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 2),
+      persist: false,
       content: SelectableText(resolvedMessage, style: AppTextStyles.m),
       action: SnackBarAction(
         label: 'Copy',

@@ -139,7 +139,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     if ((scope == FormScopeType.stateOrRegion && !_supportsStateScope) ||
         (scope == FormScopeType.countryUnion &&
             !_availableCountryUnions.contains(union))) {
-      showErrorSnackBar(context.l10n.pollTemplateScopeUnavailable);
+      showUserMistakeSnackBar(context.l10n.pollTemplateScopeUnavailable);
       return false;
     }
     setState(() {
@@ -730,27 +730,27 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     }
 
     if (_selectedTags.isEmpty) {
-      showErrorSnackBar(context.l10n.tagsRequired);
+      showUserMistakeSnackBar(context.l10n.tagsRequired);
       return;
     }
 
     if (_selectedScope == FormScopeType.stateOrRegion &&
         (!_supportsStateScope || _profileStateOrRegion == null)) {
-      showErrorSnackBar(context.l10n.pleaseSelectState);
+      showUserMistakeSnackBar(context.l10n.pleaseSelectState);
       return;
     }
     if (_selectedScope == FormScopeType.city && _profileTown == null) {
-      showErrorSnackBar(context.l10n.pleaseSetTownInAddressFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSetTownInAddressFirst);
       return;
     }
     if (_selectedScope == FormScopeType.countryUnion &&
         !_availableCountryUnions.contains(_selectedCountryUnion)) {
-      showErrorSnackBar(context.l10n.countryUnionScopeOnlyForMembers);
+      showUserMistakeSnackBar(context.l10n.countryUnionScopeOnlyForMembers);
       return;
     }
     if (_selectedScope != FormScopeType.global &&
         (_profileCountryCode == null || _profileCountryCode!.isEmpty)) {
-      showErrorSnackBar(context.l10n.pleaseSetCountryInAddressFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSetCountryInAddressFirst);
       return;
     }
     final scope = _buildSelectedScope();

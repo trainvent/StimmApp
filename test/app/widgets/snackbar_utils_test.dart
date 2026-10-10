@@ -25,6 +25,38 @@ class _ShowSnackBarDuringBuildState extends State<_ShowSnackBarDuringBuild> {
 }
 
 void main() {
+  testWidgets('user mistake snackbar has no copy action and expires', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(navigatorKey: navigatorKey, home: const Scaffold()),
+    );
+    showUserMistakeSnackBar('Choose at least one tag');
+    await tester.pumpAndSettle();
+    expect(find.text('Choose at least one tag'), findsOneWidget);
+    expect(find.byType(SnackBarAction), findsNothing);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('error snackbar expires after two seconds with its copy action', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(navigatorKey: navigatorKey, home: const Scaffold()),
+    );
+    showErrorSnackBar('Choose at least one tag');
+    await tester.pumpAndSettle();
+    expect(find.text('Choose at least one tag'), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Choose at least one tag'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
   testWidgets('defers snackbar changes requested during build', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

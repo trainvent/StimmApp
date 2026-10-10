@@ -68,7 +68,7 @@ class _ChangeProfilePicturePageState
 
     final user = authService.currentUser;
     if (user == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
 

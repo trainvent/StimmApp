@@ -115,7 +115,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
 
     final currentUid = _auth.currentUser?.uid;
     if (currentUid == null) {
-      showErrorSnackBar(context.l10n.pleaseSignInFirst);
+      showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
       return;
     }
 

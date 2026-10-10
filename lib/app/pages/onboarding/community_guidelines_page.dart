@@ -31,7 +31,7 @@ class _CommunityGuidelinesPageState extends State<CommunityGuidelinesPage> {
 
   Future<void> _accept() async {
     if (!_accepted) {
-      showErrorSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
+      showUserMistakeSnackBar(context.l10n.acceptCommunityRulesBeforeContinuing);
       return;
     }
 

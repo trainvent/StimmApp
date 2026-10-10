@@ -140,7 +140,7 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
               return;
             }
             if (_selectedTown == null || _selectedTown!.trim().isEmpty) {
-              showErrorSnackBar(l10n.pleaseSelectAddressWithTown);
+              showUserMistakeSnackBar(l10n.pleaseSelectAddressWithTown);
               return;
             }
             if (_requiresStateScope && _selectedState == null) {
