@@ -21,6 +21,7 @@ import 'package:stimmapp/app/pages/main/profile/list/delete_account_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
 import 'package:stimmapp/app/pages/others/app_loading_page.dart';
 import 'package:stimmapp/core/config/app_bootstrap.dart';
+import 'package:stimmapp/core/config/app_check.dart';
 import 'package:stimmapp/core/config/environment.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
@@ -115,6 +116,7 @@ Future<void> startApp({required FirebaseOptions firebaseOptions}) async {
   _firebaseInit ??= _initFirebase(firebaseOptions);
   await _firebaseInit;
 
+  await configureAppCheck();
   await _configureCrashReporting();
   await _configureFirestore();
   locator.init();

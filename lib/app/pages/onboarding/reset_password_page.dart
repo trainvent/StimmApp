@@ -109,9 +109,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(context.l10n.resetPassword, style: AppTextStyles.xxlBold),
-                const SizedBox(height: 20.0),
-                const Text('🔐', style: AppTextStyles.icons),
+                Image.asset(
+                  'assets/images/Lemm_pen.png',
+                  height: 240,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(height: 30),
                 if (!_codeSent) ...[
                   TextFormField(
