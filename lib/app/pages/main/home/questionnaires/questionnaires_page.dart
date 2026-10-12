@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/base_overview_page.dart';
 import 'package:stimmapp/app/widgets/form_list_tile_widget.dart';
-import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:stimmapp/core/data/models/questionnaire_group.dart';
@@ -13,6 +12,8 @@ import 'package:stimmapp/core/data/repositories/poll_repository.dart';
 import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
+
+enum _QuestionnaireFilter { poll, both, survey }
 
 class QuestionnairesPage extends StatefulWidget {
   const QuestionnairesPage({
@@ -31,7 +32,7 @@ class QuestionnairesPage extends StatefulWidget {
 class _QuestionnairesPageState extends State<QuestionnairesPage> {
   // null shows all groups; an empty ID selects forms without a group.
   late String? _selectedGroupId = widget.initialGroupId;
-  bool _showSurveys = true;
+  _QuestionnaireFilter _typeFilter = _QuestionnaireFilter.both;
 
   Stream<List<Questionnaire>> _listQuestionnaires({
     required String query,
@@ -40,16 +41,15 @@ class _QuestionnairesPageState extends State<QuestionnairesPage> {
     final pollStream = PollRepository.create()
         .list(query: query, status: status)
         .map((polls) => polls.cast<Questionnaire>());
-    if (!_showSurveys) {
+    if (_typeFilter == _QuestionnaireFilter.poll) {
       return pollStream;
     }
 
-    return _combineLatestItems(
-      pollStream,
-      SurveyRepository.create()
-          .list(query: query, status: status)
-          .map((surveys) => surveys.cast<Questionnaire>()),
-    );
+    final surveyStream = SurveyRepository.create()
+        .list(query: query, status: status)
+        .map((surveys) => surveys.cast<Questionnaire>());
+    if (_typeFilter == _QuestionnaireFilter.survey) return surveyStream;
+    return _combineLatestItems(pollStream, surveyStream);
   }
 
   Stream<List<Questionnaire>> _combineLatestItems(
@@ -133,7 +133,7 @@ class _QuestionnairesPageState extends State<QuestionnairesPage> {
   Widget build(BuildContext context) {
     final currentUid = authService.currentUser?.uid;
     return BaseOverviewPage<Questionnaire>(
-      streamKey: _showSurveys,
+      streamKey: _typeFilter,
       appBarTitle: widget.showTopNavigation
           ? context.l10n.viewGroupQuestionnaires
           : null,
@@ -146,6 +146,14 @@ class _QuestionnairesPageState extends State<QuestionnairesPage> {
       participationKeyProvider: (item) =>
           item is Survey ? 'survey:${item.id}' : 'poll:${item.id}',
       extraFilter: (item) {
+        if (_typeFilter == _QuestionnaireFilter.poll &&
+            item.kind != QuestionnaireKind.poll) {
+          return false;
+        }
+        if (_typeFilter == _QuestionnaireFilter.survey &&
+            item.kind != QuestionnaireKind.survey) {
+          return false;
+        }
         final selectedGroupId = _selectedGroupId;
         if (selectedGroupId == null) {
           return true;
@@ -156,38 +164,55 @@ class _QuestionnairesPageState extends State<QuestionnairesPage> {
         return item.groupId == selectedGroupId;
       },
       extraFilterCount:
-          (_selectedGroupId == null ? 0 : 1) + (_showSurveys ? 0 : 1),
+          (_selectedGroupId == null ? 0 : 1) +
+          (_typeFilter == _QuestionnaireFilter.both ? 0 : 1),
       clearExtraFilters: () {
-        if (_selectedGroupId == null && _showSurveys) {
+        if (_selectedGroupId == null &&
+            _typeFilter == _QuestionnaireFilter.both) {
           return;
         }
         setState(() {
           _selectedGroupId = null;
-          _showSurveys = true;
+          _typeFilter = _QuestionnaireFilter.both;
         });
       },
-      structureFilterSectionBuilder: (dialogContext, setDialogState) {
-        return CheckboxListTile(
-          key: const Key('show_surveys_filter_checkbox'),
-          contentPadding: EdgeInsets.zero,
-          value: _showSurveys,
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(child: Text(context.l10n.showSurveys)),
-              const SizedBox(width: 4),
-              InfoDialogButton(
-                title: context.l10n.showSurveys,
-                content: Text(context.l10n.showSurveysInfo),
-                cornerImagePath: 'assets/images/Lemm_teaching.png',
-              ),
-            ],
-          ),
-          controlAffinity: ListTileControlAffinity.leading,
-          onChanged: (value) {
-            setDialogState(() {});
-            setState(() => _showSurveys = value ?? true);
-          },
+      otherFilterSectionBuilder: (dialogContext, setDialogState) {
+        String typeLabel(_QuestionnaireFilter type) => switch (type) {
+          _QuestionnaireFilter.poll => context.l10n.pollDetails,
+          _QuestionnaireFilter.both => context.l10n.bothQuestionnaireTypes,
+          _QuestionnaireFilter.survey => context.l10n.surveyDetails,
+        };
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.l10n.filterQuestionnaireType,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Slider(
+              key: const Key('questionnaire_type_filter_slider'),
+              value: _typeFilter.index.toDouble(),
+              min: 0,
+              max: 2,
+              divisions: 2,
+              label: typeLabel(_typeFilter),
+              semanticFormatterCallback: (value) =>
+                  typeLabel(_QuestionnaireFilter.values[value.round()]),
+              onChanged: (value) {
+                setState(
+                  () =>
+                      _typeFilter = _QuestionnaireFilter.values[value.round()],
+                );
+                setDialogState(() {});
+              },
+            ),
+            Text(
+              typeLabel(_typeFilter),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
+            ),
+          ],
         );
       },
       filterDialogSectionBuilder: currentUid == null
@@ -199,7 +224,7 @@ class _QuestionnairesPageState extends State<QuestionnairesPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     debugPrint(
-                      'Poll group filter stream error: ${snapshot.error}',
+                      'Questionnaire group filter stream error: ${snapshot.error}',
                     );
                     return Text('${context.l10n.error}: ${snapshot.error}');
                   }

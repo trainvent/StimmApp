@@ -3332,4 +3332,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get polls => 'Abstimmungen';
+
+  @override
+  String get filterQuestionnaireType => 'Typ';
+
+  @override
+  String get bothQuestionnaireTypes => 'Beide';
 }

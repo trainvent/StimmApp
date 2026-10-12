@@ -26,7 +26,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
     this.participationKeyProvider,
     this.extraFilter,
     this.extraFilterCount = 0,
-    this.structureFilterSectionBuilder,
+    this.otherFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
     this.appBarTitle,
@@ -45,7 +45,7 @@ class BaseOverviewPage<T extends HomeItem> extends StatefulWidget {
   final bool Function(T item)? extraFilter;
   final int extraFilterCount;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
-  structureFilterSectionBuilder;
+  otherFilterSectionBuilder;
   final Widget Function(BuildContext context, StateSetter setDialogState)?
   filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
@@ -252,7 +252,7 @@ class _BaseOverviewPageState<T extends HomeItem>
           participation: _participation,
         ),
         showParticipationFilter: widget.participatedIdsStreamProvider != null,
-        structureFilterSectionBuilder: widget.structureFilterSectionBuilder,
+        otherFilterSectionBuilder: widget.otherFilterSectionBuilder,
         filterDialogSectionBuilder: widget.filterDialogSectionBuilder,
         clearExtraFilters: widget.clearExtraFilters,
       ),

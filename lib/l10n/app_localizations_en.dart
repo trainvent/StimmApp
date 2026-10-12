@@ -3287,4 +3287,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get polls => 'Polls';
+
+  @override
+  String get filterQuestionnaireType => 'Questionnaire type';
+
+  @override
+  String get bothQuestionnaireTypes => 'Both';
 }

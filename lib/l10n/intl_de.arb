@@ -1254,5 +1254,7 @@
   "textQuestion": "Text",
   "addAtLeastOneQuestion": "Füge mindestens eine Frage hinzu.",
   "createQuestionnaire": "Fragen erstellen",
-  "polls": "Abstimmungen"
+  "polls": "Abstimmungen",
+  "filterQuestionnaireType": "Typ",
+  "bothQuestionnaireTypes": "Beide"
 }

@@ -6019,6 +6019,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Polls'**
   String get polls;
+
+  /// No description provided for @filterQuestionnaireType.
+  ///
+  /// In en, this message translates to:
+  /// **'Questionnaire type'**
+  String get filterQuestionnaireType;
+
+  /// No description provided for @bothQuestionnaireTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get bothQuestionnaireTypes;
 }
 
 class _AppLocalizationsDelegate

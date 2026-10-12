@@ -99,8 +99,8 @@ void main() {
                   context: context,
                   builder: (context) => OverviewFilterDialog(
                     initialSelection: initial,
-                    structureFilterSectionBuilder: (context, update) =>
-                        const Text('Structure option'),
+                    otherFilterSectionBuilder: (context, update) =>
+                        const Text('Additional option'),
                     clearExtraFilters: () => clearCount++,
                   ),
                 );
@@ -114,7 +114,7 @@ void main() {
       await tester.tap(find.text('Open filter'));
       await tester.pumpAndSettle();
       expect(
-        find.text(language == 'en' ? 'Structure' : 'Struktur'),
+        find.text(language == 'en' ? 'Other' : 'Andere'),
         findsOneWidget,
       );
       expect(find.text('Design'), findsNothing);

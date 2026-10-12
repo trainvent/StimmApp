@@ -23,15 +23,14 @@ class OverviewFilterDialog extends StatefulWidget {
   const OverviewFilterDialog({
     super.key,
     required this.initialSelection,
-    this.structureFilterSectionBuilder,
+    this.otherFilterSectionBuilder,
     this.filterDialogSectionBuilder,
     this.clearExtraFilters,
     this.showParticipationFilter = false,
   });
   final OverviewFilterSelection initialSelection;
   final bool showParticipationFilter;
-  final Widget Function(BuildContext, StateSetter)?
-  structureFilterSectionBuilder;
+  final Widget Function(BuildContext, StateSetter)? otherFilterSectionBuilder;
   final Widget Function(BuildContext, StateSetter)? filterDialogSectionBuilder;
   final VoidCallback? clearExtraFilters;
 
@@ -129,21 +128,6 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                 ),
               ],
             ),
-            if (widget.structureFilterSectionBuilder != null) ...[
-              const Divider(),
-              ExpansionTile(
-                initiallyExpanded: false,
-                tilePadding: EdgeInsets.zero,
-                childrenPadding: const EdgeInsets.only(bottom: 8),
-                title: Text(
-                  context.l10n.structure,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                children: [
-                  widget.structureFilterSectionBuilder!(context, setState),
-                ],
-              ),
-            ],
             if (widget.filterDialogSectionBuilder != null) ...[
               const Divider(),
               ExpansionTile(
@@ -159,7 +143,8 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                 ],
               ),
             ],
-            if (widget.showParticipationFilter) ...[
+            if (widget.showParticipationFilter ||
+                widget.otherFilterSectionBuilder != null) ...[
               const Divider(),
               ExpansionTile(
                 key: const ValueKey('other_filters'),
@@ -170,35 +155,41 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 children: [
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      context.l10n.participationFilter,
-                      style: Theme.of(context).textTheme.labelLarge,
+                  if (widget.otherFilterSectionBuilder != null) ...[
+                    widget.otherFilterSectionBuilder!(context, setState),
+                    const SizedBox(height: 16),
+                  ],
+                  if (widget.showParticipationFilter) ...[
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        context.l10n.participationFilter,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
                     ),
-                  ),
-                  Slider(
-                    key: const ValueKey('participation_filter_slider'),
-                    value: _participation.index.toDouble(),
-                    min: 0,
-                    max: 2,
-                    divisions: 2,
-                    label: _participationLabel(_participation),
-                    semanticFormatterCallback: (value) => _participationLabel(
-                      ParticipationFilter.values[value.round()],
+                    Slider(
+                      key: const ValueKey('participation_filter_slider'),
+                      value: _participation.index.toDouble(),
+                      min: 0,
+                      max: 2,
+                      divisions: 2,
+                      label: _participationLabel(_participation),
+                      semanticFormatterCallback: (value) => _participationLabel(
+                        ParticipationFilter.values[value.round()],
+                      ),
+                      onChanged: (value) => setState(() {
+                        _participation =
+                            ParticipationFilter.values[value.round()];
+                      }),
                     ),
-                    onChanged: (value) => setState(() {
-                      _participation =
-                          ParticipationFilter.values[value.round()];
-                    }),
-                  ),
-                  Text(
-                    _participationLabel(_participation),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
+                    Text(
+                      _participationLabel(_participation),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
+                  ],
                 ],
               ),
             ],

@@ -1267,5 +1267,7 @@
   "textQuestion": "Text",
   "addAtLeastOneQuestion": "Add at least one question.",
   "createQuestionnaire": "Create questionnaire",
-  "polls": "Polls"
+  "polls": "Polls",
+  "filterQuestionnaireType": "Questionnaire type",
+  "bothQuestionnaireTypes": "Both"
 }
