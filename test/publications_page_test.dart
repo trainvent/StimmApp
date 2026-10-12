@@ -12,15 +12,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Your ideas in action'), findsOneWidget);
-    final createSurvey = find.widgetWithText(OutlinedButton, 'Create Survey');
+    final finishedForms = find.text('Finished Forms');
     // Small screens can still reach the final action through the scaffold.
     await tester.scrollUntilVisible(
-      createSurvey,
+      finishedForms,
       250,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(createSurvey, findsOneWidget);
+    expect(finishedForms, findsOneWidget);
   });
 }

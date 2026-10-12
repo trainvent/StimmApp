@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 
-type PollGroupActivityInput = {
+type QuestionnaireGroupActivityInput = {
 	type: string;
 	actorUid: string;
 	actorDisplayName?: string | null;
@@ -11,10 +11,10 @@ type PollGroupActivityInput = {
 	createdAt?: admin.firestore.Timestamp;
 };
 
-export function addPollGroupActivity(
+export function addQuestionnaireGroupActivity(
 	batch: admin.firestore.WriteBatch,
 	groupRef: admin.firestore.DocumentReference,
-	activity: PollGroupActivityInput,
+	activity: QuestionnaireGroupActivityInput,
 ) {
 	const ref = groupRef.collection("activities").doc();
 	batch.set(ref, {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/buttons/creation_floating_action_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
-import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
@@ -55,7 +54,7 @@ class _CreationIconButtonState extends State<CreationIconButton> {
       setState(() {
         _canCreate = widget.type == CreationType.petition
             ? status.canCreatePetition
-            : status.canCreatePoll;
+            : status.canCreateQuestionnaire;
         _loading = false;
       });
     } catch (_) {
@@ -80,21 +79,13 @@ class _CreationIconButtonState extends State<CreationIconButton> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: TriangleLoadingIndicator(size: 20, showFill: false),
-        ),
-      );
-    }
-
     return IconButton(
-      onPressed: _handlePressed,
+      onPressed: _loading ? null : _handlePressed,
       icon: Icon(widget.icon),
-      color: _canCreate ? null : Colors.grey,
-      tooltip: _canCreate ? null : context.l10n.dailyCreateLimitReached,
+      color: _loading || _canCreate ? null : Colors.grey,
+      tooltip: _loading || _canCreate
+          ? null
+          : context.l10n.dailyCreateLimitReached,
     );
   }
 }

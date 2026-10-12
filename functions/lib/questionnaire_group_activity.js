@@ -33,9 +33,9 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addPollGroupActivity = addPollGroupActivity;
+exports.addQuestionnaireGroupActivity = addQuestionnaireGroupActivity;
 const admin = __importStar(require("firebase-admin"));
-function addPollGroupActivity(batch, groupRef, activity) {
+function addQuestionnaireGroupActivity(batch, groupRef, activity) {
     var _a, _b, _c, _d, _e, _f;
     const ref = groupRef.collection("activities").doc();
     batch.set(ref, {
@@ -49,4 +49,4 @@ function addPollGroupActivity(batch, groupRef, activity) {
         createdAt: (_f = activity.createdAt) !== null && _f !== void 0 ? _f : admin.firestore.Timestamp.now(),
     });
 }
-//# sourceMappingURL=poll_group_activity.js.map
+//# sourceMappingURL=questionnaire_group_activity.js.map

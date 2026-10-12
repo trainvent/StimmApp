@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
+import 'package:stimmapp/app/pages/main/home/creator/questionnaire_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
@@ -33,30 +33,30 @@ class _FakeAuthService extends AuthService {
   User get currentUser => user;
 }
 
-class _FakeGroupRepository extends PollGroupRepository {
+class _FakeGroupRepository extends QuestionnaireGroupRepository {
   _FakeGroupRepository(this.groups)
     : super(DatabaseService(FakeFirebaseFirestore()));
 
-  final List<PollGroup> groups;
+  final List<QuestionnaireGroup> groups;
 
   @override
-  Stream<List<PollGroup>> watchGroupsForUser(String uid) {
+  Stream<List<QuestionnaireGroup>> watchGroupsForUser(String uid) {
     return Stream.value(groups);
   }
 }
 
 void main() {
-  final group = PollGroup(
+  final group = QuestionnaireGroup(
     id: 'group-1',
     name: 'Ops Team',
     createdBy: 'user-1',
     createdAt: DateTime(2026),
     joinCode: 'OPS-1',
-    nicknameMode: PollGroupNicknameMode.selfNamed,
+    nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
     managersCanInvite: true,
     memberIds: const ['user-1'],
     importedMemberCount: 0,
-    accessMode: PollGroupAccessMode.protected,
+    accessMode: QuestionnaireGroupAccessMode.protected,
     inviteLinkEnabled: true,
   );
 
@@ -74,7 +74,7 @@ void main() {
     await tester.pumpWidget(
       createTestWidget(
         ProviderScope(
-          child: SurveyCreatorPage(
+          child: QuestionnaireCreatorPage(
             auth: _FakeAuthService(_FakeUser()),
             groupRepository: _FakeGroupRepository([]),
           ),
@@ -82,27 +82,38 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(find.text('Create questionnaire'), findsOneWidget);
     expect(find.text('Question 1'), findsNothing);
     tester.state<FormState>(find.byType(Form).first).validate();
     await tester.pump();
     expect(find.text('Add at least one question.'), findsOneWidget);
     await tester.tap(find.byKey(const Key('add_text_question')));
     await tester.pumpAndSettle();
+    expect(find.text('Create questionnaire'), findsOneWidget);
+    expect(
+      tester.widget<BaseCreatorPage>(find.byType(BaseCreatorPage)).previewTitle,
+      'Survey',
+    );
     expect(find.text('Question 1'), findsOneWidget);
     expect(find.byTooltip('Answer presets'), findsNothing);
     expect(find.text('Answer type'), findsNothing);
     final prefs = await SharedPreferences.getInstance();
-    var draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    var draft = jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
     expect((draft['questions'] as List).single['type'], 'text');
     await tester.tap(find.byIcon(Icons.remove_circle_outline));
     await tester.pumpAndSettle();
     expect(find.text('Question 1'), findsNothing);
-    draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    draft = jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
     expect(draft['questions'], isEmpty);
     await tester.tap(find.byKey(const Key('add_multiple_choice_question')));
     await tester.pumpAndSettle();
+    expect(find.text('Create questionnaire'), findsOneWidget);
+    expect(
+      tester.widget<BaseCreatorPage>(find.byType(BaseCreatorPage)).previewTitle,
+      'Poll',
+    );
     expect(find.byTooltip('Answer presets'), findsOneWidget);
-    draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    draft = jsonDecode(prefs.getString('draft_poll_specific_v1')!) as Map;
     expect((draft['questions'] as List).single['type'], 'multipleChoice');
     expect((draft['questions'] as List).single['options'], hasLength(2));
   });
@@ -133,8 +144,7 @@ void main() {
     await tester.pumpWidget(
       createTestWidget(
         ProviderScope(
-          child: SurveyCreatorPage(
-            presentAsPoll: true,
+          child: QuestionnaireCreatorPage(
             auth: _FakeAuthService(_FakeUser()),
             groupRepository: _FakeGroupRepository([group]),
           ),
@@ -184,8 +194,7 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(
           ProviderScope(
-            child: SurveyCreatorPage(
-              presentAsPoll: true,
+            child: QuestionnaireCreatorPage(
               auth: _FakeAuthService(_FakeUser()),
               groupRepository: _FakeGroupRepository([group]),
             ),
@@ -197,7 +206,7 @@ void main() {
         find.byType(BaseCreatorPage),
       );
       await base.applyTemplate(
-        const PollTemplate(
+        const FormTemplate(
           id: 'review',
           name: 'Review',
           title: 'Team decisions',
@@ -243,11 +252,10 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(
           ProviderScope(
-            child: SurveyCreatorPage(
-              presentAsPoll: true,
+            child: QuestionnaireCreatorPage(
               auth: _FakeAuthService(_FakeUser()),
               groupRepository: _FakeGroupRepository([]),
-              initialTemplate: const PollTemplate(
+              initialTemplate: const FormTemplate(
                 id: 'single',
                 name: 'Single question',
                 title: 'Workplace satisfaction',
@@ -255,7 +263,7 @@ void main() {
                 tags: ['Social'],
                 scopeType: 'global',
                 questions: [
-                  PollTemplateQuestion(
+                  FormTemplateQuestion(
                     title: 'How satisfied are you with your workplace?',
                     options: ['Very satisfied', 'Not satisfied'],
                   ),
@@ -315,8 +323,7 @@ void main() {
     await tester.pumpWidget(
       createTestWidget(
         ProviderScope(
-          child: SurveyCreatorPage(
-            presentAsPoll: true,
+          child: QuestionnaireCreatorPage(
             auth: _FakeAuthService(_FakeUser()),
             groupRepository: _FakeGroupRepository([]),
           ),
@@ -328,7 +335,7 @@ void main() {
       find.byType(BaseCreatorPage),
     );
     await base.applyTemplate(
-      const PollTemplate(
+      const FormTemplate(
         id: 'review',
         name: 'Review',
         title: 'Team decisions',
@@ -359,8 +366,7 @@ void main() {
     await tester.pumpWidget(
       createTestWidget(
         ProviderScope(
-          child: SurveyCreatorPage(
-            presentAsPoll: true,
+          child: QuestionnaireCreatorPage(
             auth: _FakeAuthService(_FakeUser()),
             groupRepository: _FakeGroupRepository([group]),
           ),
@@ -404,8 +410,7 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(
           ProviderScope(
-            child: SurveyCreatorPage(
-              presentAsPoll: true,
+            child: QuestionnaireCreatorPage(
               auth: _FakeAuthService(_FakeUser()),
               groupRepository: _FakeGroupRepository([]),
             ),
@@ -459,8 +464,7 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(
           ProviderScope(
-            child: SurveyCreatorPage(
-              presentAsPoll: true,
+            child: QuestionnaireCreatorPage(
               auth: _FakeAuthService(_FakeUser()),
               groupRepository: _FakeGroupRepository([group]),
             ),
@@ -564,8 +568,8 @@ void main() {
       await tester.tap(find.text('Public').last);
       await tester.pumpAndSettle();
       await tester.enterText(fields.at(0), 'Changed title');
-      await tester.ensureVisible(find.byTooltip('Poll templates'));
-      await tester.tap(find.byTooltip('Poll templates'));
+      await tester.ensureVisible(find.byTooltip('Questionnaire templates'));
+      await tester.tap(find.byTooltip('Questionnaire templates'));
       await tester.pumpAndSettle();
       final templateTile = tester.widget<ListTile>(
         find.widgetWithText(ListTile, 'Weekly meeting'),

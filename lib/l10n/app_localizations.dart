@@ -2021,14 +2021,14 @@ abstract class AppLocalizations {
   /// No description provided for @pollDetails.
   ///
   /// In en, this message translates to:
-  /// **'Poll details'**
+  /// **'Poll'**
   String get pollDetails;
 
-  /// No description provided for @polls.
+  /// No description provided for @questionnaires.
   ///
   /// In en, this message translates to:
-  /// **'Polls'**
-  String get polls;
+  /// **'Polls & Surveys'**
+  String get questionnaires;
 
   /// No description provided for @popularPetitions.
   ///
@@ -2528,11 +2528,11 @@ abstract class AppLocalizations {
   /// **'Survey question'**
   String get surveyQuestion;
 
-  /// No description provided for @maximumSurveyQuestionsAllowed.
+  /// No description provided for @maximumQuestionnaireQuestionsAllowed.
   ///
   /// In en, this message translates to:
   /// **'Maximum {count} questions allowed'**
-  String maximumSurveyQuestionsAllowed(int count);
+  String maximumQuestionnaireQuestionsAllowed(int count);
 
   /// No description provided for @tagsRequired.
   ///
@@ -2705,7 +2705,7 @@ abstract class AppLocalizations {
   /// No description provided for @surveyDetails.
   ///
   /// In en, this message translates to:
-  /// **'Survey Details'**
+  /// **'Survey'**
   String get surveyDetails;
 
   /// No description provided for @submitSurvey.
@@ -3104,89 +3104,89 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get tagOther;
 
-  /// No description provided for @pollTutorialStep1Title.
+  /// No description provided for @questionnaireTutorialStep1Title.
   ///
   /// In en, this message translates to:
   /// **'1. Be crystal clear about the goal'**
-  String get pollTutorialStep1Title;
+  String get questionnaireTutorialStep1Title;
 
-  /// No description provided for @pollTutorialStep1Desc.
+  /// No description provided for @questionnaireTutorialStep1Desc.
   ///
   /// In en, this message translates to:
   /// **'Know exactly what you want to learn — one idea only.'**
-  String get pollTutorialStep1Desc;
+  String get questionnaireTutorialStep1Desc;
 
-  /// No description provided for @pollTutorialStep2Title.
+  /// No description provided for @questionnaireTutorialStep2Title.
   ///
   /// In en, this message translates to:
   /// **'2. Use everyday language'**
-  String get pollTutorialStep2Title;
+  String get questionnaireTutorialStep2Title;
 
-  /// No description provided for @pollTutorialStep2Desc.
+  /// No description provided for @questionnaireTutorialStep2Desc.
   ///
   /// In en, this message translates to:
   /// **'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.'**
-  String get pollTutorialStep2Desc;
+  String get questionnaireTutorialStep2Desc;
 
-  /// No description provided for @pollTutorialStep3Title.
+  /// No description provided for @questionnaireTutorialStep3Title.
   ///
   /// In en, this message translates to:
   /// **'3. Ask one short, easy to understand direct question'**
-  String get pollTutorialStep3Title;
+  String get questionnaireTutorialStep3Title;
 
-  /// No description provided for @pollTutorialStep3Desc.
+  /// No description provided for @questionnaireTutorialStep3Desc.
   ///
   /// In en, this message translates to:
   /// **'Simple sentence. Simple structure.'**
-  String get pollTutorialStep3Desc;
+  String get questionnaireTutorialStep3Desc;
 
-  /// No description provided for @pollTutorialStep4Title.
+  /// No description provided for @questionnaireTutorialStep4Title.
   ///
   /// In en, this message translates to:
   /// **'4. Give fair choices'**
-  String get pollTutorialStep4Title;
+  String get questionnaireTutorialStep4Title;
 
-  /// No description provided for @pollTutorialStep4Desc.
+  /// No description provided for @questionnaireTutorialStep4Desc.
   ///
   /// In en, this message translates to:
   /// **'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.'**
-  String get pollTutorialStep4Desc;
+  String get questionnaireTutorialStep4Desc;
 
-  /// No description provided for @pollTutorialStep5Title.
+  /// No description provided for @questionnaireTutorialStep5Title.
   ///
   /// In en, this message translates to:
   /// **'5. Keep options few'**
-  String get pollTutorialStep5Title;
+  String get questionnaireTutorialStep5Title;
 
-  /// No description provided for @pollTutorialStep5Desc.
+  /// No description provided for @questionnaireTutorialStep5Desc.
   ///
   /// In en, this message translates to:
   /// **'3–5 choices is perfect for public polls.'**
-  String get pollTutorialStep5Desc;
+  String get questionnaireTutorialStep5Desc;
 
-  /// No description provided for @pollTutorialStep6Title.
+  /// No description provided for @questionnaireTutorialStep6Title.
   ///
   /// In en, this message translates to:
   /// **'6. Make it fast to answer'**
-  String get pollTutorialStep6Title;
+  String get questionnaireTutorialStep6Title;
 
-  /// No description provided for @pollTutorialStep6Desc.
+  /// No description provided for @questionnaireTutorialStep6Desc.
   ///
   /// In en, this message translates to:
   /// **'People should understand and vote in under 10 seconds.'**
-  String get pollTutorialStep6Desc;
+  String get questionnaireTutorialStep6Desc;
 
-  /// No description provided for @pollTutorialStep7Title.
+  /// No description provided for @questionnaireTutorialStep7Title.
   ///
   /// In en, this message translates to:
   /// **'7. Respect neutrality'**
-  String get pollTutorialStep7Title;
+  String get questionnaireTutorialStep7Title;
 
-  /// No description provided for @pollTutorialStep7Desc.
+  /// No description provided for @questionnaireTutorialStep7Desc.
   ///
   /// In en, this message translates to:
   /// **'The poll must feel safe, non-judgmental, and unbiased.'**
-  String get pollTutorialStep7Desc;
+  String get questionnaireTutorialStep7Desc;
 
   /// No description provided for @petitionTutorialStep1.
   ///
@@ -4676,17 +4676,17 @@ abstract class AppLocalizations {
   /// **'Manage group'**
   String get groupManagementTitle;
 
-  /// No description provided for @viewGroupPolls.
+  /// No description provided for @viewGroupQuestionnaires.
   ///
   /// In en, this message translates to:
   /// **'Polls and surveys'**
-  String get viewGroupPolls;
+  String get viewGroupQuestionnaires;
 
-  /// No description provided for @viewGroupPollsDescription.
+  /// No description provided for @viewGroupQuestionnairesDescription.
   ///
   /// In en, this message translates to:
   /// **'See everything published for this group.'**
-  String get viewGroupPollsDescription;
+  String get viewGroupQuestionnairesDescription;
 
   /// No description provided for @activeMembersCount.
   ///
@@ -5060,65 +5060,65 @@ abstract class AppLocalizations {
   /// **'Your profile has been updated.'**
   String get profileDetailsUpdated;
 
-  /// No description provided for @pollTemplates.
+  /// No description provided for @formTemplates.
   ///
   /// In en, this message translates to:
-  /// **'Poll templates'**
-  String get pollTemplates;
+  /// **'Questionnaire templates'**
+  String get formTemplates;
 
-  /// No description provided for @savePollTemplate.
+  /// No description provided for @saveFormTemplate.
   ///
   /// In en, this message translates to:
   /// **'Save as template'**
-  String get savePollTemplate;
+  String get saveFormTemplate;
 
-  /// No description provided for @pollTemplateName.
+  /// No description provided for @formTemplateName.
   ///
   /// In en, this message translates to:
   /// **'Template name'**
-  String get pollTemplateName;
+  String get formTemplateName;
 
-  /// No description provided for @pollTemplatesLocal.
+  /// No description provided for @formTemplatesLocal.
   ///
   /// In en, this message translates to:
   /// **'Saved on this device.'**
-  String get pollTemplatesLocal;
+  String get formTemplatesLocal;
 
-  /// No description provided for @pollTemplatesEmpty.
+  /// No description provided for @formTemplatesEmpty.
   ///
   /// In en, this message translates to:
   /// **'No saved templates yet.'**
-  String get pollTemplatesEmpty;
+  String get formTemplatesEmpty;
 
-  /// No description provided for @pollTemplateSaved.
+  /// No description provided for @formTemplateSaved.
   ///
   /// In en, this message translates to:
   /// **'Template saved.'**
-  String get pollTemplateSaved;
+  String get formTemplateSaved;
 
-  /// No description provided for @pollTemplateError.
+  /// No description provided for @formTemplateError.
   ///
   /// In en, this message translates to:
   /// **'Could not save or load templates. Please try again.'**
-  String get pollTemplateError;
+  String get formTemplateError;
 
-  /// No description provided for @pollTemplateReplace.
+  /// No description provided for @formTemplateReplace.
   ///
   /// In en, this message translates to:
   /// **'Apply the selected template fields?'**
-  String get pollTemplateReplace;
+  String get formTemplateReplace;
 
-  /// No description provided for @pollTemplateDelete.
+  /// No description provided for @formTemplateDelete.
   ///
   /// In en, this message translates to:
   /// **'Delete this saved template?'**
-  String get pollTemplateDelete;
+  String get formTemplateDelete;
 
-  /// No description provided for @pollTemplateDeleteAction.
+  /// No description provided for @formTemplateDeleteAction.
   ///
   /// In en, this message translates to:
   /// **'Delete template'**
-  String get pollTemplateDeleteAction;
+  String get formTemplateDeleteAction;
 
   /// No description provided for @answerPresets.
   ///
@@ -5273,7 +5273,7 @@ abstract class AppLocalizations {
   /// No description provided for @resetCreatorDraft.
   ///
   /// In en, this message translates to:
-  /// **'Reset draft'**
+  /// **'Reset Editor'**
   String get resetCreatorDraft;
 
   /// No description provided for @creatorHelp.
@@ -5282,41 +5282,41 @@ abstract class AppLocalizations {
   /// **'Help'**
   String get creatorHelp;
 
-  /// No description provided for @pollTemplateIncludeFields.
+  /// No description provided for @formTemplateIncludeFields.
   ///
   /// In en, this message translates to:
   /// **'Include'**
-  String get pollTemplateIncludeFields;
+  String get formTemplateIncludeFields;
 
-  /// No description provided for @pollTemplateQuestionsAndAnswers.
+  /// No description provided for @formTemplateQuestionsAndAnswers.
   ///
   /// In en, this message translates to:
   /// **'Questions and answers'**
-  String get pollTemplateQuestionsAndAnswers;
+  String get formTemplateQuestionsAndAnswers;
 
-  /// No description provided for @pollTemplateScopeUnavailable.
+  /// No description provided for @formTemplateScopeUnavailable.
   ///
   /// In en, this message translates to:
   /// **'This scope is unavailable for your profile.'**
-  String get pollTemplateScopeUnavailable;
+  String get formTemplateScopeUnavailable;
 
-  /// No description provided for @pollTemplateGroupUnavailable.
+  /// No description provided for @formTemplateGroupUnavailable.
   ///
   /// In en, this message translates to:
   /// **'This group is no longer available.'**
-  String get pollTemplateGroupUnavailable;
+  String get formTemplateGroupUnavailable;
 
-  /// No description provided for @pollTemplateReplaceAction.
+  /// No description provided for @formTemplateReplaceAction.
   ///
   /// In en, this message translates to:
   /// **'Update template'**
-  String get pollTemplateReplaceAction;
+  String get formTemplateReplaceAction;
 
-  /// No description provided for @pollTemplateOverwriteConfirmation.
+  /// No description provided for @formTemplateOverwriteConfirmation.
   ///
   /// In en, this message translates to:
   /// **'Overwrite existing template?'**
-  String get pollTemplateOverwriteConfirmation;
+  String get formTemplateOverwriteConfirmation;
 
   /// No description provided for @tagSelectionCount.
   ///
@@ -6007,6 +6007,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add at least one question.'**
   String get addAtLeastOneQuestion;
+
+  /// No description provided for @createQuestionnaire.
+  ///
+  /// In en, this message translates to:
+  /// **'Create questionnaire'**
+  String get createQuestionnaire;
+
+  /// No description provided for @polls.
+  ///
+  /// In en, this message translates to:
+  /// **'Polls'**
+  String get polls;
 }
 
 class _AppLocalizationsDelegate

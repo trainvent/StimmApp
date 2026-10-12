@@ -46,7 +46,7 @@ class AccountDataExportService {
       _createdCollection(DatabaseCollections.petitions, uid),
       _createdCollection(DatabaseCollections.polls, uid),
       _createdCollection(DatabaseCollections.surveys, uid),
-      _createdCollection(DatabaseCollections.pollGroups, uid),
+      _createdCollection(DatabaseCollections.questionnaireGroups, uid),
       _userSubcollection(uid, 'signedPetitions'),
       _userSubcollection(uid, 'votedPolls'),
       _userSubcollection(uid, 'completedSurveys'),
@@ -57,8 +57,7 @@ class AccountDataExportService {
 
     return {
       'exportedAt': exportedAt,
-      'scope':
-          'Includes account metadata, profile, created publications, created groups, and user-owned participation/settings records. Does not include other users signatures, votes, or survey responses on your publications.',
+      'scope': 'Includes account metadata, profile, created publications, created groups, and user-owned participation/settings records. Does not include other users signatures, votes, or survey responses on your publications.',
       'auth': _authData(user),
       'profile': profileDoc.exists ? _documentData(profileDoc) : null,
       'createdPublications': {

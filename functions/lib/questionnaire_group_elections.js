@@ -34,12 +34,12 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.finalizePollGroupAdminElections = exports.castPollGroupAdminVote = exports.leavePollGroup = void 0;
-exports.handlePollGroupMemberDeparture = handlePollGroupMemberDeparture;
-exports.handleUserPollGroupDepartures = handleUserPollGroupDepartures;
+exports.handleQuestionnaireGroupMemberDeparture = handleQuestionnaireGroupMemberDeparture;
+exports.handleUserQuestionnaireGroupDepartures = handleUserQuestionnaireGroupDepartures;
 const https_1 = require("firebase-functions/v2/https");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = __importStar(require("firebase-admin"));
-const poll_group_activity_1 = require("./poll_group_activity");
+const questionnaire_group_activity_1 = require("./questionnaire_group_activity");
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
 async function clearElectionVotes(db, groupRef) {
     const votes = await groupRef
@@ -55,7 +55,7 @@ async function clearElectionVotes(db, groupRef) {
         await batch.commit();
     }
 }
-async function handlePollGroupMemberDeparture(db, groupRef, uid) {
+async function handleQuestionnaireGroupMemberDeparture(db, groupRef, uid) {
     var _a;
     const groupSnap = await groupRef.get();
     if (!groupSnap.exists)
@@ -77,7 +77,7 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
             memberIds: admin.firestore.FieldValue.arrayRemove(uid),
         });
         batch.delete(memberRef);
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "member_left",
             actorUid: uid,
         });
@@ -107,7 +107,7 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
             adminElectionEndsAt: null,
         });
         batch.delete(memberRef);
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "ownership_transferred",
             actorUid: uid,
             subjectUid: admins[0].uid,
@@ -134,7 +134,7 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
         candidateUids,
         winnerUid: null,
     });
-    (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+    (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
         type: "admin_election_started",
         actorUid: uid,
         createdAt: now,
@@ -142,12 +142,12 @@ async function handlePollGroupMemberDeparture(db, groupRef, uid) {
     await batch.commit();
     return "electionStarted";
 }
-async function handleUserPollGroupDepartures(uid) {
+async function handleUserQuestionnaireGroupDepartures(uid) {
     const db = admin.firestore();
     const groups = await db.collection("pollGroups").where("memberIds", "array-contains", uid).get();
     for (const group of groups.docs) {
         try {
-            await handlePollGroupMemberDeparture(db, group.ref, uid);
+            await handleQuestionnaireGroupMemberDeparture(db, group.ref, uid);
         }
         catch (error) {
             console.error(`[groupDeparture] Failed to remove ${uid} from ${group.id}:`, error);
@@ -163,7 +163,7 @@ exports.leavePollGroup = (0, https_1.onCall)(async (request) => {
     if (!groupId)
         throw new https_1.HttpsError("invalid-argument", "groupId is required.");
     const db = admin.firestore();
-    const result = await handlePollGroupMemberDeparture(db, db.collection("pollGroups").doc(groupId), uid);
+    const result = await handleQuestionnaireGroupMemberDeparture(db, db.collection("pollGroups").doc(groupId), uid);
     return { result };
 });
 exports.castPollGroupAdminVote = (0, https_1.onCall)(async (request) => {
@@ -270,7 +270,7 @@ exports.finalizePollGroupAdminElections = (0, scheduler_1.onSchedule)("every 15 
             winnerUid: winner.uid,
             resolvedAt: now,
         });
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "admin_election_completed",
             actorUid: "system",
             subjectUid: winner.uid,
@@ -279,4 +279,4 @@ exports.finalizePollGroupAdminElections = (0, scheduler_1.onSchedule)("every 15 
         await batch.commit();
     }
 });
-//# sourceMappingURL=poll_group_elections.js.map
+//# sourceMappingURL=questionnaire_group_elections.js.map

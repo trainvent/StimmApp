@@ -1,7 +1,7 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
-import { addPollGroupActivity } from "./poll_group_activity";
+import { addQuestionnaireGroupActivity } from "./questionnaire_group_activity";
 
 const ELECTION_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -30,7 +30,7 @@ async function clearElectionVotes(
 	}
 }
 
-export async function handlePollGroupMemberDeparture(
+export async function handleQuestionnaireGroupMemberDeparture(
 	db: admin.firestore.Firestore,
 	groupRef: admin.firestore.DocumentReference,
 	uid: string,
@@ -55,7 +55,7 @@ export async function handlePollGroupMemberDeparture(
 			memberIds: admin.firestore.FieldValue.arrayRemove(uid),
 		});
 		batch.delete(memberRef);
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "member_left",
 			actorUid: uid,
 		});
@@ -87,7 +87,7 @@ export async function handlePollGroupMemberDeparture(
 			adminElectionEndsAt: null,
 		});
 		batch.delete(memberRef);
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "ownership_transferred",
 			actorUid: uid,
 			subjectUid: admins[0].uid,
@@ -115,7 +115,7 @@ export async function handlePollGroupMemberDeparture(
 		candidateUids,
 		winnerUid: null,
 	});
-	addPollGroupActivity(batch, groupRef, {
+	addQuestionnaireGroupActivity(batch, groupRef, {
 		type: "admin_election_started",
 		actorUid: uid,
 		createdAt: now,
@@ -124,12 +124,12 @@ export async function handlePollGroupMemberDeparture(
 	return "electionStarted";
 }
 
-export async function handleUserPollGroupDepartures(uid: string) {
+export async function handleUserQuestionnaireGroupDepartures(uid: string) {
 	const db = admin.firestore();
 	const groups = await db.collection("pollGroups").where("memberIds", "array-contains", uid).get();
 	for (const group of groups.docs) {
 		try {
-			await handlePollGroupMemberDeparture(db, group.ref, uid);
+			await handleQuestionnaireGroupMemberDeparture(db, group.ref, uid);
 		} catch (error) {
 			console.error(`[groupDeparture] Failed to remove ${uid} from ${group.id}:`, error);
 		}
@@ -142,7 +142,7 @@ export const leavePollGroup = onCall(async (request) => {
 	const groupId = typeof request.data?.groupId === "string" ? request.data.groupId.trim() : "";
 	if (!groupId) throw new HttpsError("invalid-argument", "groupId is required.");
 	const db = admin.firestore();
-	const result = await handlePollGroupMemberDeparture(
+	const result = await handleQuestionnaireGroupMemberDeparture(
 		db,
 		db.collection("pollGroups").doc(groupId),
 		uid,
@@ -258,7 +258,7 @@ export const finalizePollGroupAdminElections = onSchedule("every 15 minutes", as
 			winnerUid: winner.uid,
 			resolvedAt: now,
 		});
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "admin_election_completed",
 			actorUid: "system",
 			subjectUid: winner.uid,

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/data/services/file_output/group_activity_export.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/poll_group_activity.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group_activity.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -21,8 +21,8 @@ class GroupActivityPage extends StatefulWidget {
     this.auth,
   });
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
   final AuthService? auth;
 
   @override
@@ -30,11 +30,11 @@ class GroupActivityPage extends StatefulWidget {
 }
 
 class _GroupActivityPageState extends State<GroupActivityPage> {
-  late final Stream<List<PollGroupActivity>> _activities = _repository
+  late final Stream<List<QuestionnaireGroupActivity>> _activities = _repository
       .watchActivities(widget.group.id);
   bool _exporting = false;
 
-  Future<void> _download(List<PollGroupActivity> activities) async {
+  Future<void> _download(List<QuestionnaireGroupActivity> activities) async {
     setState(() => _exporting = true);
     try {
       final (group, members) = await (
@@ -73,68 +73,72 @@ class _GroupActivityPageState extends State<GroupActivityPage> {
     }
   }
 
-  PollGroupRepository get _repository =>
-      widget.repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      widget.repository ?? QuestionnaireGroupRepository.create();
   AuthService get _auth => widget.auth ?? authService;
 
-  IconData _icon(PollGroupActivityType type) => switch (type) {
-    PollGroupActivityType.groupCreated => Icons.group_add_outlined,
-    PollGroupActivityType.settingsUpdated => Icons.tune_outlined,
-    PollGroupActivityType.invitationsSent => Icons.mark_email_unread_outlined,
-    PollGroupActivityType.memberJoined => Icons.person_add_alt_outlined,
-    PollGroupActivityType.memberLeft => Icons.person_remove_outlined,
-    PollGroupActivityType.memberRemoved => Icons.person_off_outlined,
-    PollGroupActivityType.ownershipTransferred => Icons.swap_horiz_outlined,
-    PollGroupActivityType.adminElectionStarted ||
-    PollGroupActivityType.adminElectionCompleted => Icons.how_to_vote_outlined,
-    PollGroupActivityType.publicationPublished => Icons.campaign_outlined,
-    PollGroupActivityType.unknown => Icons.history_outlined,
+  IconData _icon(QuestionnaireGroupActivityType type) => switch (type) {
+    QuestionnaireGroupActivityType.groupCreated => Icons.group_add_outlined,
+    QuestionnaireGroupActivityType.settingsUpdated => Icons.tune_outlined,
+    QuestionnaireGroupActivityType.invitationsSent =>
+      Icons.mark_email_unread_outlined,
+    QuestionnaireGroupActivityType.memberJoined =>
+      Icons.person_add_alt_outlined,
+    QuestionnaireGroupActivityType.memberLeft => Icons.person_remove_outlined,
+    QuestionnaireGroupActivityType.memberRemoved => Icons.person_off_outlined,
+    QuestionnaireGroupActivityType.ownershipTransferred =>
+      Icons.swap_horiz_outlined,
+    QuestionnaireGroupActivityType.adminElectionStarted ||
+    QuestionnaireGroupActivityType.adminElectionCompleted =>
+      Icons.how_to_vote_outlined,
+    QuestionnaireGroupActivityType.publicationPublished =>
+      Icons.campaign_outlined,
+    QuestionnaireGroupActivityType.unknown => Icons.history_outlined,
   };
 
-  String _actor(BuildContext context, PollGroupActivity activity) {
+  String _actor(BuildContext context, QuestionnaireGroupActivity activity) {
     final name = activity.actorDisplayName?.trim();
     return name == null || name.isEmpty
         ? context.l10n.groupActivityActorFallback
         : name;
   }
 
-  String _subject(BuildContext context, PollGroupActivity activity) {
+  String _subject(BuildContext context, QuestionnaireGroupActivity activity) {
     final name = activity.subjectDisplayName?.trim();
     return name == null || name.isEmpty
         ? context.l10n.groupActivitySubjectFallback
         : name;
   }
 
-  String _message(BuildContext context, PollGroupActivity activity) {
+  String _message(BuildContext context, QuestionnaireGroupActivity activity) {
     final actor = _actor(context, activity);
     final subject = _subject(context, activity);
     return switch (activity.type) {
-      PollGroupActivityType.groupCreated => context.l10n.groupActivityCreated(
-        actor,
-      ),
-      PollGroupActivityType.settingsUpdated =>
+      QuestionnaireGroupActivityType.groupCreated =>
+        context.l10n.groupActivityCreated(actor),
+      QuestionnaireGroupActivityType.settingsUpdated =>
         context.l10n.groupActivitySettingsUpdated(actor),
-      PollGroupActivityType.invitationsSent =>
+      QuestionnaireGroupActivityType.invitationsSent =>
         context.l10n.groupActivityInvitationsSent(actor, activity.count ?? 0),
-      PollGroupActivityType.memberJoined =>
+      QuestionnaireGroupActivityType.memberJoined =>
         context.l10n.groupActivityMemberJoined(actor),
-      PollGroupActivityType.memberLeft => context.l10n.groupActivityMemberLeft(
-        actor,
-      ),
-      PollGroupActivityType.memberRemoved =>
+      QuestionnaireGroupActivityType.memberLeft =>
+        context.l10n.groupActivityMemberLeft(actor),
+      QuestionnaireGroupActivityType.memberRemoved =>
         context.l10n.groupActivityMemberRemoved(actor, subject),
-      PollGroupActivityType.ownershipTransferred =>
+      QuestionnaireGroupActivityType.ownershipTransferred =>
         context.l10n.groupActivityOwnershipTransferred(actor, subject),
-      PollGroupActivityType.adminElectionStarted =>
+      QuestionnaireGroupActivityType.adminElectionStarted =>
         context.l10n.groupActivityAdminElectionStarted(actor),
-      PollGroupActivityType.adminElectionCompleted =>
+      QuestionnaireGroupActivityType.adminElectionCompleted =>
         context.l10n.groupActivityAdminElectionCompleted(subject),
-      PollGroupActivityType.publicationPublished =>
+      QuestionnaireGroupActivityType.publicationPublished =>
         context.l10n.groupActivityPublicationPublished(
           actor,
           activity.targetTitle ?? context.l10n.untitled,
         ),
-      PollGroupActivityType.unknown => context.l10n.groupActivityUpdated,
+      QuestionnaireGroupActivityType.unknown =>
+        context.l10n.groupActivityUpdated,
     };
   }
 
@@ -151,7 +155,7 @@ class _GroupActivityPageState extends State<GroupActivityPage> {
         body: Center(child: Text(context.l10n.pleaseSignInToViewYourGroups)),
       );
     }
-    return StreamBuilder<List<PollGroupActivity>>(
+    return StreamBuilder<List<QuestionnaireGroupActivity>>(
       stream: _activities,
       builder: (context, snapshot) => Scaffold(
         appBar: AppBar(
@@ -181,7 +185,7 @@ class _GroupActivityPageState extends State<GroupActivityPage> {
 
   Widget _buildActivities(
     BuildContext context,
-    AsyncSnapshot<List<PollGroupActivity>> snapshot,
+    AsyncSnapshot<List<QuestionnaireGroupActivity>> snapshot,
   ) {
     if (snapshot.hasError) {
       return Center(

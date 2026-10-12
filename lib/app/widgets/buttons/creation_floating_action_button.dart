@@ -5,7 +5,7 @@ import 'package:stimmapp/core/data/services/publishing_quota_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 
-enum CreationType { petition, poll }
+enum CreationType { petition, questionnaire }
 
 class CreationFloatingActionButton extends StatefulWidget {
   final CreationType type;
@@ -47,7 +47,7 @@ class _CreationFloatingActionButtonState
       setState(() {
         _canCreate = widget.type == CreationType.petition
             ? status.canCreatePetition
-            : status.canCreatePoll;
+            : status.canCreateQuestionnaire;
         _loading = false;
       });
     } catch (_) {

@@ -1033,10 +1033,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get poll => 'Poll';
 
   @override
-  String get pollDetails => 'Poll details';
+  String get pollDetails => 'Poll';
 
   @override
-  String get polls => 'Polls';
+  String get questionnaires => 'Polls & Surveys';
 
   @override
   String get popularPetitions => 'Popular Petitions';
@@ -1300,7 +1300,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get surveyQuestion => 'Survey question';
 
   @override
-  String maximumSurveyQuestionsAllowed(int count) {
+  String maximumQuestionnaireQuestionsAllowed(int count) {
     return 'Maximum $count questions allowed';
   }
 
@@ -1394,7 +1394,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'When this is on, surveys appear in the polls list alongside regular polls. Turn it off if you only want to browse single-question polls.';
 
   @override
-  String get surveyDetails => 'Survey Details';
+  String get surveyDetails => 'Survey';
 
   @override
   String get submitSurvey => 'Submit survey';
@@ -1604,52 +1604,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tagOther => 'Other';
 
   @override
-  String get pollTutorialStep1Title => '1. Be crystal clear about the goal';
+  String get questionnaireTutorialStep1Title =>
+      '1. Be crystal clear about the goal';
 
   @override
-  String get pollTutorialStep1Desc =>
+  String get questionnaireTutorialStep1Desc =>
       'Know exactly what you want to learn — one idea only.';
 
   @override
-  String get pollTutorialStep2Title => '2. Use everyday language';
+  String get questionnaireTutorialStep2Title => '2. Use everyday language';
 
   @override
-  String get pollTutorialStep2Desc =>
+  String get questionnaireTutorialStep2Desc =>
       'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.';
 
   @override
-  String get pollTutorialStep3Title =>
+  String get questionnaireTutorialStep3Title =>
       '3. Ask one short, easy to understand direct question';
 
   @override
-  String get pollTutorialStep3Desc => 'Simple sentence. Simple structure.';
+  String get questionnaireTutorialStep3Desc =>
+      'Simple sentence. Simple structure.';
 
   @override
-  String get pollTutorialStep4Title => '4. Give fair choices';
+  String get questionnaireTutorialStep4Title => '4. Give fair choices';
 
   @override
-  String get pollTutorialStep4Desc =>
+  String get questionnaireTutorialStep4Desc =>
       'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.';
 
   @override
-  String get pollTutorialStep5Title => '5. Keep options few';
+  String get questionnaireTutorialStep5Title => '5. Keep options few';
 
   @override
-  String get pollTutorialStep5Desc =>
+  String get questionnaireTutorialStep5Desc =>
       '3–5 choices is perfect for public polls.';
 
   @override
-  String get pollTutorialStep6Title => '6. Make it fast to answer';
+  String get questionnaireTutorialStep6Title => '6. Make it fast to answer';
 
   @override
-  String get pollTutorialStep6Desc =>
+  String get questionnaireTutorialStep6Desc =>
       'People should understand and vote in under 10 seconds.';
 
   @override
-  String get pollTutorialStep7Title => '7. Respect neutrality';
+  String get questionnaireTutorialStep7Title => '7. Respect neutrality';
 
   @override
-  String get pollTutorialStep7Desc =>
+  String get questionnaireTutorialStep7Desc =>
       'The poll must feel safe, non-judgmental, and unbiased.';
 
   @override
@@ -2532,10 +2534,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupManagementTitle => 'Manage group';
 
   @override
-  String get viewGroupPolls => 'Polls and surveys';
+  String get viewGroupQuestionnaires => 'Polls and surveys';
 
   @override
-  String get viewGroupPollsDescription =>
+  String get viewGroupQuestionnairesDescription =>
       'See everything published for this group.';
 
   @override
@@ -2764,35 +2766,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetailsUpdated => 'Your profile has been updated.';
 
   @override
-  String get pollTemplates => 'Poll templates';
+  String get formTemplates => 'Questionnaire templates';
 
   @override
-  String get savePollTemplate => 'Save as template';
+  String get saveFormTemplate => 'Save as template';
 
   @override
-  String get pollTemplateName => 'Template name';
+  String get formTemplateName => 'Template name';
 
   @override
-  String get pollTemplatesLocal => 'Saved on this device.';
+  String get formTemplatesLocal => 'Saved on this device.';
 
   @override
-  String get pollTemplatesEmpty => 'No saved templates yet.';
+  String get formTemplatesEmpty => 'No saved templates yet.';
 
   @override
-  String get pollTemplateSaved => 'Template saved.';
+  String get formTemplateSaved => 'Template saved.';
 
   @override
-  String get pollTemplateError =>
+  String get formTemplateError =>
       'Could not save or load templates. Please try again.';
 
   @override
-  String get pollTemplateReplace => 'Apply the selected template fields?';
+  String get formTemplateReplace => 'Apply the selected template fields?';
 
   @override
-  String get pollTemplateDelete => 'Delete this saved template?';
+  String get formTemplateDelete => 'Delete this saved template?';
 
   @override
-  String get pollTemplateDeleteAction => 'Delete template';
+  String get formTemplateDeleteAction => 'Delete template';
 
   @override
   String get answerPresets => 'Answer presets';
@@ -2870,30 +2872,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presetNever => 'Never';
 
   @override
-  String get resetCreatorDraft => 'Reset draft';
+  String get resetCreatorDraft => 'Reset Editor';
 
   @override
   String get creatorHelp => 'Help';
 
   @override
-  String get pollTemplateIncludeFields => 'Include';
+  String get formTemplateIncludeFields => 'Include';
 
   @override
-  String get pollTemplateQuestionsAndAnswers => 'Questions and answers';
+  String get formTemplateQuestionsAndAnswers => 'Questions and answers';
 
   @override
-  String get pollTemplateScopeUnavailable =>
+  String get formTemplateScopeUnavailable =>
       'This scope is unavailable for your profile.';
 
   @override
-  String get pollTemplateGroupUnavailable =>
+  String get formTemplateGroupUnavailable =>
       'This group is no longer available.';
 
   @override
-  String get pollTemplateReplaceAction => 'Update template';
+  String get formTemplateReplaceAction => 'Update template';
 
   @override
-  String get pollTemplateOverwriteConfirmation =>
+  String get formTemplateOverwriteConfirmation =>
       'Overwrite existing template?';
 
   @override
@@ -3279,4 +3281,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addAtLeastOneQuestion => 'Add at least one question.';
+
+  @override
+  String get createQuestionnaire => 'Create questionnaire';
+
+  @override
+  String get polls => 'Polls';
 }

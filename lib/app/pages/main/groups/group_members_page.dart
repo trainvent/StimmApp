@@ -3,9 +3,9 @@ import 'package:stimmapp/app/widgets/buttons/info_dialog_button.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -19,8 +19,8 @@ class GroupMembersPage extends StatefulWidget {
     this.auth,
   });
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
   final UserRepository? userRepository;
   final AuthService? auth;
 
@@ -32,26 +32,26 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   final Set<String> _removingMemberIds = <String>{};
   final Set<String> _updatingMemberIds = <String>{};
   final Map<String, Future<UserProfile?>> _profileFutures = {};
-  final Map<String, ({PollGroupMember member, UserProfile? profile})>
+  final Map<String, ({QuestionnaireGroupMember member, UserProfile? profile})>
   _selectedMembers = {};
 
   bool get _selectionMode => _selectedMembers.isNotEmpty;
 
-  PollGroupRepository get _repository =>
-      widget.repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      widget.repository ?? QuestionnaireGroupRepository.create();
   UserRepository get _userRepository =>
       widget.userRepository ?? UserRepository.create();
   AuthService get _auth => widget.auth ?? authService;
 
-  String _roleLabel(BuildContext context, PollGroupRole role) {
+  String _roleLabel(BuildContext context, QuestionnaireGroupRole role) {
     return switch (role) {
-      PollGroupRole.admin => context.l10n.adminRoleLabel,
-      PollGroupRole.manager => context.l10n.managerRoleLabel,
-      PollGroupRole.user => context.l10n.userRoleLabel,
+      QuestionnaireGroupRole.admin => context.l10n.adminRoleLabel,
+      QuestionnaireGroupRole.manager => context.l10n.managerRoleLabel,
+      QuestionnaireGroupRole.user => context.l10n.userRoleLabel,
     };
   }
 
-  String _memberName(PollGroupMember member, UserProfile? profile) {
+  String _memberName(QuestionnaireGroupMember member, UserProfile? profile) {
     final nickname = member.nickname?.trim();
     if (nickname?.isNotEmpty == true) {
       return nickname!;
@@ -64,7 +64,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     return email?.isNotEmpty == true ? email! : context.l10n.unknownGroupMember;
   }
 
-  void _toggleMemberSelection(PollGroupMember member, UserProfile? profile) {
+  void _toggleMemberSelection(
+    QuestionnaireGroupMember member,
+    UserProfile? profile,
+  ) {
     setState(() {
       if (_selectedMembers.containsKey(member.uid)) {
         _selectedMembers.remove(member.uid);
@@ -74,7 +77,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     });
   }
 
-  void _handleMemberLongPress(PollGroupMember member, UserProfile? profile) {
+  void _handleMemberLongPress(
+    QuestionnaireGroupMember member,
+    UserProfile? profile,
+  ) {
     final currentUid = _auth.currentUser?.uid;
     if (member.uid == widget.group.createdBy) {
       showErrorSnackBar(context.l10n.cannotRemoveGroupOwner);
@@ -158,73 +164,81 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
     }
   }
 
-  Future<void> _editMember(PollGroupMember member, UserProfile? profile) async {
+  Future<void> _editMember(
+    QuestionnaireGroupMember member,
+    UserProfile? profile,
+  ) async {
     var nickname = member.nickname ?? '';
     var selectedRole = member.role;
     final isCreator = member.uid == widget.group.createdBy;
-    final result = await showDialog<({String nickname, PollGroupRole role})>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(context.l10n.editGroupMemberTitle),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                key: const Key('group_member_nickname_field'),
-                initialValue: nickname,
-                autofocus: true,
-                maxLength: AppLimits.maxGroupNicknameLength,
-                decoration: InputDecoration(labelText: context.l10n.nickname),
-                onChanged: (value) => nickname = value,
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<PollGroupRole>(
-                key: const Key('group_member_role_field'),
-                initialValue: selectedRole,
-                decoration: InputDecoration(labelText: context.l10n.roleLabel),
-                items: PollGroupRole.values
-                    .map(
-                      (role) => DropdownMenuItem(
-                        value: role,
-                        child: Text(_roleLabel(context, role)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: isCreator
-                    ? null
-                    : (role) {
-                        if (role != null) {
-                          setDialogState(() => selectedRole = role);
-                        }
-                      },
-              ),
-              if (isCreator)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    context.l10n.groupOwnerMustRemainAdmin,
-                    style: Theme.of(context).textTheme.bodySmall,
+    final result =
+        await showDialog<({String nickname, QuestionnaireGroupRole role})>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (context, setDialogState) => AlertDialog(
+              title: Text(context.l10n.editGroupMemberTitle),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    key: const Key('group_member_nickname_field'),
+                    initialValue: nickname,
+                    autofocus: true,
+                    maxLength: AppLimits.maxGroupNicknameLength,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.nickname,
+                    ),
+                    onChanged: (value) => nickname = value,
                   ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<QuestionnaireGroupRole>(
+                    key: const Key('group_member_role_field'),
+                    initialValue: selectedRole,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.roleLabel,
+                    ),
+                    items: QuestionnaireGroupRole.values
+                        .map(
+                          (role) => DropdownMenuItem(
+                            value: role,
+                            child: Text(_roleLabel(context, role)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: isCreator
+                        ? null
+                        : (role) {
+                            if (role != null) {
+                              setDialogState(() => selectedRole = role);
+                            }
+                          },
+                  ),
+                  if (isCreator)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        context.l10n.groupOwnerMustRemainAdmin,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(context.l10n.cancel),
                 ),
-            ],
+                FilledButton(
+                  key: const Key('save_group_member'),
+                  onPressed: () =>
+                      Navigator.of(dialogContext)
+                          .pop((nickname: nickname, role: selectedRole)),
+                  child: Text(context.l10n.save),
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.l10n.cancel),
-            ),
-            FilledButton(
-              key: const Key('save_group_member'),
-              onPressed: () => Navigator.of(
-                dialogContext,
-              ).pop((nickname: nickname, role: selectedRole)),
-              child: Text(context.l10n.save),
-            ),
-          ],
-        ),
-      ),
-    );
+        );
     if (result == null || !mounted) {
       return;
     }
@@ -291,7 +305,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
               ),
           ],
         ),
-        body: StreamBuilder<List<PollGroupMember>>(
+        body: StreamBuilder<List<QuestionnaireGroupMember>>(
           stream: _repository.watchMembers(widget.group.id),
           builder: (context, snapshot) {
             if (snapshot.hasError) {

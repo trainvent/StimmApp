@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/config/environment.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
-String? buildPollGroupInviteLink(PollGroup group) {
+String? buildQuestionnaireGroupInviteLink(QuestionnaireGroup group) {
   if (!group.inviteLinkEnabled) {
     return null;
   }
@@ -21,11 +21,11 @@ String? buildPollGroupInviteLink(PollGroup group) {
   ).toString();
 }
 
-Future<void> copyPollGroupInviteLink(
+Future<void> copyQuestionnaireGroupInviteLink(
   BuildContext context,
-  PollGroup group,
+  QuestionnaireGroup group,
 ) async {
-  final inviteLink = buildPollGroupInviteLink(group);
+  final inviteLink = buildQuestionnaireGroupInviteLink(group);
   if (inviteLink == null) {
     showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
     return;
@@ -37,11 +37,11 @@ Future<void> copyPollGroupInviteLink(
   }
 }
 
-Future<void> showPollGroupInviteQrCode(
+Future<void> showQuestionnaireGroupInviteQrCode(
   BuildContext context,
-  PollGroup group,
+  QuestionnaireGroup group,
 ) async {
-  final inviteLink = buildPollGroupInviteLink(group);
+  final inviteLink = buildQuestionnaireGroupInviteLink(group);
   if (inviteLink == null) {
     showErrorSnackBar(context.l10n.groupHasNoActiveInviteLink);
     return;
@@ -93,36 +93,37 @@ Future<void> showPollGroupInviteQrCode(
   );
 }
 
-String formatPollGroupDate(DateTime date) {
+String formatQuestionnaireGroupDate(DateTime date) {
   return DateFormat('yyyy-MM-dd').format(date);
 }
 
-extension PollGroupAccessModeLocalization on PollGroupAccessMode {
+extension QuestionnaireGroupAccessModeLocalization
+    on QuestionnaireGroupAccessMode {
   String localizedTitle(BuildContext context) {
     switch (this) {
-      case PollGroupAccessMode.private:
+      case QuestionnaireGroupAccessMode.private:
         return context.l10n.completelyPrivateAccessMode;
-      case PollGroupAccessMode.protected:
+      case QuestionnaireGroupAccessMode.protected:
         return context.l10n.protectedAccessMode;
-      case PollGroupAccessMode.open:
+      case QuestionnaireGroupAccessMode.open:
         return context.l10n.openAccessMode;
     }
   }
 
   String localizedDescription(BuildContext context) {
     switch (this) {
-      case PollGroupAccessMode.private:
+      case QuestionnaireGroupAccessMode.private:
         return context.l10n.onlyPreparedMembersCanParticipate;
-      case PollGroupAccessMode.protected:
+      case QuestionnaireGroupAccessMode.protected:
         return context.l10n.peopleWithInviteLinkCanRequestAccessToGroup;
-      case PollGroupAccessMode.open:
+      case QuestionnaireGroupAccessMode.open:
         return context.l10n.everyoneCanJoinWithoutApproval;
     }
   }
 }
 
-class PollGroupSummaryCard extends StatelessWidget {
-  const PollGroupSummaryCard({
+class QuestionnaireGroupSummaryCard extends StatelessWidget {
+  const QuestionnaireGroupSummaryCard({
     super.key,
     required this.group,
     required this.summary,
@@ -132,7 +133,7 @@ class PollGroupSummaryCard extends StatelessWidget {
     this.embedded = false,
   });
 
-  final PollGroup group;
+  final QuestionnaireGroup group;
   final String summary;
   final Widget? trailing;
   final Widget? footer;

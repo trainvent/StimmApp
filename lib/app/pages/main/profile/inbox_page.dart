@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/groups/group_entry_page.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -20,18 +20,14 @@ class InboxPage extends StatelessWidget {
       );
     }
 
-    final repo = PollGroupRepository.create();
+    final repo = QuestionnaireGroupRepository.create();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.notificationsTitle),
-        actions: [
-        ],
-      ),
-      body: StreamBuilder<List<PollGroupAccessNotification>>(
+      appBar: AppBar(title: Text(context.l10n.notificationsTitle), actions: []),
+      body: StreamBuilder<List<QuestionnaireGroupAccessNotification>>(
         stream: repo.watchNotifications(uid),
         builder: (context, snapshot) {
           final notifications =
-              snapshot.data ?? const <PollGroupAccessNotification>[];
+              snapshot.data ?? const <QuestionnaireGroupAccessNotification>[];
           if (snapshot.connectionState == ConnectionState.waiting &&
               notifications.isEmpty) {
             return const Center(
@@ -44,7 +40,8 @@ class InboxPage extends StatelessWidget {
           final unreadRemovalIds = notifications
               .where(
                 (item) =>
-                    item.type == PollGroupAccessNotificationType.removed &&
+                    item.type ==
+                        QuestionnaireGroupAccessNotificationType.removed &&
                     item.readAt == null,
               )
               .map((item) => item.id)
@@ -60,29 +57,30 @@ class InboxPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = notifications[index];
               final statusLabel = switch (item.status) {
-                PollGroupAccessNotificationStatus.pending =>
+                QuestionnaireGroupAccessNotificationStatus.pending =>
                   context.l10n.notificationStatusPending,
-                PollGroupAccessNotificationStatus.accepted =>
+                QuestionnaireGroupAccessNotificationStatus.accepted =>
                   context.l10n.notificationStatusAccepted,
-                PollGroupAccessNotificationStatus.denied =>
+                QuestionnaireGroupAccessNotificationStatus.denied =>
                   context.l10n.notificationStatusDenied,
               };
               final actionLabel = switch (item.type) {
-                PollGroupAccessNotificationType.invite =>
+                QuestionnaireGroupAccessNotificationType.invite =>
                   context.l10n.notificationActionInvitedYou,
-                PollGroupAccessNotificationType.request =>
+                QuestionnaireGroupAccessNotificationType.request =>
                   context.l10n.notificationActionRequestedAccess,
-                PollGroupAccessNotificationType.removed =>
+                QuestionnaireGroupAccessNotificationType.removed =>
                   context.l10n.notificationActionRemovedYou,
               };
               final isRemoval =
-                  item.type == PollGroupAccessNotificationType.removed;
+                  item.type == QuestionnaireGroupAccessNotificationType.removed;
               return ListTile(
                 leading: Icon(switch (item.type) {
-                  PollGroupAccessNotificationType.invite => Icons.group_add,
-                  PollGroupAccessNotificationType.request =>
+                  QuestionnaireGroupAccessNotificationType.invite =>
+                    Icons.group_add,
+                  QuestionnaireGroupAccessNotificationType.request =>
                     Icons.mark_email_unread_outlined,
-                  PollGroupAccessNotificationType.removed =>
+                  QuestionnaireGroupAccessNotificationType.removed =>
                     Icons.person_remove_outlined,
                 }),
                 title: Text(item.groupName),
@@ -93,7 +91,8 @@ class InboxPage extends StatelessWidget {
                 ),
                 trailing:
                     !isRemoval &&
-                        item.status == PollGroupAccessNotificationStatus.pending
+                        item.status ==
+                            QuestionnaireGroupAccessNotificationStatus.pending
                     ? const Icon(Icons.chevron_right)
                     : null,
                 onTap: isRemoval

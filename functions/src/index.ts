@@ -134,8 +134,9 @@ export * from './user_cleanup';
 export * from './admin';
 export * from './auth_code';
 export * from './data_sync';
-export * from './poll_groups';
-export * from './poll_group_elections';
+// Deployed callable names remain stable; shared implementation uses questionnaire names.
+export * from './questionnaire_groups';
+export * from './questionnaire_group_elections';
 export * from './share_page';
 
 // Conditionally export test_data_seeder only if NOT in production

@@ -1,28 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 
 void main() {
-  group('PollGroup', () {
+  group('QuestionnaireGroup', () {
     final timestamp = Timestamp.fromDate(DateTime(2024, 1, 2));
-    final group = PollGroup(
+    final group = QuestionnaireGroup(
       id: 'group-1',
       name: 'Team Pulse',
       createdBy: 'owner',
       createdAt: timestamp.toDate(),
       joinCode: 'GRP-123456',
-      nicknameMode: PollGroupNicknameMode.selfNamed,
+      nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
       managersCanInvite: true,
       memberIds: const ['owner'],
       importedMemberCount: 2,
       isActive: true,
-      accessMode: PollGroupAccessMode.protected,
+      accessMode: QuestionnaireGroupAccessMode.protected,
       inviteLinkEnabled: true,
     );
 
     test('serializes invite and privacy fields', () {
-      final result = PollGroup.toFirestore(group, null);
+      final result = QuestionnaireGroup.toFirestore(group, null);
 
       expect(result['accessMode'], 'protected');
       expect(result['inviteLinkEnabled'], isTrue);
@@ -36,8 +36,8 @@ void main() {
         final withPicture = group.copyWith(profilePictureUrl: url);
         final firestore = FakeFirebaseFirestore();
         final ref = firestore.collection('pollGroups').doc(group.id);
-        await ref.set(PollGroup.toFirestore(withPicture, null));
-        final loaded = PollGroup.fromFirestore(await ref.get(), null);
+        await ref.set(QuestionnaireGroup.toFirestore(withPicture, null));
+        final loaded = QuestionnaireGroup.fromFirestore(await ref.get(), null);
         expect(loaded.profilePictureUrl, url);
         expect(loaded.copyWith(name: 'Renamed').profilePictureUrl, url);
         expect(
@@ -64,15 +64,15 @@ void main() {
         'inviteLinkEnabled': true,
       });
 
-      final result = PollGroup.fromFirestore(await ref.get(), null);
+      final result = QuestionnaireGroup.fromFirestore(await ref.get(), null);
 
-      expect(result.accessMode, PollGroupAccessMode.protected);
+      expect(result.accessMode, QuestionnaireGroupAccessMode.protected);
       expect(result.inviteLinkEnabled, isTrue);
       expect(result.importedMemberCount, 2);
     });
   });
 
-  group('PollGroupAllowedDomain', () {
+  group('QuestionnaireGroupAllowedDomain', () {
     test('serializes and deserializes domain rules', () async {
       final firestore = FakeFirebaseFirestore();
       final ref = firestore
@@ -80,21 +80,21 @@ void main() {
           .doc('group-1')
           .collection('allowedDomains')
           .doc('company.com');
-      final domain = PollGroupAllowedDomain(
+      final domain = QuestionnaireGroupAllowedDomain(
         domain: 'company.com',
-        role: PollGroupRole.manager,
+        role: QuestionnaireGroupRole.manager,
         createdAt: DateTime(2024, 1, 2),
         createdBy: 'owner',
       );
 
-      await ref.set(PollGroupAllowedDomain.toFirestore(domain, null));
-      final result = PollGroupAllowedDomain.fromFirestore(
+      await ref.set(QuestionnaireGroupAllowedDomain.toFirestore(domain, null));
+      final result = QuestionnaireGroupAllowedDomain.fromFirestore(
         await ref.get(),
         null,
       );
 
       expect(result.domain, 'company.com');
-      expect(result.role, PollGroupRole.manager);
+      expect(result.role, QuestionnaireGroupRole.manager);
       expect(result.createdBy, 'owner');
     });
   });

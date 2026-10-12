@@ -1,6 +1,7 @@
+import 'package:stimmapp/core/data/models/form_import.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/services/pdf_form_import.dart';
-import 'package:stimmapp/core/data/models/survey.dart';
 
 void main() {
   test('imports explicit choices, wrapped answers and written questions', () {
@@ -11,14 +12,14 @@ a) A greener
 neighbourhood
 b) Better transport
 2. What else should change?
-''', type: 'poll');
+''', target: FormImportTarget.questionnaire);
     expect(form.title, 'Community survey');
     expect(form.questions, hasLength(2));
     expect(form.questions!.first.options, [
       'A greener neighbourhood',
       'Better transport',
     ]);
-    expect(form.questions!.last.type, SurveyQuestionType.text);
+    expect(form.questions!.last.type, QuestionnaireQuestionType.text);
     expect(form.tags, isNull);
     expect(form.scopeType, isNull);
   });
@@ -27,7 +28,7 @@ b) Better transport
     final form = PdfFormImport.parse('''Protect our park
 We ask the council to protect our community park.
 1. Keep the existing trees.
-2. Preserve public access.''', type: 'petition');
+2. Preserve public access.''', target: FormImportTarget.petition);
     expect(form.description, contains('1. Keep'));
     expect(form.questions, isNull);
   });
@@ -39,7 +40,7 @@ We ask the council to protect our community park.
       'Survey title\nA sufficiently long description here.\n1. Choose one\na) Only choice',
     ]) {
       expect(
-        () => PdfFormImport.parse(text, type: 'poll'),
+        () => PdfFormImport.parse(text, target: FormImportTarget.questionnaire),
         throwsFormatException,
       );
     }

@@ -1,9 +1,10 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/app/pages/main/home/polls/poll_detail_page.dart';
-import 'package:stimmapp/app/pages/main/home/polls/survey_detail_page.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/poll_detail_page.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/survey_detail_page.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
@@ -56,12 +57,12 @@ void main() {
               'q': {'a': 3, 'b': 1},
             },
             questions: const [
-              SurveyQuestion(
+              QuestionnaireQuestion(
                 id: 'q',
                 title: 'Which option?',
                 options: [
-                  SurveyOption(id: 'a', label: 'Option A'),
-                  SurveyOption(id: 'b', label: 'Option B'),
+                  QuestionnaireOption(id: 'a', label: 'Option A'),
+                  QuestionnaireOption(id: 'b', label: 'Option B'),
                 ],
               ),
             ],

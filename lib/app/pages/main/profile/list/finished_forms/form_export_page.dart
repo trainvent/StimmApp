@@ -1,6 +1,6 @@
 import 'package:stimmapp/app/pages/main/home/creator/petition_creator_page.dart';
-import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/app/pages/main/home/creator/questionnaire_creator_page.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -130,7 +130,7 @@ class _FormExportPageState extends State<FormExportPage> {
       return;
     }
     if (action == _FormAction.useAsTemplate) {
-      final template = PollTemplate(
+      final template = FormTemplate(
         id: '',
         name: petition.title,
         title: petition.title,
@@ -164,7 +164,7 @@ class _FormExportPageState extends State<FormExportPage> {
       return;
     }
     if (action == _FormAction.useAsTemplate) {
-      final template = PollTemplate(
+      final template = FormTemplate(
         id: '',
         name: poll.title,
         title: poll.title,
@@ -173,7 +173,7 @@ class _FormExportPageState extends State<FormExportPage> {
         scopeType: poll.scope.type.name,
         countryUnion: poll.scope.countryUnion?.code,
         questions: [
-          PollTemplateQuestion(
+          FormTemplateQuestion(
             title: poll.questionTitle.isEmpty ? poll.title : poll.questionTitle,
             options: poll.options.map((o) => o.label).toList(),
           ),
@@ -182,8 +182,7 @@ class _FormExportPageState extends State<FormExportPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              SurveyCreatorPage(presentAsPoll: true, initialTemplate: template),
+          builder: (_) => QuestionnaireCreatorPage(initialTemplate: template),
         ),
       );
       return;
@@ -204,7 +203,7 @@ class _FormExportPageState extends State<FormExportPage> {
       return;
     }
     if (action == _FormAction.useAsTemplate) {
-      final template = PollTemplate(
+      final template = FormTemplate(
         id: '',
         name: survey.title,
         title: survey.title,
@@ -214,7 +213,7 @@ class _FormExportPageState extends State<FormExportPage> {
         countryUnion: survey.scope.countryUnion?.code,
         questions: survey.questions
             .map(
-              (q) => PollTemplateQuestion(
+              (q) => FormTemplateQuestion(
                 title: q.title,
                 type: q.type,
                 options: q.options.map((o) => o.label).toList(),
@@ -225,10 +224,7 @@ class _FormExportPageState extends State<FormExportPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => SurveyCreatorPage(
-            presentAsPoll: false,
-            initialTemplate: template,
-          ),
+          builder: (_) => QuestionnaireCreatorPage(initialTemplate: template),
         ),
       );
       return;
@@ -238,7 +234,7 @@ class _FormExportPageState extends State<FormExportPage> {
 
   Future<void> _exportPetition(Petition petition, _FormAction action) async {
     final exportContext = context;
-    final includeContent = await _selectIncludeContent(isPoll: false);
+    final includeContent = await _selectIncludeContent(isQuestionnaire: false);
     if (includeContent == null || !exportContext.mounted) return;
     final format = await _selectExportFormat(isPetition: true);
     if (format == null || !exportContext.mounted) return;
@@ -274,7 +270,7 @@ class _FormExportPageState extends State<FormExportPage> {
 
   Future<void> _exportPoll(Poll poll, _FormAction action) async {
     final exportContext = context;
-    final includeContent = await _selectIncludeContent(isPoll: true);
+    final includeContent = await _selectIncludeContent(isQuestionnaire: true);
     if (includeContent == null || !exportContext.mounted) return;
     final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
@@ -310,7 +306,7 @@ class _FormExportPageState extends State<FormExportPage> {
 
   Future<void> _exportSurvey(Survey survey, _FormAction action) async {
     final exportContext = context;
-    final includeContent = await _selectIncludeContent(isPoll: true);
+    final includeContent = await _selectIncludeContent(isQuestionnaire: true);
     if (includeContent == null || !exportContext.mounted) return;
     final format = await _selectExportFormat(isPetition: false);
     if (format == null || !exportContext.mounted) return;
@@ -344,8 +340,8 @@ class _FormExportPageState extends State<FormExportPage> {
     }
   }
 
-  Future<bool?> _selectIncludeContent({required bool isPoll}) {
-    final resultsLabel = isPoll
+  Future<bool?> _selectIncludeContent({required bool isQuestionnaire}) {
+    final resultsLabel = isQuestionnaire
         ? _resultsLabel(context)
         : _signaturesLabel(context);
     return showModalBottomSheet<bool>(

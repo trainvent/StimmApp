@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -25,11 +25,11 @@ class GroupInvitePage extends StatefulWidget {
     this.csvImporter,
   });
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
   final AuthService? auth;
   final UserRepository? userRepository;
-  final PollGroupCsvImporter? csvImporter;
+  final QuestionnaireGroupCsvImporter? csvImporter;
 
   @override
   State<GroupInvitePage> createState() => _GroupInvitePageState();
@@ -37,21 +37,21 @@ class GroupInvitePage extends StatefulWidget {
 
 class _GroupInvitePageState extends State<GroupInvitePage> {
   final List<_InviteMemberDraft> _memberDrafts = [];
-  List<PollGroupAllowedMember> _existingAllowedMembers = const [];
-  List<PollGroupAllowedDomain> _allowedDomains = const [];
+  List<QuestionnaireGroupAllowedMember> _existingAllowedMembers = const [];
+  List<QuestionnaireGroupAllowedDomain> _allowedDomains = const [];
   bool _isSending = false;
   bool _isDraggingCsv = false;
   int _lastImportedCsvRows = 0;
   int _lastInvalidCsvRows = 0;
   bool _isLoadingRules = true;
 
-  PollGroupRepository get _repository =>
-      widget.repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      widget.repository ?? QuestionnaireGroupRepository.create();
   AuthService get _auth => widget.auth ?? authService;
   UserRepository get _userRepository =>
       widget.userRepository ?? UserRepository.create();
-  PollGroupCsvImporter get _csvImporter =>
-      widget.csvImporter ?? const DefaultPollGroupCsvImporter();
+  QuestionnaireGroupCsvImporter get _csvImporter =>
+      widget.csvImporter ?? const DefaultQuestionnaireGroupCsvImporter();
 
   @override
   void initState() {
@@ -100,7 +100,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
   void _addMemberDraft({
     String email = '',
     String nickname = '',
-    PollGroupRole role = PollGroupRole.user,
+    QuestionnaireGroupRole role = QuestionnaireGroupRole.user,
     bool isCommitted = false,
   }) {
     setState(() {
@@ -120,7 +120,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
       _memberDrafts[index].emailController.clear();
       _memberDrafts[index].nicknameController.clear();
       setState(() {
-        _memberDrafts[index].role = PollGroupRole.user;
+        _memberDrafts[index].role = QuestionnaireGroupRole.user;
         _memberDrafts[index].isCommitted = false;
       });
       return;
@@ -134,7 +134,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
   bool _isMemberDraftBlank(_InviteMemberDraft draft) {
     return draft.emailController.text.trim().isEmpty &&
         draft.nicknameController.text.trim().isEmpty &&
-        draft.role == PollGroupRole.user;
+        draft.role == QuestionnaireGroupRole.user;
   }
 
   void _ensurePendingMemberDraft() {
@@ -187,9 +187,9 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
             child: Text(context.l10n.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(
-              dialogContext,
-            ).pop(_parseCsvMembers(controller.text)),
+            onPressed: () =>
+                Navigator.of(dialogContext)
+                    .pop(_parseCsvMembers(controller.text)),
             child: Text(context.l10n.importLabel),
           ),
         ],
@@ -293,17 +293,17 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
     return first == 'email' || first == 'e-mail' || first == 'mail';
   }
 
-  PollGroupRole? _parseRoleOrNull(String value) {
+  QuestionnaireGroupRole? _parseRoleOrNull(String value) {
     switch (value) {
       case '':
       case 'user':
       case 'benutzer':
       case 'mitglied':
-        return PollGroupRole.user;
+        return QuestionnaireGroupRole.user;
       case 'manager':
-        return PollGroupRole.manager;
+        return QuestionnaireGroupRole.manager;
       case 'admin':
-        return PollGroupRole.admin;
+        return QuestionnaireGroupRole.admin;
       default:
         return null;
     }
@@ -380,11 +380,11 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
     return email;
   }
 
-  Future<List<PollGroupAllowedMember>?> _buildAllowedMembers(
+  Future<List<QuestionnaireGroupAllowedMember>?> _buildAllowedMembers(
     String creatorUid,
   ) async {
     final now = DateTime.now();
-    final members = <PollGroupAllowedMember>[];
+    final members = <QuestionnaireGroupAllowedMember>[];
     for (final draft in _memberDrafts) {
       if (_isMemberDraftBlank(draft)) continue;
       final email = await _resolveInviteEmail(draft.emailController.text);
@@ -394,7 +394,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
         AppLimits.maxGroupNicknameLength,
       );
       members.add(
-        PollGroupAllowedMember(
+        QuestionnaireGroupAllowedMember(
           email: email,
           nickname: nickname.isEmpty ? null : nickname,
           role: draft.role,
@@ -403,7 +403,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
         ),
       );
     }
-    return PollGroupRepository.normalizeAllowedMembers(members);
+    return QuestionnaireGroupRepository.normalizeAllowedMembers(members);
   }
 
   Future<void> _sendInvitations() async {
@@ -418,7 +418,7 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
       showUserMistakeSnackBar(context.l10n.pleaseAddMemberToInvite);
       return;
     }
-    final mergedMembers = PollGroupRepository.normalizeAllowedMembers([
+    final mergedMembers = QuestionnaireGroupRepository.normalizeAllowedMembers([
       ..._existingAllowedMembers,
       ...newMembers,
     ]);
@@ -456,32 +456,32 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
     }
   }
 
-  String _roleLabel(PollGroupRole role) {
+  String _roleLabel(QuestionnaireGroupRole role) {
     switch (role) {
-      case PollGroupRole.admin:
+      case QuestionnaireGroupRole.admin:
         return context.l10n.adminRoleLabel;
-      case PollGroupRole.manager:
+      case QuestionnaireGroupRole.manager:
         return context.l10n.managerRoleLabel;
-      case PollGroupRole.user:
+      case QuestionnaireGroupRole.user:
         return context.l10n.userRoleLabel;
     }
   }
 
   Widget _buildRoleDropdown({
-    required PollGroupRole value,
-    required ValueChanged<PollGroupRole?> onChanged,
+    required QuestionnaireGroupRole value,
+    required ValueChanged<QuestionnaireGroupRole?> onChanged,
     Key? key,
   }) {
-    return DropdownButtonFormField<PollGroupRole>(
+    return DropdownButtonFormField<QuestionnaireGroupRole>(
       key: key,
       initialValue: value,
       decoration: InputDecoration(
         labelText: context.l10n.roleLabel,
         border: const OutlineInputBorder(),
       ),
-      items: PollGroupRole.values
+      items: QuestionnaireGroupRole.values
           .map(
-            (role) => DropdownMenuItem<PollGroupRole>(
+            (role) => DropdownMenuItem<QuestionnaireGroupRole>(
               value: role,
               child: Text(_roleLabel(role)),
             ),
@@ -637,9 +637,8 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
               ),
               borderRadius: BorderRadius.circular(12),
               color: _isDraggingCsv
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.06)
+                  ? Theme.of(context).colorScheme.primary
+                        .withValues(alpha: 0.06)
                   : null,
             ),
             child: Column(
@@ -661,9 +660,9 @@ class _GroupInvitePageState extends State<GroupInvitePage> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: SelectableText(
@@ -757,14 +756,14 @@ class _InviteMemberDraft {
   _InviteMemberDraft({
     String email = '',
     String nickname = '',
-    this.role = PollGroupRole.user,
+    this.role = QuestionnaireGroupRole.user,
     this.isCommitted = false,
   }) : emailController = TextEditingController(text: email),
        nicknameController = TextEditingController(text: nickname);
 
   final TextEditingController emailController;
   final TextEditingController nicknameController;
-  PollGroupRole role;
+  QuestionnaireGroupRole role;
   bool isCommitted;
 
   void dispose() {
@@ -782,7 +781,7 @@ class _ImportedMemberDraft {
 
   final String email;
   final String nickname;
-  final PollGroupRole role;
+  final QuestionnaireGroupRole role;
 }
 
 class _CsvImportResult {
@@ -792,14 +791,15 @@ class _CsvImportResult {
   final int invalidRows;
 }
 
-abstract class PollGroupCsvImporter {
-  const PollGroupCsvImporter();
+abstract class QuestionnaireGroupCsvImporter {
+  const QuestionnaireGroupCsvImporter();
 
   Future<String?> pickCsvText();
 }
 
-class DefaultPollGroupCsvImporter extends PollGroupCsvImporter {
-  const DefaultPollGroupCsvImporter();
+class DefaultQuestionnaireGroupCsvImporter
+    extends QuestionnaireGroupCsvImporter {
+  const DefaultQuestionnaireGroupCsvImporter();
 
   @override
   Future<String?> pickCsvText() async {

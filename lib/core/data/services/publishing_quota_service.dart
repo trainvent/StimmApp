@@ -6,11 +6,11 @@ import 'package:stimmapp/core/data/models/user_profile.dart';
 
 class DailyPublishingStatus {
   final bool canCreatePetition;
-  final bool canCreatePoll;
+  final bool canCreateQuestionnaire;
 
   const DailyPublishingStatus({
     required this.canCreatePetition,
-    required this.canCreatePoll,
+    required this.canCreateQuestionnaire,
   });
 }
 
@@ -64,13 +64,13 @@ class PublishingQuotaService {
     if (uid == null) {
       return const DailyPublishingStatus(
         canCreatePetition: false,
-        canCreatePoll: false,
+        canCreateQuestionnaire: false,
       );
     }
     if (await _isProUser(uid)) {
       return const DailyPublishingStatus(
         canCreatePetition: true,
-        canCreatePoll: true,
+        canCreateQuestionnaire: true,
       );
     }
 
@@ -81,7 +81,7 @@ class PublishingQuotaService {
     ]);
     return DailyPublishingStatus(
       canCreatePetition: counts[0] < 1,
-      canCreatePoll: counts[1] + counts[2] < 1,
+      canCreateQuestionnaire: counts[1] + counts[2] < 1,
     );
   }
 
@@ -92,10 +92,10 @@ class PublishingQuotaService {
     }
   }
 
-  Future<void> ensureCanCreatePoll() async {
+  Future<void> ensureCanCreateQuestionnaire() async {
     final status = await getDailyStatus();
-    if (!status.canCreatePoll) {
-      throw StateError('poll_daily_limit_reached');
+    if (!status.canCreateQuestionnaire) {
+      throw StateError('questionnaire_daily_limit_reached');
     }
   }
 }

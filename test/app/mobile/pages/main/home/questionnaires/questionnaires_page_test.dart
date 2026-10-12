@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/home/base_overview_page.dart';
-import 'package:stimmapp/app/pages/main/home/polls/polls_page.dart';
-import 'package:stimmapp/core/data/models/home_item.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/questionnaires_page.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 
@@ -35,12 +35,12 @@ void main() {
     'no group excludes assigned forms and clears back to all groups',
     (tester) async {
       await tester.pumpWidget(
-        createTestWidget(const PollsPage(initialGroupId: '')),
+        createTestWidget(const QuestionnairesPage(initialGroupId: '')),
       );
       await tester.pumpAndSettle();
-      BaseOverviewPage<HomeItem> overview() =>
-          tester.widget<BaseOverviewPage<HomeItem>>(
-            find.byType(BaseOverviewPage<HomeItem>),
+      BaseOverviewPage<Questionnaire> overview() =>
+          tester.widget<BaseOverviewPage<Questionnaire>>(
+            find.byType(BaseOverviewPage<Questionnaire>),
           );
       expect(overview().extraFilterCount, 1);
       for (final item in [poll(null), poll(''), survey(null), survey('')]) {
@@ -60,11 +60,11 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      createTestWidget(const PollsPage(initialGroupId: 'group-1')),
+      createTestWidget(const QuestionnairesPage(initialGroupId: 'group-1')),
     );
     await tester.pumpAndSettle();
-    final overview = tester.widget<BaseOverviewPage<HomeItem>>(
-      find.byType(BaseOverviewPage<HomeItem>),
+    final overview = tester.widget<BaseOverviewPage<Questionnaire>>(
+      find.byType(BaseOverviewPage<Questionnaire>),
     );
     expect(overview.extraFilter!(poll('group-1')), isTrue);
     expect(overview.extraFilter!(poll('group-2')), isFalse);

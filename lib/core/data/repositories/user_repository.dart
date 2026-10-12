@@ -210,7 +210,7 @@ class UserRepository implements UserInterface {
       debugPrint('Error deleting profile picture: $e');
     }
 
-    // Close polls and petitions created by this user
+    // Close petitions and both questionnaire publication types created by this user
     await pollRepo.closePollsCreatedByUser(uid);
     await petitionRepo.closePetitionsCreatedByUser(uid);
     await surveyRepo.closeSurveysCreatedByUser(uid);

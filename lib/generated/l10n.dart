@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -3887,140 +3888,140 @@ class S {
   }
 
   /// `1. Be crystal clear about the goal`
-  String get pollTutorialStep1Title {
+  String get questionnaireTutorialStep1Title {
     return Intl.message(
       '1. Be crystal clear about the goal',
-      name: 'pollTutorialStep1Title',
+      name: 'questionnaireTutorialStep1Title',
       desc: '',
       args: [],
     );
   }
 
   /// `Know exactly what you want to learn — one idea only.`
-  String get pollTutorialStep1Desc {
+  String get questionnaireTutorialStep1Desc {
     return Intl.message(
       'Know exactly what you want to learn — one idea only.',
-      name: 'pollTutorialStep1Desc',
+      name: 'questionnaireTutorialStep1Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `2. Use everyday language`
-  String get pollTutorialStep2Title {
+  String get questionnaireTutorialStep2Title {
     return Intl.message(
       '2. Use everyday language',
-      name: 'pollTutorialStep2Title',
+      name: 'questionnaireTutorialStep2Title',
       desc: '',
       args: [],
     );
   }
 
   /// `No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.`
-  String get pollTutorialStep2Desc {
+  String get questionnaireTutorialStep2Desc {
     return Intl.message(
       'No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.',
-      name: 'pollTutorialStep2Desc',
+      name: 'questionnaireTutorialStep2Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `3. Ask one short, easy to understand direct question`
-  String get pollTutorialStep3Title {
+  String get questionnaireTutorialStep3Title {
     return Intl.message(
       '3. Ask one short, easy to understand direct question',
-      name: 'pollTutorialStep3Title',
+      name: 'questionnaireTutorialStep3Title',
       desc: '',
       args: [],
     );
   }
 
   /// `Simple sentence. Simple structure.`
-  String get pollTutorialStep3Desc {
+  String get questionnaireTutorialStep3Desc {
     return Intl.message(
       'Simple sentence. Simple structure.',
-      name: 'pollTutorialStep3Desc',
+      name: 'questionnaireTutorialStep3Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `4. Give fair choices`
-  String get pollTutorialStep4Title {
+  String get questionnaireTutorialStep4Title {
     return Intl.message(
       '4. Give fair choices',
-      name: 'pollTutorialStep4Title',
+      name: 'questionnaireTutorialStep4Title',
       desc: '',
       args: [],
     );
   }
 
   /// `No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.`
-  String get pollTutorialStep4Desc {
+  String get questionnaireTutorialStep4Desc {
     return Intl.message(
       'No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.',
-      name: 'pollTutorialStep4Desc',
+      name: 'questionnaireTutorialStep4Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `5. Keep options few`
-  String get pollTutorialStep5Title {
+  String get questionnaireTutorialStep5Title {
     return Intl.message(
       '5. Keep options few',
-      name: 'pollTutorialStep5Title',
+      name: 'questionnaireTutorialStep5Title',
       desc: '',
       args: [],
     );
   }
 
   /// `3–5 choices is perfect for public polls.`
-  String get pollTutorialStep5Desc {
+  String get questionnaireTutorialStep5Desc {
     return Intl.message(
       '3–5 choices is perfect for public polls.',
-      name: 'pollTutorialStep5Desc',
+      name: 'questionnaireTutorialStep5Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `6. Make it fast to answer`
-  String get pollTutorialStep6Title {
+  String get questionnaireTutorialStep6Title {
     return Intl.message(
       '6. Make it fast to answer',
-      name: 'pollTutorialStep6Title',
+      name: 'questionnaireTutorialStep6Title',
       desc: '',
       args: [],
     );
   }
 
   /// `People should understand and vote in under 10 seconds.`
-  String get pollTutorialStep6Desc {
+  String get questionnaireTutorialStep6Desc {
     return Intl.message(
       'People should understand and vote in under 10 seconds.',
-      name: 'pollTutorialStep6Desc',
+      name: 'questionnaireTutorialStep6Desc',
       desc: '',
       args: [],
     );
   }
 
   /// `7. Respect neutrality`
-  String get pollTutorialStep7Title {
+  String get questionnaireTutorialStep7Title {
     return Intl.message(
       '7. Respect neutrality',
-      name: 'pollTutorialStep7Title',
+      name: 'questionnaireTutorialStep7Title',
       desc: '',
       args: [],
     );
   }
 
   /// `The poll must feel safe, non-judgmental, and unbiased.`
-  String get pollTutorialStep7Desc {
+  String get questionnaireTutorialStep7Desc {
     return Intl.message(
       'The poll must feel safe, non-judgmental, and unbiased.',
-      name: 'pollTutorialStep7Desc',
+      name: 'questionnaireTutorialStep7Desc',
       desc: '',
       args: [],
     );
@@ -6323,20 +6324,20 @@ class S {
   }
 
   /// `Polls and surveys`
-  String get viewGroupPolls {
+  String get viewGroupQuestionnaires {
     return Intl.message(
       'Polls and surveys',
-      name: 'viewGroupPolls',
+      name: 'viewGroupQuestionnaires',
       desc: '',
       args: [],
     );
   }
 
   /// `See everything published for this group.`
-  String get viewGroupPollsDescription {
+  String get viewGroupQuestionnairesDescription {
     return Intl.message(
       'See everything published for this group.',
-      name: 'viewGroupPollsDescription',
+      name: 'viewGroupQuestionnairesDescription',
       desc: '',
       args: [],
     );

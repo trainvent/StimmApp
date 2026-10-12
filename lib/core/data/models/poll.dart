@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
-import 'package:stimmapp/core/data/models/home_item.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 
 class PollOption {
   final String id;
@@ -14,7 +14,10 @@ class PollOption {
   Map<String, dynamic> toMap() => {'id': id, 'label': label};
 }
 
-class Poll extends HomeItem {
+class Poll extends Questionnaire {
+  @override
+  QuestionnaireKind get kind => QuestionnaireKind.poll;
+
   @override
   final String id;
   @override
@@ -28,6 +31,7 @@ class Poll extends HomeItem {
   final Map<String, int> votes; // optionId -> count
   @override
   final String createdBy;
+  @override
   final DateTime createdAt;
   @override
   final DateTime? expiresAt;
@@ -37,7 +41,9 @@ class Poll extends HomeItem {
   final String status;
   @override
   final FormScope scope;
+  @override
   final String? groupId;
+  @override
   final String? groupName;
   final String visibility;
 

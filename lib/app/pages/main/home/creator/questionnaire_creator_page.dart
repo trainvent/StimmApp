@@ -1,23 +1,26 @@
+import 'package:stimmapp/core/data/models/form_import.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
-import 'package:stimmapp/core/data/repositories/poll_template_repository.dart';
-import 'package:stimmapp/core/providers/poll_template_provider.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_template_repository.dart';
+import 'package:stimmapp/core/providers/questionnaire_template_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/app/pages/main/home/creator/base_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/creator/widgets/choice_option_list_editor.dart';
 import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
-import 'package:stimmapp/core/constants/poll_tutorial_helper.dart';
+import 'package:stimmapp/core/constants/questionnaire_tutorial_helper.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/repositories/poll_repository.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/survey_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/content_moderation_service.dart';
@@ -38,40 +41,44 @@ enum _TemplateField {
 
 const String _publicGroupValue = '__public__';
 
-class SurveyCreatorPage extends ConsumerStatefulWidget {
-  const SurveyCreatorPage({
+class QuestionnaireCreatorPage extends ConsumerStatefulWidget {
+  const QuestionnaireCreatorPage({
     super.key,
     this.initialTemplate,
-    this.presentAsPoll = false,
     this.auth,
     this.groupRepository,
   });
 
-  final PollTemplate? initialTemplate;
-  final bool presentAsPoll;
+  final FormTemplate? initialTemplate;
   final AuthService? auth;
-  final PollGroupRepository? groupRepository;
+  final QuestionnaireGroupRepository? groupRepository;
 
   @override
-  ConsumerState<SurveyCreatorPage> createState() => _SurveyCreatorPageState();
+  ConsumerState<QuestionnaireCreatorPage> createState() =>
+      _QuestionnaireCreatorPageState();
 }
 
-class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
+class _QuestionnaireCreatorPageState
+    extends ConsumerState<QuestionnaireCreatorPage> {
   final _uuid = const Uuid();
   final _creatorKey = GlobalKey<BaseCreatorPageState>();
   late final List<_QuestionDraft> _questions;
-  final Map<String, PollGroup> _knownGroupsById = <String, PollGroup>{};
+  final Map<String, QuestionnaireGroup> _knownGroupsById =
+      <String, QuestionnaireGroup>{};
   String? _selectedGroupId;
   int _draftRevision = 0;
 
   AuthService get _auth => widget.auth ?? authService;
-  PollGroupRepository get _groupRepository =>
-      widget.groupRepository ?? PollGroupRepository.create();
-  PollGroup? get _selectedGroup =>
+  QuestionnaireGroupRepository get _groupRepository =>
+      widget.groupRepository ?? QuestionnaireGroupRepository.create();
+  bool get _isSingleQuestionPoll =>
+      _questions.length == 1 &&
+      _questions.single.type == QuestionnaireQuestionType.multipleChoice;
+
+  QuestionnaireGroup? get _selectedGroup =>
       _selectedGroupId == null ? null : _knownGroupsById[_selectedGroupId];
-  String get _specificDraftKey => widget.presentAsPoll
-      ? 'draft_poll_specific_v1'
-      : 'draft_survey_specific_v1';
+  // Persisted preference identifier; both questionnaire types share this draft.
+  static const _specificDraftKey = 'draft_poll_specific_v1';
 
   @override
   void initState() {
@@ -93,7 +100,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
   _QuestionDraft _createQuestionDraft({
     String title = '',
-    SurveyQuestionType type = SurveyQuestionType.multipleChoice,
+    QuestionnaireQuestionType type = QuestionnaireQuestionType.multipleChoice,
     List<String>? options,
   }) {
     return _QuestionDraft(
@@ -114,20 +121,22 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       final rawQuestions = data['questions'] as List?;
       final restoredQuestions = rawQuestions
           ?.whereType<Map>()
-          .take(AppLimits.maxSurveyQuestions)
+          .take(AppLimits.maxQuestionnaireQuestions)
           .map((rawQuestion) {
             final question = Map<String, dynamic>.from(rawQuestion);
             final type = question['type'] == 'text'
-                ? SurveyQuestionType.text
-                : SurveyQuestionType.multipleChoice;
+                ? QuestionnaireQuestionType.text
+                : QuestionnaireQuestionType.multipleChoice;
             final options = (question['options'] as List?)
                 ?.whereType<String>()
-                .take(AppLimits.maxSurveyOptionsPerQuestion)
+                .take(AppLimits.maxQuestionnaireOptionsPerQuestion)
                 .toList();
             return _createQuestionDraft(
               title: question['title'] as String? ?? '',
               type: type,
-              options: type == SurveyQuestionType.text ? const [] : options,
+              options: type == QuestionnaireQuestionType.text
+                  ? const []
+                  : options,
             );
           })
           .toList();
@@ -249,7 +258,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       if (group.id == value) {
         setState(() {
           _selectedGroupId = group.id;
-          _rememberGroups(<PollGroup>[group]);
+          _rememberGroups(<QuestionnaireGroup>[group]);
         });
         _saveSpecificDraft();
         return;
@@ -257,7 +266,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     }
   }
 
-  void _rememberGroups(Iterable<PollGroup> groups) {
+  void _rememberGroups(Iterable<QuestionnaireGroup> groups) {
     for (final group in groups) {
       _knownGroupsById[group.id] = group;
     }
@@ -284,11 +293,11 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       );
     }
 
-    return StreamBuilder<List<PollGroup>>(
+    return StreamBuilder<List<QuestionnaireGroup>>(
       stream: _groupRepository.watchGroupsForUser(currentUser.uid),
       builder: (context, snapshot) {
-        final latestGroups = List<PollGroup>.from(
-          snapshot.data ?? const <PollGroup>[],
+        final latestGroups = List<QuestionnaireGroup>.from(
+          snapshot.data ?? const <QuestionnaireGroup>[],
         );
         if (latestGroups.isNotEmpty) {
           _rememberGroups(latestGroups);
@@ -326,11 +335,11 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     );
   }
 
-  void _addQuestion(SurveyQuestionType type) {
-    if (_questions.length >= AppLimits.maxSurveyQuestions) {
+  void _addQuestion(QuestionnaireQuestionType type) {
+    if (_questions.length >= AppLimits.maxQuestionnaireQuestions) {
       showUserMistakeSnackBar(
-        context.l10n.maximumSurveyQuestionsAllowed(
-          AppLimits.maxSurveyQuestions,
+        context.l10n.maximumQuestionnaireQuestionsAllowed(
+          AppLimits.maxQuestionnaireQuestions,
         ),
       );
       return;
@@ -359,10 +368,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 
   void _addOption(_QuestionDraft question) {
     if (question.optionControllers.length >=
-        AppLimits.maxSurveyOptionsPerQuestion) {
+        AppLimits.maxQuestionnaireOptionsPerQuestion) {
       showUserMistakeSnackBar(
         context.l10n.maximumPollOptionsAllowed(
-          AppLimits.maxSurveyOptionsPerQuestion,
+          AppLimits.maxQuestionnaireOptionsPerQuestion,
         ),
       );
       return;
@@ -389,7 +398,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     _saveSpecificDraft();
   }
 
-  Future<bool> _createSurvey({
+  Future<bool> _createQuestionnaire({
     required String title,
     required String description,
     required List<String> tags,
@@ -408,7 +417,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       description,
       ..._questions.map((question) => question.titleController.text),
       ..._questions.expand(
-        (question) => question.type == SurveyQuestionType.text
+        (question) => question.type == QuestionnaireQuestionType.text
             ? <String>[]
             : question.optionControllers.map((controller) => controller.text),
       ),
@@ -427,16 +436,16 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           .map((question) {
             final options = question.optionControllers
                 .map(
-                  (controller) => SurveyOption(
+                  (controller) => QuestionnaireOption(
                     id: _uuid.v4(),
                     label: controller.text.trim(),
                   ),
                 )
                 .toList(growable: false);
-            return SurveyQuestion(
+            return QuestionnaireQuestion(
               id: _uuid.v4(),
               title: question.titleController.text.trim(),
-              options: question.type == SurveyQuestionType.text
+              options: question.type == QuestionnaireQuestionType.text
                   ? const []
                   : options,
               type: question.type,
@@ -445,9 +454,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           .toList(growable: false);
 
       final now = DateTime.now();
-      final isSingleQuestionPoll =
-          questions.length == 1 && !questions.single.isText;
-      if (isSingleQuestionPoll) {
+      if (_isSingleQuestionPoll) {
         final question = questions.single;
         final poll = Poll(
           id: '',
@@ -483,7 +490,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           return false;
         }
 
-        await PublishingQuotaService.instance.ensureCanCreatePoll();
+        await PublishingQuotaService.instance.ensureCanCreateQuestionnaire();
 
         final pollId = await PollRepository.create().createPoll(poll);
         await _recordGroupPublication(
@@ -536,7 +543,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         return false;
       }
 
-      await PublishingQuotaService.instance.ensureCanCreatePoll();
+      await PublishingQuotaService.instance.ensureCanCreateQuestionnaire();
 
       final surveyId = await SurveyRepository.create().createSurvey(survey);
       await _recordGroupPublication(
@@ -560,17 +567,17 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       if (!mounted) {
         return false;
       }
-      if (error.message == 'poll_daily_limit_reached') {
+      if (error.message == 'questionnaire_daily_limit_reached') {
         showUserMistakeSnackBar(context.l10n.dailyCreateLimitReached);
       } else {
-        final failureMessage = _questions.length == 1
+        final failureMessage = _isSingleQuestionPoll
             ? context.l10n.failedToCreatePoll
             : context.l10n.failedToCreateSurvey;
         showErrorSnackBar('$failureMessage: $error');
       }
     } catch (error) {
       if (mounted) {
-        final failureMessage = _questions.length == 1
+        final failureMessage = _isSingleQuestionPoll
             ? context.l10n.failedToCreatePoll
             : context.l10n.failedToCreateSurvey;
         showErrorSnackBar('$failureMessage: $error');
@@ -605,14 +612,14 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
   ) async {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return;
-    late final PollTemplateRepository repository;
+    late final QuestionnaireTemplateRepository repository;
     try {
       repository = await ref.read(
-        pollTemplateRepositoryProvider(userId).future,
+        questionnaireTemplateRepositoryProvider(userId).future,
       );
       repository.load();
     } catch (_) {
-      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+      if (mounted) showErrorSnackBar(context.l10n.formTemplateError);
       return;
     }
     if (!mounted) return;
@@ -622,7 +629,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     final labels = <_TemplateField, String>{
       _TemplateField.title: context.l10n.title,
       _TemplateField.description: context.l10n.description,
-      _TemplateField.questions: context.l10n.pollTemplateQuestionsAndAnswers,
+      _TemplateField.questions: context.l10n.formTemplateQuestionsAndAnswers,
       _TemplateField.tags: context.l10n.tags,
       _TemplateField.scope: context.l10n.scope,
       _TemplateField.duration: context.l10n.duration,
@@ -633,7 +640,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
-          title: Text(context.l10n.savePollTemplate),
+          title: Text(context.l10n.saveFormTemplate),
           content: SizedBox(
             width: double.maxFinite,
             child: SingleChildScrollView(
@@ -653,11 +660,11 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     maxLength: AppLimits.maxTitleLength,
                     onChanged: (_) => update(() {}),
                     decoration: InputDecoration(
-                      labelText: context.l10n.pollTemplateName,
+                      labelText: context.l10n.formTemplateName,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(context.l10n.pollTemplateIncludeFields),
+                  Text(context.l10n.formTemplateIncludeFields),
                   for (final field in _TemplateField.values)
                     CheckboxListTile(
                       key: ValueKey('template_field_${field.name}'),
@@ -689,7 +696,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                       final name = nameController.text.trim();
                       if (repository.containsName(name)) {
                         final confirmed = await _confirmReplacement(
-                          context.l10n.pollTemplateOverwriteConfirmation,
+                          context.l10n.formTemplateOverwriteConfirmation,
                         );
                         if (!confirmed) return;
                       }
@@ -697,7 +704,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     },
               child: Text(
                 repository.containsName(nameController.text)
-                    ? context.l10n.pollTemplateReplaceAction
+                    ? context.l10n.formTemplateReplaceAction
                     : context.l10n.confirm,
               ),
             ),
@@ -710,7 +717,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       (_) => nameController.dispose(),
     );
     if (name == null || !mounted) return;
-    final template = PollTemplate(
+    final template = FormTemplate(
       id: _uuid.v4(),
       name: name,
       title: included.contains(_TemplateField.title) ? title.text : null,
@@ -737,7 +744,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       questions: included.contains(_TemplateField.questions)
           ? [
               for (final question in _questions)
-                PollTemplateQuestion(
+                FormTemplateQuestion(
                   title: question.titleController.text,
                   type: question.type,
                   options: [
@@ -750,13 +757,13 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     );
     try {
       await repository.save(template);
-      if (mounted) showSuccessSnackBar(context.l10n.pollTemplateSaved);
+      if (mounted) showSuccessSnackBar(context.l10n.formTemplateSaved);
     } catch (_) {
-      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+      if (mounted) showErrorSnackBar(context.l10n.formTemplateError);
     }
   }
 
-  String _templateSummary(PollTemplate template) {
+  String _templateSummary(FormTemplate template) {
     final l = context.l10n;
     return [
       if (template.title != null) l.title,
@@ -795,9 +802,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                if (_questions[index].type == SurveyQuestionType.text)
+                if (_questions[index].type == QuestionnaireQuestionType.text)
                   Text(context.l10n.writtenAnswerHint),
-                if (_questions[index].type == SurveyQuestionType.multipleChoice)
+                if (_questions[index].type ==
+                    QuestionnaireQuestionType.multipleChoice)
                   for (final option in _questions[index].optionControllers)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -824,21 +832,21 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     if (userId == null) return;
     try {
       final repository = await ref.read(
-        pollTemplateRepositoryProvider(userId).future,
+        questionnaireTemplateRepositoryProvider(userId).future,
       );
       final templates = repository.load();
       if (!mounted) return;
-      final selected = await showDialog<PollTemplate>(
+      final selected = await showDialog<FormTemplate>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (context, update) => AlertDialog(
-            title: Text(context.l10n.pollTemplates),
+            title: Text(context.l10n.formTemplates),
             content: SizedBox(
               width: double.maxFinite,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (templates.isEmpty) Text(context.l10n.pollTemplatesEmpty),
+                  if (templates.isEmpty) Text(context.l10n.formTemplatesEmpty),
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -851,10 +859,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                           onTap: () => Navigator.pop(dialogContext, template),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline),
-                            tooltip: context.l10n.pollTemplateDeleteAction,
+                            tooltip: context.l10n.formTemplateDeleteAction,
                             onPressed: () async {
                               if (!await _confirmReplacement(
-                                context.l10n.pollTemplateDelete,
+                                context.l10n.formTemplateDelete,
                               )) {
                                 return;
                               }
@@ -866,7 +874,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                               } catch (_) {
                                 if (mounted) {
                                   showErrorSnackBar(
-                                    this.context.l10n.pollTemplateError,
+                                    this.context.l10n.formTemplateError,
                                   );
                                 }
                               }
@@ -890,7 +898,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       );
       if (selected == null || !mounted) return;
       if (!await _confirmReplacement(
-            '${context.l10n.pollTemplateReplace}\n\n${selected.name}\n${_templateSummary(selected)}',
+            '${context.l10n.formTemplateReplace}\n\n${selected.name}\n${_templateSummary(selected)}',
           ) ||
           !mounted) {
         return;
@@ -899,7 +907,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         final groups = await _groupRepository.watchGroupsForUser(userId).first;
         if (!mounted) return;
         if (!groups.any((group) => group.id == selected.groupId)) {
-          showUserMistakeSnackBar(context.l10n.pollTemplateGroupUnavailable);
+          showUserMistakeSnackBar(context.l10n.formTemplateGroupUnavailable);
           return;
         }
         _rememberGroups(groups);
@@ -919,13 +927,13 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             ..clear()
             ..addAll(
               selected.questions!
-                  .take(AppLimits.maxSurveyQuestions)
+                  .take(AppLimits.maxQuestionnaireQuestions)
                   .map(
                     (question) => _createQuestionDraft(
                       title: question.title,
                       type: question.type,
                       options: question.options
-                          .take(AppLimits.maxSurveyOptionsPerQuestion)
+                          .take(AppLimits.maxQuestionnaireOptionsPerQuestion)
                           .toList(),
                     ),
                   ),
@@ -934,7 +942,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       });
       await _saveSpecificDraft();
     } catch (_) {
-      if (mounted) showErrorSnackBar(context.l10n.pollTemplateError);
+      if (mounted) showErrorSnackBar(context.l10n.formTemplateError);
     }
   }
 
@@ -955,7 +963,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         ),
         IconButton(
           icon: const Icon(Icons.library_books_outlined),
-          tooltip: context.l10n.pollTemplates,
+          tooltip: context.l10n.formTemplates,
           onPressed: _auth.currentUser == null
               ? null
               : () => _chooseTemplate(title, description),
@@ -1065,7 +1073,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             const SizedBox(height: 8),
             TextFormField(
               controller: question.titleController,
-              maxLength: AppLimits.maxSurveyQuestionLength,
+              maxLength: AppLimits.maxQuestionnaireQuestionLength,
               decoration: InputDecoration(
                 labelText: context.l10n.surveyQuestion,
                 border: const OutlineInputBorder(),
@@ -1075,9 +1083,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   : null,
             ),
             const SizedBox(height: 8),
-            if (question.type == SurveyQuestionType.text)
+            if (question.type == QuestionnaireQuestionType.text)
               Text(context.l10n.writtenAnswerHint),
-            if (question.type == SurveyQuestionType.multipleChoice) ...[
+            if (question.type == QuestionnaireQuestionType.multipleChoice) ...[
               Row(
                 children: [
                   Expanded(
@@ -1095,7 +1103,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               ),
               ChoiceOptionListEditor(
                 controllers: question.optionControllers,
-                maxOptionLength: AppLimits.maxSurveyOptionLength,
+                maxOptionLength: AppLimits.maxQuestionnaireOptionLength,
                 optionLabelBuilder: (optionIndex) =>
                     context.l10n.optionNumber(optionIndex + 1),
                 optionRequiredMessage: context.l10n.optionRequired,
@@ -1104,7 +1112,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                 onRemove: (optionIndex) => _removeOption(question, optionIndex),
               ),
               if (question.optionControllers.length <
-                  AppLimits.maxSurveyOptionsPerQuestion)
+                  AppLimits.maxQuestionnaireOptionsPerQuestion)
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
@@ -1125,7 +1133,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     return BaseCreatorPage(
       initialTemplate: widget.initialTemplate,
       key: _creatorKey,
-      importType: widget.presentAsPoll ? 'poll' : 'survey',
+      importTarget: FormImportTarget.questionnaire,
       onImportQuestions: (questions) async {
         setState(() {
           for (final question in _questions) {
@@ -1145,16 +1153,18 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
         });
         await _saveSpecificDraft();
       },
-      title: widget.presentAsPoll
-          ? context.l10n.createPoll
-          : context.l10n.createSurvey,
-      tutorialSteps: PollTutorialHelper.getSteps(context),
-      onSubmit: _createSurvey,
+      title: context.l10n.createQuestionnaire,
+      draftStorageKey: 'draft_questionnaire_v1',
+      previewTitle: _isSingleQuestionPoll
+          ? context.l10n.pollDetails
+          : context.l10n.surveyDetails,
+      tutorialSteps: QuestionnaireTutorialHelper.getSteps(context),
+      onSubmit: _createQuestionnaire,
       previewContentBuilder: _buildPublicationPreview,
       contentActionsBuilder: _buildTemplateActions,
       appBarActionBuilder: (title, description) => IconButton(
         icon: const Icon(Icons.bookmark_add_outlined),
-        tooltip: context.l10n.savePollTemplate,
+        tooltip: context.l10n.saveFormTemplate,
         onPressed: _auth.currentUser == null
             ? null
             : () => _saveTemplate(title, description),
@@ -1190,7 +1200,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
             ],
           ),
         ),
-        if (_questions.length < AppLimits.maxSurveyQuestions)
+        if (_questions.length < AppLimits.maxQuestionnaireQuestions)
           SizedBox(
             width: double.infinity,
             child: DecoratedBox(
@@ -1222,8 +1232,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                             key: const Key('add_multiple_choice_question'),
                             icon: const Icon(Icons.list),
                             label: Text(context.l10n.multipleChoiceAnswer),
-                            onPressed: () =>
-                                _addQuestion(SurveyQuestionType.multipleChoice),
+                            onPressed: () => _addQuestion(
+                              QuestionnaireQuestionType.multipleChoice,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -1233,7 +1244,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                             icon: const Icon(Icons.notes),
                             label: Text(context.l10n.textQuestion),
                             onPressed: () =>
-                                _addQuestion(SurveyQuestionType.text),
+                                _addQuestion(QuestionnaireQuestionType.text),
                           ),
                         ),
                       ],
@@ -1251,7 +1262,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
 class _QuestionDraft {
   _QuestionDraft({
     required this.onChanged,
-    this.type = SurveyQuestionType.multipleChoice,
+    this.type = QuestionnaireQuestionType.multipleChoice,
     String title = '',
     List<String>? options,
   }) : titleController = TextEditingController(text: title),
@@ -1264,7 +1275,7 @@ class _QuestionDraft {
     }
   }
 
-  final SurveyQuestionType type;
+  final QuestionnaireQuestionType type;
   final VoidCallback onChanged;
   final TextEditingController titleController;
   final List<TextEditingController> optionControllers;

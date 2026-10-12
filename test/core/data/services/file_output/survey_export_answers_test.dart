@@ -1,6 +1,8 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
+
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/services/file_output/survey_export_answers.dart';
 import 'package:stimmapp/core/data/services/file_output/export_document.dart';
 import 'package:stimmapp/core/data/services/file_output/to_csv.dart';
@@ -8,15 +10,15 @@ import 'package:stimmapp/core/data/services/file_output/to_json.dart';
 
 void main() {
   const questions = [
-    SurveyQuestion(
+    QuestionnaireQuestion(
       id: 'choice',
       title: 'Pick',
-      options: [SurveyOption(id: 'a', label: 'Trees')],
+      options: [QuestionnaireOption(id: 'a', label: 'Trees')],
     ),
-    SurveyQuestion(
+    QuestionnaireQuestion(
       id: 'text',
       title: 'Explain',
-      type: SurveyQuestionType.text,
+      type: QuestionnaireQuestionType.text,
       options: [],
     ),
   ];

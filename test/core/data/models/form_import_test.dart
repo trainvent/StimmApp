@@ -1,6 +1,8 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
+
 import 'dart:convert';
 import 'dart:io';
-import 'package:stimmapp/core/data/models/survey.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
 
@@ -14,7 +16,9 @@ void main() {
   dynamic parse(Map<String, dynamic> data, {String type = 'petition'}) =>
       FormImport.parse(
         jsonEncode(data),
-        expectedType: type,
+        target: type == 'petition'
+            ? FormImportTarget.petition
+            : FormImportTarget.questionnaire,
         allowedTags: {'Environment'},
       );
 
@@ -31,9 +35,37 @@ void main() {
         {'title': 'More feedback', 'type': 'text', 'options': []},
       ],
     }, type: 'poll');
-    expect(result.questions[0].type, SurveyQuestionType.multipleChoice);
-    expect(result.questions[1].type, SurveyQuestionType.text);
+    expect(result.questions[0].type, QuestionnaireQuestionType.multipleChoice);
+    expect(result.questions[1].type, QuestionnaireQuestionType.text);
     expect(result.questions[1].options, isEmpty);
+  });
+
+  test('questionnaire target accepts both concrete publication types', () {
+    for (final type in ['poll', 'survey']) {
+      final template = FormImport.parse(
+        jsonEncode({
+          ...petition,
+          'type': type,
+          'questions': [
+            {
+              'title': 'Your choice',
+              'options': ['Yes', 'No'],
+            },
+          ],
+        }),
+        target: FormImportTarget.questionnaire,
+        allowedTags: {},
+      );
+      expect(template.questions!.single.title, 'Your choice');
+    }
+    expect(
+      () => FormImport.parse(
+        jsonEncode(petition),
+        target: FormImportTarget.questionnaire,
+        allowedTags: {},
+      ),
+      throwsFormatException,
+    );
   });
 
   test('rejects invalid question types and text options', () {
@@ -66,16 +98,19 @@ void main() {
     for (final locale in ['de', 'en']) {
       for (final type in ['poll', 'petition']) {
         final result = FormImport.parse(
-          File(
-            'website/public/examples/$type-import-$locale.json',
-          ).readAsStringSync(),
-          expectedType: type,
+          File('website/public/examples/$type-import-$locale.json')
+              .readAsStringSync(),
+          target: type == 'petition'
+              ? FormImportTarget.petition
+              : FormImportTarget.questionnaire,
           allowedTags: {'Environment'},
         );
         expect(result.title, isNotEmpty);
         if (type == 'poll') {
           expect(
-            result.questions!.any((q) => q.type == SurveyQuestionType.text),
+            result.questions!.any(
+              (q) => q.type == QuestionnaireQuestionType.text,
+            ),
             isTrue,
           );
         }
@@ -145,8 +180,11 @@ void main() {
   test('rejects malformed and oversized JSON', () {
     for (final source in ['{', '[]', 'null', ' ' * (FormImport.maxBytes + 1)]) {
       expect(
-        () =>
-            FormImport.parse(source, expectedType: 'petition', allowedTags: {}),
+        () => FormImport.parse(
+          source,
+          target: FormImportTarget.petition,
+          allowedTags: {},
+        ),
         throwsFormatException,
       );
     }

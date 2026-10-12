@@ -1222,46 +1222,46 @@ class MessageLookup extends MessageLookupByLibrary {
       "Poll guideline description",
     ),
     "pollGuidelines": MessageLookupByLibrary.simpleMessage("Poll Guidelines"),
-    "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
       "Know exactly what you want to learn — one idea only.",
     ),
-    "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
       "1. Be crystal clear about the goal",
     ),
-    "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
       "No technical words. No jargon. No “smart-sounding” phrasing. If a teenager and a grandparent both understand it, it’s good.",
     ),
-    "pollTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
       "2. Use everyday language",
     ),
-    "pollTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
       "Simple sentence. Simple structure.",
     ),
-    "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
       "3. Ask one short, easy to understand direct question",
     ),
-    "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
       "No trick answers. No emotional wording. No pushing people toward one option. Include “Not sure” if relevant.",
     ),
-    "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
       "4. Give fair choices",
     ),
-    "pollTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
       "3–5 choices is perfect for public polls.",
     ),
-    "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
       "5. Keep options few",
     ),
-    "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
       "People should understand and vote in under 10 seconds.",
     ),
-    "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
       "6. Make it fast to answer",
     ),
-    "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
       "The poll must feel safe, non-judgmental, and unbiased.",
     ),
-    "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
       "7. Respect neutrality",
     ),
     "polls": MessageLookupByLibrary.simpleMessage("Polls"),
@@ -1651,8 +1651,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "victory": MessageLookupByLibrary.simpleMessage("Victory!"),
-    "viewGroupPolls": MessageLookupByLibrary.simpleMessage("Polls and surveys"),
-    "viewGroupPollsDescription": MessageLookupByLibrary.simpleMessage(
+    "viewGroupQuestionnaires": MessageLookupByLibrary.simpleMessage(
+      "Polls and surveys",
+    ),
+    "viewGroupQuestionnairesDescription": MessageLookupByLibrary.simpleMessage(
       "See everything published for this group.",
     ),
     "viewInstitutionalGuide": MessageLookupByLibrary.simpleMessage(

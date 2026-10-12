@@ -4,28 +4,29 @@ import 'package:stimmapp/app/pages/main/groups/groups_overview_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/app/pages/onboarding/login_page.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 bool shouldAutoJoinOpenGroup({
-  required PollGroup? group,
-  required PollGroupAccessNotification? notification,
+  required QuestionnaireGroup? group,
+  required QuestionnaireGroupAccessNotification? notification,
   required String? currentUid,
   required bool isSaving,
   required String? attemptedForUid,
 }) {
   final hasPendingInvite =
-      notification?.type == PollGroupAccessNotificationType.invite &&
-      notification?.status == PollGroupAccessNotificationStatus.pending &&
+      notification?.type == QuestionnaireGroupAccessNotificationType.invite &&
+      notification?.status ==
+          QuestionnaireGroupAccessNotificationStatus.pending &&
       notification?.recipientUid == currentUid;
   return group != null &&
       currentUid != null &&
       !hasPendingInvite &&
-      group.accessMode == PollGroupAccessMode.open &&
+      group.accessMode == QuestionnaireGroupAccessMode.open &&
       !group.memberIds.contains(currentUid) &&
       !isSaving &&
       attemptedForUid != currentUid;
@@ -48,11 +49,11 @@ class GroupEntryPage extends StatefulWidget {
 }
 
 class _GroupEntryPageState extends State<GroupEntryPage> {
-  final _repo = PollGroupRepository.create();
+  final _repo = QuestionnaireGroupRepository.create();
   bool _isSaving = false;
   String? _autoJoinAttemptedForUid;
 
-  Future<PollGroup?> _loadGroup() async {
+  Future<QuestionnaireGroup?> _loadGroup() async {
     try {
       return await _repo.getGroup(widget.groupId);
     } catch (error, stackTrace) {
@@ -64,7 +65,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     }
   }
 
-  Future<PollGroupAccessNotification?> _loadNotification() async {
+  Future<QuestionnaireGroupAccessNotification?> _loadNotification() async {
     final ownerUid = widget.notificationOwnerUid;
     final notificationId = widget.notificationId;
     if (ownerUid == null || notificationId == null) {
@@ -112,7 +113,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     }
   }
 
-  Future<void> _requestAccess(PollGroup group) async {
+  Future<void> _requestAccess(QuestionnaireGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
       showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
@@ -127,7 +128,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         requesterDisplayName:
             profile?.displayName ?? profile?.email ?? fallbackDisplayName,
         group: group,
-        requestedRole: PollGroupRole.user,
+        requestedRole: QuestionnaireGroupRole.user,
       );
       if (!mounted) {
         return;
@@ -143,7 +144,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
     }
   }
 
-  Future<void> _joinOpenGroup(PollGroup group) async {
+  Future<void> _joinOpenGroup(QuestionnaireGroup group) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
       showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
@@ -173,9 +174,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   }
 
   Future<void> _openLogin() async {
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const LoginPage()));
+    await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const LoginPage()));
     if (mounted) {
       setState(() {});
     }
@@ -188,8 +188,8 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   }
 
   void _maybeAutoJoinOpenGroup(
-    PollGroup? group,
-    PollGroupAccessNotification? notification,
+    QuestionnaireGroup? group,
+    QuestionnaireGroupAccessNotification? notification,
     UserProfile? currentProfile,
   ) {
     final currentUid = currentProfile?.uid;
@@ -210,21 +210,22 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
   }
 
   Widget _buildPrimaryActions({
-    required PollGroup? group,
-    required PollGroupAccessNotification? notification,
+    required QuestionnaireGroup? group,
+    required QuestionnaireGroupAccessNotification? notification,
     required UserProfile? currentProfile,
   }) {
     final currentUid = currentProfile?.uid;
 
     if (notification != null &&
-        notification.status == PollGroupAccessNotificationStatus.pending &&
+        notification.status ==
+            QuestionnaireGroupAccessNotificationStatus.pending &&
         currentUid == notification.recipientUid) {
       final acceptLabel =
-          notification.type == PollGroupAccessNotificationType.request
+          notification.type == QuestionnaireGroupAccessNotificationType.request
           ? context.l10n.approveRequest
           : context.l10n.accept;
       final denyLabel =
-          notification.type == PollGroupAccessNotificationType.request
+          notification.type == QuestionnaireGroupAccessNotificationType.request
           ? context.l10n.denyRequest
           : context.l10n.deny;
       return Row(
@@ -268,7 +269,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       );
     }
     if (currentUid == null) {
-      final label = group.accessMode == PollGroupAccessMode.open
+      final label = group.accessMode == QuestionnaireGroupAccessMode.open
           ? context.l10n.signInToJoinGroup
           : context.l10n.signInToRequestGroupAccess;
       return FilledButton(
@@ -276,10 +277,10 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
         child: Text(label),
       );
     }
-    if (group.accessMode == PollGroupAccessMode.private) {
+    if (group.accessMode == QuestionnaireGroupAccessMode.private) {
       return Text(context.l10n.privateGroupWaitForInvite);
     }
-    if (group.accessMode == PollGroupAccessMode.protected) {
+    if (group.accessMode == QuestionnaireGroupAccessMode.protected) {
       return FilledButton(
         onPressed: _isSaving ? null : () => _requestAccess(group),
         child: Text(context.l10n.requestAccess),
@@ -298,7 +299,11 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
       builder: (context, _) {
         final currentUid = authService.currentUser?.uid;
         return FutureBuilder<
-          (PollGroup?, PollGroupAccessNotification?, UserProfile?)
+          (
+            QuestionnaireGroup?,
+            QuestionnaireGroupAccessNotification?,
+            UserProfile?,
+          )
         >(
           future: () async {
             final group = await _loadGroup();
@@ -339,7 +344,7 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                   if (notification != null)
                     Text(
                       notification.type ==
-                              PollGroupAccessNotificationType.invite
+                              QuestionnaireGroupAccessNotificationType.invite
                           ? context.l10n.invitedYouToThisGroup(
                               notification.actorDisplayName,
                             )
@@ -355,9 +360,10 @@ class _GroupEntryPageState extends State<GroupEntryPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    if (group.accessMode == PollGroupAccessMode.protected)
+                    if (group.accessMode ==
+                        QuestionnaireGroupAccessMode.protected)
                       Text(group.accessMode.localizedDescription(context)),
-                    if (group.accessMode == PollGroupAccessMode.open)
+                    if (group.accessMode == QuestionnaireGroupAccessMode.open)
                       Text(
                         currentUid == null
                             ? context.l10n.signInToJoinGroupAutomatically

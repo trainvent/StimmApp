@@ -5,86 +5,91 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/database_collections.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/poll_group_activity.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group_activity.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
-enum PollGroupLeaveResult { left, groupDeleted }
+enum QuestionnaireGroupLeaveResult { left, groupDeleted }
 
-class PollGroupRepository {
-  PollGroupRepository(this._fs);
+class QuestionnaireGroupRepository {
+  QuestionnaireGroupRepository(this._fs);
 
   final DatabaseService _fs;
 
-  static PollGroupRepository create() =>
-      PollGroupRepository(locator.databaseService);
+  static QuestionnaireGroupRepository create() =>
+      QuestionnaireGroupRepository(locator.databaseService);
 
-  CollectionReference<PollGroup> _groups() => _fs.colRef<PollGroup>(
-    DatabaseCollections.pollGroups,
-    fromFirestore: PollGroup.fromFirestore,
-    toFirestore: PollGroup.toFirestore,
-  );
-
-  CollectionReference<PollGroupMember> _members(String groupId) =>
-      _fs.colRef<PollGroupMember>(
-        '${DatabaseCollections.pollGroups}/$groupId/members',
-        fromFirestore: PollGroupMember.fromFirestore,
-        toFirestore: PollGroupMember.toFirestore,
+  CollectionReference<QuestionnaireGroup> _groups() =>
+      _fs.colRef<QuestionnaireGroup>(
+        DatabaseCollections.questionnaireGroups,
+        fromFirestore: QuestionnaireGroup.fromFirestore,
+        toFirestore: QuestionnaireGroup.toFirestore,
       );
 
-  CollectionReference<PollGroupAllowedMember> _allowedMembers(String groupId) =>
-      _fs.colRef<PollGroupAllowedMember>(
-        '${DatabaseCollections.pollGroups}/$groupId/allowedMembers',
-        fromFirestore: PollGroupAllowedMember.fromFirestore,
-        toFirestore: PollGroupAllowedMember.toFirestore,
+  CollectionReference<QuestionnaireGroupMember> _members(String groupId) =>
+      _fs.colRef<QuestionnaireGroupMember>(
+        '${DatabaseCollections.questionnaireGroups}/$groupId/members',
+        fromFirestore: QuestionnaireGroupMember.fromFirestore,
+        toFirestore: QuestionnaireGroupMember.toFirestore,
       );
 
-  CollectionReference<PollGroupInvitation> _invitations(String groupId) =>
-      _fs.colRef<PollGroupInvitation>(
-        '${DatabaseCollections.pollGroups}/$groupId/invitations',
-        fromFirestore: PollGroupInvitation.fromFirestore,
-        toFirestore: PollGroupInvitation.toFirestore,
-      );
-
-  CollectionReference<PollGroupAdminElection> _adminElections(String groupId) =>
-      _fs.colRef<PollGroupAdminElection>(
-        '${DatabaseCollections.pollGroups}/$groupId/adminElections',
-        fromFirestore: PollGroupAdminElection.fromFirestore,
-        toFirestore: PollGroupAdminElection.toFirestore,
-      );
-
-  CollectionReference<PollGroupAdminElectionVote> _adminElectionVotes(
+  CollectionReference<QuestionnaireGroupAllowedMember> _allowedMembers(
     String groupId,
-  ) => _fs.colRef<PollGroupAdminElectionVote>(
-    '${DatabaseCollections.pollGroups}/$groupId/adminElections/current/votes',
-    fromFirestore: PollGroupAdminElectionVote.fromFirestore,
-    toFirestore: PollGroupAdminElectionVote.toFirestore,
+  ) => _fs.colRef<QuestionnaireGroupAllowedMember>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/allowedMembers',
+    fromFirestore: QuestionnaireGroupAllowedMember.fromFirestore,
+    toFirestore: QuestionnaireGroupAllowedMember.toFirestore,
   );
 
-  CollectionReference<PollGroupAllowedDomain> _allowedDomains(String groupId) =>
-      _fs.colRef<PollGroupAllowedDomain>(
-        '${DatabaseCollections.pollGroups}/$groupId/allowedDomains',
-        fromFirestore: PollGroupAllowedDomain.fromFirestore,
-        toFirestore: PollGroupAllowedDomain.toFirestore,
-      );
-
-  CollectionReference<PollGroupActivity> _activities(
+  CollectionReference<QuestionnaireGroupInvitation> _invitations(
     String groupId,
-  ) => _fs.colRef<PollGroupActivity>(
-    '${DatabaseCollections.pollGroups}/$groupId/${DatabaseCollections.groupActivities}',
-    fromFirestore: PollGroupActivity.fromFirestore,
-    toFirestore: PollGroupActivity.toFirestore,
+  ) => _fs.colRef<QuestionnaireGroupInvitation>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/invitations',
+    fromFirestore: QuestionnaireGroupInvitation.fromFirestore,
+    toFirestore: QuestionnaireGroupInvitation.toFirestore,
   );
 
-  CollectionReference<PollGroupAccessNotification> _notifications(
+  CollectionReference<QuestionnaireGroupAdminElection> _adminElections(
+    String groupId,
+  ) => _fs.colRef<QuestionnaireGroupAdminElection>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/adminElections',
+    fromFirestore: QuestionnaireGroupAdminElection.fromFirestore,
+    toFirestore: QuestionnaireGroupAdminElection.toFirestore,
+  );
+
+  CollectionReference<QuestionnaireGroupAdminElectionVote> _adminElectionVotes(
+    String groupId,
+  ) => _fs.colRef<QuestionnaireGroupAdminElectionVote>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/adminElections/current/votes',
+    fromFirestore: QuestionnaireGroupAdminElectionVote.fromFirestore,
+    toFirestore: QuestionnaireGroupAdminElectionVote.toFirestore,
+  );
+
+  CollectionReference<QuestionnaireGroupAllowedDomain> _allowedDomains(
+    String groupId,
+  ) => _fs.colRef<QuestionnaireGroupAllowedDomain>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/allowedDomains',
+    fromFirestore: QuestionnaireGroupAllowedDomain.fromFirestore,
+    toFirestore: QuestionnaireGroupAllowedDomain.toFirestore,
+  );
+
+  CollectionReference<QuestionnaireGroupActivity> _activities(
+    String groupId,
+  ) => _fs.colRef<QuestionnaireGroupActivity>(
+    '${DatabaseCollections.questionnaireGroups}/$groupId/${DatabaseCollections.groupActivities}',
+    fromFirestore: QuestionnaireGroupActivity.fromFirestore,
+    toFirestore: QuestionnaireGroupActivity.toFirestore,
+  );
+
+  CollectionReference<QuestionnaireGroupAccessNotification> _notifications(
     String uid,
-  ) => _fs.colRef<PollGroupAccessNotification>(
+  ) => _fs.colRef<QuestionnaireGroupAccessNotification>(
     '${DatabaseCollections.users}/$uid/${DatabaseCollections.groupAccessNotifications}',
-    fromFirestore: PollGroupAccessNotification.fromFirestore,
-    toFirestore: PollGroupAccessNotification.toFirestore,
+    fromFirestore: QuestionnaireGroupAccessNotification.fromFirestore,
+    toFirestore: QuestionnaireGroupAccessNotification.toFirestore,
   );
 
-  Stream<List<PollGroup>> watchGroupsForUser(String uid) {
+  Stream<List<QuestionnaireGroup>> watchGroupsForUser(String uid) {
     return _fs.watchCol(_groups().where('memberIds', arrayContains: uid)).map((
       groups,
     ) {
@@ -94,11 +99,13 @@ class PollGroupRepository {
     });
   }
 
-  Stream<List<PollGroup>> watchAccessibleGroupsForUser(String uid) {
+  Stream<List<QuestionnaireGroup>> watchAccessibleGroupsForUser(String uid) {
     return watchGroupsForUser(uid);
   }
 
-  Future<List<PollGroup>> getAccessibleGroupsForUser(String uid) async {
+  Future<List<QuestionnaireGroup>> getAccessibleGroupsForUser(
+    String uid,
+  ) async {
     return watchGroupsForUser(uid).first;
   }
 
@@ -106,13 +113,13 @@ class PollGroupRepository {
     required String creatorUid,
     required String name,
     required String joinCode,
-    required PollGroupNicknameMode nicknameMode,
+    required QuestionnaireGroupNicknameMode nicknameMode,
     required bool managersCanInvite,
-    required PollGroupAccessMode accessMode,
+    required QuestionnaireGroupAccessMode accessMode,
     required bool inviteLinkEnabled,
     DateTime? expiresAt,
-    List<PollGroupAllowedMember> allowedMembers = const [],
-    List<PollGroupAllowedDomain> allowedDomains = const [],
+    List<QuestionnaireGroupAllowedMember> allowedMembers = const [],
+    List<QuestionnaireGroupAllowedDomain> allowedDomains = const [],
   }) async {
     final normalizedName = name.trim();
     if (normalizedName.isEmpty ||
@@ -128,9 +135,9 @@ class PollGroupRepository {
       final result = await callable.call(<String, Object?>{
         'name': normalizedName,
         'joinCode': joinCode,
-        'nicknameMode': pollGroupNicknameModeToFirestore(nicknameMode),
+        'nicknameMode': questionnaireGroupNicknameModeToFirestore(nicknameMode),
         'managersCanInvite': managersCanInvite,
-        'accessMode': pollGroupAccessModeToFirestore(accessMode),
+        'accessMode': questionnaireGroupAccessModeToFirestore(accessMode),
         'inviteLinkEnabled': inviteLinkEnabled,
         'expiresAtMillis': expiresAt?.millisecondsSinceEpoch,
         'allowedMembers': normalizedMembers
@@ -138,7 +145,7 @@ class PollGroupRepository {
               (member) => <String, Object?>{
                 'email': member.email,
                 'nickname': member.nickname,
-                'role': pollGroupRoleToFirestore(member.role),
+                'role': questionnaireGroupRoleToFirestore(member.role),
               },
             )
             .toList(),
@@ -146,7 +153,7 @@ class PollGroupRepository {
             .map(
               (domain) => <String, Object?>{
                 'domain': domain.domain,
-                'role': pollGroupRoleToFirestore(domain.role),
+                'role': questionnaireGroupRoleToFirestore(domain.role),
               },
             )
             .toList(),
@@ -174,20 +181,24 @@ class PollGroupRepository {
     return groups.where((group) => group.createdBy == uid).take(2).length;
   }
 
-  Future<List<PollGroupAllowedMember>> getAllowedMembers(String groupId) async {
+  Future<List<QuestionnaireGroupAllowedMember>> getAllowedMembers(
+    String groupId,
+  ) async {
     final snap = await _allowedMembers(groupId).get();
     return snap.docs.map((doc) => doc.data()).toList();
   }
 
-  Future<List<PollGroupAllowedDomain>> getAllowedDomains(String groupId) async {
+  Future<List<QuestionnaireGroupAllowedDomain>> getAllowedDomains(
+    String groupId,
+  ) async {
     final snap = await _allowedDomains(groupId).get();
     return snap.docs.map((doc) => doc.data()).toList();
   }
 
   Future<int> updateGroup({
-    required PollGroup group,
-    List<PollGroupAllowedMember> allowedMembers = const [],
-    List<PollGroupAllowedDomain> allowedDomains = const [],
+    required QuestionnaireGroup group,
+    List<QuestionnaireGroupAllowedMember> allowedMembers = const [],
+    List<QuestionnaireGroupAllowedDomain> allowedDomains = const [],
     List<String> inviteEmails = const [],
   }) async {
     final normalizedName = group.name.trim();
@@ -203,11 +214,13 @@ class PollGroupRepository {
           .call({
             'groupId': group.id,
             'name': normalizedName,
-            'nicknameMode': pollGroupNicknameModeToFirestore(
+            'nicknameMode': questionnaireGroupNicknameModeToFirestore(
               group.nicknameMode,
             ),
             'managersCanInvite': group.managersCanInvite,
-            'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+            'accessMode': questionnaireGroupAccessModeToFirestore(
+              group.accessMode,
+            ),
             'inviteLinkEnabled': group.inviteLinkEnabled,
             'expiresAtMillis': group.expiresAt?.millisecondsSinceEpoch,
             'allowedMembers': normalizedMembers
@@ -215,7 +228,7 @@ class PollGroupRepository {
                   (member) => <String, Object?>{
                     'email': member.email,
                     'nickname': member.nickname,
-                    'role': pollGroupRoleToFirestore(member.role),
+                    'role': questionnaireGroupRoleToFirestore(member.role),
                   },
                 )
                 .toList(),
@@ -223,7 +236,7 @@ class PollGroupRepository {
                 .map(
                   (domain) => <String, Object?>{
                     'domain': domain.domain,
-                    'role': pollGroupRoleToFirestore(domain.role),
+                    'role': questionnaireGroupRoleToFirestore(domain.role),
                   },
                 )
                 .toList(),
@@ -236,7 +249,9 @@ class PollGroupRepository {
     }
   }
 
-  Stream<List<PollGroupAccessNotification>> watchNotifications(String uid) {
+  Stream<List<QuestionnaireGroupAccessNotification>> watchNotifications(
+    String uid,
+  ) {
     return _fs.watchCol(
       _notifications(uid).orderBy('createdAt', descending: true),
     );
@@ -254,29 +269,29 @@ class PollGroupRepository {
     await batch.commit();
   }
 
-  Future<PollGroup?> getGroup(String groupId) async {
+  Future<QuestionnaireGroup?> getGroup(String groupId) async {
     return _fs.getDoc(_groups().doc(groupId));
   }
 
-  Stream<PollGroup?> watchGroup(String groupId) {
+  Stream<QuestionnaireGroup?> watchGroup(String groupId) {
     return _fs.watchDoc(_groups().doc(groupId));
   }
 
-  Stream<PollGroupMember?> watchMember(String groupId, String uid) {
+  Stream<QuestionnaireGroupMember?> watchMember(String groupId, String uid) {
     return _fs.watchDoc(_members(groupId).doc(uid));
   }
 
-  Stream<List<PollGroupMember>> watchMembers(String groupId) {
+  Stream<List<QuestionnaireGroupMember>> watchMembers(String groupId) {
     return _fs.watchCol(_members(groupId).orderBy('joinedAt'));
   }
 
-  Stream<List<PollGroupInvitation>> watchInvitations(String groupId) {
+  Stream<List<QuestionnaireGroupInvitation>> watchInvitations(String groupId) {
     return _fs.watchCol(
       _invitations(groupId).orderBy('invitedAt', descending: true),
     );
   }
 
-  Stream<List<PollGroupActivity>> watchActivities(String groupId) {
+  Stream<List<QuestionnaireGroupActivity>> watchActivities(String groupId) {
     return _fs.watchCol(
       _activities(groupId).orderBy('createdAt', descending: true),
     );
@@ -285,7 +300,7 @@ class PollGroupRepository {
   void _addActivityToBatch(
     WriteBatch batch, {
     required String groupId,
-    required PollGroupActivityType type,
+    required QuestionnaireGroupActivityType type,
     required String actorUid,
     String? actorDisplayName,
     String? subjectUid,
@@ -297,7 +312,7 @@ class PollGroupRepository {
     final ref = _activities(groupId).doc();
     batch.set(
       ref,
-      PollGroupActivity(
+      QuestionnaireGroupActivity(
         id: ref.id,
         type: type,
         actorUid: actorUid,
@@ -333,9 +348,9 @@ class PollGroupRepository {
   }) async {
     final ref = _activities(groupId).doc();
     await ref.set(
-      PollGroupActivity(
+      QuestionnaireGroupActivity(
         id: ref.id,
-        type: PollGroupActivityType.publicationPublished,
+        type: QuestionnaireGroupActivityType.publicationPublished,
         actorUid: actorUid,
         actorDisplayName: actorDisplayName,
         targetTitle: title,
@@ -344,11 +359,11 @@ class PollGroupRepository {
     );
   }
 
-  Stream<PollGroupAdminElection?> watchAdminElection(String groupId) {
+  Stream<QuestionnaireGroupAdminElection?> watchAdminElection(String groupId) {
     return _fs.watchDoc(_adminElections(groupId).doc('current'));
   }
 
-  Stream<PollGroupAdminElectionVote?> watchAdminElectionVote(
+  Stream<QuestionnaireGroupAdminElectionVote?> watchAdminElectionVote(
     String groupId,
     String uid,
   ) {
@@ -376,7 +391,7 @@ class PollGroupRepository {
     final activitiesSnap = await _activities(groupId).get();
     final electionSnap = await _adminElections(groupId).get();
     final electionVotes = electionSnap.docs.isEmpty
-        ? const <QueryDocumentSnapshot<PollGroupAdminElectionVote>>[]
+        ? const <QueryDocumentSnapshot<QuestionnaireGroupAdminElectionVote>>[]
         : (await _adminElectionVotes(groupId).get()).docs;
     final batch = _fs.instance.batch();
 
@@ -405,7 +420,7 @@ class PollGroupRepository {
     await batch.commit();
   }
 
-  Future<PollGroupAccessNotification?> getNotification(
+  Future<QuestionnaireGroupAccessNotification?> getNotification(
     String uid,
     String notificationId,
   ) async {
@@ -422,19 +437,20 @@ class PollGroupRepository {
     if (notification == null) {
       throw StateError('Notification not found.');
     }
-    if (notification.status != PollGroupAccessNotificationStatus.pending) {
+    if (notification.status !=
+        QuestionnaireGroupAccessNotificationStatus.pending) {
       return;
     }
 
     final groupRef = _groups().doc(notification.groupId);
     final joiningUid =
-        notification.type == PollGroupAccessNotificationType.invite
+        notification.type == QuestionnaireGroupAccessNotificationType.invite
         ? currentUid
         : notification.actorUid;
     final now = DateTime.now();
     final invitationRef = _invitations(notification.groupId).doc(joiningUid);
     final invitation =
-        notification.type == PollGroupAccessNotificationType.invite
+        notification.type == QuestionnaireGroupAccessNotificationType.invite
         ? await _fs.getDoc(invitationRef)
         : null;
     final joiningDisplayName = accept
@@ -448,7 +464,7 @@ class PollGroupRepository {
       });
       batch.set(
         _members(notification.groupId).doc(joiningUid),
-        PollGroupMember(
+        QuestionnaireGroupMember(
           uid: joiningUid,
           role: notification.role,
           joinedAt: now,
@@ -458,7 +474,7 @@ class PollGroupRepository {
       _addActivityToBatch(
         batch,
         groupId: notification.groupId,
-        type: PollGroupActivityType.memberJoined,
+        type: QuestionnaireGroupActivityType.memberJoined,
         actorUid: joiningUid,
         actorDisplayName: joiningDisplayName,
         createdAt: now,
@@ -469,8 +485,8 @@ class PollGroupRepository {
       notificationRef,
       notification.copyWith(
         status: accept
-            ? PollGroupAccessNotificationStatus.accepted
-            : PollGroupAccessNotificationStatus.denied,
+            ? QuestionnaireGroupAccessNotificationStatus.accepted
+            : QuestionnaireGroupAccessNotificationStatus.denied,
         resolvedAt: now,
       ),
     );
@@ -479,8 +495,8 @@ class PollGroupRepository {
         invitationRef,
         invitation.copyWith(
           status: accept
-              ? PollGroupInvitationStatus.accepted
-              : PollGroupInvitationStatus.declined,
+              ? QuestionnaireGroupInvitationStatus.accepted
+              : QuestionnaireGroupInvitationStatus.declined,
           resolvedAt: now,
         ),
       );
@@ -492,13 +508,13 @@ class PollGroupRepository {
   Future<void> requestAccess({
     required String requesterUid,
     required String requesterDisplayName,
-    required PollGroup group,
-    required PollGroupRole requestedRole,
+    required QuestionnaireGroup group,
+    required QuestionnaireGroupRole requestedRole,
   }) async {
     final now = DateTime.now();
     final notificationRef = _notifications(group.createdBy).doc();
     await notificationRef.set(
-      PollGroupAccessNotification(
+      QuestionnaireGroupAccessNotification(
         id: notificationRef.id,
         groupId: group.id,
         groupName: group.name,
@@ -507,15 +523,15 @@ class PollGroupRepository {
         recipientUid: group.createdBy,
         role: requestedRole,
         accessMode: group.accessMode,
-        type: PollGroupAccessNotificationType.request,
-        status: PollGroupAccessNotificationStatus.pending,
+        type: QuestionnaireGroupAccessNotificationType.request,
+        status: QuestionnaireGroupAccessNotificationStatus.pending,
         createdAt: now,
       ),
     );
   }
 
   Future<void> joinOpenGroup({
-    required PollGroup group,
+    required QuestionnaireGroup group,
     required String uid,
     required String joinedBy,
     String? actorDisplayName,
@@ -526,9 +542,9 @@ class PollGroupRepository {
     });
     batch.set(
       _members(group.id).doc(uid),
-      PollGroupMember(
+      QuestionnaireGroupMember(
         uid: uid,
-        role: PollGroupRole.user,
+        role: QuestionnaireGroupRole.user,
         joinedAt: DateTime.now(),
         joinedBy: joinedBy,
       ),
@@ -536,20 +552,20 @@ class PollGroupRepository {
     _addActivityToBatch(
       batch,
       groupId: group.id,
-      type: PollGroupActivityType.memberJoined,
+      type: QuestionnaireGroupActivityType.memberJoined,
       actorUid: uid,
       actorDisplayName: actorDisplayName,
     );
     await batch.commit();
   }
 
-  Future<PollGroupLeaveResult> leaveGroup({
-    required PollGroup group,
+  Future<QuestionnaireGroupLeaveResult> leaveGroup({
+    required QuestionnaireGroup group,
     required String uid,
   }) async {
     final currentGroup = await getGroup(group.id);
     if (currentGroup == null || !currentGroup.memberIds.contains(uid)) {
-      return PollGroupLeaveResult.left;
+      return QuestionnaireGroupLeaveResult.left;
     }
 
     if (currentGroup.memberIds.length == 1) {
@@ -560,14 +576,14 @@ class PollGroupRepository {
               .call({'groupId': currentGroup.id});
           final data = Map<String, dynamic>.from(result.data as Map);
           return data['result'] == 'groupDeleted'
-              ? PollGroupLeaveResult.groupDeleted
-              : PollGroupLeaveResult.left;
+              ? QuestionnaireGroupLeaveResult.groupDeleted
+              : QuestionnaireGroupLeaveResult.left;
         } on FirebaseFunctionsException catch (e) {
           throw StateError(e.message ?? e.code);
         }
       }
       await deleteGroup(currentGroup.id);
-      return PollGroupLeaveResult.groupDeleted;
+      return QuestionnaireGroupLeaveResult.groupDeleted;
     }
 
     String? successorUid;
@@ -579,7 +595,7 @@ class PollGroupRepository {
               .where(
                 (member) =>
                     member.uid != uid &&
-                    member.role == PollGroupRole.admin &&
+                    member.role == QuestionnaireGroupRole.admin &&
                     currentGroup.memberIds.contains(member.uid),
               )
               .toList()
@@ -603,7 +619,7 @@ class PollGroupRepository {
         batch.delete(_members(currentGroup.id).doc(uid));
         batch.set(
           _adminElections(currentGroup.id).doc('current'),
-          PollGroupAdminElection(
+          QuestionnaireGroupAdminElection(
             id: 'current',
             status: 'open',
             startedAt: now,
@@ -615,13 +631,13 @@ class PollGroupRepository {
         _addActivityToBatch(
           batch,
           groupId: currentGroup.id,
-          type: PollGroupActivityType.adminElectionStarted,
+          type: QuestionnaireGroupActivityType.adminElectionStarted,
           actorUid: uid,
           actorDisplayName: await _userDisplayName(uid),
           createdAt: now,
         );
         await batch.commit();
-        return PollGroupLeaveResult.left;
+        return QuestionnaireGroupLeaveResult.left;
       }
       successorUid = adminCandidates.first.uid;
     }
@@ -639,8 +655,8 @@ class PollGroupRepository {
       batch,
       groupId: currentGroup.id,
       type: successorUid == null
-          ? PollGroupActivityType.memberLeft
-          : PollGroupActivityType.ownershipTransferred,
+          ? QuestionnaireGroupActivityType.memberLeft
+          : QuestionnaireGroupActivityType.ownershipTransferred,
       actorUid: uid,
       actorDisplayName: actorDisplayName,
       subjectUid: successorUid,
@@ -649,15 +665,15 @@ class PollGroupRepository {
           : await _userDisplayName(successorUid),
     );
     await batch.commit();
-    return PollGroupLeaveResult.left;
+    return QuestionnaireGroupLeaveResult.left;
   }
 
   Future<void> removeMember({
-    required PollGroup group,
+    required QuestionnaireGroup group,
     required String uid,
     required String actorUid,
     required String actorDisplayName,
-    required PollGroupRole role,
+    required QuestionnaireGroupRole role,
     String? email,
     String? memberDisplayName,
   }) async {
@@ -692,14 +708,14 @@ class PollGroupRepository {
       batch.set(
         invitationRef,
         invitation.copyWith(
-          status: PollGroupInvitationStatus.removed,
+          status: QuestionnaireGroupInvitationStatus.removed,
           resolvedAt: now,
         ),
       );
     }
     batch.set(
       notificationRef,
-      PollGroupAccessNotification(
+      QuestionnaireGroupAccessNotification(
         id: notificationRef.id,
         groupId: group.id,
         groupName: group.name,
@@ -708,8 +724,8 @@ class PollGroupRepository {
         recipientUid: uid,
         role: role,
         accessMode: group.accessMode,
-        type: PollGroupAccessNotificationType.removed,
-        status: PollGroupAccessNotificationStatus.accepted,
+        type: QuestionnaireGroupAccessNotificationType.removed,
+        status: QuestionnaireGroupAccessNotificationStatus.accepted,
         createdAt: now,
         resolvedAt: now,
       ),
@@ -717,7 +733,7 @@ class PollGroupRepository {
     _addActivityToBatch(
       batch,
       groupId: group.id,
-      type: PollGroupActivityType.memberRemoved,
+      type: QuestionnaireGroupActivityType.memberRemoved,
       actorUid: actorUid,
       actorDisplayName: actorDisplayName,
       subjectUid: uid,
@@ -728,16 +744,16 @@ class PollGroupRepository {
   }
 
   Future<void> updateMember({
-    required PollGroup group,
-    required PollGroupMember member,
-    required PollGroupRole role,
+    required QuestionnaireGroup group,
+    required QuestionnaireGroupMember member,
+    required QuestionnaireGroupRole role,
     String? nickname,
     String? email,
   }) async {
     if (!group.memberIds.contains(member.uid)) {
       throw StateError('group_member_not_found');
     }
-    if (member.uid == group.createdBy && role != PollGroupRole.admin) {
+    if (member.uid == group.createdBy && role != QuestionnaireGroupRole.admin) {
       throw StateError('group_creator_must_remain_admin');
     }
 
@@ -754,7 +770,7 @@ class PollGroupRepository {
     final batch = _fs.instance.batch();
     batch.update(_members(group.id).doc(member.uid), {
       'nickname': normalizedNickname,
-      'role': pollGroupRoleToFirestore(role),
+      'role': questionnaireGroupRoleToFirestore(role),
     });
 
     final normalizedEmail = email?.trim().toLowerCase();
@@ -763,7 +779,7 @@ class PollGroupRepository {
       if ((await allowedMemberRef.get()).exists) {
         batch.update(allowedMemberRef, {
           'nickname': normalizedNickname,
-          'role': pollGroupRoleToFirestore(role),
+          'role': questionnaireGroupRoleToFirestore(role),
         });
       }
     }
@@ -771,10 +787,10 @@ class PollGroupRepository {
     await batch.commit();
   }
 
-  static List<PollGroupAllowedMember> normalizeAllowedMembers(
-    List<PollGroupAllowedMember> members,
+  static List<QuestionnaireGroupAllowedMember> normalizeAllowedMembers(
+    List<QuestionnaireGroupAllowedMember> members,
   ) {
-    final deduped = <String, PollGroupAllowedMember>{};
+    final deduped = <String, QuestionnaireGroupAllowedMember>{};
     for (final member in members) {
       final email = member.email.trim().toLowerCase();
       if (email.isEmpty) {
@@ -787,7 +803,7 @@ class PollGroupRepository {
           : (trimmedNickname.length > AppLimits.maxGroupNicknameLength
                 ? trimmedNickname.substring(0, AppLimits.maxGroupNicknameLength)
                 : trimmedNickname);
-      deduped[email] = PollGroupAllowedMember(
+      deduped[email] = QuestionnaireGroupAllowedMember(
         email: email,
         nickname: normalizedNickname,
         role: member.role,
@@ -798,16 +814,16 @@ class PollGroupRepository {
     return deduped.values.toList();
   }
 
-  static List<PollGroupAllowedDomain> normalizeAllowedDomains(
-    List<PollGroupAllowedDomain> domains,
+  static List<QuestionnaireGroupAllowedDomain> normalizeAllowedDomains(
+    List<QuestionnaireGroupAllowedDomain> domains,
   ) {
-    final deduped = <String, PollGroupAllowedDomain>{};
+    final deduped = <String, QuestionnaireGroupAllowedDomain>{};
     for (final domain in domains) {
       final normalizedDomain = normalizeDomain(domain.domain);
       if (normalizedDomain == null) {
         continue;
       }
-      deduped[normalizedDomain] = PollGroupAllowedDomain(
+      deduped[normalizedDomain] = QuestionnaireGroupAllowedDomain(
         domain: normalizedDomain,
         role: domain.role,
         createdAt: domain.createdAt,

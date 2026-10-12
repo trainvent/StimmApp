@@ -21,6 +21,13 @@ StimmApp is a Flutter-based mobile application for creating and signing petition
 *   Keep local, short-lived UI state local; prioritize removing old shared app/domain state.
 
 
+### Publication terminology
+* `Questionnaire` is the shared domain category for `Poll` and `Survey`.
+* A `Poll` contains one choice question; a `Survey` supports text questions and question lists.
+* Shared overview, creator, groups, templates, and publishing quotas use questionnaire names.
+* `FormTemplate` is shared by petition and questionnaire editors.
+* Firebase collection paths, callable names, and portable JSON types remain persisted API contracts; do not rename them as part of a code naming cleanup.
+
 ## 2. Architecture
 
 The app follows a clean architecture approach, separated into layers:

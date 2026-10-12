@@ -1,155 +1,163 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum PollGroupRole { admin, manager, user }
+enum QuestionnaireGroupRole { admin, manager, user }
 
-enum PollGroupNicknameMode { selfNamed, adminAssigned }
+enum QuestionnaireGroupNicknameMode { selfNamed, adminAssigned }
 
-enum PollGroupAccessMode { private, protected, open }
+enum QuestionnaireGroupAccessMode { private, protected, open }
 
-enum PollGroupAccessNotificationType { invite, request, removed }
+enum QuestionnaireGroupAccessNotificationType { invite, request, removed }
 
-enum PollGroupAccessNotificationStatus { pending, accepted, denied }
+enum QuestionnaireGroupAccessNotificationStatus { pending, accepted, denied }
 
-enum PollGroupInvitationStatus { pending, accepted, declined, removed }
+enum QuestionnaireGroupInvitationStatus { pending, accepted, declined, removed }
 
-String pollGroupRoleToFirestore(PollGroupRole role) {
+String questionnaireGroupRoleToFirestore(QuestionnaireGroupRole role) {
   switch (role) {
-    case PollGroupRole.admin:
+    case QuestionnaireGroupRole.admin:
       return 'admin';
-    case PollGroupRole.manager:
+    case QuestionnaireGroupRole.manager:
       return 'manager';
-    case PollGroupRole.user:
+    case QuestionnaireGroupRole.user:
       return 'user';
   }
 }
 
-PollGroupRole parsePollGroupRole(String? value) {
+QuestionnaireGroupRole parseQuestionnaireGroupRole(String? value) {
   switch (value) {
     case 'admin':
-      return PollGroupRole.admin;
+      return QuestionnaireGroupRole.admin;
     case 'manager':
-      return PollGroupRole.manager;
+      return QuestionnaireGroupRole.manager;
     case 'user':
     default:
-      return PollGroupRole.user;
+      return QuestionnaireGroupRole.user;
   }
 }
 
-String pollGroupNicknameModeToFirestore(PollGroupNicknameMode mode) {
+String questionnaireGroupNicknameModeToFirestore(
+  QuestionnaireGroupNicknameMode mode,
+) {
   switch (mode) {
-    case PollGroupNicknameMode.selfNamed:
+    case QuestionnaireGroupNicknameMode.selfNamed:
       return 'self_named';
-    case PollGroupNicknameMode.adminAssigned:
+    case QuestionnaireGroupNicknameMode.adminAssigned:
       return 'admin_assigned';
   }
 }
 
-PollGroupNicknameMode parsePollGroupNicknameMode(String? value) {
+QuestionnaireGroupNicknameMode parseQuestionnaireGroupNicknameMode(
+  String? value,
+) {
   switch (value) {
     case 'admin_assigned':
-      return PollGroupNicknameMode.adminAssigned;
+      return QuestionnaireGroupNicknameMode.adminAssigned;
     case 'self_named':
     default:
-      return PollGroupNicknameMode.selfNamed;
+      return QuestionnaireGroupNicknameMode.selfNamed;
   }
 }
 
-String pollGroupAccessModeToFirestore(PollGroupAccessMode mode) {
+String questionnaireGroupAccessModeToFirestore(
+  QuestionnaireGroupAccessMode mode,
+) {
   switch (mode) {
-    case PollGroupAccessMode.private:
+    case QuestionnaireGroupAccessMode.private:
       return 'private';
-    case PollGroupAccessMode.protected:
+    case QuestionnaireGroupAccessMode.protected:
       return 'protected';
-    case PollGroupAccessMode.open:
+    case QuestionnaireGroupAccessMode.open:
       return 'open';
   }
 }
 
-PollGroupAccessMode parsePollGroupAccessMode(String? value) {
+QuestionnaireGroupAccessMode parseQuestionnaireGroupAccessMode(String? value) {
   switch (value) {
     case 'protected':
-      return PollGroupAccessMode.protected;
+      return QuestionnaireGroupAccessMode.protected;
     case 'open':
-      return PollGroupAccessMode.open;
+      return QuestionnaireGroupAccessMode.open;
     case 'private':
     default:
-      return PollGroupAccessMode.private;
+      return QuestionnaireGroupAccessMode.private;
   }
 }
 
-String pollGroupAccessNotificationTypeToFirestore(
-  PollGroupAccessNotificationType type,
+String questionnaireGroupAccessNotificationTypeToFirestore(
+  QuestionnaireGroupAccessNotificationType type,
 ) {
   switch (type) {
-    case PollGroupAccessNotificationType.invite:
+    case QuestionnaireGroupAccessNotificationType.invite:
       return 'invite';
-    case PollGroupAccessNotificationType.request:
+    case QuestionnaireGroupAccessNotificationType.request:
       return 'request';
-    case PollGroupAccessNotificationType.removed:
+    case QuestionnaireGroupAccessNotificationType.removed:
       return 'removed';
   }
 }
 
-PollGroupAccessNotificationType parsePollGroupAccessNotificationType(
-  String? value,
-) {
+QuestionnaireGroupAccessNotificationType
+parseQuestionnaireGroupAccessNotificationType(String? value) {
   switch (value) {
     case 'removed':
-      return PollGroupAccessNotificationType.removed;
+      return QuestionnaireGroupAccessNotificationType.removed;
     case 'request':
-      return PollGroupAccessNotificationType.request;
+      return QuestionnaireGroupAccessNotificationType.request;
     case 'invite':
     default:
-      return PollGroupAccessNotificationType.invite;
+      return QuestionnaireGroupAccessNotificationType.invite;
   }
 }
 
-String pollGroupAccessNotificationStatusToFirestore(
-  PollGroupAccessNotificationStatus status,
+String questionnaireGroupAccessNotificationStatusToFirestore(
+  QuestionnaireGroupAccessNotificationStatus status,
 ) {
   switch (status) {
-    case PollGroupAccessNotificationStatus.pending:
+    case QuestionnaireGroupAccessNotificationStatus.pending:
       return 'pending';
-    case PollGroupAccessNotificationStatus.accepted:
+    case QuestionnaireGroupAccessNotificationStatus.accepted:
       return 'accepted';
-    case PollGroupAccessNotificationStatus.denied:
+    case QuestionnaireGroupAccessNotificationStatus.denied:
       return 'denied';
   }
 }
 
-PollGroupAccessNotificationStatus parsePollGroupAccessNotificationStatus(
-  String? value,
-) {
+QuestionnaireGroupAccessNotificationStatus
+parseQuestionnaireGroupAccessNotificationStatus(String? value) {
   switch (value) {
     case 'accepted':
-      return PollGroupAccessNotificationStatus.accepted;
+      return QuestionnaireGroupAccessNotificationStatus.accepted;
     case 'denied':
-      return PollGroupAccessNotificationStatus.denied;
+      return QuestionnaireGroupAccessNotificationStatus.denied;
     case 'pending':
     default:
-      return PollGroupAccessNotificationStatus.pending;
+      return QuestionnaireGroupAccessNotificationStatus.pending;
   }
 }
 
-String pollGroupInvitationStatusToFirestore(PollGroupInvitationStatus status) {
+String questionnaireGroupInvitationStatusToFirestore(
+  QuestionnaireGroupInvitationStatus status,
+) {
   return switch (status) {
-    PollGroupInvitationStatus.pending => 'pending',
-    PollGroupInvitationStatus.accepted => 'accepted',
-    PollGroupInvitationStatus.declined => 'declined',
-    PollGroupInvitationStatus.removed => 'removed',
+    QuestionnaireGroupInvitationStatus.pending => 'pending',
+    QuestionnaireGroupInvitationStatus.accepted => 'accepted',
+    QuestionnaireGroupInvitationStatus.declined => 'declined',
+    QuestionnaireGroupInvitationStatus.removed => 'removed',
   };
 }
 
-PollGroupInvitationStatus parsePollGroupInvitationStatus(String? value) {
+QuestionnaireGroupInvitationStatus parseQuestionnaireGroupInvitationStatus(
+  String? value,
+) {
   return switch (value) {
-    'accepted' => PollGroupInvitationStatus.accepted,
-    'declined' || 'denied' => PollGroupInvitationStatus.declined,
-    'removed' => PollGroupInvitationStatus.removed,
-    _ => PollGroupInvitationStatus.pending,
+    'accepted' => QuestionnaireGroupInvitationStatus.accepted,
+    'declined' || 'denied' => QuestionnaireGroupInvitationStatus.declined,
+    'removed' => QuestionnaireGroupInvitationStatus.removed,
+    _ => QuestionnaireGroupInvitationStatus.pending,
   };
 }
 
-class PollGroup {
+class QuestionnaireGroup {
   final String id;
   final String name;
   final String? profilePictureUrl;
@@ -157,17 +165,17 @@ class PollGroup {
   final DateTime createdAt;
   final DateTime? expiresAt;
   final String joinCode;
-  final PollGroupNicknameMode nicknameMode;
+  final QuestionnaireGroupNicknameMode nicknameMode;
   final bool managersCanInvite;
   final List<String> memberIds;
   final int importedMemberCount;
   final bool isActive;
-  final PollGroupAccessMode accessMode;
+  final QuestionnaireGroupAccessMode accessMode;
   final bool inviteLinkEnabled;
   final bool adminElectionOpen;
   final DateTime? adminElectionEndsAt;
 
-  const PollGroup({
+  const QuestionnaireGroup({
     required this.id,
     required this.name,
     this.profilePictureUrl,
@@ -180,13 +188,13 @@ class PollGroup {
     required this.importedMemberCount,
     this.expiresAt,
     this.isActive = true,
-    this.accessMode = PollGroupAccessMode.private,
+    this.accessMode = QuestionnaireGroupAccessMode.private,
     this.inviteLinkEnabled = false,
     this.adminElectionOpen = false,
     this.adminElectionEndsAt,
   });
 
-  PollGroup copyWith({
+  QuestionnaireGroup copyWith({
     String? id,
     String? name,
     Object? profilePictureUrl = _unset,
@@ -194,17 +202,17 @@ class PollGroup {
     DateTime? createdAt,
     Object? expiresAt = _unset,
     String? joinCode,
-    PollGroupNicknameMode? nicknameMode,
+    QuestionnaireGroupNicknameMode? nicknameMode,
     bool? managersCanInvite,
     List<String>? memberIds,
     int? importedMemberCount,
     bool? isActive,
-    PollGroupAccessMode? accessMode,
+    QuestionnaireGroupAccessMode? accessMode,
     bool? inviteLinkEnabled,
     bool? adminElectionOpen,
     Object? adminElectionEndsAt = _unset,
   }) {
-    return PollGroup(
+    return QuestionnaireGroup(
       id: id ?? this.id,
       name: name ?? this.name,
       profilePictureUrl: identical(profilePictureUrl, _unset)
@@ -230,12 +238,12 @@ class PollGroup {
     );
   }
 
-  static PollGroup fromFirestore(
+  static QuestionnaireGroup fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroup(
+    return QuestionnaireGroup(
       id: snap.id,
       name: (data['name'] ?? '') as String,
       profilePictureUrl: data['profilePictureUrl'] as String?,
@@ -243,12 +251,14 @@ class PollGroup {
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as Timestamp?)?.toDate(),
       joinCode: (data['joinCode'] ?? '') as String,
-      nicknameMode: parsePollGroupNicknameMode(data['nicknameMode'] as String?),
+      nicknameMode: parseQuestionnaireGroupNicknameMode(
+        data['nicknameMode'] as String?,
+      ),
       managersCanInvite: data['managersCanInvite'] as bool? ?? false,
       memberIds: (data['memberIds'] as List?)?.cast<String>() ?? const [],
       importedMemberCount: data['importedMemberCount'] as int? ?? 0,
       isActive: data['isActive'] as bool? ?? true,
-      accessMode: parsePollGroupAccessMode(
+      accessMode: parseQuestionnaireGroupAccessMode(
         data['accessMode'] as String? ??
             ((data['isPrivate'] as bool? ?? true) ? 'private' : 'open'),
       ),
@@ -259,7 +269,10 @@ class PollGroup {
     );
   }
 
-  static Map<String, Object?> toFirestore(PollGroup group, SetOptions? _) {
+  static Map<String, Object?> toFirestore(
+    QuestionnaireGroup group,
+    SetOptions? _,
+  ) {
     return {
       'name': group.name,
       'profilePictureUrl': group.profilePictureUrl,
@@ -269,12 +282,14 @@ class PollGroup {
           ? Timestamp.fromDate(group.expiresAt!)
           : null,
       'joinCode': group.joinCode,
-      'nicknameMode': pollGroupNicknameModeToFirestore(group.nicknameMode),
+      'nicknameMode': questionnaireGroupNicknameModeToFirestore(
+        group.nicknameMode,
+      ),
       'managersCanInvite': group.managersCanInvite,
       'memberIds': group.memberIds,
       'importedMemberCount': group.importedMemberCount,
       'isActive': group.isActive,
-      'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+      'accessMode': questionnaireGroupAccessModeToFirestore(group.accessMode),
       'inviteLinkEnabled': group.inviteLinkEnabled,
       'adminElectionStatus': group.adminElectionOpen ? 'open' : null,
       'adminElectionEndsAt': group.adminElectionEndsAt == null
@@ -285,7 +300,7 @@ class PollGroup {
   }
 }
 
-class PollGroupAdminElection {
+class QuestionnaireGroupAdminElection {
   final String id;
   final String status;
   final DateTime startedAt;
@@ -294,7 +309,7 @@ class PollGroupAdminElection {
   final List<String> candidateUids;
   final String? winnerUid;
 
-  const PollGroupAdminElection({
+  const QuestionnaireGroupAdminElection({
     required this.id,
     required this.status,
     required this.startedAt,
@@ -306,12 +321,12 @@ class PollGroupAdminElection {
 
   bool get isOpen => status == 'open';
 
-  static PollGroupAdminElection fromFirestore(
+  static QuestionnaireGroupAdminElection fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupAdminElection(
+    return QuestionnaireGroupAdminElection(
       id: snap.id,
       status: data['status'] as String? ?? 'open',
       startedAt: (data['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -324,7 +339,7 @@ class PollGroupAdminElection {
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupAdminElection election,
+    QuestionnaireGroupAdminElection election,
     SetOptions? _,
   ) {
     return {
@@ -338,23 +353,23 @@ class PollGroupAdminElection {
   }
 }
 
-class PollGroupAdminElectionVote {
+class QuestionnaireGroupAdminElectionVote {
   final String voterUid;
   final String candidateUid;
   final DateTime castAt;
 
-  const PollGroupAdminElectionVote({
+  const QuestionnaireGroupAdminElectionVote({
     required this.voterUid,
     required this.candidateUid,
     required this.castAt,
   });
 
-  static PollGroupAdminElectionVote fromFirestore(
+  static QuestionnaireGroupAdminElectionVote fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupAdminElectionVote(
+    return QuestionnaireGroupAdminElectionVote(
       voterUid: data['voterUid'] as String? ?? snap.id,
       candidateUid: data['candidateUid'] as String? ?? '',
       castAt: (data['castAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -362,7 +377,7 @@ class PollGroupAdminElectionVote {
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupAdminElectionVote vote,
+    QuestionnaireGroupAdminElectionVote vote,
     SetOptions? _,
   ) {
     return {
@@ -373,14 +388,14 @@ class PollGroupAdminElectionVote {
   }
 }
 
-class PollGroupMember {
+class QuestionnaireGroupMember {
   final String uid;
-  final PollGroupRole role;
+  final QuestionnaireGroupRole role;
   final String? nickname;
   final DateTime joinedAt;
   final String joinedBy;
 
-  const PollGroupMember({
+  const QuestionnaireGroupMember({
     required this.uid,
     required this.role,
     required this.joinedAt,
@@ -388,14 +403,14 @@ class PollGroupMember {
     this.nickname,
   });
 
-  static PollGroupMember fromFirestore(
+  static QuestionnaireGroupMember fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupMember(
+    return QuestionnaireGroupMember(
       uid: snap.id,
-      role: parsePollGroupRole(data['role'] as String?),
+      role: parseQuestionnaireGroupRole(data['role'] as String?),
       nickname: data['nickname'] as String?,
       joinedAt: (data['joinedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       joinedBy: (data['joinedBy'] ?? '') as String,
@@ -403,11 +418,11 @@ class PollGroupMember {
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupMember member,
+    QuestionnaireGroupMember member,
     SetOptions? _,
   ) {
     return {
-      'role': pollGroupRoleToFirestore(member.role),
+      'role': questionnaireGroupRoleToFirestore(member.role),
       'nickname': member.nickname,
       'joinedAt': Timestamp.fromDate(member.joinedAt),
       'joinedBy': member.joinedBy,
@@ -415,17 +430,17 @@ class PollGroupMember {
   }
 }
 
-class PollGroupInvitation {
+class QuestionnaireGroupInvitation {
   final String recipientUid;
   final String email;
   final String? displayName;
-  final PollGroupRole role;
-  final PollGroupInvitationStatus status;
+  final QuestionnaireGroupRole role;
+  final QuestionnaireGroupInvitationStatus status;
   final DateTime invitedAt;
   final String invitedBy;
   final DateTime? resolvedAt;
 
-  const PollGroupInvitation({
+  const QuestionnaireGroupInvitation({
     required this.recipientUid,
     required this.email,
     required this.role,
@@ -436,11 +451,11 @@ class PollGroupInvitation {
     this.resolvedAt,
   });
 
-  PollGroupInvitation copyWith({
-    PollGroupInvitationStatus? status,
+  QuestionnaireGroupInvitation copyWith({
+    QuestionnaireGroupInvitationStatus? status,
     Object? resolvedAt = _unset,
   }) {
-    return PollGroupInvitation(
+    return QuestionnaireGroupInvitation(
       recipientUid: recipientUid,
       email: email,
       displayName: displayName,
@@ -454,17 +469,19 @@ class PollGroupInvitation {
     );
   }
 
-  static PollGroupInvitation fromFirestore(
+  static QuestionnaireGroupInvitation fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupInvitation(
+    return QuestionnaireGroupInvitation(
       recipientUid: (data['recipientUid'] ?? snap.id) as String,
       email: (data['email'] ?? '') as String,
       displayName: data['displayName'] as String?,
-      role: parsePollGroupRole(data['role'] as String?),
-      status: parsePollGroupInvitationStatus(data['status'] as String?),
+      role: parseQuestionnaireGroupRole(data['role'] as String?),
+      status: parseQuestionnaireGroupInvitationStatus(
+        data['status'] as String?,
+      ),
       invitedAt: (data['invitedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       invitedBy: (data['invitedBy'] ?? '') as String,
       resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
@@ -472,15 +489,17 @@ class PollGroupInvitation {
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupInvitation invitation,
+    QuestionnaireGroupInvitation invitation,
     SetOptions? _,
   ) {
     return {
       'recipientUid': invitation.recipientUid,
       'email': invitation.email,
       'displayName': invitation.displayName,
-      'role': pollGroupRoleToFirestore(invitation.role),
-      'status': pollGroupInvitationStatusToFirestore(invitation.status),
+      'role': questionnaireGroupRoleToFirestore(invitation.role),
+      'status': questionnaireGroupInvitationStatusToFirestore(
+        invitation.status,
+      ),
       'invitedAt': Timestamp.fromDate(invitation.invitedAt),
       'invitedBy': invitation.invitedBy,
       'resolvedAt': invitation.resolvedAt == null
@@ -490,14 +509,14 @@ class PollGroupInvitation {
   }
 }
 
-class PollGroupAllowedMember {
+class QuestionnaireGroupAllowedMember {
   final String email;
   final String? nickname;
-  final PollGroupRole role;
+  final QuestionnaireGroupRole role;
   final DateTime createdAt;
   final String createdBy;
 
-  const PollGroupAllowedMember({
+  const QuestionnaireGroupAllowedMember({
     required this.email,
     required this.role,
     required this.createdAt,
@@ -505,94 +524,95 @@ class PollGroupAllowedMember {
     this.nickname,
   });
 
-  static PollGroupAllowedMember fromFirestore(
+  static QuestionnaireGroupAllowedMember fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupAllowedMember(
+    return QuestionnaireGroupAllowedMember(
       email: (data['email'] ?? snap.id) as String,
       nickname: data['nickname'] as String?,
-      role: parsePollGroupRole(data['role'] as String?),
+      role: parseQuestionnaireGroupRole(data['role'] as String?),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdBy: (data['createdBy'] ?? '') as String,
     );
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupAllowedMember member,
+    QuestionnaireGroupAllowedMember member,
     SetOptions? _,
   ) {
     return {
       'email': member.email,
       'emailLowercase': member.email.toLowerCase(),
       'nickname': member.nickname,
-      'role': pollGroupRoleToFirestore(member.role),
+      'role': questionnaireGroupRoleToFirestore(member.role),
       'createdAt': Timestamp.fromDate(member.createdAt),
       'createdBy': member.createdBy,
     };
   }
 }
 
-class PollGroupAllowedDomain {
+class QuestionnaireGroupAllowedDomain {
   final String domain;
-  final PollGroupRole role;
+  final QuestionnaireGroupRole role;
   final DateTime createdAt;
   final String createdBy;
 
-  const PollGroupAllowedDomain({
+  const QuestionnaireGroupAllowedDomain({
     required this.domain,
     required this.role,
     required this.createdAt,
     required this.createdBy,
   });
 
-  static PollGroupAllowedDomain fromFirestore(
+  static QuestionnaireGroupAllowedDomain fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupAllowedDomain(
+    return QuestionnaireGroupAllowedDomain(
       domain: (data['domain'] ?? snap.id) as String,
-      role: parsePollGroupRole(data['role'] as String?),
+      role: parseQuestionnaireGroupRole(data['role'] as String?),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdBy: (data['createdBy'] ?? '') as String,
     );
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupAllowedDomain domain,
+    QuestionnaireGroupAllowedDomain domain,
     SetOptions? _,
   ) {
     return {
       'domain': domain.domain,
-      'role': pollGroupRoleToFirestore(domain.role),
+      'role': questionnaireGroupRoleToFirestore(domain.role),
       'createdAt': Timestamp.fromDate(domain.createdAt),
       'createdBy': domain.createdBy,
     };
   }
 }
 
-class PollGroupAccessNotification {
+class QuestionnaireGroupAccessNotification {
   final String id;
   final String groupId;
   final String groupName;
   final String actorUid;
   final String actorDisplayName;
   final String recipientUid;
-  final PollGroupRole role;
-  final PollGroupAccessMode accessMode;
-  final PollGroupAccessNotificationType type;
-  final PollGroupAccessNotificationStatus status;
+  final QuestionnaireGroupRole role;
+  final QuestionnaireGroupAccessMode accessMode;
+  final QuestionnaireGroupAccessNotificationType type;
+  final QuestionnaireGroupAccessNotificationStatus status;
   final DateTime createdAt;
   final DateTime? resolvedAt;
   final DateTime? readAt;
 
   bool get countsAsUnread =>
-      status == PollGroupAccessNotificationStatus.pending ||
-      (type == PollGroupAccessNotificationType.removed && readAt == null);
+      status == QuestionnaireGroupAccessNotificationStatus.pending ||
+      (type == QuestionnaireGroupAccessNotificationType.removed &&
+          readAt == null);
 
-  const PollGroupAccessNotification({
+  const QuestionnaireGroupAccessNotification({
     required this.id,
     required this.groupId,
     required this.groupName,
@@ -608,22 +628,22 @@ class PollGroupAccessNotification {
     this.readAt,
   });
 
-  PollGroupAccessNotification copyWith({
+  QuestionnaireGroupAccessNotification copyWith({
     String? id,
     String? groupId,
     String? groupName,
     String? actorUid,
     String? actorDisplayName,
     String? recipientUid,
-    PollGroupRole? role,
-    PollGroupAccessMode? accessMode,
-    PollGroupAccessNotificationType? type,
-    PollGroupAccessNotificationStatus? status,
+    QuestionnaireGroupRole? role,
+    QuestionnaireGroupAccessMode? accessMode,
+    QuestionnaireGroupAccessNotificationType? type,
+    QuestionnaireGroupAccessNotificationStatus? status,
     DateTime? createdAt,
     Object? resolvedAt = _unset,
     Object? readAt = _unset,
   }) {
-    return PollGroupAccessNotification(
+    return QuestionnaireGroupAccessNotification(
       id: id ?? this.id,
       groupId: groupId ?? this.groupId,
       groupName: groupName ?? this.groupName,
@@ -642,22 +662,28 @@ class PollGroupAccessNotification {
     );
   }
 
-  static PollGroupAccessNotification fromFirestore(
+  static QuestionnaireGroupAccessNotification fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snap,
     SnapshotOptions? _,
   ) {
     final data = snap.data() ?? <String, dynamic>{};
-    return PollGroupAccessNotification(
+    return QuestionnaireGroupAccessNotification(
       id: snap.id,
       groupId: (data['groupId'] ?? '') as String,
       groupName: (data['groupName'] ?? '') as String,
       actorUid: (data['actorUid'] ?? '') as String,
       actorDisplayName: (data['actorDisplayName'] ?? '') as String,
       recipientUid: (data['recipientUid'] ?? '') as String,
-      role: parsePollGroupRole(data['role'] as String?),
-      accessMode: parsePollGroupAccessMode(data['accessMode'] as String?),
-      type: parsePollGroupAccessNotificationType(data['type'] as String?),
-      status: parsePollGroupAccessNotificationStatus(data['status'] as String?),
+      role: parseQuestionnaireGroupRole(data['role'] as String?),
+      accessMode: parseQuestionnaireGroupAccessMode(
+        data['accessMode'] as String?,
+      ),
+      type: parseQuestionnaireGroupAccessNotificationType(
+        data['type'] as String?,
+      ),
+      status: parseQuestionnaireGroupAccessNotificationStatus(
+        data['status'] as String?,
+      ),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       resolvedAt: (data['resolvedAt'] as Timestamp?)?.toDate(),
       readAt: (data['readAt'] as Timestamp?)?.toDate(),
@@ -665,7 +691,7 @@ class PollGroupAccessNotification {
   }
 
   static Map<String, Object?> toFirestore(
-    PollGroupAccessNotification notification,
+    QuestionnaireGroupAccessNotification notification,
     SetOptions? _,
   ) {
     return {
@@ -674,10 +700,14 @@ class PollGroupAccessNotification {
       'actorUid': notification.actorUid,
       'actorDisplayName': notification.actorDisplayName,
       'recipientUid': notification.recipientUid,
-      'role': pollGroupRoleToFirestore(notification.role),
-      'accessMode': pollGroupAccessModeToFirestore(notification.accessMode),
-      'type': pollGroupAccessNotificationTypeToFirestore(notification.type),
-      'status': pollGroupAccessNotificationStatusToFirestore(
+      'role': questionnaireGroupRoleToFirestore(notification.role),
+      'accessMode': questionnaireGroupAccessModeToFirestore(
+        notification.accessMode,
+      ),
+      'type': questionnaireGroupAccessNotificationTypeToFirestore(
+        notification.type,
+      ),
+      'status': questionnaireGroupAccessNotificationStatusToFirestore(
         notification.status,
       ),
       'createdAt': Timestamp.fromDate(notification.createdAt),

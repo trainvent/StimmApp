@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -25,20 +26,20 @@ void main() {
       description: 'A test survey description',
       tags: const [],
       questions: const [
-        SurveyQuestion(
+        QuestionnaireQuestion(
           id: 'q1',
           title: 'Question 1',
           options: [
-            SurveyOption(id: 'q1-opt1', label: 'Option 1'),
-            SurveyOption(id: 'q1-opt2', label: 'Option 2'),
+            QuestionnaireOption(id: 'q1-opt1', label: 'Option 1'),
+            QuestionnaireOption(id: 'q1-opt2', label: 'Option 2'),
           ],
         ),
-        SurveyQuestion(
+        QuestionnaireQuestion(
           id: 'q2',
           title: 'Question 2',
           options: [
-            SurveyOption(id: 'q2-opt1', label: 'Option 1'),
-            SurveyOption(id: 'q2-opt2', label: 'Option 2'),
+            QuestionnaireOption(id: 'q2-opt1', label: 'Option 1'),
+            QuestionnaireOption(id: 'q2-opt2', label: 'Option 2'),
           ],
         ),
       ],

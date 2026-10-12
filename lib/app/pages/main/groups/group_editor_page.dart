@@ -7,8 +7,8 @@ import 'package:stimmapp/app/widgets/group_avatar.dart';
 import 'package:stimmapp/core/data/services/group_picture_service.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/services/purchases_service.dart';
@@ -22,8 +22,8 @@ class GroupEditorPage extends StatefulWidget {
     this.pictureService,
   });
 
-  final PollGroup? initialGroup;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup? initialGroup;
+  final QuestionnaireGroupRepository? repository;
   final AuthService? auth;
   final GroupPictureService? pictureService;
 
@@ -34,15 +34,16 @@ class GroupEditorPage extends StatefulWidget {
 class _GroupEditorPageState extends State<GroupEditorPage> {
   final _nameController = TextEditingController();
   final List<_AllowedDomainDraft> _domainDrafts = [];
-  List<PollGroupAllowedMember> _existingAllowedMembers = const [];
+  List<QuestionnaireGroupAllowedMember> _existingAllowedMembers = const [];
   bool _allowSelfNamedNicknames = true;
   bool _showExplanations = false;
   DateTime? _expiresAt;
   bool _isCreating = false;
-  PollGroupAccessMode _accessMode = PollGroupAccessMode.protected;
+  QuestionnaireGroupAccessMode _accessMode =
+      QuestionnaireGroupAccessMode.protected;
   bool _isLoadingExistingRules = false;
 
-  PollGroup? _savedGroup;
+  QuestionnaireGroup? _savedGroup;
   Uint8List? _pictureBytes;
   String? _pictureUrl;
   bool _pictureChanged = false;
@@ -53,8 +54,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
   bool get _isEditing => _savedGroup != null;
 
-  PollGroupRepository get _repository =>
-      widget.repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      widget.repository ?? QuestionnaireGroupRepository.create();
   AuthService get _auth => widget.auth ?? authService;
 
   @override
@@ -172,7 +173,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
     _nameController.text = initialGroup.name;
     _allowSelfNamedNicknames =
-        initialGroup.nicknameMode == PollGroupNicknameMode.selfNamed;
+        initialGroup.nicknameMode == QuestionnaireGroupNicknameMode.selfNamed;
     _expiresAt = initialGroup.expiresAt;
     _accessMode = initialGroup.accessMode;
     _loadExistingRules(initialGroup.id);
@@ -221,7 +222,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
   void _addDomainDraft({
     String domain = '',
-    PollGroupRole role = PollGroupRole.user,
+    QuestionnaireGroupRole role = QuestionnaireGroupRole.user,
   }) {
     setState(() {
       _domainDrafts.add(_AllowedDomainDraft(domain: domain, role: role));
@@ -242,14 +243,16 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   }
 
   bool get _inviteLinkEnabled =>
-      _accessMode == PollGroupAccessMode.protected ||
-      _accessMode == PollGroupAccessMode.open;
+      _accessMode == QuestionnaireGroupAccessMode.protected ||
+      _accessMode == QuestionnaireGroupAccessMode.open;
 
-  List<PollGroupAllowedDomain>? _buildAllowedDomains(String creatorUid) {
+  List<QuestionnaireGroupAllowedDomain>? _buildAllowedDomains(
+    String creatorUid,
+  ) {
     final now = DateTime.now();
-    final domains = <PollGroupAllowedDomain>[];
+    final domains = <QuestionnaireGroupAllowedDomain>[];
     for (final draft in _domainDrafts) {
-      final normalizedDomain = PollGroupRepository.normalizeDomain(
+      final normalizedDomain = QuestionnaireGroupRepository.normalizeDomain(
         draft.domainController.text,
       );
       final rawValue = draft.domainController.text.trim();
@@ -261,7 +264,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         return null;
       }
       domains.add(
-        PollGroupAllowedDomain(
+        QuestionnaireGroupAllowedDomain(
           domain: normalizedDomain,
           role: draft.role,
           createdAt: now,
@@ -269,7 +272,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
         ),
       );
     }
-    return PollGroupRepository.normalizeAllowedDomains(domains);
+    return QuestionnaireGroupRepository.normalizeAllowedDomains(domains);
   }
 
   Future<void> _saveGroup() async {
@@ -297,15 +300,15 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 
     setState(() => _isCreating = true);
     try {
-      late PollGroup group;
+      late QuestionnaireGroup group;
       if (_isEditing) {
         final existingGroup = _savedGroup!;
         group = existingGroup.copyWith(
           name: groupName,
           expiresAt: _expiresAt,
           nicknameMode: _allowSelfNamedNicknames
-              ? PollGroupNicknameMode.selfNamed
-              : PollGroupNicknameMode.adminAssigned,
+              ? QuestionnaireGroupNicknameMode.selfNamed
+              : QuestionnaireGroupNicknameMode.adminAssigned,
           managersCanInvite: true,
           importedMemberCount: _existingAllowedMembers.length,
           accessMode: _accessMode,
@@ -322,8 +325,8 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           name: groupName,
           joinCode: _buildJoinCode(),
           nicknameMode: _allowSelfNamedNicknames
-              ? PollGroupNicknameMode.selfNamed
-              : PollGroupNicknameMode.adminAssigned,
+              ? QuestionnaireGroupNicknameMode.selfNamed
+              : QuestionnaireGroupNicknameMode.adminAssigned,
           managersCanInvite: true,
           accessMode: _accessMode,
           inviteLinkEnabled: _inviteLinkEnabled,
@@ -411,28 +414,28 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
     }
   }
 
-  String _roleLabel(PollGroupRole role) {
+  String _roleLabel(QuestionnaireGroupRole role) {
     switch (role) {
-      case PollGroupRole.admin:
+      case QuestionnaireGroupRole.admin:
         return context.l10n.adminRoleLabel;
-      case PollGroupRole.manager:
+      case QuestionnaireGroupRole.manager:
         return context.l10n.managerRoleLabel;
-      case PollGroupRole.user:
+      case QuestionnaireGroupRole.user:
         return context.l10n.userRoleLabel;
     }
   }
 
   Widget _buildAccessModeDropdown() {
-    return DropdownButtonFormField<PollGroupAccessMode>(
+    return DropdownButtonFormField<QuestionnaireGroupAccessMode>(
       key: const Key('access_mode_dropdown'),
       initialValue: _accessMode,
       decoration: InputDecoration(
         labelText: context.l10n.groupAccess,
         border: const OutlineInputBorder(),
       ),
-      items: PollGroupAccessMode.values
+      items: QuestionnaireGroupAccessMode.values
           .map(
-            (mode) => DropdownMenuItem<PollGroupAccessMode>(
+            (mode) => DropdownMenuItem<QuestionnaireGroupAccessMode>(
               value: mode,
               child: Text(mode.localizedTitle(context)),
             ),
@@ -448,20 +451,20 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
   }
 
   Widget _buildRoleDropdown({
-    required PollGroupRole value,
-    required ValueChanged<PollGroupRole?> onChanged,
+    required QuestionnaireGroupRole value,
+    required ValueChanged<QuestionnaireGroupRole?> onChanged,
     Key? key,
   }) {
-    return DropdownButtonFormField<PollGroupRole>(
+    return DropdownButtonFormField<QuestionnaireGroupRole>(
       key: key,
       initialValue: value,
       decoration: InputDecoration(
         labelText: context.l10n.roleLabel,
         border: const OutlineInputBorder(),
       ),
-      items: PollGroupRole.values
+      items: QuestionnaireGroupRole.values
           .map(
-            (role) => DropdownMenuItem<PollGroupRole>(
+            (role) => DropdownMenuItem<QuestionnaireGroupRole>(
               value: role,
               child: Text(_roleLabel(role)),
             ),
@@ -577,7 +580,9 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
           const SizedBox(height: 4),
           Text(
             hasExpiration
-                ? context.l10n.expiresOnShort(formatPollGroupDate(_expiresAt!))
+                ? context.l10n.expiresOnShort(
+                    formatQuestionnaireGroupDate(_expiresAt!),
+                  )
                 : context.l10n.noExpirationDateSet,
             style: Theme.of(context).textTheme.bodySmall,
           ),
@@ -590,7 +595,7 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
                   icon: const Icon(Icons.calendar_month_outlined),
                   label: Text(
                     hasExpiration
-                        ? formatPollGroupDate(_expiresAt!)
+                        ? formatQuestionnaireGroupDate(_expiresAt!)
                         : context.l10n.pickExpirationDate,
                   ),
                 ),
@@ -731,11 +736,13 @@ class _GroupEditorPageState extends State<GroupEditorPage> {
 }
 
 class _AllowedDomainDraft {
-  _AllowedDomainDraft({String domain = '', this.role = PollGroupRole.user})
-    : domainController = TextEditingController(text: domain);
+  _AllowedDomainDraft({
+    String domain = '',
+    this.role = QuestionnaireGroupRole.user,
+  }) : domainController = TextEditingController(text: domain);
 
   final TextEditingController domainController;
-  PollGroupRole role;
+  QuestionnaireGroupRole role;
 
   void dispose() {
     domainController.dispose();

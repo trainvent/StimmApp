@@ -2,67 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
-import 'package:stimmapp/core/data/models/home_item.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 
-class SurveyOption {
-  final String id;
-  final String label;
+class Survey extends Questionnaire {
+  @override
+  QuestionnaireKind get kind => QuestionnaireKind.survey;
 
-  const SurveyOption({required this.id, required this.label});
-
-  factory SurveyOption.fromMap(Map<String, dynamic> map) {
-    return SurveyOption(
-      id: (map['id'] ?? '') as String,
-      label: (map['label'] ?? '') as String,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {'id': id, 'label': label};
-}
-
-enum SurveyQuestionType { multipleChoice, text }
-
-class SurveyQuestion {
-  final String id;
-  final String title;
-  final List<SurveyOption> options;
-  final SurveyQuestionType type;
-
-  bool get isText => type == SurveyQuestionType.text;
-
-  const SurveyQuestion({
-    required this.id,
-    required this.title,
-    required this.options,
-    this.type = SurveyQuestionType.multipleChoice,
-  });
-
-  factory SurveyQuestion.fromMap(Map<String, dynamic> map) {
-    return SurveyQuestion(
-      id: (map['id'] ?? '') as String,
-      title: (map['title'] ?? '') as String,
-      type: map['type'] == 'text'
-          ? SurveyQuestionType.text
-          : SurveyQuestionType.multipleChoice,
-      options:
-          (map['options'] as List?)
-              ?.map(
-                (item) => SurveyOption.fromMap(Map<String, dynamic>.from(item)),
-              )
-              .toList() ??
-          const [],
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'title': title,
-    'type': type.name,
-    'options': options.map((option) => option.toMap()).toList(),
-  };
-}
-
-class Survey extends HomeItem {
   @override
   final String id;
   @override
@@ -71,11 +16,12 @@ class Survey extends HomeItem {
   final String description;
   @override
   final List<String> tags;
-  final List<SurveyQuestion> questions;
+  final List<QuestionnaireQuestion> questions;
   final Map<String, Map<String, int>> questionVotes;
   final int responseCount;
   @override
   final String createdBy;
+  @override
   final DateTime createdAt;
   @override
   final DateTime? expiresAt;
@@ -85,7 +31,9 @@ class Survey extends HomeItem {
   final String status;
   @override
   final FormScope scope;
+  @override
   final String? groupId;
+  @override
   final String? groupName;
   final String visibility;
 
@@ -120,7 +68,7 @@ class Survey extends HomeItem {
     String? title,
     String? description,
     List<String>? tags,
-    List<SurveyQuestion>? questions,
+    List<QuestionnaireQuestion>? questions,
     Map<String, Map<String, int>>? questionVotes,
     int? responseCount,
     String? createdBy,
@@ -169,8 +117,9 @@ class Survey extends HomeItem {
       questions:
           (data['questions'] as List?)
               ?.map(
-                (item) =>
-                    SurveyQuestion.fromMap(Map<String, dynamic>.from(item)),
+                (item) => QuestionnaireQuestion.fromMap(
+                  Map<String, dynamic>.from(item),
+                ),
               )
               .toList() ??
           const [],

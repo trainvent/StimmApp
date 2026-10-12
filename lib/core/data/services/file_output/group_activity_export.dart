@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/poll_group_activity.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group_activity.dart';
 
 String buildGroupActivityExport(
-  PollGroup group,
-  List<PollGroupActivity> activities, {
+  QuestionnaireGroup group,
+  List<QuestionnaireGroupActivity> activities, {
   required DateTime exportedAt,
-  required List<PollGroupMember> members,
+  required List<QuestionnaireGroupMember> members,
 }) {
   return const JsonEncoder.withIndent('  ').convert({
     'schemaVersion': 1,
@@ -19,12 +19,14 @@ String buildGroupActivityExport(
       'createdAt': group.createdAt.toUtc().toIso8601String(),
       'expiresAt': group.expiresAt?.toUtc().toIso8601String(),
       'joinCode': group.joinCode,
-      'nicknameMode': pollGroupNicknameModeToFirestore(group.nicknameMode),
+      'nicknameMode': questionnaireGroupNicknameModeToFirestore(
+        group.nicknameMode,
+      ),
       'managersCanInvite': group.managersCanInvite,
       'memberIds': group.memberIds,
       'importedMemberCount': group.importedMemberCount,
       'isActive': group.isActive,
-      'accessMode': pollGroupAccessModeToFirestore(group.accessMode),
+      'accessMode': questionnaireGroupAccessModeToFirestore(group.accessMode),
       'inviteLinkEnabled': group.inviteLinkEnabled,
       'adminElectionOpen': group.adminElectionOpen,
       'adminElectionEndsAt': group.adminElectionEndsAt
@@ -35,7 +37,7 @@ String buildGroupActivityExport(
         .map(
           (member) => {
             'uid': member.uid,
-            'role': pollGroupRoleToFirestore(member.role),
+            'role': questionnaireGroupRoleToFirestore(member.role),
             'nickname': member.nickname,
             'joinedAt': member.joinedAt.toUtc().toIso8601String(),
             'joinedBy': member.joinedBy,
@@ -47,7 +49,7 @@ String buildGroupActivityExport(
         .map(
           (activity) => {
             'id': activity.id,
-            'type': pollGroupActivityTypeToFirestore(activity.type),
+            'type': questionnaireGroupActivityTypeToFirestore(activity.type),
             'actorUid': activity.actorUid,
             'actorDisplayName': activity.actorDisplayName,
             'subjectUid': activity.subjectUid,

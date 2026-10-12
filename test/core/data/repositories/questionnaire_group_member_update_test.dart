@@ -1,32 +1,32 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
 void main() {
   late FakeFirebaseFirestore firestore;
-  late PollGroupRepository repository;
-  late PollGroup group;
-  late PollGroupMember member;
+  late QuestionnaireGroupRepository repository;
+  late QuestionnaireGroup group;
+  late QuestionnaireGroupMember member;
 
   setUp(() async {
     firestore = FakeFirebaseFirestore();
-    repository = PollGroupRepository(DatabaseService(firestore));
-    group = PollGroup(
+    repository = QuestionnaireGroupRepository(DatabaseService(firestore));
+    group = QuestionnaireGroup(
       id: 'group-1',
       name: 'Operations',
       createdBy: 'owner',
       createdAt: DateTime(2026, 1, 1),
       joinCode: 'OPS-1',
-      nicknameMode: PollGroupNicknameMode.adminAssigned,
+      nicknameMode: QuestionnaireGroupNicknameMode.adminAssigned,
       managersCanInvite: true,
       memberIds: const ['owner', 'member'],
       importedMemberCount: 1,
     );
-    member = PollGroupMember(
+    member = QuestionnaireGroupMember(
       uid: 'member',
-      role: PollGroupRole.user,
+      role: QuestionnaireGroupRole.user,
       nickname: 'Old name',
       joinedAt: DateTime(2026, 1, 2),
       joinedBy: 'owner',
@@ -34,13 +34,13 @@ void main() {
     await firestore
         .collection('pollGroups')
         .doc(group.id)
-        .set(PollGroup.toFirestore(group, null));
+        .set(QuestionnaireGroup.toFirestore(group, null));
     await firestore
         .collection('pollGroups')
         .doc(group.id)
         .collection('members')
         .doc(member.uid)
-        .set(PollGroupMember.toFirestore(member, null));
+        .set(QuestionnaireGroupMember.toFirestore(member, null));
     await firestore
         .collection('pollGroups')
         .doc(group.id)
@@ -62,7 +62,7 @@ void main() {
         group: group,
         member: member,
         nickname: '  Team Lead  ',
-        role: PollGroupRole.manager,
+        role: QuestionnaireGroupRole.manager,
         email: 'MEMBER@example.com',
       );
 
@@ -87,9 +87,9 @@ void main() {
   );
 
   test('does not allow the creator to be demoted', () async {
-    final creator = PollGroupMember(
+    final creator = QuestionnaireGroupMember(
       uid: 'owner',
-      role: PollGroupRole.admin,
+      role: QuestionnaireGroupRole.admin,
       joinedAt: DateTime(2026, 1, 1),
       joinedBy: 'owner',
     );
@@ -98,7 +98,7 @@ void main() {
       () => repository.updateMember(
         group: group,
         member: creator,
-        role: PollGroupRole.manager,
+        role: QuestionnaireGroupRole.manager,
       ),
       throwsA(
         isA<StateError>().having(

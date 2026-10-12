@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -131,12 +132,12 @@ void main() {
         description: 'Has one response',
         tags: const [],
         questions: const [
-          SurveyQuestion(
+          QuestionnaireQuestion(
             id: 'q1',
             title: 'Question',
             options: [
-              SurveyOption(id: 'yes', label: 'Yes'),
-              SurveyOption(id: 'no', label: 'No'),
+              QuestionnaireOption(id: 'yes', label: 'Yes'),
+              QuestionnaireOption(id: 'no', label: 'No'),
             ],
           ),
         ],

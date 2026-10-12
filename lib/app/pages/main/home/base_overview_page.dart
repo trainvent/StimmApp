@@ -10,7 +10,7 @@ import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -224,7 +224,7 @@ class _BaseOverviewPageState<T extends HomeItem>
         () => _restartableStream(
           () => uid == null
               ? Stream<Set<String>>.value(const <String>{})
-              : PollGroupRepository.create()
+              : QuestionnaireGroupRepository.create()
                     .watchGroupsForUser(uid)
                     .map((groups) => groups.map((group) => group.id).toSet()),
         ),

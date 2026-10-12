@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -289,13 +290,15 @@ class SurveyRepository {
           final normalizedQuestionTitle = question.title.trim();
           final normalizedOptions = question.options
               .map(
-                (option) =>
-                    SurveyOption(id: option.id, label: option.label.trim()),
+                (option) => QuestionnaireOption(
+                  id: option.id,
+                  label: option.label.trim(),
+                ),
               )
               .where((option) => option.label.isNotEmpty)
               .toList(growable: false);
 
-          return SurveyQuestion(
+          return QuestionnaireQuestion(
             id: question.id,
             title: normalizedQuestionTitle,
             options: question.isText ? const [] : normalizedOptions,
@@ -318,19 +321,22 @@ class SurveyRepository {
     );
   }
 
-  void _validateQuestions(List<SurveyQuestion> questions) {
+  void _validateQuestions(List<QuestionnaireQuestion> questions) {
     if (questions.isEmpty ||
-        questions.length > AppLimits.maxSurveyQuestions ||
+        questions.length > AppLimits.maxQuestionnaireQuestions ||
         questions.any(
           (question) =>
               question.id.trim().isEmpty ||
-              question.title.length > AppLimits.maxSurveyQuestionLength ||
+              question.title.length >
+                  AppLimits.maxQuestionnaireQuestionLength ||
               (!question.isText && question.options.length < 2) ||
-              question.options.length > AppLimits.maxSurveyOptionsPerQuestion ||
+              question.options.length >
+                  AppLimits.maxQuestionnaireOptionsPerQuestion ||
               question.options.any(
                 (option) =>
                     option.id.trim().isEmpty ||
-                    option.label.length > AppLimits.maxSurveyOptionLength,
+                    option.label.length >
+                        AppLimits.maxQuestionnaireOptionLength,
               ),
         )) {
       throw StateError('invalid_survey_questions');
@@ -350,7 +356,7 @@ class SurveyRepository {
   }
 
   Map<String, Map<String, int>> _initialQuestionVotes(
-    List<SurveyQuestion> questions,
+    List<QuestionnaireQuestion> questions,
     Map<String, Map<String, int>> existingVotes,
   ) {
     return {

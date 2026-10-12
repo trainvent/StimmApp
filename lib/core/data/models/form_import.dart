@@ -1,16 +1,19 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
+
 import 'dart:convert';
-import 'package:stimmapp/core/data/models/survey.dart';
 
 import 'package:stimmapp/core/constants/app_limits.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 
 /// Portable content only. Identity, responses and publication state are never imported.
+enum FormImportTarget { petition, questionnaire }
+
 class FormImport {
   static const maxBytes = 256 * 1024;
 
-  static PollTemplate parse(
+  static FormTemplate parse(
     String source, {
-    required String expectedType,
+    required FormImportTarget target,
     required Set<String> allowedTags,
   }) {
     void invalid(String field) => throw FormatException(field);
@@ -35,7 +38,10 @@ class FormImport {
     }
     if (json['version'] != 1 || json['version'] is! int) invalid('version');
     final type = json['type'];
-    if (type != expectedType && !(expectedType == 'poll' && type == 'survey')) {
+    final acceptedTypes = target == FormImportTarget.petition
+        ? const {'petition'}
+        : const {'poll', 'survey'};
+    if (!acceptedTypes.contains(type)) {
       invalid('type');
     }
     String text(dynamic value, String field, int min, int max) {
@@ -98,14 +104,14 @@ class FormImport {
         (json.containsKey('countryUnion') && scope != 'countryUnion')) {
       invalid('countryUnion');
     }
-    List<PollTemplateQuestion>? questions;
-    if (expectedType == 'petition') {
+    List<FormTemplateQuestion>? questions;
+    if (target == FormImportTarget.petition) {
       if (json.containsKey('questions')) invalid('questions');
     } else {
       final values = json['questions'];
       if (values is! List ||
           values.isEmpty ||
-          values.length > AppLimits.maxSurveyQuestions) {
+          values.length > AppLimits.maxQuestionnaireQuestions) {
         invalid('questions');
       }
       questions = (values as List).map((value) {
@@ -128,34 +134,38 @@ class FormImport {
             : (isText ? [] : null);
         if (options is! List ||
             (isText ? options.isNotEmpty : options.length < 2) ||
-            options.length > AppLimits.maxSurveyOptionsPerQuestion) {
+            options.length > AppLimits.maxQuestionnaireOptionsPerQuestion) {
           invalid('options');
         }
         final labels = (options as List)
             .map(
-              (option) =>
-                  text(option, 'options', 1, AppLimits.maxSurveyOptionLength),
+              (option) => text(
+                option,
+                'options',
+                1,
+                AppLimits.maxQuestionnaireOptionLength,
+              ),
             )
             .toList();
         if (labels.map((label) => label.toLowerCase()).toSet().length !=
             labels.length) {
           invalid('options');
         }
-        return PollTemplateQuestion(
+        return FormTemplateQuestion(
           type: isText
-              ? SurveyQuestionType.text
-              : SurveyQuestionType.multipleChoice,
+              ? QuestionnaireQuestionType.text
+              : QuestionnaireQuestionType.multipleChoice,
           title: text(
             question['title'],
             'questions.title',
             1,
-            AppLimits.maxSurveyQuestionLength,
+            AppLimits.maxQuestionnaireQuestionLength,
           ),
           options: labels,
         );
       }).toList();
     }
-    return PollTemplate(
+    return FormTemplate(
       id: '',
       name: title,
       title: title,

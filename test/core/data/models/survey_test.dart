@@ -1,15 +1,16 @@
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 
 void main() {
-  group('SurveyOption', () {
-    const option = SurveyOption(id: 'opt1', label: 'Option 1');
+  group('QuestionnaireOption', () {
+    const option = QuestionnaireOption(id: 'opt1', label: 'Option 1');
     final optionMap = {'id': 'opt1', 'label': 'Option 1'};
 
-    test('fromMap creates a SurveyOption', () {
-      final result = SurveyOption.fromMap(optionMap);
+    test('fromMap creates a QuestionnaireOption', () {
+      final result = QuestionnaireOption.fromMap(optionMap);
       expect(result.id, option.id);
       expect(result.label, option.label);
     });
@@ -19,22 +20,23 @@ void main() {
     });
   });
 
-  group('SurveyQuestion', () {
-    const question = SurveyQuestion(
+  group('QuestionnaireQuestion', () {
+    const question = QuestionnaireQuestion(
       id: 'q1',
       title: 'Question 1',
-      options: [SurveyOption(id: 'opt1', label: 'Option 1')],
+      options: [QuestionnaireOption(id: 'opt1', label: 'Option 1')],
     );
     final questionMap = {
       'id': 'q1',
       'title': 'Question 1',
+      'type': 'multipleChoice',
       'options': [
         {'id': 'opt1', 'label': 'Option 1'},
       ],
     };
 
-    test('fromMap creates a SurveyQuestion', () {
-      final result = SurveyQuestion.fromMap(questionMap);
+    test('fromMap creates a QuestionnaireQuestion', () {
+      final result = QuestionnaireQuestion.fromMap(questionMap);
       expect(result.id, question.id);
       expect(result.title, question.title);
       expect(result.options.first.id, question.options.first.id);
@@ -53,12 +55,12 @@ void main() {
       description: 'This is a test survey.',
       tags: ['survey'],
       questions: const [
-        SurveyQuestion(
+        QuestionnaireQuestion(
           id: 'q1',
           title: 'Question 1',
           options: [
-            SurveyOption(id: 'opt1', label: 'Option 1'),
-            SurveyOption(id: 'opt2', label: 'Option 2'),
+            QuestionnaireOption(id: 'opt1', label: 'Option 1'),
+            QuestionnaireOption(id: 'opt2', label: 'Option 2'),
           ],
         ),
       ],
@@ -79,6 +81,7 @@ void main() {
         {
           'id': 'q1',
           'title': 'Question 1',
+          'type': 'multipleChoice',
           'options': [
             {'id': 'opt1', 'label': 'Option 1'},
             {'id': 'opt2', 'label': 'Option 2'},

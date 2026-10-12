@@ -21,7 +21,7 @@ import 'package:stimmapp/core/data/repositories/public_profile_repository.dart';
 import 'package:stimmapp/core/data/models/survey.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/moderation_repository.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -826,7 +826,7 @@ class _BaseDetailPageState<T extends HomeItem>
               : ModerationRepository.create().watchBlockedUserIds(currentUid);
           final memberGroupIdsStream = currentUid == null
               ? Stream<Set<String>>.value(const <String>{})
-              : PollGroupRepository.create()
+              : QuestionnaireGroupRepository.create()
                     .watchGroupsForUser(currentUid)
                     .map((groups) => groups.map((group) => group.id).toSet());
           return StreamBuilder<Set<String>>(

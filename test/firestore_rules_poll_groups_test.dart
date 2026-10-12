@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('firestore.rules pollGroups coverage', () {
+  group('firestore.rules questionnaireGroups coverage', () {
     final rules = File('firestore.rules').readAsStringSync();
 
     test('covers allowedDomains writes', () {
@@ -11,7 +11,7 @@ void main() {
       expect(
         rules,
         contains(
-          'allow create: if isAdmin() || isPollGroupCreatorAfter(groupId) || isPollGroupAdmin(groupId);',
+          'allow create: if isAdmin() || isQuestionnaireGroupCreatorAfter(groupId) || isQuestionnaireGroupAdmin(groupId);',
         ),
       );
     });

@@ -1,54 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 class GroupInvitationsPage extends StatelessWidget {
   const GroupInvitationsPage({super.key, required this.group, this.repository});
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
 
-  PollGroupRepository get _repository =>
-      repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      repository ?? QuestionnaireGroupRepository.create();
 
-  String _statusLabel(BuildContext context, PollGroupInvitationStatus status) {
+  String _statusLabel(
+    BuildContext context,
+    QuestionnaireGroupInvitationStatus status,
+  ) {
     return switch (status) {
-      PollGroupInvitationStatus.pending => context.l10n.invitationStatusPending,
-      PollGroupInvitationStatus.accepted =>
+      QuestionnaireGroupInvitationStatus.pending =>
+        context.l10n.invitationStatusPending,
+      QuestionnaireGroupInvitationStatus.accepted =>
         context.l10n.invitationStatusAccepted,
-      PollGroupInvitationStatus.declined =>
+      QuestionnaireGroupInvitationStatus.declined =>
         context.l10n.invitationStatusDeclined,
-      PollGroupInvitationStatus.removed => context.l10n.invitationStatusRemoved,
+      QuestionnaireGroupInvitationStatus.removed =>
+        context.l10n.invitationStatusRemoved,
     };
   }
 
-  IconData _statusIcon(PollGroupInvitationStatus status) {
+  IconData _statusIcon(QuestionnaireGroupInvitationStatus status) {
     return switch (status) {
-      PollGroupInvitationStatus.pending => Icons.schedule_outlined,
-      PollGroupInvitationStatus.accepted => Icons.check_circle_outline,
-      PollGroupInvitationStatus.declined => Icons.cancel_outlined,
-      PollGroupInvitationStatus.removed => Icons.person_remove_outlined,
+      QuestionnaireGroupInvitationStatus.pending => Icons.schedule_outlined,
+      QuestionnaireGroupInvitationStatus.accepted => Icons.check_circle_outline,
+      QuestionnaireGroupInvitationStatus.declined => Icons.cancel_outlined,
+      QuestionnaireGroupInvitationStatus.removed =>
+        Icons.person_remove_outlined,
     };
   }
 
-  Color _statusColor(BuildContext context, PollGroupInvitationStatus status) {
+  Color _statusColor(
+    BuildContext context,
+    QuestionnaireGroupInvitationStatus status,
+  ) {
     return switch (status) {
-      PollGroupInvitationStatus.pending => Colors.orange,
-      PollGroupInvitationStatus.accepted => Colors.green,
-      PollGroupInvitationStatus.declined => Theme.of(context).colorScheme.error,
-      PollGroupInvitationStatus.removed => Theme.of(
+      QuestionnaireGroupInvitationStatus.pending => Colors.orange,
+      QuestionnaireGroupInvitationStatus.accepted => Colors.green,
+      QuestionnaireGroupInvitationStatus.declined => Theme.of(
+        context,
+      ).colorScheme.error,
+      QuestionnaireGroupInvitationStatus.removed => Theme.of(
         context,
       ).colorScheme.onSurfaceVariant,
     };
   }
 
-  String _roleLabel(BuildContext context, PollGroupRole role) {
+  String _roleLabel(BuildContext context, QuestionnaireGroupRole role) {
     return switch (role) {
-      PollGroupRole.admin => context.l10n.adminRoleLabel,
-      PollGroupRole.manager => context.l10n.managerRoleLabel,
-      PollGroupRole.user => context.l10n.memberRoleLabel,
+      QuestionnaireGroupRole.admin => context.l10n.adminRoleLabel,
+      QuestionnaireGroupRole.manager => context.l10n.managerRoleLabel,
+      QuestionnaireGroupRole.user => context.l10n.memberRoleLabel,
     };
   }
 
@@ -62,7 +73,7 @@ class GroupInvitationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupInvitationsTitle)),
-      body: StreamBuilder<List<PollGroupInvitation>>(
+      body: StreamBuilder<List<QuestionnaireGroupInvitation>>(
         stream: _repository.watchInvitations(group.id),
         builder: (context, snapshot) {
           if (snapshot.hasError) {

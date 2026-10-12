@@ -1,8 +1,8 @@
-import 'package:stimmapp/core/data/models/survey.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 
 /// Builds one response row in question order for every export format.
 List<String> surveyExportAnswers(
-  List<SurveyQuestion> questions,
+  List<QuestionnaireQuestion> questions,
   Map<String, dynamic> response,
 ) {
   final choices = response['answers'] as Map? ?? const {};

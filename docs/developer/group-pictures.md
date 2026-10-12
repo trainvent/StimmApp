@@ -42,5 +42,5 @@ npm --prefix test/security ci
 npm --prefix test/security test
 npm --prefix functions ci
 npm --prefix functions run build
-flutter test test/core/data/models/poll_group_test.dart test/app/mobile/pages/main/home/creator/poll_groups_page_test.dart
+flutter test test/core/data/models/questionnaire_group_test.dart test/app/mobile/pages/main/home/creator/poll_groups_page_test.dart
 ```

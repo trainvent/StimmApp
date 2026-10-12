@@ -3,7 +3,7 @@ import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/app/pages/main/home/blocked_forms_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stimmapp/app/pages/main/home/creator/petition_creator_page.dart';
-import 'package:stimmapp/app/pages/main/home/creator/survey_creator_page.dart';
+import 'package:stimmapp/app/pages/main/home/creator/questionnaire_creator_page.dart';
 import 'package:stimmapp/app/pages/main/home/home_navigation_config.dart';
 import 'package:stimmapp/app/pages/main/profile/profile_page.dart';
 import 'package:stimmapp/app/pages/main/settings/settings_page.dart';
@@ -40,9 +40,8 @@ class WidgetTree extends ConsumerWidget {
               )
             : selectedPage == 1
             ? CreationIconButton(
-                type: CreationType.poll,
-                pageBuilder: (context) =>
-                    const SurveyCreatorPage(presentAsPoll: true),
+                type: CreationType.questionnaire,
+                pageBuilder: (context) => const QuestionnaireCreatorPage(),
               )
             : null,
         actions: [

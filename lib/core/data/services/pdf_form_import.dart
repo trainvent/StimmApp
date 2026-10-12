@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:pdfrx/pdfrx.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 
 class PdfFormImport {
   static const maxBytes = 10 * 1024 * 1024;
@@ -29,7 +29,7 @@ class PdfFormImport {
   }
 
   /// Deliberately limited to explicit numbering; never guesses layout or content.
-  static PollTemplate parse(String source, {required String type}) {
+  static FormTemplate parse(String source, {required FormImportTarget target}) {
     if (source.length > maxCharacters) throw const FormatException('size');
     final lines = source
         .split(RegExp(r'\r\n?|\n'))
@@ -42,7 +42,9 @@ class PdfFormImport {
     final numbered = RegExp(r'^\d+[.)]\s+(.+)$');
     final choice = RegExp(r'^(?:[a-zA-Z][.)]|[-•☐□])\s+(.+)$');
     for (final line in lines.skip(1)) {
-      final question = type == 'petition' ? null : numbered.firstMatch(line);
+      final question = target == FormImportTarget.petition
+          ? null
+          : numbered.firstMatch(line);
       if (question != null) {
         questions.add({'title': question.group(1)!, 'options': <String>[]});
       } else if (questions.isEmpty) {
@@ -70,12 +72,12 @@ class PdfFormImport {
     return FormImport.parse(
       jsonEncode({
         'version': 1,
-        'type': type,
+        'type': target == FormImportTarget.petition ? 'petition' : 'survey',
         'title': lines.first,
         'description': description.join('\n'),
-        if (type != 'petition') 'questions': questions,
+        if (target != FormImportTarget.petition) 'questions': questions,
       }),
-      expectedType: type,
+      target: target,
       allowedTags: {},
     );
   }

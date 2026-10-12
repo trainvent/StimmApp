@@ -1,22 +1,22 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 
 /// Templates are private to an account on this device, separate from drafts.
-class PollTemplateRepository {
-  PollTemplateRepository(this.preferences, String userId)
+class QuestionnaireTemplateRepository {
+  QuestionnaireTemplateRepository(this.preferences, String userId)
     : _key = 'poll_templates_v1_${Uri.encodeComponent(userId)}';
 
   final SharedPreferences preferences;
   final String _key;
 
-  List<PollTemplate> load() {
+  List<FormTemplate> load() {
     final encoded = preferences.getStringList(_key) ?? const [];
     return encoded
         .map(
           (value) =>
-              PollTemplate.fromJson(jsonDecode(value) as Map<String, dynamic>),
+              FormTemplate.fromJson(jsonDecode(value) as Map<String, dynamic>),
         )
         .toList();
   }
@@ -27,7 +27,7 @@ class PollTemplateRepository {
         template.name.trim().toLowerCase() == name.trim().toLowerCase(),
   );
 
-  Future<void> save(PollTemplate template) async {
+  Future<void> save(FormTemplate template) async {
     final templates = load();
     final normalizedName = template.name.trim().toLowerCase();
     final matches = templates.where(
@@ -43,7 +43,7 @@ class PollTemplateRepository {
     );
     templates.insert(
       0,
-      PollTemplate.fromJson({
+      FormTemplate.fromJson({
         ...template.toJson(),
         'id': existingId,
         'name': template.name.trim(),
@@ -56,7 +56,7 @@ class PollTemplateRepository {
     await _write(load()..removeWhere((item) => item.id == id));
   }
 
-  Future<void> _write(List<PollTemplate> templates) async {
+  Future<void> _write(List<FormTemplate> templates) async {
     final saved = await preferences.setStringList(
       _key,
       templates.map((template) => jsonEncode(template.toJson())).toList(),

@@ -49,17 +49,29 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
         .where('createdBy', isEqualTo: uid)
         .get();
 
+    final completedSurveysFuture = userDocRef
+        .collection('completedSurveys')
+        .get();
+    final createdSurveysFuture = db
+        .collection('surveys')
+        .where('createdBy', isEqualTo: uid)
+        .get();
+
     final results = await Future.wait([
       signedPetitionsFuture,
       votedPollsFuture,
       createdPetitionsFuture,
       createdPollsFuture,
+      completedSurveysFuture,
+      createdSurveysFuture,
     ]);
 
     final signedPetitionsSnapshot = results[0];
     final votedPollsSnapshot = results[1];
     final createdPetitionsSnapshot = results[2];
     final createdPollsSnapshot = results[3];
+    final completedSurveysSnapshot = results[4];
+    final createdSurveysSnapshot = results[5];
 
     final List<Future<DocumentSnapshot>> petitionFutures =
         signedPetitionsSnapshot.docs
@@ -72,6 +84,12 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
 
     final petitionSnapshots = await Future.wait(petitionFutures);
     final pollSnapshots = await Future.wait(pollFutures);
+
+    final surveySnapshots = await Future.wait(
+      completedSurveysSnapshot.docs.map(
+        (doc) => db.collection('surveys').doc(doc.id).get(),
+      ),
+    );
 
     final historyItems = <_HistoryItem>[];
 
@@ -131,6 +149,33 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
       );
     }
 
+    for (var index = 0; index < surveySnapshots.length; index++) {
+      final doc = surveySnapshots[index];
+      if (!doc.exists) continue;
+      final data = doc.data() as Map<String, dynamic>;
+      historyItems.add(
+        _HistoryItem(
+          title: data['title'] as String?,
+          type: _HistoryType.survey,
+          action: _HistoryAction.participation,
+          timestamp: _toDateTime(
+            completedSurveysSnapshot.docs[index].data()['submittedAt'],
+          ),
+        ),
+      );
+    }
+    for (final doc in createdSurveysSnapshot.docs) {
+      final data = doc.data();
+      historyItems.add(
+        _HistoryItem(
+          title: data['title'] as String?,
+          type: _HistoryType.survey,
+          action: _HistoryAction.publication,
+          timestamp: _toDateTime(data['createdAt']),
+        ),
+      );
+    }
+
     historyItems.sort((a, b) {
       final aTimestamp = a.timestamp;
       final bTimestamp = b.timestamp;
@@ -184,17 +229,24 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
               final isPetition = item.type == _HistoryType.petition;
               final isPublication = item.action == _HistoryAction.publication;
               final title = item.title ?? context.l10n.noTitle;
-              final action = isPublication
-                  ? (isPetition
-                        ? context.l10n.createdPetition
-                        : context.l10n.createdPoll)
-                  : (isPetition ? context.l10n.signed : context.l10n.voted);
+              final action = switch ((item.type, isPublication)) {
+                (_HistoryType.petition, true) => context.l10n.createdPetition,
+                (_HistoryType.poll, true) => context.l10n.createdPoll,
+                (_HistoryType.survey, true) => context.l10n.createdSurvey,
+                (_HistoryType.petition, false) => context.l10n.signed,
+                (_HistoryType.poll, false) => context.l10n.voted,
+                (_HistoryType.survey, false) => context.l10n.surveySubmitted,
+              };
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: ListTile(
                   leading: Icon(
-                    isPetition ? Icons.article : Icons.poll,
+                    isPetition
+                        ? Icons.article
+                        : item.type == _HistoryType.survey
+                        ? Icons.list_alt
+                        : Icons.poll,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(title, style: AppTextStyles.mBold),
@@ -219,7 +271,7 @@ class _UserHistoryPageState extends State<UserHistoryPage> {
   }
 }
 
-enum _HistoryType { petition, poll }
+enum _HistoryType { petition, poll, survey }
 
 enum _HistoryAction { participation, publication }
 

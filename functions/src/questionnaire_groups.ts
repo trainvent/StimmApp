@@ -1,8 +1,8 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { addPollGroupActivity } from "./poll_group_activity";
+import { addQuestionnaireGroupActivity } from "./questionnaire_group_activity";
 
-type CreatePollGroupPayload = {
+type CreateQuestionnaireGroupPayload = {
 	name?: unknown;
 	joinCode?: unknown;
 	nicknameMode?: unknown;
@@ -15,7 +15,7 @@ type CreatePollGroupPayload = {
 	inviteEmails?: unknown;
 };
 
-type UpdatePollGroupPayload = CreatePollGroupPayload & {
+type UpdateQuestionnaireGroupPayload = CreateQuestionnaireGroupPayload & {
 	groupId?: unknown;
 };
 
@@ -106,7 +106,7 @@ function chunk<T>(items: T[], size: number) {
 
 export const createPollGroup = onCall(async (request) => {
 	const uid = requireAuth(request);
-	const data = (request.data ?? {}) as CreatePollGroupPayload;
+	const data = (request.data ?? {}) as CreateQuestionnaireGroupPayload;
 	const db = admin.firestore();
 	const now = admin.firestore.Timestamp.now();
 
@@ -279,14 +279,14 @@ export const createPollGroup = onCall(async (request) => {
 		});
 	}
 
-	addPollGroupActivity(batch, groupRef, {
+	addQuestionnaireGroupActivity(batch, groupRef, {
 		type: "group_created",
 		actorUid: uid,
 		actorDisplayName,
 		createdAt: now,
 	});
 	if (matchingProfiles.length > 0) {
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "invitations_sent",
 			actorUid: uid,
 			actorDisplayName,
@@ -302,7 +302,7 @@ export const createPollGroup = onCall(async (request) => {
 
 export const updatePollGroup = onCall(async (request) => {
 	const uid = requireAuth(request);
-	const data = (request.data ?? {}) as UpdatePollGroupPayload;
+	const data = (request.data ?? {}) as UpdateQuestionnaireGroupPayload;
 	const db = admin.firestore();
 	const now = admin.firestore.Timestamp.now();
 
@@ -502,7 +502,7 @@ export const updatePollGroup = onCall(async (request) => {
 
 	const isInvitationUpdate = Array.isArray(data.inviteEmails) && data.inviteEmails.length > 0;
 	if (!isInvitationUpdate) {
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "settings_updated",
 			actorUid: uid,
 			actorDisplayName,
@@ -510,7 +510,7 @@ export const updatePollGroup = onCall(async (request) => {
 		});
 	}
 	if (invitationCount > 0) {
-		addPollGroupActivity(batch, groupRef, {
+		addQuestionnaireGroupActivity(batch, groupRef, {
 			type: "invitations_sent",
 			actorUid: uid,
 			actorDisplayName,

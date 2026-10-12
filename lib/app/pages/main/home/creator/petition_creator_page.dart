@@ -1,10 +1,12 @@
+import 'package:stimmapp/core/data/models/form_import.dart';
+
 import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/data/models/petition_draft.dart';
 import 'package:stimmapp/core/data/repositories/petition_draft_repository.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,7 @@ import 'package:stimmapp/core/services/analytics_service.dart';
 class PetitionCreatorPage extends StatefulWidget {
   const PetitionCreatorPage({super.key, this.initialTemplate});
 
-  final PollTemplate? initialTemplate;
+  final FormTemplate? initialTemplate;
 
   @override
   State<PetitionCreatorPage> createState() => _PetitionCreatorPageState();
@@ -57,7 +59,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     return PetitionDraftRepository(await SharedPreferences.getInstance(), uid);
   }
 
-  Future<void> _savePetitionDraft(PollTemplate settings) async {
+  Future<void> _savePetitionDraft(FormTemplate settings) async {
     if (_isSavingDraft) return;
     _isSavingDraft = true;
     final imageFile = _imageFile;
@@ -69,7 +71,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
           : base64Encode(await imageFile.readAsBytes());
       final id =
           _savedDraftId ?? DateTime.now().microsecondsSinceEpoch.toString();
-      final form = PollTemplate.fromJson({
+      final form = FormTemplate.fromJson({
         ...settings.toJson(),
         'id': id,
         'name': settings.title ?? '',
@@ -258,7 +260,9 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
     if (ContentModerationService.instance.containsObjectionableContent(
       <String?>[title, description],
     )) {
-      showUserMistakeSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
+      showUserMistakeSnackBar(
+        context.l10n.removeAbusiveLanguageBeforePublishing,
+      );
       return false;
     }
 
@@ -367,7 +371,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
       onSaveDraft: _savePetitionDraft,
       onChooseDraft: _chooseDraft,
       initialTemplate: widget.initialTemplate,
-      importType: 'petition',
+      importTarget: FormImportTarget.petition,
       title: context.l10n.createPetition,
       tutorialSteps: PetitionTutorialHelper.getSteps(context),
       onSubmit: _createPetition,

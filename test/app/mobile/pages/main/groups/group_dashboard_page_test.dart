@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stimmapp/app/pages/main/groups/group_dashboard_page.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
@@ -24,32 +24,32 @@ class _FakeAuthService extends AuthService {
   User? get currentUser => _FakeUser();
 }
 
-class _FakePollGroupRepository extends PollGroupRepository {
-  _FakePollGroupRepository(this.group)
+class _FakeQuestionnaireGroupRepository extends QuestionnaireGroupRepository {
+  _FakeQuestionnaireGroupRepository(this.group)
     : super(DatabaseService(FakeFirebaseFirestore()));
 
-  final PollGroup group;
+  final QuestionnaireGroup group;
 
   @override
-  Stream<PollGroup?> watchGroup(String groupId) => Stream.value(group);
+  Stream<QuestionnaireGroup?> watchGroup(String groupId) => Stream.value(group);
 
   @override
-  Stream<PollGroupMember?> watchMember(String groupId, String uid) =>
+  Stream<QuestionnaireGroupMember?> watchMember(String groupId, String uid) =>
       Stream.value(null);
 }
 
 void main() {
-  final group = PollGroup(
+  final group = QuestionnaireGroup(
     id: 'group-1',
     name: 'Ops Team',
     createdBy: 'owner-1',
     createdAt: DateTime(2026, 1, 1),
     joinCode: 'OPS-1',
-    nicknameMode: PollGroupNicknameMode.selfNamed,
+    nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
     managersCanInvite: true,
     memberIds: const ['owner-1'],
     importedMemberCount: 0,
-    accessMode: PollGroupAccessMode.protected,
+    accessMode: QuestionnaireGroupAccessMode.protected,
     inviteLinkEnabled: true,
   );
 
@@ -65,7 +65,7 @@ void main() {
       createTestWidget(
         GroupDashboardPage(
           group: group,
-          repository: _FakePollGroupRepository(group),
+          repository: _FakeQuestionnaireGroupRepository(group),
           auth: _FakeAuthService(),
         ),
       ),
@@ -96,7 +96,7 @@ void main() {
       createTestWidget(
         GroupDashboardPage(
           group: group,
-          repository: _FakePollGroupRepository(group),
+          repository: _FakeQuestionnaireGroupRepository(group),
           auth: _FakeAuthService(),
         ),
       ),
@@ -131,7 +131,7 @@ void main() {
       createTestWidget(
         GroupDashboardPage(
           group: group,
-          repository: _FakePollGroupRepository(group),
+          repository: _FakeQuestionnaireGroupRepository(group),
           auth: _FakeAuthService(),
         ),
       ),

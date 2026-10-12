@@ -13,10 +13,10 @@ class AppLimits {
   static const int maxPollOptionLength = 50;
   static const int maxPollOptions = 10;
   static const int maxSurveyTextAnswerLength = 2000;
-  static const int maxSurveyQuestions = 20;
-  static const int maxSurveyQuestionLength = 200;
-  static const int maxSurveyOptionsPerQuestion = 10;
-  static const int maxSurveyOptionLength = maxPollOptionLength;
+  static const int maxQuestionnaireQuestions = 20;
+  static const int maxQuestionnaireQuestionLength = 200;
+  static const int maxQuestionnaireOptionsPerQuestion = 10;
+  static const int maxQuestionnaireOptionLength = maxPollOptionLength;
 
   static const int minUsernameLength = 6;
   static const int maxDisplayNameLength = 30;

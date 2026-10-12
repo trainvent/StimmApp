@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/home/petitions/petitions_page.dart';
-import 'package:stimmapp/app/pages/main/home/polls/polls_page.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/questionnaires_page.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
 /// A simple class to hold the configuration for a main page in the app.
@@ -25,8 +25,8 @@ List<MainPageConfig> mainPagesConfig(BuildContext context) => [
     icon: Icons.drive_file_rename_outline,
   ),
   MainPageConfig(
-    page: const PollsPage(),
-    title: context.l10n.polls,
+    page: const QuestionnairesPage(),
+    title: context.l10n.questionnaires,
     icon: Icons.ballot,
   ),
 ];

@@ -45,7 +45,7 @@ void main() {
         child: app(const BannedModeMarker()),
       ),
     );
-    await tester.tap(find.text('Banned'));
+    await tester.tap(find.byIcon(Icons.block));
     await tester.pump();
     expect(
       find.text(

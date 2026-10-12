@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_members_page.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
@@ -29,59 +29,59 @@ void main() {
   testWidgets('edits a member nickname and rank', (tester) async {
     final firestore = FakeFirebaseFirestore();
     final database = DatabaseService(firestore);
-    final repository = PollGroupRepository(database);
+    final repository = QuestionnaireGroupRepository(database);
     final userRepository = UserRepository(database);
-    final group = PollGroup(
+    final group = QuestionnaireGroup(
       id: 'group-1',
       name: 'Operations',
       createdBy: 'owner',
       createdAt: DateTime(2026, 1, 1),
       joinCode: 'OPS-1',
-      nicknameMode: PollGroupNicknameMode.adminAssigned,
+      nicknameMode: QuestionnaireGroupNicknameMode.adminAssigned,
       managersCanInvite: true,
       memberIds: const ['owner', 'member', 'member-2', 'member-3'],
       importedMemberCount: 0,
     );
-    final member = PollGroupMember(
+    final member = QuestionnaireGroupMember(
       uid: 'member',
-      role: PollGroupRole.user,
+      role: QuestionnaireGroupRole.user,
       joinedAt: DateTime(2026, 1, 2),
       joinedBy: 'owner',
     );
-    final member2 = PollGroupMember(
+    final member2 = QuestionnaireGroupMember(
       uid: 'member-2',
-      role: PollGroupRole.user,
+      role: QuestionnaireGroupRole.user,
       joinedAt: DateTime(2026, 1, 3),
       joinedBy: 'owner',
     );
-    final member3 = PollGroupMember(
+    final member3 = QuestionnaireGroupMember(
       uid: 'member-3',
-      role: PollGroupRole.manager,
+      role: QuestionnaireGroupRole.manager,
       joinedAt: DateTime(2026, 1, 4),
       joinedBy: 'owner',
     );
     await firestore
         .collection('pollGroups')
         .doc(group.id)
-        .set(PollGroup.toFirestore(group, null));
+        .set(QuestionnaireGroup.toFirestore(group, null));
     await firestore
         .collection('pollGroups')
         .doc(group.id)
         .collection('members')
         .doc(member.uid)
-        .set(PollGroupMember.toFirestore(member, null));
+        .set(QuestionnaireGroupMember.toFirestore(member, null));
     await firestore
         .collection('pollGroups')
         .doc(group.id)
         .collection('members')
         .doc(member2.uid)
-        .set(PollGroupMember.toFirestore(member2, null));
+        .set(QuestionnaireGroupMember.toFirestore(member2, null));
     await firestore
         .collection('pollGroups')
         .doc(group.id)
         .collection('members')
         .doc(member3.uid)
-        .set(PollGroupMember.toFirestore(member3, null));
+        .set(QuestionnaireGroupMember.toFirestore(member3, null));
     await userRepository.upsert(
       const UserProfile(
         uid: 'member',

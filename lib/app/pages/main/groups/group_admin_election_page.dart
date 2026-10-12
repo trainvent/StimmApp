@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -17,8 +17,8 @@ class GroupAdminElectionPage extends StatefulWidget {
     this.auth,
   });
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
   final UserRepository? userRepository;
   final AuthService? auth;
 
@@ -30,8 +30,8 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
   String? _selectedCandidateUid;
   bool _isSaving = false;
 
-  PollGroupRepository get _repository =>
-      widget.repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      widget.repository ?? QuestionnaireGroupRepository.create();
   UserRepository get _userRepository =>
       widget.userRepository ?? UserRepository.create();
   AuthService get _auth => widget.auth ?? authService;
@@ -62,7 +62,7 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
   }
 
   Widget _candidateTile({
-    required PollGroupMember member,
+    required QuestionnaireGroupMember member,
     required bool enabled,
   }) {
     return FutureBuilder<UserProfile?>(
@@ -100,7 +100,7 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.adminElectionTitle)),
-      body: StreamBuilder<PollGroupAdminElection?>(
+      body: StreamBuilder<QuestionnaireGroupAdminElection?>(
         stream: _repository.watchAdminElection(widget.group.id),
         builder: (context, electionSnapshot) {
           if (electionSnapshot.hasError) {
@@ -116,7 +116,7 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
             return Center(child: Text(context.l10n.noActiveAdminElection));
           }
 
-          return StreamBuilder<PollGroupAdminElectionVote?>(
+          return StreamBuilder<QuestionnaireGroupAdminElectionVote?>(
             stream: _repository.watchAdminElectionVote(widget.group.id, uid),
             builder: (context, voteSnapshot) {
               final savedCandidateUid = voteSnapshot.data?.candidateUid;
@@ -124,7 +124,7 @@ class _GroupAdminElectionPageState extends State<GroupAdminElectionPage> {
               final electionOpen =
                   election.isOpen && DateTime.now().isBefore(election.endsAt);
 
-              return StreamBuilder<List<PollGroupMember>>(
+              return StreamBuilder<List<QuestionnaireGroupMember>>(
                 stream: _repository.watchMembers(widget.group.id),
                 builder: (context, membersSnapshot) {
                   if (!membersSnapshot.hasData) {

@@ -22,6 +22,37 @@ Widget _testApp(Widget child) {
 }
 
 void main() {
+  testWidgets('includes created and completed surveys in activity order', (
+    tester,
+  ) async {
+    final firestore = FakeFirebaseFirestore();
+    await firestore.collection('surveys').doc('created').set({
+      'title': 'My questionnaire',
+      'createdBy': 'user-1',
+      'createdAt': DateTime(2026, 1, 1),
+    });
+    await firestore.collection('surveys').doc('completed').set({
+      'title': 'Answered questionnaire',
+      'createdBy': 'someone-else',
+    });
+    await firestore
+        .collection('users')
+        .doc('user-1')
+        .collection('completedSurveys')
+        .doc('completed')
+        .set({'submittedAt': DateTime(2026, 1, 2)});
+    await tester.pumpWidget(
+      _testApp(UserHistoryPage(uid: 'user-1', database: firestore)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Survey created'), findsOneWidget);
+    expect(find.text('Survey submitted'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Answered questionnaire')).dy,
+      lessThan(tester.getTopLeft(find.text('My questionnaire')).dy),
+    );
+  });
+
   testWidgets(
     'shows participation and publications with distinct icons in activity order',
     (tester) async {

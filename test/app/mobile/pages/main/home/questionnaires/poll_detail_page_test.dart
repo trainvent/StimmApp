@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stimmapp/app/pages/main/home/polls/poll_detail_page.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/poll_detail_page.dart';
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';

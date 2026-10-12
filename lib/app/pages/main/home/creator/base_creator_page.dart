@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:stimmapp/core/data/models/form_import.dart';
 import 'package:flag/flag.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,20 +41,24 @@ class BaseCreatorPage extends StatefulWidget {
     this.additionalDraftClearer,
     this.onResetAdditionalFields,
     this.previewContentBuilder,
+    this.previewTitle,
     this.initialTemplate,
-    this.importType,
+    this.importTarget,
+    this.draftStorageKey,
     this.onImportQuestions,
     this.onSaveDraft,
     this.onChooseDraft,
   });
 
-  final Future<void> Function(PollTemplate)? onSaveDraft;
+  final Future<void> Function(FormTemplate)? onSaveDraft;
   final Future<void> Function()? onChooseDraft;
-  final PollTemplate? initialTemplate;
-  final String? importType;
-  final Future<void> Function(List<PollTemplateQuestion>)? onImportQuestions;
+  final FormTemplate? initialTemplate;
+  final FormImportTarget? importTarget;
+  final Future<void> Function(List<FormTemplateQuestion>)? onImportQuestions;
   final String title;
-  final List<dynamic> tutorialSteps; // Can be String or PollTutorialStep
+  final String? draftStorageKey;
+  final List<dynamic>
+  tutorialSteps; // Can be String or QuestionnaireTutorialStep
   final Future<bool> Function({
     required String title,
     required String description,
@@ -81,6 +85,7 @@ class BaseCreatorPage extends StatefulWidget {
   final Future<void> Function()? additionalDraftClearer;
   final VoidCallback? onResetAdditionalFields;
   final WidgetBuilder? previewContentBuilder;
+  final String? previewTitle;
 
   @override
   State<BaseCreatorPage> createState() => BaseCreatorPageState();
@@ -106,7 +111,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   bool _openUntilClosed = false;
 
   /// A snapshot of settings for the template save dialog.
-  PollTemplate get templateSettings => PollTemplate(
+  FormTemplate get templateSettings => FormTemplate(
     id: '',
     name: '',
     tags: List.of(_selectedTags),
@@ -117,7 +122,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   );
 
   Future<void> _saveNamedDraft() async {
-    final form = PollTemplate.fromJson({
+    final form = FormTemplate.fromJson({
       ...templateSettings.toJson(),
       'title': _titleController.text,
       'description': _descriptionController.text,
@@ -131,7 +136,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   }
 
   /// Refuse unavailable scope settings instead of silently broadening an audience.
-  Future<bool> applyTemplate(PollTemplate template) async {
+  Future<bool> applyTemplate(FormTemplate template) async {
     final scope = template.scopeType == null
         ? null
         : parseFormScopeType(template.scopeType);
@@ -139,7 +144,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     if ((scope == FormScopeType.stateOrRegion && !_supportsStateScope) ||
         (scope == FormScopeType.countryUnion &&
             !_availableCountryUnions.contains(union))) {
-      showUserMistakeSnackBar(context.l10n.pollTemplateScopeUnavailable);
+      showUserMistakeSnackBar(context.l10n.formTemplateScopeUnavailable);
       return false;
     }
     setState(() {
@@ -243,9 +248,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       final text = await PdfFormImport.extract(await file.readAsBytes());
       if (!mounted) return;
       final controller = TextEditingController(text: text);
-      PollTemplate? template;
+      FormTemplate? template;
       try {
-        final route = DialogRoute<PollTemplate>(
+        final route = DialogRoute<FormTemplate>(
           context: context,
           builder: (context) {
             String? error;
@@ -285,7 +290,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                       try {
                         final result = PdfFormImport.parse(
                           controller.text,
-                          type: widget.importType!,
+                          target: widget.importTarget!,
                         );
                         Navigator.pop(context, result);
                       } on FormatException {
@@ -343,7 +348,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       if (!mounted) return;
       final template = FormImport.parse(
         utf8.decode(bytes),
-        expectedType: widget.importType!,
+        target: widget.importTarget!,
         allowedTags: AppTagsHelper.getTags(context).keys.toSet(),
       );
       final confirmed = await showDialog<bool>(
@@ -417,7 +422,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     super.dispose();
   }
 
-  String get _draftKey => 'draft_${widget.title}';
+  String get _draftKey => widget.draftStorageKey ?? 'draft_${widget.title}';
 
   Future<void> _loadStateScope() async {
     final profileLoader = widget.profileLoader;
@@ -464,6 +469,31 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
 
   Future<void> _loadDraft() async {
     final prefs = await SharedPreferences.getInstance();
+    // Move the current title-based draft once, then use the stable namespace.
+    final previousKey = 'draft_${widget.title}';
+    if (widget.draftStorageKey != null &&
+        !prefs.containsKey('${_draftKey}_title') &&
+        prefs.containsKey('${previousKey}_title')) {
+      final oldKeys = prefs
+          .getKeys()
+          .where((key) => key.startsWith('${previousKey}_'))
+          .toList();
+      for (final key in oldKeys) {
+        final destination = '$_draftKey${key.substring(previousKey.length)}';
+        final saved = switch (prefs.get(key)) {
+          final String value => await prefs.setString(destination, value),
+          final int value => await prefs.setInt(destination, value),
+          final bool value => await prefs.setBool(destination, value),
+          final double value => await prefs.setDouble(destination, value),
+          final List<String> value => await prefs.setStringList(
+            destination,
+            value,
+          ),
+          _ => false,
+        };
+        if (saved) await prefs.remove(key);
+      }
+    }
     final draftTitle = prefs.getString('${_draftKey}_title');
     final draftDescription = prefs.getString('${_draftKey}_description');
     final draftTags = prefs.getStringList('${_draftKey}_tags');
@@ -623,7 +653,11 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         builder: (context, updatePreview) => PopScope(
           canPop: !_isLoading,
           child: Scaffold(
-            appBar: AppBar(title: Text(context.l10n.reviewPublication)),
+            appBar: AppBar(
+              title: Text(
+                widget.previewTitle ?? context.l10n.reviewPublication,
+              ),
+            ),
             body: ListView(
               padding: const EdgeInsets.all(20),
               children: [
@@ -1248,39 +1282,21 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          if (widget.importType != null)
-            IconButton(
-              key: const Key('import_form_json'),
-              tooltip: context.l10n.importFormLabel,
-              icon: _isImporting
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Center(
-                        child: TriangleLoadingIndicator(
-                          size: 18,
-                          showFill: false,
-                          strokeColor: colors.onSurface,
-                        ),
-                      ),
-                    )
-                  : const Icon(Icons.file_upload_outlined),
-              onPressed: _isImporting || _isLoading || _isReviewing
-                  ? null
-                  : _chooseImport,
-            ),
           if (widget.appBarActionBuilder != null)
             widget.appBarActionBuilder!(
               _titleController,
               _descriptionController,
             ),
-          if (widget.appBarActionBuilder != null ||
+          if (widget.importTarget != null ||
+              widget.appBarActionBuilder != null ||
               widget.onSaveDraft != null) ...[
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
               enabled: !_isLoading && !_isReviewing,
               onSelected: (action) {
-                if (action == 'saveDraft') {
+                if (action == 'import') {
+                  _chooseImport();
+                } else if (action == 'saveDraft') {
                   _saveNamedDraft();
                 } else if (action == 'chooseDraft') {
                   widget.onChooseDraft!();
@@ -1291,6 +1307,22 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 }
               },
               itemBuilder: (context) => [
+                if (widget.importTarget != null)
+                  PopupMenuItem(
+                    key: const Key('import_form_json'),
+                    value: 'import',
+                    enabled: !_isImporting,
+                    child: Row(
+                      children: [
+                        Icon(Icons.system_update_alt, color: colors.onPrimary),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.importFormLabel,
+                          style: TextStyle(color: colors.onPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (widget.onSaveDraft != null)
                   PopupMenuItem(
                     value: 'saveDraft',

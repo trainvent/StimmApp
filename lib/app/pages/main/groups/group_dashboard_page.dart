@@ -7,10 +7,10 @@ import 'package:stimmapp/app/pages/main/groups/group_invite_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_invitations_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_members_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
-import 'package:stimmapp/app/pages/main/home/polls/polls_page.dart';
+import 'package:stimmapp/app/pages/main/home/questionnaires/questionnaires_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -22,26 +22,33 @@ class GroupDashboardPage extends StatelessWidget {
     this.auth,
   });
 
-  final PollGroup group;
-  final PollGroupRepository? repository;
+  final QuestionnaireGroup group;
+  final QuestionnaireGroupRepository? repository;
   final AuthService? auth;
 
-  PollGroupRepository get _repository =>
-      repository ?? PollGroupRepository.create();
+  QuestionnaireGroupRepository get _repository =>
+      repository ?? QuestionnaireGroupRepository.create();
   AuthService get _auth => auth ?? authService;
 
-  String _roleLabel(BuildContext context, PollGroupRole? role, bool isCreator) {
+  String _roleLabel(
+    BuildContext context,
+    QuestionnaireGroupRole? role,
+    bool isCreator,
+  ) {
     if (isCreator) {
       return context.l10n.ownerRoleLabel;
     }
     return switch (role) {
-      PollGroupRole.admin => context.l10n.adminRoleLabel,
-      PollGroupRole.manager => context.l10n.managerRoleLabel,
-      PollGroupRole.user || null => context.l10n.memberRoleLabel,
+      QuestionnaireGroupRole.admin => context.l10n.adminRoleLabel,
+      QuestionnaireGroupRole.manager => context.l10n.managerRoleLabel,
+      QuestionnaireGroupRole.user || null => context.l10n.memberRoleLabel,
     };
   }
 
-  Future<void> _deleteGroup(BuildContext context, PollGroup group) async {
+  Future<void> _deleteGroup(
+    BuildContext context,
+    QuestionnaireGroup group,
+  ) async {
     var enteredGroupName = '';
     try {
       final confirmed = await showDialog<bool>(
@@ -104,9 +111,8 @@ class GroupDashboardPage extends StatelessWidget {
   }
 
   Future<void> _open(Widget page, BuildContext context) {
-    return Navigator.of(
-      context,
-    ).push<void>(MaterialPageRoute(builder: (_) => page));
+    return Navigator.of(context)
+        .push<void>(MaterialPageRoute(builder: (_) => page));
   }
 
   Widget _actionCard({
@@ -145,7 +151,7 @@ class GroupDashboardPage extends StatelessWidget {
       );
     }
 
-    return StreamBuilder<PollGroup?>(
+    return StreamBuilder<QuestionnaireGroup?>(
       stream: _repository.watchGroup(group.id),
       initialData: group,
       builder: (context, groupSnapshot) {
@@ -156,17 +162,20 @@ class GroupDashboardPage extends StatelessWidget {
             body: Center(child: Text(context.l10n.notFound)),
           );
         }
-        return StreamBuilder<PollGroupMember?>(
+        return StreamBuilder<QuestionnaireGroupMember?>(
           stream: _repository.watchMember(currentGroup.id, uid),
           builder: (context, memberSnapshot) {
             final member = memberSnapshot.data;
             final isCreator = currentGroup.createdBy == uid;
-            final canManage = isCreator || member?.role == PollGroupRole.admin;
+            final canManage =
+                isCreator || member?.role == QuestionnaireGroupRole.admin;
             final roleLabel = _roleLabel(context, member?.role, isCreator);
             final expiresAt = currentGroup.expiresAt;
             final expiryLabel = expiresAt == null
                 ? context.l10n.noExpiry
-                : context.l10n.expiresOnDate(formatPollGroupDate(expiresAt));
+                : context.l10n.expiresOnDate(
+                    formatQuestionnaireGroupDate(expiresAt),
+                  );
 
             return Scaffold(
               appBar: AppBar(title: Text(currentGroup.name)),
@@ -189,9 +198,9 @@ class GroupDashboardPage extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   currentGroup.name,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.headlineSmall,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall,
                                 ),
                               ),
                               Chip(label: Text(roleLabel)),
@@ -268,9 +277,9 @@ class GroupDashboardPage extends StatelessWidget {
                   _actionCard(
                     context: context,
                     icon: Icons.how_to_vote_outlined,
-                    title: context.l10n.viewGroupPolls,
+                    title: context.l10n.viewGroupQuestionnaires,
                     onTap: () => _open(
-                      PollsPage(
+                      QuestionnairesPage(
                         initialGroupId: currentGroup.id,
                         showTopNavigation: true,
                       ),
@@ -348,7 +357,7 @@ class GroupDashboardPage extends StatelessWidget {
                         context,
                       ),
                     ),
-                    if (buildPollGroupInviteLink(currentGroup) != null)
+                    if (buildQuestionnaireGroupInviteLink(currentGroup) != null)
                       _actionCard(
                         context: context,
                         icon: Icons.share_outlined,
@@ -357,7 +366,7 @@ class GroupDashboardPage extends StatelessWidget {
                           IconButton(
                             key: const Key('display_group_invite_qr'),
                             tooltip: context.l10n.displayQrCode,
-                            onPressed: () => showPollGroupInviteQrCode(
+                            onPressed: () => showQuestionnaireGroupInviteQrCode(
                               context,
                               currentGroup,
                             ),
@@ -366,8 +375,10 @@ class GroupDashboardPage extends StatelessWidget {
                           IconButton(
                             key: const Key('copy_group_invite_link'),
                             tooltip: context.l10n.copyInviteLinkTooltip,
-                            onPressed: () =>
-                                copyPollGroupInviteLink(context, currentGroup),
+                            onPressed: () => copyQuestionnaireGroupInviteLink(
+                              context,
+                              currentGroup,
+                            ),
                             icon: const Icon(Icons.copy_outlined),
                           ),
                         ],

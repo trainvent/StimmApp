@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePollGroup = exports.createPollGroup = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
-const poll_group_activity_1 = require("./poll_group_activity");
+const questionnaire_group_activity_1 = require("./questionnaire_group_activity");
 const VALID_ROLES = new Set(["admin", "manager", "user"]);
 const VALID_ACCESS_MODES = new Set(["private", "protected", "open"]);
 const VALID_NICKNAME_MODES = new Set(["self_named", "admin_assigned"]);
@@ -249,14 +249,14 @@ exports.createPollGroup = (0, https_1.onCall)(async (request) => {
             resolvedAt: null,
         });
     }
-    (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+    (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
         type: "group_created",
         actorUid: uid,
         actorDisplayName,
         createdAt: now,
     });
     if (matchingProfiles.length > 0) {
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "invitations_sent",
             actorUid: uid,
             actorDisplayName,
@@ -441,7 +441,7 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
     }
     const isInvitationUpdate = Array.isArray(data.inviteEmails) && data.inviteEmails.length > 0;
     if (!isInvitationUpdate) {
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "settings_updated",
             actorUid: uid,
             actorDisplayName,
@@ -449,7 +449,7 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
         });
     }
     if (invitationCount > 0) {
-        (0, poll_group_activity_1.addPollGroupActivity)(batch, groupRef, {
+        (0, questionnaire_group_activity_1.addQuestionnaireGroupActivity)(batch, groupRef, {
             type: "invitations_sent",
             actorUid: uid,
             actorDisplayName,
@@ -460,4 +460,4 @@ exports.updatePollGroup = (0, https_1.onCall)(async (request) => {
     await batch.commit();
     return { groupId, invitationCount };
 });
-//# sourceMappingURL=poll_groups.js.map
+//# sourceMappingURL=questionnaire_groups.js.map

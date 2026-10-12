@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/poll_group_activity.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group_activity.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
-class _TestPollGroupRepository extends PollGroupRepository {
-  _TestPollGroupRepository(this.firestore) : super(DatabaseService(firestore));
+class _TestQuestionnaireGroupRepository extends QuestionnaireGroupRepository {
+  _TestQuestionnaireGroupRepository(this.firestore)
+    : super(DatabaseService(firestore));
 
   final FakeFirebaseFirestore firestore;
 
@@ -17,20 +18,18 @@ class _TestPollGroupRepository extends PollGroupRepository {
     required String creatorUid,
     required String name,
     required String joinCode,
-    required PollGroupNicknameMode nicknameMode,
+    required QuestionnaireGroupNicknameMode nicknameMode,
     required bool managersCanInvite,
-    required PollGroupAccessMode accessMode,
+    required QuestionnaireGroupAccessMode accessMode,
     required bool inviteLinkEnabled,
     DateTime? expiresAt,
-    List<PollGroupAllowedMember> allowedMembers = const [],
-    List<PollGroupAllowedDomain> allowedDomains = const [],
+    List<QuestionnaireGroupAllowedMember> allowedMembers = const [],
+    List<QuestionnaireGroupAllowedDomain> allowedDomains = const [],
   }) async {
-    final normalizedMembers = PollGroupRepository.normalizeAllowedMembers(
-      allowedMembers,
-    );
-    final normalizedDomains = PollGroupRepository.normalizeAllowedDomains(
-      allowedDomains,
-    );
+    final normalizedMembers =
+        QuestionnaireGroupRepository.normalizeAllowedMembers(allowedMembers);
+    final normalizedDomains =
+        QuestionnaireGroupRepository.normalizeAllowedDomains(allowedDomains);
     final now = DateTime(2024, 1, 1);
     final groupRef = firestore.collection('pollGroups').doc();
     final creatorSnap = await firestore
@@ -46,8 +45,8 @@ class _TestPollGroupRepository extends PollGroupRepository {
               : 'Group admin');
 
     await groupRef.set(
-      PollGroup.toFirestore(
-        PollGroup(
+      QuestionnaireGroup.toFirestore(
+        QuestionnaireGroup(
           id: groupRef.id,
           name: name,
           createdBy: creatorUid,
@@ -69,10 +68,10 @@ class _TestPollGroupRepository extends PollGroupRepository {
         .collection('members')
         .doc(creatorUid)
         .set(
-          PollGroupMember.toFirestore(
-            PollGroupMember(
+          QuestionnaireGroupMember.toFirestore(
+            QuestionnaireGroupMember(
               uid: creatorUid,
-              role: PollGroupRole.admin,
+              role: QuestionnaireGroupRole.admin,
               joinedAt: now,
               joinedBy: creatorUid,
             ),
@@ -84,13 +83,13 @@ class _TestPollGroupRepository extends PollGroupRepository {
       await groupRef
           .collection('allowedMembers')
           .doc(member.email.toLowerCase())
-          .set(PollGroupAllowedMember.toFirestore(member, null));
+          .set(QuestionnaireGroupAllowedMember.toFirestore(member, null));
     }
     for (final domain in normalizedDomains) {
       await groupRef
           .collection('allowedDomains')
           .doc(domain.domain)
-          .set(PollGroupAllowedDomain.toFirestore(domain, null));
+          .set(QuestionnaireGroupAllowedDomain.toFirestore(domain, null));
     }
 
     final users = await firestore.collection('users').get();
@@ -108,8 +107,8 @@ class _TestPollGroupRepository extends PollGroupRepository {
           .collection('groupAccessNotifications')
           .doc();
       await notificationRef.set(
-        PollGroupAccessNotification.toFirestore(
-          PollGroupAccessNotification(
+        QuestionnaireGroupAccessNotification.toFirestore(
+          QuestionnaireGroupAccessNotification(
             id: notificationRef.id,
             groupId: groupRef.id,
             groupName: name,
@@ -118,8 +117,8 @@ class _TestPollGroupRepository extends PollGroupRepository {
             recipientUid: userDoc.id,
             role: allowedMember.first.role,
             accessMode: accessMode,
-            type: PollGroupAccessNotificationType.invite,
-            status: PollGroupAccessNotificationStatus.pending,
+            type: QuestionnaireGroupAccessNotificationType.invite,
+            status: QuestionnaireGroupAccessNotificationStatus.pending,
             createdAt: now,
           ),
           null,
@@ -129,13 +128,13 @@ class _TestPollGroupRepository extends PollGroupRepository {
           .collection('invitations')
           .doc(userDoc.id)
           .set(
-            PollGroupInvitation.toFirestore(
-              PollGroupInvitation(
+            QuestionnaireGroupInvitation.toFirestore(
+              QuestionnaireGroupInvitation(
                 recipientUid: userDoc.id,
                 email: email,
                 displayName: userDoc.data()['displayName'] as String?,
                 role: allowedMember.first.role,
-                status: PollGroupInvitationStatus.pending,
+                status: QuestionnaireGroupInvitationStatus.pending,
                 invitedAt: now,
                 invitedBy: creatorUid,
               ),
@@ -150,17 +149,17 @@ class _TestPollGroupRepository extends PollGroupRepository {
 
 void main() {
   late FakeFirebaseFirestore firestore;
-  late PollGroupRepository repository;
+  late QuestionnaireGroupRepository repository;
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
-    repository = _TestPollGroupRepository(firestore);
+    repository = _TestQuestionnaireGroupRepository(firestore);
   });
 
   Future<void> addMember({
     required String groupId,
     required String uid,
-    required PollGroupRole role,
+    required QuestionnaireGroupRole role,
     required DateTime joinedAt,
   }) async {
     await firestore
@@ -169,8 +168,8 @@ void main() {
         .collection('members')
         .doc(uid)
         .set(
-          PollGroupMember.toFirestore(
-            PollGroupMember(
+          QuestionnaireGroupMember.toFirestore(
+            QuestionnaireGroupMember(
               uid: uid,
               role: role,
               joinedAt: joinedAt,
@@ -184,7 +183,7 @@ void main() {
     });
   }
 
-  group('PollGroupRepository', () {
+  group('QuestionnaireGroupRepository', () {
     test(
       'createGroup persists invite, privacy, members, and domains',
       () async {
@@ -213,23 +212,23 @@ void main() {
           creatorUid: 'owner',
           name: 'Operations',
           joinCode: 'GRP-ABC123',
-          nicknameMode: PollGroupNicknameMode.adminAssigned,
+          nicknameMode: QuestionnaireGroupNicknameMode.adminAssigned,
           managersCanInvite: true,
-          accessMode: PollGroupAccessMode.protected,
+          accessMode: QuestionnaireGroupAccessMode.protected,
           inviteLinkEnabled: true,
           allowedMembers: [
-            PollGroupAllowedMember(
+            QuestionnaireGroupAllowedMember(
               email: 'Anna@Example.com',
               nickname: 'Anna',
-              role: PollGroupRole.user,
+              role: QuestionnaireGroupRole.user,
               createdAt: DateTime(2024, 1, 1),
               createdBy: 'owner',
             ),
           ],
           allowedDomains: [
-            PollGroupAllowedDomain(
+            QuestionnaireGroupAllowedDomain(
               domain: '@Example.com',
-              role: PollGroupRole.manager,
+              role: QuestionnaireGroupRole.manager,
               createdAt: DateTime(2024, 1, 1),
               createdBy: 'owner',
             ),
@@ -267,32 +266,32 @@ void main() {
     );
 
     test('normalizes and deduplicates allowed members and domains', () {
-      final members = PollGroupRepository.normalizeAllowedMembers([
-        PollGroupAllowedMember(
+      final members = QuestionnaireGroupRepository.normalizeAllowedMembers([
+        QuestionnaireGroupAllowedMember(
           email: ' DUP@example.com ',
           nickname: 'First',
-          role: PollGroupRole.user,
+          role: QuestionnaireGroupRole.user,
           createdAt: DateTime(2024, 1, 1),
           createdBy: 'owner',
         ),
-        PollGroupAllowedMember(
+        QuestionnaireGroupAllowedMember(
           email: 'dup@example.com',
           nickname: 'Latest',
-          role: PollGroupRole.manager,
+          role: QuestionnaireGroupRole.manager,
           createdAt: DateTime(2024, 1, 1),
           createdBy: 'owner',
         ),
       ]);
-      final domains = PollGroupRepository.normalizeAllowedDomains([
-        PollGroupAllowedDomain(
+      final domains = QuestionnaireGroupRepository.normalizeAllowedDomains([
+        QuestionnaireGroupAllowedDomain(
           domain: '@Example.com',
-          role: PollGroupRole.user,
+          role: QuestionnaireGroupRole.user,
           createdAt: DateTime(2024, 1, 1),
           createdBy: 'owner',
         ),
-        PollGroupAllowedDomain(
+        QuestionnaireGroupAllowedDomain(
           domain: 'example.com',
-          role: PollGroupRole.admin,
+          role: QuestionnaireGroupRole.admin,
           createdAt: DateTime(2024, 1, 1),
           createdBy: 'owner',
         ),
@@ -301,11 +300,11 @@ void main() {
       expect(members, hasLength(1));
       expect(members.single.email, 'dup@example.com');
       expect(members.single.nickname, 'Latest');
-      expect(members.single.role, PollGroupRole.manager);
+      expect(members.single.role, QuestionnaireGroupRole.manager);
 
       expect(domains, hasLength(1));
       expect(domains.single.domain, 'example.com');
-      expect(domains.single.role, PollGroupRole.admin);
+      expect(domains.single.role, QuestionnaireGroupRole.admin);
     });
 
     test('watchGroupsForUser returns created groups', () async {
@@ -313,9 +312,9 @@ void main() {
         creatorUid: 'owner',
         name: 'Operations',
         joinCode: 'GRP-ABC123',
-        nicknameMode: PollGroupNicknameMode.selfNamed,
+        nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
         managersCanInvite: true,
-        accessMode: PollGroupAccessMode.private,
+        accessMode: QuestionnaireGroupAccessMode.private,
         inviteLinkEnabled: false,
       );
 
@@ -330,16 +329,16 @@ void main() {
         creatorUid: 'owner',
         name: 'Solo',
         joinCode: 'GRP-SOLO',
-        nicknameMode: PollGroupNicknameMode.selfNamed,
+        nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
         managersCanInvite: true,
-        accessMode: PollGroupAccessMode.private,
+        accessMode: QuestionnaireGroupAccessMode.private,
         inviteLinkEnabled: false,
       );
       final group = (await repository.getGroup(groupId))!;
 
       final result = await repository.leaveGroup(group: group, uid: 'owner');
 
-      expect(result, PollGroupLeaveResult.groupDeleted);
+      expect(result, QuestionnaireGroupLeaveResult.groupDeleted);
       expect(await repository.getGroup(groupId), isNull);
       expect(
         (await firestore
@@ -359,21 +358,21 @@ void main() {
           creatorUid: 'owner',
           name: 'Team',
           joinCode: 'GRP-TEAM',
-          nicknameMode: PollGroupNicknameMode.selfNamed,
+          nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
           managersCanInvite: true,
-          accessMode: PollGroupAccessMode.private,
+          accessMode: QuestionnaireGroupAccessMode.private,
           inviteLinkEnabled: false,
         );
         await addMember(
           groupId: groupId,
           uid: 'newer-admin',
-          role: PollGroupRole.admin,
+          role: QuestionnaireGroupRole.admin,
           joinedAt: DateTime(2024, 3),
         );
         await addMember(
           groupId: groupId,
           uid: 'older-admin',
-          role: PollGroupRole.admin,
+          role: QuestionnaireGroupRole.admin,
           joinedAt: DateTime(2024, 2),
         );
         final group = (await repository.getGroup(groupId))!;
@@ -387,13 +386,13 @@ void main() {
             .doc('owner')
             .get();
 
-        expect(result, PollGroupLeaveResult.left);
+        expect(result, QuestionnaireGroupLeaveResult.left);
         expect(updatedGroup.createdBy, 'older-admin');
         expect(updatedGroup.memberIds, isNot(contains('owner')));
         expect(formerOwner.exists, isFalse);
         expect(
           (await repository.watchActivities(groupId).first).single.type,
-          PollGroupActivityType.ownershipTransferred,
+          QuestionnaireGroupActivityType.ownershipTransferred,
         );
       },
     );
@@ -405,15 +404,15 @@ void main() {
           creatorUid: 'owner',
           name: 'Team',
           joinCode: 'GRP-TEAM',
-          nicknameMode: PollGroupNicknameMode.selfNamed,
+          nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
           managersCanInvite: true,
-          accessMode: PollGroupAccessMode.private,
+          accessMode: QuestionnaireGroupAccessMode.private,
           inviteLinkEnabled: false,
         );
         await addMember(
           groupId: groupId,
           uid: 'member',
-          role: PollGroupRole.user,
+          role: QuestionnaireGroupRole.user,
           joinedAt: DateTime(2024, 2),
         );
         final group = (await repository.getGroup(groupId))!;
@@ -423,7 +422,7 @@ void main() {
         final updatedGroup = (await repository.getGroup(groupId))!;
         final election = await repository.watchAdminElection(groupId).first;
 
-        expect(result, PollGroupLeaveResult.left);
+        expect(result, QuestionnaireGroupLeaveResult.left);
         expect(updatedGroup.createdBy, 'owner');
         expect(updatedGroup.memberIds, isNot(contains('owner')));
         expect(updatedGroup.adminElectionOpen, isTrue);
@@ -436,7 +435,7 @@ void main() {
         expect(election?.isOpen, isTrue);
         expect(
           (await repository.watchActivities(groupId).first).single.type,
-          PollGroupActivityType.adminElectionStarted,
+          QuestionnaireGroupActivityType.adminElectionStarted,
         );
       },
     );
@@ -469,15 +468,15 @@ void main() {
           creatorUid: 'owner',
           name: 'Operations',
           joinCode: 'GRP-ABC123',
-          nicknameMode: PollGroupNicknameMode.selfNamed,
+          nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
           managersCanInvite: true,
-          accessMode: PollGroupAccessMode.private,
+          accessMode: QuestionnaireGroupAccessMode.private,
           inviteLinkEnabled: false,
           allowedMembers: [
-            PollGroupAllowedMember(
+            QuestionnaireGroupAllowedMember(
               email: 'anna@example.com',
               nickname: 'Anna',
-              role: PollGroupRole.manager,
+              role: QuestionnaireGroupRole.manager,
               createdAt: DateTime(2024, 1, 1),
               createdBy: 'owner',
             ),
@@ -513,11 +512,11 @@ void main() {
         expect(memberSnap.exists, isTrue);
         expect(
           notification?.status,
-          PollGroupAccessNotificationStatus.accepted,
+          QuestionnaireGroupAccessNotificationStatus.accepted,
         );
         expect(
           (await repository.watchInvitations(groupId).first).single.status,
-          PollGroupInvitationStatus.accepted,
+          QuestionnaireGroupInvitationStatus.accepted,
         );
 
         await repository.removeMember(
@@ -525,7 +524,7 @@ void main() {
           uid: 'invitee',
           actorUid: 'owner',
           actorDisplayName: 'Owner',
-          role: PollGroupRole.manager,
+          role: QuestionnaireGroupRole.manager,
           email: 'anna@example.com',
         );
 
@@ -555,7 +554,7 @@ void main() {
             (await repository.watchInvitations(groupId).first).single;
 
         expect(updatedGroup?.memberIds, isNot(contains('invitee')));
-        expect(invitation.status, PollGroupInvitationStatus.removed);
+        expect(invitation.status, QuestionnaireGroupInvitationStatus.removed);
         expect(updatedGroup?.importedMemberCount, 0);
         expect(removedMember.exists, isFalse);
         expect(removedPreparedAccess.exists, isFalse);
@@ -587,8 +586,8 @@ void main() {
         expect(
           activities.map((activity) => activity.type),
           containsAll([
-            PollGroupActivityType.memberJoined,
-            PollGroupActivityType.memberRemoved,
+            QuestionnaireGroupActivityType.memberJoined,
+            QuestionnaireGroupActivityType.memberRemoved,
           ]),
         );
       },
@@ -599,9 +598,9 @@ void main() {
         creatorUid: 'owner',
         name: 'Operations',
         joinCode: 'GRP-ABC123',
-        nicknameMode: PollGroupNicknameMode.selfNamed,
+        nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
         managersCanInvite: true,
-        accessMode: PollGroupAccessMode.private,
+        accessMode: QuestionnaireGroupAccessMode.private,
         inviteLinkEnabled: false,
       );
 
@@ -613,7 +612,10 @@ void main() {
       );
 
       final activity = (await repository.watchActivities(groupId).first).single;
-      expect(activity.type, PollGroupActivityType.publicationPublished);
+      expect(
+        activity.type,
+        QuestionnaireGroupActivityType.publicationPublished,
+      );
       expect(activity.actorDisplayName, 'Owner');
       expect(activity.targetTitle, 'Quarterly priorities');
     });

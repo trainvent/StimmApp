@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_editor_page.dart';
 import 'package:stimmapp/app/pages/main/groups/group_invite_page.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/group_picture_service.dart';
@@ -34,7 +35,7 @@ class _FakeAuthService extends AuthService {
   User? get currentUser => _user;
 }
 
-class _FakeCsvImporter extends PollGroupCsvImporter {
+class _FakeCsvImporter extends QuestionnaireGroupCsvImporter {
   const _FakeCsvImporter(this.content);
 
   final String? content;
@@ -43,13 +44,14 @@ class _FakeCsvImporter extends PollGroupCsvImporter {
   Future<String?> pickCsvText() async => content;
 }
 
-class _RecordingPollGroupRepository extends PollGroupRepository {
-  _RecordingPollGroupRepository()
+class _RecordingQuestionnaireGroupRepository
+    extends QuestionnaireGroupRepository {
+  _RecordingQuestionnaireGroupRepository()
     : super(DatabaseService(FakeFirebaseFirestore()));
 
   Map<String, Object?>? lastCreatePayload;
   Map<String, Object?>? lastUpdatePayload;
-  final List<PollGroup> createdGroups = [];
+  final List<QuestionnaireGroup> createdGroups = [];
   int createCalls = 0;
   String? savedPicture;
   bool pictureSaved = false;
@@ -61,20 +63,24 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
   }
 
   @override
-  Future<List<PollGroupAllowedMember>> getAllowedMembers(String groupId) async {
+  Future<List<QuestionnaireGroupAllowedMember>> getAllowedMembers(
+    String groupId,
+  ) async {
     return const [];
   }
 
   @override
-  Future<List<PollGroupAllowedDomain>> getAllowedDomains(String groupId) async {
+  Future<List<QuestionnaireGroupAllowedDomain>> getAllowedDomains(
+    String groupId,
+  ) async {
     return const [];
   }
 
   @override
   Future<int> updateGroup({
-    required PollGroup group,
-    List<PollGroupAllowedMember> allowedMembers = const [],
-    List<PollGroupAllowedDomain> allowedDomains = const [],
+    required QuestionnaireGroup group,
+    List<QuestionnaireGroupAllowedMember> allowedMembers = const [],
+    List<QuestionnaireGroupAllowedDomain> allowedDomains = const [],
     List<String> inviteEmails = const [],
   }) async {
     lastUpdatePayload = {
@@ -91,13 +97,13 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
     required String creatorUid,
     required String name,
     required String joinCode,
-    required PollGroupNicknameMode nicknameMode,
+    required QuestionnaireGroupNicknameMode nicknameMode,
     required bool managersCanInvite,
-    required PollGroupAccessMode accessMode,
+    required QuestionnaireGroupAccessMode accessMode,
     required bool inviteLinkEnabled,
     DateTime? expiresAt,
-    List<PollGroupAllowedMember> allowedMembers = const [],
-    List<PollGroupAllowedDomain> allowedDomains = const [],
+    List<QuestionnaireGroupAllowedMember> allowedMembers = const [],
+    List<QuestionnaireGroupAllowedDomain> allowedDomains = const [],
   }) async {
     createCalls++;
     lastCreatePayload = {
@@ -110,7 +116,7 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
       'allowedMembers': allowedMembers,
       'allowedDomains': allowedDomains,
     };
-    final group = PollGroup(
+    final group = QuestionnaireGroup(
       id: 'group-1',
       name: name,
       createdBy: creatorUid,
@@ -130,8 +136,8 @@ class _RecordingPollGroupRepository extends PollGroupRepository {
   }
 
   @override
-  Stream<List<PollGroup>> watchGroupsForUser(String uid) {
-    return Stream.value(List<PollGroup>.from(createdGroups));
+  Stream<List<QuestionnaireGroup>> watchGroupsForUser(String uid) {
+    return Stream.value(List<QuestionnaireGroup>.from(createdGroups));
   }
 }
 
@@ -162,25 +168,25 @@ class _FakeGroupPictures extends GroupPictureService {
 
 void main() {
   late _FakeUser user;
-  late _RecordingPollGroupRepository repository;
+  late _RecordingQuestionnaireGroupRepository repository;
 
   setUp(() {
     initializeTestDependencies();
     user = _FakeUser();
-    repository = _RecordingPollGroupRepository();
+    repository = _RecordingQuestionnaireGroupRepository();
   });
 
-  final existingGroup = PollGroup(
+  final existingGroup = QuestionnaireGroup(
     id: 'group-1',
     name: 'Ops Team',
     createdBy: 'user-1',
     createdAt: DateTime(2024, 1, 1),
     joinCode: 'OPS-1',
-    nicknameMode: PollGroupNicknameMode.selfNamed,
+    nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
     managersCanInvite: true,
     memberIds: const ['user-1'],
     importedMemberCount: 0,
-    accessMode: PollGroupAccessMode.protected,
+    accessMode: QuestionnaireGroupAccessMode.protected,
     inviteLinkEnabled: true,
   );
 
@@ -427,16 +433,16 @@ void main() {
       expect(repository.lastCreatePayload?['name'], 'Ops Team');
       expect(
         repository.lastCreatePayload?['accessMode'],
-        PollGroupAccessMode.protected,
+        QuestionnaireGroupAccessMode.protected,
       );
       expect(repository.lastCreatePayload?['inviteLinkEnabled'], isTrue);
 
       final allowedMembers =
           repository.lastCreatePayload?['allowedMembers']
-              as List<PollGroupAllowedMember>;
+              as List<QuestionnaireGroupAllowedMember>;
       final allowedDomains =
           repository.lastCreatePayload?['allowedDomains']
-              as List<PollGroupAllowedDomain>;
+              as List<QuestionnaireGroupAllowedDomain>;
 
       expect(allowedMembers, isEmpty);
 
@@ -469,7 +475,7 @@ void main() {
 
       final allowedMembers =
           repository.lastUpdatePayload?['allowedMembers']
-              as List<PollGroupAllowedMember>;
+              as List<QuestionnaireGroupAllowedMember>;
       expect(allowedMembers, hasLength(1));
       expect(allowedMembers.single.email, 'anna@example.com');
       expect(repository.lastUpdatePayload?['inviteEmails'], const [
@@ -518,7 +524,7 @@ void main() {
 
       final allowedMembers =
           repository.lastUpdatePayload?['allowedMembers']
-              as List<PollGroupAllowedMember>;
+              as List<QuestionnaireGroupAllowedMember>;
       expect(allowedMembers.single.email, 'anna@example.com');
       expect(repository.lastUpdatePayload?['inviteEmails'], const [
         'anna@example.com',

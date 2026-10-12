@@ -1,8 +1,8 @@
-import 'package:stimmapp/core/data/models/survey.dart';
+import 'package:stimmapp/core/data/models/questionnaire.dart';
 
 /// Only selected fields are stored; absent fields leave the current form unchanged.
-class PollTemplate {
-  const PollTemplate({
+class FormTemplate {
+  const FormTemplate({
     required this.id,
     required this.name,
     this.title,
@@ -23,7 +23,7 @@ class PollTemplate {
   final String? title;
   final String? description;
   final String? imageUrl;
-  final List<PollTemplateQuestion>? questions;
+  final List<FormTemplateQuestion>? questions;
   final List<String>? tags;
   final String? scopeType;
   final String? countryUnion;
@@ -49,7 +49,7 @@ class PollTemplate {
     if (includesAudience) 'groupId': groupId,
   };
 
-  factory PollTemplate.fromJson(Map<String, dynamic> json) => PollTemplate(
+  factory FormTemplate.fromJson(Map<String, dynamic> json) => FormTemplate(
     id: json['id'] as String,
     name: json['name'] as String,
     title: json['title'] as String?,
@@ -64,7 +64,7 @@ class PollTemplate {
     groupId: json['groupId'] as String?,
     questions: (json['questions'] as List?)
         ?.map(
-          (question) => PollTemplateQuestion.fromJson(
+          (question) => FormTemplateQuestion.fromJson(
             Map<String, dynamic>.from(question as Map),
           ),
         )
@@ -72,13 +72,13 @@ class PollTemplate {
   );
 }
 
-class PollTemplateQuestion {
-  const PollTemplateQuestion({
+class FormTemplateQuestion {
+  const FormTemplateQuestion({
     required this.title,
     required this.options,
-    this.type = SurveyQuestionType.multipleChoice,
+    this.type = QuestionnaireQuestionType.multipleChoice,
   });
-  final SurveyQuestionType type;
+  final QuestionnaireQuestionType type;
   final String title;
   final List<String> options;
 
@@ -87,11 +87,11 @@ class PollTemplateQuestion {
     'options': options,
     'type': type.name,
   };
-  factory PollTemplateQuestion.fromJson(Map<String, dynamic> json) =>
-      PollTemplateQuestion(
+  factory FormTemplateQuestion.fromJson(Map<String, dynamic> json) =>
+      FormTemplateQuestion(
         type: json['type'] == 'text'
-            ? SurveyQuestionType.text
-            : SurveyQuestionType.multipleChoice,
+            ? QuestionnaireQuestionType.text
+            : QuestionnaireQuestionType.multipleChoice,
         title: json['title'] as String,
         options: List<String>.from(json['options'] as List),
       );

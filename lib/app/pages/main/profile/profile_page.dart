@@ -28,8 +28,8 @@ import 'package:stimmapp/app/widgets/selection_notifier_dialog.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/google_account_links.dart';
@@ -333,15 +333,16 @@ class ProfilePage extends ConsumerWidget {
     return AppBarScaffold(
       title: context.l10n.myProfile,
       actions: [
-        StreamBuilder<List<PollGroupAccessNotification>>(
+        StreamBuilder<List<QuestionnaireGroupAccessNotification>>(
           stream: currentUser == null
               ? null
-              : PollGroupRepository.create().watchNotifications(
+              : QuestionnaireGroupRepository.create().watchNotifications(
                   currentUser.uid,
                 ),
           builder: (context, snapshot) {
             final pendingCount =
-                (snapshot.data ?? const <PollGroupAccessNotification>[])
+                (snapshot.data ??
+                        const <QuestionnaireGroupAccessNotification>[])
                     .where((item) => item.countsAsUnread)
                     .length;
             return Badge.count(
@@ -394,9 +395,8 @@ class ProfilePage extends ConsumerWidget {
                       child: Column(
                         children: [
                           Theme(
-                            data: Theme.of(
-                              context,
-                            ).copyWith(dividerColor: Colors.transparent),
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
                             child: ExpansionTile(
                               controlAffinity: ListTileControlAffinity.leading,
                               trailing: const SizedBox(width: 24),

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stimmapp/core/data/models/petition_draft.dart';
-import 'package:stimmapp/core/data/models/poll_template.dart';
+import 'package:stimmapp/core/data/models/form_template.dart';
 import 'package:stimmapp/core/data/repositories/petition_draft_repository.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       final repository = PetitionDraftRepository(preferences, 'alice');
       const first = PetitionDraft(
-        form: PollTemplate(
+        form: FormTemplate(
           id: 'one',
           name: '',
           title: '',
@@ -28,7 +28,7 @@ void main() {
       await repository.save(first);
       await repository.save(
         const PetitionDraft(
-          form: PollTemplate(id: 'two', name: 'Other'),
+          form: FormTemplate(id: 'two', name: 'Other'),
         ),
       );
       final restored = PetitionDraftRepository(preferences, 'alice').load();
@@ -37,7 +37,7 @@ void main() {
       expect(PetitionDraftRepository(preferences, 'bob').load(), isEmpty);
       await repository.save(
         const PetitionDraft(
-          form: PollTemplate(id: 'one', name: '', title: 'Completed title'),
+          form: FormTemplate(id: 'one', name: '', title: 'Completed title'),
         ),
       );
       expect(repository.load().length, 2);

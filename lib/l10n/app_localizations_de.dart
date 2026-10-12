@@ -1041,10 +1041,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get poll => 'Umfrage';
 
   @override
-  String get pollDetails => 'Umfragedetails';
+  String get pollDetails => 'Abstimmung';
 
   @override
-  String get polls => 'Umfragen';
+  String get questionnaires => 'Umfragen';
 
   @override
   String get popularPetitions => 'Beliebte Petitionen';
@@ -1309,7 +1309,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get surveyQuestion => 'Frage im Fragebogen';
 
   @override
-  String maximumSurveyQuestionsAllowed(int count) {
+  String maximumQuestionnaireQuestionsAllowed(int count) {
     return 'Maximal $count Fragen erlaubt';
   }
 
@@ -1404,7 +1404,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn dies aktiviert ist, erscheinen Fragebögen zusammen mit normalen Abstimmungen in der Abstimmungsliste. Deaktiviere es, wenn du nur Einzelfrage-Abstimmungen sehen möchtest.';
 
   @override
-  String get surveyDetails => 'Fragebogendetails';
+  String get surveyDetails => 'Fragebogen';
 
   @override
   String get submitSurvey => 'Fragebogen absenden';
@@ -1621,51 +1621,56 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tagOther => 'Sonstiges';
 
   @override
-  String get pollTutorialStep1Title => '1. Formuliere ein klares Ziel';
+  String get questionnaireTutorialStep1Title => '1. Formuliere ein klares Ziel';
 
   @override
-  String get pollTutorialStep1Desc =>
+  String get questionnaireTutorialStep1Desc =>
       'Lege genau fest, was du erfahren möchtest – konzentriere dich auf eine Idee.';
 
   @override
-  String get pollTutorialStep2Title => '2. Verwende Alltagssprache';
+  String get questionnaireTutorialStep2Title => '2. Verwende Alltagssprache';
 
   @override
-  String get pollTutorialStep2Desc =>
+  String get questionnaireTutorialStep2Desc =>
       'Keine Fachwörter. Kein Jargon. Keine „klug klingenden“ Formulierungen. Wenn ein Teenager und ein Großelternteil es beide verstehen, ist es gut.';
 
   @override
-  String get pollTutorialStep3Title => '3. Stelle eine kurze, direkte Frage';
+  String get questionnaireTutorialStep3Title =>
+      '3. Stelle eine kurze, direkte Frage';
 
   @override
-  String get pollTutorialStep3Desc => 'Einfacher Satz. Einfache Struktur.';
+  String get questionnaireTutorialStep3Desc =>
+      'Einfacher Satz. Einfache Struktur.';
 
   @override
-  String get pollTutorialStep4Title => '4. Gib faire Auswahlmöglichkeiten';
+  String get questionnaireTutorialStep4Title =>
+      '4. Gib faire Auswahlmöglichkeiten';
 
   @override
-  String get pollTutorialStep4Desc =>
+  String get questionnaireTutorialStep4Desc =>
       'Keine Fangfragen und keine emotionale Wortwahl. Dränge niemanden zu einer bestimmten Option. Füge bei Bedarf „Nicht sicher“ hinzu.';
 
   @override
-  String get pollTutorialStep5Title => '5. Beschränke die Anzahl der Optionen';
+  String get questionnaireTutorialStep5Title =>
+      '5. Beschränke die Anzahl der Optionen';
 
   @override
-  String get pollTutorialStep5Desc =>
+  String get questionnaireTutorialStep5Desc =>
       '3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.';
 
   @override
-  String get pollTutorialStep6Title => '6. Halte die Beantwortung kurz';
+  String get questionnaireTutorialStep6Title =>
+      '6. Halte die Beantwortung kurz';
 
   @override
-  String get pollTutorialStep6Desc =>
+  String get questionnaireTutorialStep6Desc =>
       'Die Leute sollten es in unter 10 Sekunden verstehen und abstimmen können.';
 
   @override
-  String get pollTutorialStep7Title => '7. Respektiere Neutralität';
+  String get questionnaireTutorialStep7Title => '7. Respektiere Neutralität';
 
   @override
-  String get pollTutorialStep7Desc =>
+  String get questionnaireTutorialStep7Desc =>
       'Die Umfrage sollte neutral, wertungsfrei und unvoreingenommen formuliert sein.';
 
   @override
@@ -2560,10 +2565,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get groupManagementTitle => 'Gruppe verwalten';
 
   @override
-  String get viewGroupPolls => 'Umfragen und Erhebungen';
+  String get viewGroupQuestionnaires => 'Umfragen und Erhebungen';
 
   @override
-  String get viewGroupPollsDescription =>
+  String get viewGroupQuestionnairesDescription =>
       'Sieh alles, was für diese Gruppe veröffentlicht wurde.';
 
   @override
@@ -2797,35 +2802,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileDetailsUpdated => 'Dein Profil wurde aktualisiert.';
 
   @override
-  String get pollTemplates => 'Abstimmungsvorlagen';
+  String get formTemplates => 'Abstimmungsvorlagen';
 
   @override
-  String get savePollTemplate => 'Als Vorlage speichern';
+  String get saveFormTemplate => 'Als Vorlage speichern';
 
   @override
-  String get pollTemplateName => 'Name der Vorlage';
+  String get formTemplateName => 'Name der Vorlage';
 
   @override
-  String get pollTemplatesLocal => 'Auf diesem Gerät gespeichert.';
+  String get formTemplatesLocal => 'Auf diesem Gerät gespeichert.';
 
   @override
-  String get pollTemplatesEmpty => 'Noch keine Vorlagen gespeichert.';
+  String get formTemplatesEmpty => 'Noch keine Vorlagen gespeichert.';
 
   @override
-  String get pollTemplateSaved => 'Vorlage gespeichert.';
+  String get formTemplateSaved => 'Vorlage gespeichert.';
 
   @override
-  String get pollTemplateError =>
+  String get formTemplateError =>
       'Vorlagen konnten nicht gespeichert oder geladen werden. Bitte versuche es erneut.';
 
   @override
-  String get pollTemplateReplace => 'Gespeicherte Vorlagenfelder übernehmen?';
+  String get formTemplateReplace => 'Gespeicherte Vorlagenfelder übernehmen?';
 
   @override
-  String get pollTemplateDelete => 'Diese gespeicherte Vorlage löschen?';
+  String get formTemplateDelete => 'Diese gespeicherte Vorlage löschen?';
 
   @override
-  String get pollTemplateDeleteAction => 'Vorlage löschen';
+  String get formTemplateDeleteAction => 'Vorlage löschen';
 
   @override
   String get answerPresets => 'Antwortvorlagen';
@@ -2903,30 +2908,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get presetNever => 'Nie';
 
   @override
-  String get resetCreatorDraft => 'Entwurf zurücksetzen';
+  String get resetCreatorDraft => 'Editor leeren';
 
   @override
   String get creatorHelp => 'Hilfe';
 
   @override
-  String get pollTemplateIncludeFields => 'Inhalt';
+  String get formTemplateIncludeFields => 'Inhalt';
 
   @override
-  String get pollTemplateQuestionsAndAnswers => 'Fragen und Antworten';
+  String get formTemplateQuestionsAndAnswers => 'Fragen und Antworten';
 
   @override
-  String get pollTemplateScopeUnavailable =>
+  String get formTemplateScopeUnavailable =>
       'Dieser Geltungsbereich ist für dein Profil nicht verfügbar.';
 
   @override
-  String get pollTemplateGroupUnavailable =>
+  String get formTemplateGroupUnavailable =>
       'Diese Gruppe ist nicht mehr verfügbar.';
 
   @override
-  String get pollTemplateReplaceAction => 'Vorlage aktualisieren';
+  String get formTemplateReplaceAction => 'Vorlage aktualisieren';
 
   @override
-  String get pollTemplateOverwriteConfirmation =>
+  String get formTemplateOverwriteConfirmation =>
       'Bestehende Vorlage überschreiben?';
 
   @override
@@ -3175,7 +3180,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get answerType => 'Antworttyp';
 
   @override
-  String get multipleChoiceAnswer => 'Multiple Choice';
+  String get multipleChoiceAnswer => 'Auswahl';
 
   @override
   String get writtenAnswer => 'Freitextantwort';
@@ -3321,4 +3326,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addAtLeastOneQuestion => 'Füge mindestens eine Frage hinzu.';
+
+  @override
+  String get createQuestionnaire => 'Fragen erstellen';
+
+  @override
+  String get polls => 'Abstimmungen';
 }

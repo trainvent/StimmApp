@@ -152,9 +152,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "aboutThisApp": MessageLookupByLibrary.simpleMessage("Über diese App"),
     "accentPallette": MessageLookupByLibrary.simpleMessage("Akzentpalette"),
     "accept": MessageLookupByLibrary.simpleMessage("Annehmen"),
-    "acceptCommunityRulesBeforeContinuing": MessageLookupByLibrary.simpleMessage(
-      "Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.",
-    ),
+    "acceptCommunityRulesBeforeContinuing":
+        MessageLookupByLibrary.simpleMessage(
+          "Bitte akzeptiere die Community-Regeln und Nutzungsbedingungen, bevor du fortfährst.",
+        ),
     "acceptInvite": MessageLookupByLibrary.simpleMessage("Einladung annehmen"),
     "acceptedCsvFormat": MessageLookupByLibrary.simpleMessage(
       "CSV oder TSV, mit einer Person pro Zeile:",
@@ -1288,46 +1289,46 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollGuidelines": MessageLookupByLibrary.simpleMessage(
       "Umfragerichtlinien",
     ),
-    "pollTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep1Desc": MessageLookupByLibrary.simpleMessage(
       "Lege genau fest, was du erfahren möchtest – konzentriere dich auf eine Idee.",
     ),
-    "pollTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep1Title": MessageLookupByLibrary.simpleMessage(
       "1. Formuliere ein klares Ziel",
     ),
-    "pollTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep2Desc": MessageLookupByLibrary.simpleMessage(
       "Keine Fachwörter. Kein Jargon. Keine „klug klingenden“ Formulierungen. Wenn ein Teenager und ein Großelternteil es beide verstehen, ist es gut.",
     ),
-    "pollTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep2Title": MessageLookupByLibrary.simpleMessage(
       "2. Verwende Alltagssprache",
     ),
-    "pollTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep3Desc": MessageLookupByLibrary.simpleMessage(
       "Einfacher Satz. Einfache Struktur.",
     ),
-    "pollTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep3Title": MessageLookupByLibrary.simpleMessage(
       "3. Stelle eine kurze, direkte Frage",
     ),
-    "pollTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep4Desc": MessageLookupByLibrary.simpleMessage(
       "Keine Fangfragen und keine emotionale Wortwahl. Dränge niemanden zu einer bestimmten Option. Füge bei Bedarf „Nicht sicher“ hinzu.",
     ),
-    "pollTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep4Title": MessageLookupByLibrary.simpleMessage(
       "4. Gib faire Auswahlmöglichkeiten",
     ),
-    "pollTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep5Desc": MessageLookupByLibrary.simpleMessage(
       "3–5 Auswahlmöglichkeiten sind perfekt für öffentliche Umfragen.",
     ),
-    "pollTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep5Title": MessageLookupByLibrary.simpleMessage(
       "5. Beschränke die Anzahl der Optionen",
     ),
-    "pollTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep6Desc": MessageLookupByLibrary.simpleMessage(
       "Die Leute sollten es in unter 10 Sekunden verstehen und abstimmen können.",
     ),
-    "pollTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep6Title": MessageLookupByLibrary.simpleMessage(
       "6. Halte die Beantwortung kurz",
     ),
-    "pollTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep7Desc": MessageLookupByLibrary.simpleMessage(
       "Die Umfrage sollte neutral, wertungsfrei und unvoreingenommen formuliert sein.",
     ),
-    "pollTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
+    "questionnaireTutorialStep7Title": MessageLookupByLibrary.simpleMessage(
       "7. Respektiere Neutralität",
     ),
     "polls": MessageLookupByLibrary.simpleMessage("Umfragen"),
@@ -1370,9 +1371,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Dein Profil konnte nicht gespeichert werden. Bitte versuche es erneut.",
     ),
     "protectedAccessMode": MessageLookupByLibrary.simpleMessage("Geschützt"),
-    "protectedGroupsRequireApprovalRequest": MessageLookupByLibrary.simpleMessage(
-      "Geschützte Gruppen benötigen eine Genehmigungsanfrage, bevor du beitreten kannst.",
-    ),
+    "protectedGroupsRequireApprovalRequest":
+        MessageLookupByLibrary.simpleMessage(
+          "Geschützte Gruppen benötigen eine Genehmigungsanfrage, bevor du beitreten kannst.",
+        ),
     "protectedGroupsRequireInviteLink": MessageLookupByLibrary.simpleMessage(
       "Geschützte Gruppen benötigen einen gültigen Einladungslink und eine Zugriffsanfrage.",
     ),
@@ -1413,9 +1415,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "registerHere": MessageLookupByLibrary.simpleMessage("Hier registrieren"),
     "relatedToState": m39,
     "remove": MessageLookupByLibrary.simpleMessage("Entfernen"),
-    "removeAbusiveLanguageBeforePublishing": MessageLookupByLibrary.simpleMessage(
-      "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
-    ),
+    "removeAbusiveLanguageBeforePublishing":
+        MessageLookupByLibrary.simpleMessage(
+          "Bitte entferne beleidigende oder anstößige Sprache vor dem Veröffentlichen.",
+        ),
     "removeAbusiveLanguageFromPublicName": MessageLookupByLibrary.simpleMessage(
       "Bitte entferne missbräuchliche oder anstößige Sprache aus deinem öffentlichen Namen.",
     ),
@@ -1777,10 +1780,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "verify": MessageLookupByLibrary.simpleMessage("Verifizieren"),
     "victory": MessageLookupByLibrary.simpleMessage("Sieg!"),
-    "viewGroupPolls": MessageLookupByLibrary.simpleMessage(
+    "viewGroupQuestionnaires": MessageLookupByLibrary.simpleMessage(
       "Umfragen und Erhebungen",
     ),
-    "viewGroupPollsDescription": MessageLookupByLibrary.simpleMessage(
+    "viewGroupQuestionnairesDescription": MessageLookupByLibrary.simpleMessage(
       "Sieh alles, was für diese Gruppe veröffentlicht wurde.",
     ),
     "viewInstitutionalGuide": MessageLookupByLibrary.simpleMessage(
@@ -1806,9 +1809,10 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Wir konnten dein Bundesland nicht ermitteln. Bitte überprüfe deine Wohnadresse.",
         ),
-    "weHaveSentA6digitCodeToYourEmailPlease": MessageLookupByLibrary.simpleMessage(
-      "Wir haben einen 6-stelligen Code an deine E-Mail-Adresse gesendet. Bitte gib ihn unten ein.",
-    ),
+    "weHaveSentA6digitCodeToYourEmailPlease":
+        MessageLookupByLibrary.simpleMessage(
+          "Wir haben einen 6-stelligen Code an deine E-Mail-Adresse gesendet. Bitte gib ihn unten ein.",
+        ),
     "welcomeBackPleaseEnterYourDetails": MessageLookupByLibrary.simpleMessage(
       "Willkommen zurück! Bitte gib deine Daten ein.",
     ),

@@ -10,9 +10,9 @@ import 'package:stimmapp/app/pages/main/groups/group_ui.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/app/widgets/slidable_widget.dart';
 import 'package:trainvent_general/trainvent_general.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
@@ -73,7 +73,10 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
     }
   }
 
-  Future<void> _leaveGroup(BuildContext context, PollGroup group) async {
+  Future<void> _leaveGroup(
+    BuildContext context,
+    QuestionnaireGroup group,
+  ) async {
     final uid = authService.currentUser?.uid;
     if (uid == null) {
       showUserMistakeSnackBar(context.l10n.pleaseSignInFirst);
@@ -103,7 +106,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
     }
 
     try {
-      final result = await PollGroupRepository.create().leaveGroup(
+      final result = await QuestionnaireGroupRepository.create().leaveGroup(
         group: group,
         uid: uid,
       );
@@ -111,7 +114,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
         return;
       }
       showSuccessSnackBar(
-        result == PollGroupLeaveResult.groupDeleted
+        result == QuestionnaireGroupLeaveResult.groupDeleted
             ? context.l10n.groupDeleted
             : context.l10n.youLeftTheGroup,
       );
@@ -125,7 +128,10 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
     }
   }
 
-  Future<void> _openDashboard(BuildContext context, PollGroup group) async {
+  Future<void> _openDashboard(
+    BuildContext context,
+    QuestionnaireGroup group,
+  ) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute(builder: (context) => GroupDashboardPage(group: group)),
     );
@@ -147,7 +153,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
     );
 
     final user = await UserRepository.create().getById(uid);
-    final createdCount = await PollGroupRepository.create()
+    final createdCount = await QuestionnaireGroupRepository.create()
         .countGroupsCreatedByUser(uid);
     final requiresPro = groupCreationRequiresPro(
       createdCount: createdCount,
@@ -179,7 +185,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
     if (!context.mounted) {
       return;
     }
-    await Navigator.of(context).push<PollGroup>(
+    await Navigator.of(context).push<QuestionnaireGroup>(
       MaterialPageRoute(builder: (context) => const GroupEditorPage()),
     );
   }
@@ -187,7 +193,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
   @override
   Widget build(BuildContext context) {
     final uid = authService.currentUser?.uid;
-    final repository = PollGroupRepository.create();
+    final repository = QuestionnaireGroupRepository.create();
     if (uid == null) {
       return Scaffold(
         body: Center(child: Text(context.l10n.pleaseSignInToViewYourGroups)),
@@ -215,7 +221,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
           ),
         ],
       ),
-      body: StreamBuilder<List<PollGroup>>(
+      body: StreamBuilder<List<QuestionnaireGroup>>(
         stream: repository.watchAccessibleGroupsForUser(uid),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -230,7 +236,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
             );
           }
 
-          final groups = snapshot.data ?? const <PollGroup>[];
+          final groups = snapshot.data ?? const <QuestionnaireGroup>[];
           if (snapshot.connectionState == ConnectionState.waiting &&
               groups.isEmpty) {
             return const Center(
@@ -261,11 +267,11 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
               final group = groups[index];
               final isCreator = group.createdBy == uid;
 
-              return StreamBuilder<PollGroupMember?>(
+              return StreamBuilder<QuestionnaireGroupMember?>(
                 stream: repository.watchMember(group.id, uid),
                 builder: (context, memberSnapshot) {
                   final member = memberSnapshot.data;
-                  final isAdmin = member?.role == PollGroupRole.admin;
+                  final isAdmin = member?.role == QuestionnaireGroupRole.admin;
                   final roleLabel = isCreator
                       ? context.l10n.ownerRoleLabel
                       : (isAdmin
@@ -275,7 +281,7 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
                   final expiresLabel = expiresAt == null
                       ? context.l10n.noExpiry
                       : context.l10n.expiresOnDate(
-                          formatPollGroupDate(expiresAt),
+                          formatQuestionnaireGroupDate(expiresAt),
                         );
 
                   return Card(
@@ -294,10 +300,11 @@ class _GroupsOverviewPageState extends State<GroupsOverviewPage> {
                         style: AppSlidableActionStyle.secondary,
                       ),
                       onEndSwipe: () => _leaveGroup(context, group),
-                      child: PollGroupSummaryCard(
+                      child: QuestionnaireGroupSummaryCard(
                         group: group,
                         embedded: true,
-                        onTap: () => showPollGroupInviteQrCode(context, group),
+                        onTap: () =>
+                            showQuestionnaireGroupInviteQrCode(context, group),
                         trailing: Chip(label: Text(roleLabel)),
                         summary: context.l10n.groupAccessSummary(
                           group.accessMode.localizedTitle(context),
@@ -336,8 +343,10 @@ class _GroupCreateAction extends ConsumerWidget {
       );
     }
 
-    return StreamBuilder<List<PollGroup>>(
-      stream: PollGroupRepository.create().watchGroupsForUser(user.uid),
+    return StreamBuilder<List<QuestionnaireGroup>>(
+      stream: QuestionnaireGroupRepository.create().watchGroupsForUser(
+        user.uid,
+      ),
       builder: (context, snapshot) {
         if (!profileState.hasValue || !snapshot.hasData) {
           return const SizedBox(

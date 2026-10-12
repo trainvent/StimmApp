@@ -64,14 +64,14 @@ void main() {
 
     var status = await service.getDailyStatus();
     expect(status.canCreatePetition, isFalse);
-    expect(status.canCreatePoll, isFalse);
+    expect(status.canCreateQuestionnaire, isFalse);
 
     await petition.delete();
     await poll.delete();
 
     status = await service.getDailyStatus();
     expect(status.canCreatePetition, isTrue);
-    expect(status.canCreatePoll, isTrue);
+    expect(status.canCreateQuestionnaire, isTrue);
   });
 
   test('polls and surveys share one daily free allowance', () async {
@@ -79,14 +79,14 @@ void main() {
 
     final status = await service.getDailyStatus();
     expect(status.canCreatePetition, isTrue);
-    expect(status.canCreatePoll, isFalse);
+    expect(status.canCreateQuestionnaire, isFalse);
     await expectLater(
-      service.ensureCanCreatePoll(),
+      service.ensureCanCreateQuestionnaire(),
       throwsA(
         isA<StateError>().having(
           (error) => error.message,
           'message',
-          'poll_daily_limit_reached',
+          'questionnaire_daily_limit_reached',
         ),
       ),
     );
@@ -101,11 +101,11 @@ void main() {
         .set({'petitionCount': 99, 'pollCount': 99});
 
     await service.ensureCanCreatePetition();
-    await service.ensureCanCreatePoll();
+    await service.ensureCanCreateQuestionnaire();
 
     final status = await service.getDailyStatus();
     expect(status.canCreatePetition, isTrue);
-    expect(status.canCreatePoll, isTrue);
+    expect(status.canCreateQuestionnaire, isTrue);
   });
 
   test('publications from another UTC day do not consume quota', () async {
@@ -120,7 +120,7 @@ void main() {
 
     final status = await service.getDailyStatus();
     expect(status.canCreatePetition, isTrue);
-    expect(status.canCreatePoll, isTrue);
+    expect(status.canCreateQuestionnaire, isTrue);
   });
 
   test('Pro users are not limited by existing publications', () async {
@@ -134,6 +134,6 @@ void main() {
 
     final status = await service.getDailyStatus();
     expect(status.canCreatePetition, isTrue);
-    expect(status.canCreatePoll, isTrue);
+    expect(status.canCreateQuestionnaire, isTrue);
   });
 }

@@ -4,7 +4,8 @@ class DatabaseCollections {
   static const petitions = 'petitions';
   static const polls = 'polls';
   static const surveys = 'surveys';
-  static const pollGroups = 'pollGroups';
+  // Remote collection name is a persisted schema contract.
+  static const questionnaireGroups = 'pollGroups';
   static const votes = 'votes';
   static const responses = 'responses';
   static const blockedUsers = 'blockedUsers';

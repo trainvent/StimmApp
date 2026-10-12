@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:stimmapp/core/data/services/file_output/group_activity_export.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stimmapp/app/pages/main/groups/group_activity_page.dart';
-import 'package:stimmapp/core/data/models/poll_group.dart';
-import 'package:stimmapp/core/data/models/poll_group_activity.dart';
-import 'package:stimmapp/core/data/repositories/poll_group_repository.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group.dart';
+import 'package:stimmapp/core/data/models/questionnaire_group_activity.dart';
+import 'package:stimmapp/core/data/repositories/questionnaire_group_repository.dart';
 import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/data/services/database_service.dart';
 
@@ -27,25 +27,25 @@ class _FakeAuthService extends AuthService {
   User? get currentUser => _FakeUser();
 }
 
-class _FakeRepository extends PollGroupRepository {
+class _FakeRepository extends QuestionnaireGroupRepository {
   _FakeRepository(this.activities)
     : super(DatabaseService(FakeFirebaseFirestore()));
 
-  final List<PollGroupActivity> activities;
+  final List<QuestionnaireGroupActivity> activities;
 
   @override
-  Stream<List<PollGroupActivity>> watchActivities(String groupId) =>
+  Stream<List<QuestionnaireGroupActivity>> watchActivities(String groupId) =>
       Stream.value(activities);
 }
 
 void main() {
-  final group = PollGroup(
+  final group = QuestionnaireGroup(
     id: 'group-1',
     name: 'Ops Team',
     createdBy: 'owner',
     createdAt: DateTime(2026, 1, 1),
     joinCode: 'OPS-1',
-    nicknameMode: PollGroupNicknameMode.selfNamed,
+    nicknameMode: QuestionnaireGroupNicknameMode.selfNamed,
     managersCanInvite: true,
     memberIds: const ['owner'],
     importedMemberCount: 0,
@@ -53,32 +53,30 @@ void main() {
 
   test('exports structured activity fields and UTC timestamps as JSON', () {
     final date = DateTime.utc(2026, 8, 9, 12);
-    final activity = PollGroupActivity(
+    final activity = QuestionnaireGroupActivity(
       id: 'published',
-      type: PollGroupActivityType.publicationPublished,
+      type: QuestionnaireGroupActivityType.publicationPublished,
       actorUid: 'owner',
       actorDisplayName: 'Alex',
       targetTitle: 'Priorities "2026"',
       createdAt: date,
     );
-    final data =
-        jsonDecode(
-              buildGroupActivityExport(
-                group,
-                [activity],
-                exportedAt: date,
-                members: [
-                  PollGroupMember(
-                    uid: 'owner',
-                    role: PollGroupRole.admin,
-                    nickname: 'Alex',
-                    joinedAt: date,
-                    joinedBy: 'owner',
-                  ),
-                ],
-              ),
-            )
-            as Map<String, dynamic>;
+    final data = jsonDecode(
+      buildGroupActivityExport(
+        group,
+        [activity],
+        exportedAt: date,
+        members: [
+          QuestionnaireGroupMember(
+            uid: 'owner',
+            role: QuestionnaireGroupRole.admin,
+            nickname: 'Alex',
+            joinedAt: date,
+            joinedBy: 'owner',
+          ),
+        ],
+      ),
+    ) as Map<String, dynamic>;
     expect(data['schemaVersion'], 1);
     expect(data['group']['name'], 'Ops Team');
     expect(data['group']['joinCode'], 'OPS-1');
@@ -95,17 +93,17 @@ void main() {
 
   testWidgets('shows localized group activity newest first', (tester) async {
     final activities = [
-      PollGroupActivity(
+      QuestionnaireGroupActivity(
         id: 'published',
-        type: PollGroupActivityType.publicationPublished,
+        type: QuestionnaireGroupActivityType.publicationPublished,
         actorUid: 'owner',
         actorDisplayName: 'Alex',
         targetTitle: 'Quarterly priorities',
         createdAt: DateTime(2026, 8, 9, 12),
       ),
-      PollGroupActivity(
+      QuestionnaireGroupActivity(
         id: 'joined',
-        type: PollGroupActivityType.memberJoined,
+        type: QuestionnaireGroupActivityType.memberJoined,
         actorUid: 'member',
         actorDisplayName: 'Sam',
         createdAt: DateTime(2026, 8, 8, 12),
