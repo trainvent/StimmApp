@@ -1462,11 +1462,14 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                       key: const Key('durationSliderTheme'),
                       data: SliderTheme.of(context).copyWith(
                         thumbShape: _openUntilClosed
-                            ? SliderComponentShape.noThumb
+                            ? _InvisibleSliderThumb(
+                                SliderTheme.of(context).thumbShape ??
+                                    const RoundSliderThumbShape(),
+                              )
                             : SliderTheme.of(context).thumbShape,
-                        overlayShape: _openUntilClosed
-                            ? SliderComponentShape.noOverlay
-                            : SliderTheme.of(context).overlayShape,
+                        overlayColor: _openUntilClosed
+                            ? Colors.transparent
+                            : SliderTheme.of(context).overlayColor,
                         activeTrackColor: _openUntilClosed
                             ? Theme.of(context).colorScheme.outlineVariant
                             : null,
@@ -1505,7 +1508,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                           : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     onPressed: () {
-                      setState(() => _openUntilClosed = true);
+                      setState(() => _openUntilClosed = !_openUntilClosed);
                       _saveDraft();
                     },
                     icon: const Icon(Icons.all_inclusive),
@@ -1598,4 +1601,31 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       ),
     );
   }
+}
+
+/// Hides the thumb without changing the inset used to lay out the track.
+class _InvisibleSliderThumb extends SliderComponentShape {
+  const _InvisibleSliderThumb(this.shape);
+
+  final SliderComponentShape shape;
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) =>
+      shape.getPreferredSize(isEnabled, isDiscrete);
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {}
 }

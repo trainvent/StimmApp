@@ -530,20 +530,29 @@ void main() {
     expect(tester.widget<Slider>(sliderFinder).value, 42);
     expect(tester.widget<Slider>(sliderFinder).max, 42);
     expect(find.text('42'), findsOneWidget);
+    tester.widget<Slider>(sliderFinder).onChanged!(20);
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('openUntilClosedButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('42 days'), findsNothing);
+    expect(find.text('20 days'), findsNothing);
     expect(find.text('Open until closed'), findsOneWidget);
-    expect(tester.widget<Slider>(sliderFinder).value, 42);
+    expect(tester.widget<Slider>(sliderFinder).value, 20);
     expect(
       tester
           .widget<SliderTheme>(find.byKey(const Key('durationSliderTheme')))
           .data
-          .thumbShape,
-      SliderComponentShape.noThumb,
+          .thumbShape!
+          .getPreferredSize(true, true),
+      const RoundSliderThumbShape().getPreferredSize(true, true),
     );
+
+    await tester.tap(find.byKey(const Key('openUntilClosedButton')));
+    await tester.pumpAndSettle();
+    expect(find.text('20 days'), findsOneWidget);
+    expect(find.text('Open until closed'), findsNothing);
+    expect(tester.widget<Slider>(sliderFinder).value, 20);
 
     tester.widget<Slider>(sliderFinder).onChanged!(41);
     await tester.pumpAndSettle();
