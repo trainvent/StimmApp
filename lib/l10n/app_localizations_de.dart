@@ -3315,4 +3315,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get signAnonymouslyDescription =>
       'Zeige in öffentlichen Teilnehmerlisten „Anonym“ ohne dein Bild oder Profil-Link, auch für bestehende Unterschriften. Die Auswertung erhält weiterhin deine vollständigen Angaben.';
+
+  @override
+  String get textQuestion => 'Text';
+
+  @override
+  String get addAtLeastOneQuestion => 'Füge mindestens eine Frage hinzu.';
 }

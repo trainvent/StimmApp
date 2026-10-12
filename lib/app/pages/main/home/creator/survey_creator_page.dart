@@ -78,7 +78,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     super.initState();
     final templateQuestions = widget.initialTemplate?.questions;
     _questions = templateQuestions == null || templateQuestions.isEmpty
-        ? [_createQuestionDraft()]
+        ? <_QuestionDraft>[]
         : templateQuestions
               .map(
                 (q) => _createQuestionDraft(
@@ -133,7 +133,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           .toList();
       if (!mounted) return;
       setState(() {
-        if (restoredQuestions != null && restoredQuestions.isNotEmpty) {
+        if (restoredQuestions != null) {
           for (final question in _questions) {
             question.dispose();
           }
@@ -182,9 +182,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       for (final question in _questions) {
         question.dispose();
       }
-      _questions
-        ..clear()
-        ..add(_createQuestionDraft());
+      _questions.clear();
       _selectedGroupId = null;
     });
   }
@@ -328,7 +326,7 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     );
   }
 
-  void _addQuestion() {
+  void _addQuestion(SurveyQuestionType type) {
     if (_questions.length >= AppLimits.maxSurveyQuestions) {
       showUserMistakeSnackBar(
         context.l10n.maximumSurveyQuestionsAllowed(
@@ -338,15 +336,12 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
       return;
     }
     setState(() {
-      _questions.add(_createQuestionDraft());
+      _questions.add(_createQuestionDraft(type: type));
     });
     _saveSpecificDraft();
   }
 
   void _removeQuestion(int index) {
-    if (_questions.length == 1) {
-      return;
-    }
     setState(() {
       _questions[index].dispose();
       _questions.removeAt(index);
@@ -421,7 +416,9 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
     if (ContentModerationService.instance.containsObjectionableContent(
       moderationInputs,
     )) {
-      showUserMistakeSnackBar(context.l10n.removeAbusiveLanguageBeforePublishing);
+      showUserMistakeSnackBar(
+        context.l10n.removeAbusiveLanguageBeforePublishing,
+      );
       return false;
     }
 
@@ -841,10 +838,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(context.l10n.pollTemplatesLocal),
-                  const SizedBox(height: 8),
-                  Text(context.l10n.templateApplyHint),
-                  const SizedBox(height: 12),
                   if (templates.isEmpty) Text(context.l10n.pollTemplatesEmpty),
                   Flexible(
                     child: ListView.builder(
@@ -937,7 +930,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     ),
                   ),
             );
-          if (_questions.isEmpty) _questions.add(_createQuestionDraft());
         }
       });
       await _saveSpecificDraft();
@@ -1064,11 +1056,10 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                if (_questions.length > 1)
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: () => _removeQuestion(index),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline),
+                  onPressed: () => _removeQuestion(index),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -1084,32 +1075,6 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
                   : null,
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<SurveyQuestionType>(
-              key: ValueKey(
-                'answer_type_${identityHashCode(question)}_${question.type.name}',
-              ),
-              initialValue: question.type,
-              decoration: InputDecoration(
-                labelText: context.l10n.answerType,
-                border: const OutlineInputBorder(),
-              ),
-              items: [
-                DropdownMenuItem(
-                  value: SurveyQuestionType.multipleChoice,
-                  child: Text(context.l10n.multipleChoiceAnswer),
-                ),
-                DropdownMenuItem(
-                  value: SurveyQuestionType.text,
-                  child: Text(context.l10n.writtenAnswer),
-                ),
-              ],
-              onChanged: (type) {
-                if (type == null) return;
-                setState(() => question.type = type);
-                _saveSpecificDraft();
-              },
-            ),
-            const SizedBox(height: 12),
             if (question.type == SurveyQuestionType.text)
               Text(context.l10n.writtenAnswerHint),
             if (question.type == SurveyQuestionType.multipleChoice) ...[
@@ -1203,19 +1168,80 @@ class _SurveyCreatorPageState extends ConsumerState<SurveyCreatorPage> {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ReorderableListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _questions.length,
-          onReorderItem: _reorderQuestions,
-          buildDefaultDragHandles: false,
-          itemBuilder: (context, index) => _buildQuestionCard(index),
+        FormField<void>(
+          validator: (_) =>
+              _questions.isEmpty ? context.l10n.addAtLeastOneQuestion : null,
+          builder: (field) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ReorderableListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _questions.length,
+                onReorderItem: _reorderQuestions,
+                buildDefaultDragHandles: false,
+                itemBuilder: (context, index) => _buildQuestionCard(index),
+              ),
+              if (_questions.isEmpty && field.hasError)
+                Text(
+                  field.errorText!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+            ],
+          ),
         ),
         if (_questions.length < AppLimits.maxSurveyQuestions)
-          TextButton.icon(
-            icon: const Icon(Icons.add),
-            label: Text(context.l10n.addQuestion),
-            onPressed: _addQuestion,
+          SizedBox(
+            width: double.infinity,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      size: 24,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.tonalIcon(
+                            key: const Key('add_multiple_choice_question'),
+                            icon: const Icon(Icons.list),
+                            label: Text(context.l10n.multipleChoiceAnswer),
+                            onPressed: () =>
+                                _addQuestion(SurveyQuestionType.multipleChoice),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.tonalIcon(
+                            key: const Key('add_text_question'),
+                            icon: const Icon(Icons.notes),
+                            label: Text(context.l10n.textQuestion),
+                            onPressed: () =>
+                                _addQuestion(SurveyQuestionType.text),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
       ],
     );
@@ -1238,7 +1264,7 @@ class _QuestionDraft {
     }
   }
 
-  SurveyQuestionType type;
+  final SurveyQuestionType type;
   final VoidCallback onChanged;
   final TextEditingController titleController;
   final List<TextEditingController> optionControllers;

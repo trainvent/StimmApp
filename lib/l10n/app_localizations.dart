@@ -5995,6 +5995,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show “Anonymous” without your picture or profile link in public participant lists, including existing signatures. Result evaluators still receive your full details.'**
   String get signAnonymouslyDescription;
+
+  /// No description provided for @textQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get textQuestion;
+
+  /// No description provided for @addAtLeastOneQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one question.'**
+  String get addAtLeastOneQuestion;
 }
 
 class _AppLocalizationsDelegate

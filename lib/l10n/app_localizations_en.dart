@@ -3273,4 +3273,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get signAnonymouslyDescription =>
       'Show “Anonymous” without your picture or profile link in public participant lists, including existing signatures. Result evaluators still receive your full details.';
+
+  @override
+  String get textQuestion => 'Text';
+
+  @override
+  String get addAtLeastOneQuestion => 'Add at least one question.';
 }

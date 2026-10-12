@@ -64,6 +64,49 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  testWidgets('starts empty and adds each question type explicitly', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      createTestWidget(
+        ProviderScope(
+          child: SurveyCreatorPage(
+            auth: _FakeAuthService(_FakeUser()),
+            groupRepository: _FakeGroupRepository([]),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Question 1'), findsNothing);
+    tester.state<FormState>(find.byType(Form).first).validate();
+    await tester.pump();
+    expect(find.text('Add at least one question.'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('add_text_question')));
+    await tester.pumpAndSettle();
+    expect(find.text('Question 1'), findsOneWidget);
+    expect(find.byTooltip('Answer presets'), findsNothing);
+    expect(find.text('Answer type'), findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    var draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    expect((draft['questions'] as List).single['type'], 'text');
+    await tester.tap(find.byIcon(Icons.remove_circle_outline));
+    await tester.pumpAndSettle();
+    expect(find.text('Question 1'), findsNothing);
+    draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    expect(draft['questions'], isEmpty);
+    await tester.tap(find.byKey(const Key('add_multiple_choice_question')));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Answer presets'), findsOneWidget);
+    draft = jsonDecode(prefs.getString('draft_survey_specific_v1')!) as Map;
+    expect((draft['questions'] as List).single['type'], 'multipleChoice');
+    expect((draft['questions'] as List).single['options'], hasLength(2));
+  });
+
   testWidgets('restores cached group, questions, and options in order', (
     tester,
   ) async {
@@ -170,6 +213,9 @@ void main() {
         400,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(preview);
+      await tester.pumpAndSettle();
       await tester.tap(preview);
       await tester.pumpAndSettle();
       expect(find.text('Ops Team'), findsOneWidget);
@@ -226,6 +272,9 @@ void main() {
         400,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(preview);
+      await tester.pumpAndSettle();
       await tester.tap(preview);
       await tester.pumpAndSettle();
       final question = find.text(
@@ -325,6 +374,8 @@ void main() {
     await tester.tap(find.text('Ops Team').last);
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const Key('add_multiple_choice_question')));
+    await tester.pumpAndSettle();
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.at(2), 'Cached question');
     await tester.enterText(fields.at(3), 'Cached A');
@@ -332,9 +383,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final prefs = await SharedPreferences.getInstance();
-    final draft =
-        jsonDecode(prefs.getString('draft_poll_specific_v1')!)
-            as Map<String, dynamic>;
+    final draft = jsonDecode(
+      prefs.getString('draft_poll_specific_v1')!,
+    ) as Map<String, dynamic>;
     final questions = draft['questions'] as List<dynamic>;
     expect(draft['groupId'], 'group-1');
     expect(questions.single, {
@@ -361,6 +412,8 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('add_multiple_choice_question')));
       await tester.pumpAndSettle();
       final preset = find.byTooltip('Answer presets');
       await tester.ensureVisible(preset);
@@ -418,6 +471,8 @@ void main() {
       await tester.tap(find.byKey(const Key('survey_group_dropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Ops Team').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('add_multiple_choice_question')));
       await tester.pumpAndSettle();
       final fields = find.byType(TextFormField);
       await tester.enterText(fields.at(0), 'Weekly meeting');
@@ -495,9 +550,9 @@ void main() {
         expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
       }
 
-      final saved =
-          jsonDecode(prefs.getStringList('poll_templates_v1_user-1')!.single)
-              as Map;
+      final saved = jsonDecode(
+        prefs.getStringList('poll_templates_v1_user-1')!.single,
+      ) as Map;
       expect(saved.containsKey('scopeType'), includeAll);
       expect(saved.containsKey('durationDays'), includeAll);
       expect(saved.containsKey('tags'), includeAll);
