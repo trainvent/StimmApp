@@ -34,7 +34,8 @@ class BaseCreatorPage extends StatefulWidget {
     required this.onSubmit,
     this.additionalTopFields,
     this.contentActionsBuilder,
-    this.appBarActionBuilder,
+    this.onSaveTemplate,
+    this.onChooseTemplate,
     this.additionalMiddleFields,
     this.additionalBottomFields,
     this.profileLoader,
@@ -74,11 +75,16 @@ class BaseCreatorPage extends StatefulWidget {
     TextEditingController description,
   )?
   contentActionsBuilder;
-  final Widget Function(
+  final Future<void> Function(
     TextEditingController title,
     TextEditingController description,
   )?
-  appBarActionBuilder;
+  onSaveTemplate;
+  final Future<void> Function(
+    TextEditingController title,
+    TextEditingController description,
+  )?
+  onChooseTemplate;
   final List<Widget>? additionalMiddleFields;
   final List<Widget>? additionalBottomFields;
   final Future<UserProfile?> Function()? profileLoader;
@@ -1275,6 +1281,34 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     cornerImagePath: 'assets/images/Lemm_teaching.png',
   );
 
+  Widget _templateMenuLabel(IconData icon, String title, String description) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onPrimary;
+    return Row(
+      children: [
+        Icon(icon, color: color),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title, style: TextStyle(color: color)),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: theme.textTheme.bodySmall?.copyWith(color: color),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -1282,19 +1316,25 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          if (widget.appBarActionBuilder != null)
-            widget.appBarActionBuilder!(
-              _titleController,
-              _descriptionController,
-            ),
           if (widget.importTarget != null ||
-              widget.appBarActionBuilder != null ||
+              widget.onSaveTemplate != null ||
+              widget.onChooseTemplate != null ||
               widget.onSaveDraft != null) ...[
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
               enabled: !_isLoading && !_isReviewing,
               onSelected: (action) {
-                if (action == 'import') {
+                if (action == 'saveTemplate') {
+                  widget.onSaveTemplate!(
+                    _titleController,
+                    _descriptionController,
+                  );
+                } else if (action == 'chooseTemplate') {
+                  widget.onChooseTemplate!(
+                    _titleController,
+                    _descriptionController,
+                  );
+                } else if (action == 'import') {
                   _chooseImport();
                 } else if (action == 'saveDraft') {
                   _saveNamedDraft();
@@ -1307,6 +1347,27 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 }
               },
               itemBuilder: (context) => [
+                if (widget.onSaveTemplate != null)
+                  PopupMenuItem(
+                    key: const Key('save_form_template'),
+                    value: 'saveTemplate',
+                    child: _templateMenuLabel(
+                      Icons.bookmark_add_outlined,
+                      context.l10n.saveFormTemplate,
+                      context.l10n.saveFormTemplateDescription,
+                    ),
+                  ),
+                if (widget.onChooseTemplate != null)
+                  PopupMenuItem(
+                    key: const Key('paste_form_template'),
+                    value: 'chooseTemplate',
+                    child: _templateMenuLabel(
+                      Icons.library_books_outlined,
+                      context.l10n.pasteFormTemplate,
+                      context.l10n.pasteFormTemplateDescription,
+                    ),
+                  ),
+
                 if (widget.importTarget != null)
                   PopupMenuItem(
                     key: const Key('import_form_json'),

@@ -946,7 +946,7 @@ class _QuestionnaireCreatorPageState
     }
   }
 
-  Widget _buildTemplateActions(
+  Widget _buildPublishingActions(
     TextEditingController title,
     TextEditingController description,
   ) => Padding(
@@ -960,13 +960,6 @@ class _QuestionnaireCreatorPageState
           icon: const Icon(Icons.group_outlined),
           tooltip: context.l10n.createOrManageGroups,
           onPressed: _auth.currentUser == null ? null : _openManageGroups,
-        ),
-        IconButton(
-          icon: const Icon(Icons.library_books_outlined),
-          tooltip: context.l10n.formTemplates,
-          onPressed: _auth.currentUser == null
-              ? null
-              : () => _chooseTemplate(title, description),
         ),
       ],
     ),
@@ -1161,14 +1154,9 @@ class _QuestionnaireCreatorPageState
       tutorialSteps: QuestionnaireTutorialHelper.getSteps(context),
       onSubmit: _createQuestionnaire,
       previewContentBuilder: _buildPublicationPreview,
-      contentActionsBuilder: _buildTemplateActions,
-      appBarActionBuilder: (title, description) => IconButton(
-        icon: const Icon(Icons.bookmark_add_outlined),
-        tooltip: context.l10n.saveFormTemplate,
-        onPressed: _auth.currentUser == null
-            ? null
-            : () => _saveTemplate(title, description),
-      ),
+      contentActionsBuilder: _buildPublishingActions,
+      onSaveTemplate: _auth.currentUser == null ? null : _saveTemplate,
+      onChooseTemplate: _auth.currentUser == null ? null : _chooseTemplate,
       additionalDraftClearer: _clearSpecificDraft,
       onResetAdditionalFields: _resetSpecificFields,
       additionalMiddleFields: [

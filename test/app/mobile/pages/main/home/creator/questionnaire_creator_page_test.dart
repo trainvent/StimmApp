@@ -484,8 +484,9 @@ void main() {
       await tester.enterText(fields.at(2), 'Shall we proceed?');
       await tester.enterText(fields.at(3), 'Yes');
       await tester.enterText(fields.at(4), 'No');
-      await tester.ensureVisible(find.byTooltip('Save as template'));
-      await tester.tap(find.byTooltip('Save as template'));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('save_form_template')));
       await tester.pumpAndSettle();
       expect(
         tester
@@ -512,7 +513,9 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getStringList('poll_templates_v1_user-1'), hasLength(1));
       if (includeAll) {
-        await tester.tap(find.byTooltip('Save as template'));
+        await tester.tap(find.byIcon(Icons.more_vert));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('save_form_template')));
         await tester.pumpAndSettle();
         final nameField = find.descendant(
           of: find.byType(AlertDialog),
@@ -568,8 +571,9 @@ void main() {
       await tester.tap(find.text('Public').last);
       await tester.pumpAndSettle();
       await tester.enterText(fields.at(0), 'Changed title');
-      await tester.ensureVisible(find.byTooltip('Questionnaire templates'));
-      await tester.tap(find.byTooltip('Questionnaire templates'));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('paste_form_template')));
       await tester.pumpAndSettle();
       final templateTile = tester.widget<ListTile>(
         find.widgetWithText(ListTile, 'Weekly meeting'),
