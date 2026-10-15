@@ -1281,30 +1281,13 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     cornerImagePath: 'assets/images/Lemm_teaching.png',
   );
 
-  Widget _templateMenuLabel(IconData icon, String title, String description) {
-    final theme = Theme.of(context);
-    final color = theme.colorScheme.onPrimary;
+  Widget _templateMenuLabel(IconData icon, String title) {
+    final color = Theme.of(context).colorScheme.onPrimary;
     return Row(
       children: [
         Icon(icon, color: color),
         const SizedBox(width: 12),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(title, style: TextStyle(color: color)),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: theme.textTheme.bodySmall?.copyWith(color: color),
-                ),
-              ],
-            ),
-          ),
-        ),
+        Expanded(child: Text(title, style: TextStyle(color: color))),
       ],
     );
   }
@@ -1354,7 +1337,6 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                     child: _templateMenuLabel(
                       Icons.bookmark_add_outlined,
                       context.l10n.saveFormTemplate,
-                      context.l10n.saveFormTemplateDescription,
                     ),
                   ),
                 if (widget.onChooseTemplate != null)
@@ -1364,7 +1346,6 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                     child: _templateMenuLabel(
                       Icons.library_books_outlined,
                       context.l10n.pasteFormTemplate,
-                      context.l10n.pasteFormTemplateDescription,
                     ),
                   ),
 

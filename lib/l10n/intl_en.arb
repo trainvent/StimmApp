@@ -1093,8 +1093,6 @@
 	"profileDetailsUpdated": "Your profile has been updated.",
   "formTemplates": "Questionnaire templates",
   "pasteFormTemplate": "Paste template",
-  "saveFormTemplateDescription": "Save selected fields for reuse on this device.",
-  "pasteFormTemplateDescription": "Choose a saved template to fill in this questionnaire.",
   "saveFormTemplate": "Save as template",
   "formTemplateName": "Template name",
   "formTemplatesLocal": "Saved on this device.",

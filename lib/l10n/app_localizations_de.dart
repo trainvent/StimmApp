@@ -2808,14 +2808,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pasteFormTemplate => 'Vorlage einfügen';
 
   @override
-  String get saveFormTemplateDescription =>
-      'Ausgewählte Felder auf diesem Gerät zur Wiederverwendung speichern.';
-
-  @override
-  String get pasteFormTemplateDescription =>
-      'Eine gespeicherte Vorlage wählen, um diesen Fragebogen auszufüllen.';
-
-  @override
   String get saveFormTemplate => 'Als Vorlage speichern';
 
   @override

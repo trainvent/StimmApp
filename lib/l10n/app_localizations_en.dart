@@ -2772,14 +2772,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pasteFormTemplate => 'Paste template';
 
   @override
-  String get saveFormTemplateDescription =>
-      'Save selected fields for reuse on this device.';
-
-  @override
-  String get pasteFormTemplateDescription =>
-      'Choose a saved template to fill in this questionnaire.';
-
-  @override
   String get saveFormTemplate => 'Save as template';
 
   @override

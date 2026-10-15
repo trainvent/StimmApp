@@ -5072,18 +5072,6 @@ abstract class AppLocalizations {
   /// **'Paste template'**
   String get pasteFormTemplate;
 
-  /// No description provided for @saveFormTemplateDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Save selected fields for reuse on this device.'**
-  String get saveFormTemplateDescription;
-
-  /// No description provided for @pasteFormTemplateDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a saved template to fill in this questionnaire.'**
-  String get pasteFormTemplateDescription;
-
   /// No description provided for @saveFormTemplate.
   ///
   /// In en, this message translates to:

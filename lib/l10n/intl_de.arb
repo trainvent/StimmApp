@@ -1097,8 +1097,6 @@
 	"profileDetailsUpdated": "Dein Profil wurde aktualisiert.",
   "formTemplates": "Abstimmungsvorlagen",
   "pasteFormTemplate": "Vorlage einfügen",
-  "saveFormTemplateDescription": "Ausgewählte Felder auf diesem Gerät zur Wiederverwendung speichern.",
-  "pasteFormTemplateDescription": "Eine gespeicherte Vorlage wählen, um diesen Fragebogen auszufüllen.",
   "saveFormTemplate": "Als Vorlage speichern",
   "formTemplateName": "Name der Vorlage",
   "formTemplatesLocal": "Auf diesem Gerät gespeichert.",
