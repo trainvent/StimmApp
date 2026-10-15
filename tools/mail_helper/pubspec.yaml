@@ -1,0 +1,7 @@
+name: stimmapp_mail_helper
+description: Standalone IMAP helper for manually checking test verification mail.
+publish_to: none
+environment:
+  sdk: ^3.13.0
+dependencies:
+  enough_mail: ^2.1.7

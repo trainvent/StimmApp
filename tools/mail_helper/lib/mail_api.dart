@@ -64,7 +64,7 @@ class MailApi {
         }
 
         // Wait before retrying
-        await Future.delayed(delay);
+        await Future<void>.delayed(delay);
       }
     } catch (e) {
       _logger('MailApi Error: $e');
