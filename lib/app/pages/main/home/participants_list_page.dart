@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
-import 'package:trainvent_general/trainvent_general.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 
@@ -35,7 +35,7 @@ class ParticipantsListPage extends StatelessWidget {
       stream: participantsStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: TriangleLoadingIndicator());
+          return const _ParticipantsSkeleton();
         }
         if (snapshot.hasError) {
           return Center(child: Text(context.l10n.error));
@@ -73,7 +73,7 @@ class ParticipantsListPage extends StatelessWidget {
       stream: signaturesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: TriangleLoadingIndicator());
+          return const _ParticipantsSkeleton(showReasons: true);
         }
         if (snapshot.hasError) {
           return Center(child: Text(context.l10n.error));
@@ -87,7 +87,7 @@ class ParticipantsListPage extends StatelessWidget {
           stream: participantsStream,
           builder: (context, userSnap) {
             if (userSnap.connectionState == ConnectionState.waiting) {
-              return const Center(child: TriangleLoadingIndicator());
+              return _ParticipantsSkeleton(signatures: signatures);
             }
             if (userSnap.hasError) {
               return Center(child: Text(context.l10n.error));
@@ -133,6 +133,42 @@ class ParticipantsListPage extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class _ParticipantsSkeleton extends StatelessWidget {
+  const _ParticipantsSkeleton({this.showReasons = false, this.signatures});
+
+  final bool showReasons;
+  final List<Map<String, dynamic>>? signatures;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: TickerMode(
+        enabled: !MediaQuery.disableAnimationsOf(context),
+        child: SkeletonizerConfig(
+          data: SkeletonizerConfigData(
+            brightness: Theme.of(context).brightness,
+          ),
+          child: Skeletonizer.zone(
+            child: ListView.builder(
+              itemCount: signatures?.length ?? 8,
+              itemBuilder: (context, index) {
+                final reason = signatures?[index]['reason'] as String?;
+                final hasReason =
+                    showReasons || (reason != null && reason.isNotEmpty);
+                return ListTile(
+                  leading: const Bone.circle(size: 40),
+                  title: Bone.text(words: 2 + index % 3),
+                  subtitle: hasReason ? Bone.text(words: 5) : null,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

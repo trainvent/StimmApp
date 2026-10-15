@@ -87,6 +87,7 @@ dependencies:
   pdf: ^3.13.1
   pdfrx: ^2.4.8
   corner_radius_plugin: ^0.1.1
+  skeletonizer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
