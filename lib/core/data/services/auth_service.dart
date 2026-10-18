@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
@@ -790,6 +791,41 @@ class AuthService {
     } catch (e, st) {
       _logUnexpectedError('signInWithCode', e, st);
       rethrow;
+    }
+  }
+
+  /// Verify recovery ownership without creating a persisted app login.
+  Future<String> verifyPasswordResetCode(String email, String code) async {
+    try {
+      final result = await functions.httpsCallable('verifyLoginCode').call({
+        'email': email,
+        'code': code,
+      });
+      return result.data['token'] as String;
+    } on FirebaseFunctionsException catch (e) {
+      throw AuthException(
+        FirebaseAuthException(code: e.code, message: e.message),
+      );
+    }
+  }
+
+  Future<void> completePasswordReset(String token, String password) async {
+    // Recovery must never sign in the primary instance used by app routing.
+    final app = await Firebase.initializeApp(
+      name: 'password-reset-${DateTime.now().microsecondsSinceEpoch}',
+      options: firebaseAuth.app.options,
+    );
+    final resetAuth = FirebaseAuth.instanceFor(app: app);
+    try {
+      if (kIsWeb) await resetAuth.setPersistence(Persistence.NONE);
+      final credential = await resetAuth.signInWithCustomToken(token);
+      await credential.user!.updatePassword(password);
+    } finally {
+      try {
+        await resetAuth.signOut();
+      } finally {
+        await app.delete();
+      }
     }
   }
 }

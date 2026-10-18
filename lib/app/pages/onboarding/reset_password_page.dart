@@ -79,11 +79,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     try {
-      await authService.signInWithCode(controllerEmail.text, code);
+      final resetToken = await authService.verifyPasswordResetCode(
+        controllerEmail.text,
+        code,
+      );
 
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const SetNewPasswordPage()),
+        MaterialPageRoute(
+          builder: (context) => SetNewPasswordPage(resetToken: resetToken),
+        ),
       );
     } on AuthException catch (e) {
       debugPrint('ResetPasswordPage._verifyCode AuthException: $e');

@@ -8,11 +8,12 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/validate_password.dart';
 import 'package:stimmapp/core/theme/app_text_styles.dart';
-import 'package:stimmapp/generated/l10n.dart';
 import 'package:trainvent_general/trainvent_general.dart';
 
 class SetNewPasswordPage extends StatefulWidget {
-  const SetNewPasswordPage({super.key});
+  const SetNewPasswordPage({super.key, required this.resetToken});
+
+  final String resetToken;
 
   @override
   State<SetNewPasswordPage> createState() => _SetNewPasswordPageState();
@@ -36,22 +37,15 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
     setState(() => _isUpdating = true);
 
     try {
-      final user = authService.currentUser;
-      if (user == null) {
-        showUserMistakeSnackBar(context.l10n.passwordResetSessionExpired);
-        return;
-      }
-
-      await user.updatePassword(controllerPw.text);
+      await authService.completePasswordReset(
+        widget.resetToken,
+        controllerPw.text,
+      );
       if (!mounted) return;
 
       final successMessage = context.l10n.passwordChangedSuccessfully;
       final route = ModalRoute.of(context);
       FocusManager.instance.primaryFocus?.unfocus();
-
-      // Sign out and go back to login/welcome
-      await authService.signOut();
-      if (!mounted) return;
 
       Navigator.of(context).popUntil((route) => route.isFirst);
       // Let the outgoing scaffold and its buttons leave before positioning
@@ -66,7 +60,8 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
         FirebaseAuthException(
           code: 'requires-recent-login' ||
               'user-token-expired' ||
-              'invalid-user-token',
+              'invalid-user-token' ||
+              'invalid-custom-token',
         ) =>
           l10n.passwordResetSessionExpired,
         FirebaseAuthException(code: 'network-request-failed') =>
@@ -85,7 +80,6 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userName = authService.currentUser?.displayName ?? '';
     final passwordIllustration = LemmImage(
       assetPath: 'assets/images/Lemm_pen_password.png',
       height: 180,
@@ -104,10 +98,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 60.0),
-                  Text(
-                    "${S.of(context).hello} $userName",
-                    style: AppTextStyles.xlBold,
-                  ),
+                  Text(context.l10n.hello, style: AppTextStyles.xlBold),
                   const SizedBox(height: 20.0),
                   Text(
                     context.l10n.pleaseEnterNewPassword,
