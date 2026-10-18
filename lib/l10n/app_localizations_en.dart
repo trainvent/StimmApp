@@ -3386,7 +3386,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get publicProfileHistoryHelp =>
-      'Your public petitions and questionnaires can still appear elsewhere in the app.';
+      'Publications remain visible elsewhere.';
 
   @override
   String get publicProfileFullName => 'Full name';

@@ -1,4 +1,3 @@
-import 'package:stimmapp/app/pages/main/profile/profile_settings/update_profile_field_page.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/core/data/models/user_profile.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -20,8 +19,6 @@ class _PublicProfileSettingsDialogState
   late bool _showFullName = widget.profile.publicProfileShowFullName;
   late bool _showAddress = widget.profile.publicProfileShowAddress;
   late bool _showLink = widget.profile.publicProfileShowLink;
-  late String? _websiteUrl = widget.profile.websiteUrl;
-  bool _editingLink = false;
   bool _saving = false;
   bool _failed = false;
 
@@ -44,30 +41,6 @@ class _PublicProfileSettingsDialogState
       if (mounted) setState(() => _failed = true);
     } finally {
       if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  Future<void> _editLink() async {
-    if (_editingLink || _saving) return;
-    setState(() => _editingLink = true);
-    try {
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => UpdateProfileFieldPage(
-            field: EditableProfileField.websiteUrl,
-            initialValue: _websiteUrl,
-          ),
-        ),
-      );
-      if (!mounted) return;
-      final profile = await UserRepository.create().getById(widget.profile.uid);
-      if (mounted && profile != null) {
-        setState(() => _websiteUrl = profile.websiteUrl);
-      }
-    } catch (_) {
-      if (mounted) setState(() => _failed = true);
-    } finally {
-      if (mounted) setState(() => _editingLink = false);
     }
   }
 
@@ -135,26 +108,14 @@ class _PublicProfileSettingsDialogState
                 contentPadding: EdgeInsets.zero,
                 title: Text(context.l10n.profileLinkTitle),
                 subtitle: Text(
-                  _websiteUrl?.trim().isNotEmpty == true
-                      ? _websiteUrl!
+                  profile.websiteUrl?.trim().isNotEmpty == true
+                      ? profile.websiteUrl!
                       : context.l10n.publicProfileNotAdded,
                 ),
                 value: _showLink,
                 onChanged: _saving
                     ? null
                     : (value) => setState(() => _showLink = value),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  icon: const Icon(Icons.edit_outlined),
-                  label: Text(
-                    _websiteUrl?.isNotEmpty == true
-                        ? context.l10n.profileLinkEdit
-                        : context.l10n.profileLinkAdd,
-                  ),
-                  onPressed: _saving || _editingLink ? null : _editLink,
-                ),
               ),
               if (_failed)
                 Text(

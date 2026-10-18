@@ -1283,7 +1283,7 @@
 	"publicProfileSettingsDescription": "Wähle, was andere auf deinem Profil sehen können.",
 	"publicProfileVisibilityIntro": "Dein Nickname und dein Profilbild sind immer sichtbar. Wähle, welche weiteren Angaben du teilen möchtest.",
 	"publicProfilePublicationHistory": "Veröffentlichungen",
-	"publicProfileHistoryHelp": "Deine öffentlichen Petitionen und Fragebögen können weiterhin an anderen Stellen in der App erscheinen.",
+	"publicProfileHistoryHelp": "Veröffentlichungen bleiben andernorts sichtbar.",
 	"publicProfileFullName": "Vollständiger Name",
 	"publicProfileNotAdded": "Noch nicht hinzugefügt"
 }

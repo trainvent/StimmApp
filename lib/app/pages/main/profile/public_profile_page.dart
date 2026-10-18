@@ -104,50 +104,68 @@ class _PublicProfilePageState extends ConsumerState<PublicProfilePage> {
                         ),
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _ProfileAvatar(profile: profile),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  context.l10n.nickname,
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant,
-                                      ),
+                          Row(
+                            children: [
+                              _ProfileAvatar(profile: profile),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      context.l10n.nickname,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      profile.nickname?.trim().isNotEmpty ==
+                                              true
+                                          ? profile.nickname!
+                                          : context.l10n.unknownUser,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  profile.nickname?.trim().isNotEmpty == true
-                                      ? profile.nickname!
-                                      : context.l10n.unknownUser,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
+                          if (profile.fullName?.trim().isNotEmpty == true ||
+                              profile.address?.trim().isNotEmpty == true) ...[
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(height: 1, thickness: 0.5),
+                            ),
+                            if (profile.fullName?.trim().isNotEmpty == true)
+                              _ProfileDetail(
+                                icon: Icons.person_outline,
+                                label: context.l10n.publicProfileFullName,
+                                value: profile.fullName!,
+                              ),
+                            if (profile.fullName?.trim().isNotEmpty == true &&
+                                profile.address?.trim().isNotEmpty == true)
+                              const SizedBox(height: 16),
+                            if (profile.address?.trim().isNotEmpty == true)
+                              _ProfileDetail(
+                                icon: Icons.location_on_outlined,
+                                label: context.l10n.address,
+                                value: profile.address!,
+                              ),
+                          ],
                         ],
                       ),
                     ),
-                    if (profile.fullName?.trim().isNotEmpty == true)
-                      ListTile(
-                        leading: const Icon(Icons.person_outline),
-                        title: Text(context.l10n.publicProfileFullName),
-                        subtitle: Text(profile.fullName!),
-                      ),
-                    if (profile.address?.trim().isNotEmpty == true)
-                      ListTile(
-                        leading: const Icon(Icons.location_on_outlined),
-                        title: Text(context.l10n.address),
-                        subtitle: Text(profile.address!),
-                      ),
                     if (parseWebsiteLink(profile.websiteUrl) case final uri?)
                       ExternalLinkCard(
                         uri: uri,
@@ -228,6 +246,46 @@ class _PublicProfilePageState extends ConsumerState<PublicProfilePage> {
                   ],
                 ),
         ),
+  );
+}
+
+class _ProfileDetail extends StatelessWidget {
+  const _ProfileDetail({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(
+        icon,
+        size: 20,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(value, style: Theme.of(context).textTheme.bodyLarge),
+          ],
+        ),
+      ),
+    ],
   );
 }
 

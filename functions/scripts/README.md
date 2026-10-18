@@ -1,8 +1,9 @@
 # Verification mail helper
 
 From `functions/`, run `npm ci`, then `npm run mail:verification-code`.
-Set `TEST_HELPER_MAIL` and `TEST_HELPER_SECURE_PASSWORD` in the repository root
-`.env` file; the npm command loads it automatically. Exported environment
+Set `TEST_HELPER_MAIL` and `TEST_HELPER_SECURE_PASSWORD` in
+`functions/.env.mail-helper`; the npm command loads it automatically. This file
+is excluded from version control and Cloud Functions deployment. Exported environment
 variables take precedence over values in that file.
 Keep credentials out of source control and shared logs.
 

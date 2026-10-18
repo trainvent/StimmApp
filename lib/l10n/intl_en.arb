@@ -1296,7 +1296,7 @@
 	"publicProfileSettingsDescription": "Choose what others can see on your profile.",
 	"publicProfileVisibilityIntro": "Your nickname and profile picture are always visible. Choose which other details to share.",
 	"publicProfilePublicationHistory": "Publication history",
-	"publicProfileHistoryHelp": "Your public petitions and questionnaires can still appear elsewhere in the app.",
+	"publicProfileHistoryHelp": "Publications remain visible elsewhere.",
 	"publicProfileFullName": "Full name",
 	"publicProfileNotAdded": "Not added yet"
 }

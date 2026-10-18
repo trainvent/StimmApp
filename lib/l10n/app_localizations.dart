@@ -6191,7 +6191,7 @@ abstract class AppLocalizations {
   /// No description provided for @publicProfileHistoryHelp.
   ///
   /// In en, this message translates to:
-  /// **'Your public petitions and questionnaires can still appear elsewhere in the app.'**
+  /// **'Publications remain visible elsewhere.'**
   String get publicProfileHistoryHelp;
 
   /// No description provided for @publicProfileFullName.

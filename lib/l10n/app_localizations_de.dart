@@ -3431,7 +3431,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get publicProfileHistoryHelp =>
-      'Deine öffentlichen Petitionen und Fragebögen können weiterhin an anderen Stellen in der App erscheinen.';
+      'Veröffentlichungen bleiben andernorts sichtbar.';
 
   @override
   String get publicProfileFullName => 'Vollständiger Name';

@@ -64,7 +64,7 @@ void main() {
     expect(find.text('Not found'), findsOneWidget);
   });
   testWidgets(
-    'the owner can add a link and the editor accepts an empty value for removal',
+    'public settings control link visibility while link editing stays separate',
     (tester) async {
       final app = createTestWidget(
         ProviderScope(
@@ -80,10 +80,21 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('public_profile_settings')));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Add link'));
-      await tester.tap(find.text('Add link'));
+      expect(find.text('Add link'), findsNothing);
+      expect(find.text('Edit link'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('public_profile_show_link')),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(
+        createTestWidget(
+          const UpdateProfileFieldPage(
+            field: EditableProfileField.websiteUrl,
+            initialValue: null,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
-      expect(find.byType(UpdateProfileFieldPage), findsOneWidget);
       final field = find.byType(TextFormField);
       expect(tester.state<FormState>(find.byType(Form)).validate(), isTrue);
       await tester.enterText(field, 'javascript:alert(1)');
