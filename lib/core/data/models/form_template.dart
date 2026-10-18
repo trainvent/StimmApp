@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:stimmapp/core/data/models/questionnaire.dart';
 
 /// Only selected fields are stored; absent fields leave the current form unchanged.
@@ -7,6 +8,7 @@ class FormTemplate {
     required this.name,
     this.title,
     this.description,
+    this.links,
     this.imageUrl,
     this.questions,
     this.tags,
@@ -22,6 +24,7 @@ class FormTemplate {
   final String name;
   final String? title;
   final String? description;
+  final PublicationLinks? links;
   final String? imageUrl;
   final List<FormTemplateQuestion>? questions;
   final List<String>? tags;
@@ -37,6 +40,7 @@ class FormTemplate {
     'name': name,
     if (title != null) 'title': title,
     if (description != null) 'description': description,
+    if (links != null) 'links': links!.toJson(),
     if (imageUrl != null) 'imageUrl': imageUrl,
     if (questions != null)
       'questions': questions!.map((question) => question.toJson()).toList(),
@@ -54,6 +58,9 @@ class FormTemplate {
     name: json['name'] as String,
     title: json['title'] as String?,
     description: json['description'] as String?,
+    links: json.containsKey('links')
+        ? PublicationLinks.fromJson(json['links'])
+        : null,
     imageUrl: json['imageUrl'] as String?,
     tags: (json['tags'] as List?)?.cast<String>(),
     scopeType: json['scopeType'] as String?,

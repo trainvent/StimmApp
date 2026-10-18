@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:stimmapp/core/data/models/questionnaire.dart';
 
 import 'dart:convert';
@@ -26,6 +27,7 @@ class FormImport {
       'type',
       'title',
       'description',
+      'links',
       'questions',
       'tags',
       'durationDays',
@@ -63,6 +65,27 @@ class FormImport {
       AppLimits.minDescriptionLength,
       AppLimits.maxDescriptionLength,
     );
+    PublicationLinks? links;
+    if (json.containsKey('links')) {
+      final raw = json['links'];
+      if (raw is! Map ||
+          raw.keys.any((key) => key != 'youtubeUrl' && key != 'websiteUrl')) {
+        invalid('links');
+      }
+      final map = raw as Map;
+      for (final field in ['youtubeUrl', 'websiteUrl']) {
+        if (map.containsKey(field)) {
+          final value = map[field];
+          if (value is! String ||
+              (field == 'youtubeUrl'
+                  ? PublicationLinks.youtubeUri(value) == null
+                  : PublicationLinks.websiteUri(value) == null)) {
+            invalid('links.$field');
+          }
+        }
+      }
+      links = PublicationLinks.fromJson(map);
+    }
     List<String>? tags;
     if (json.containsKey('tags')) {
       final values = json['tags'];
@@ -170,6 +193,7 @@ class FormImport {
       name: title,
       title: title,
       description: description,
+      links: links,
       questions: questions,
       tags: tags,
       scopeType: scope as String?,

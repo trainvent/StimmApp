@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:stimmapp/core/data/models/form_scope.dart';
 
 abstract class HomeItem {
@@ -6,6 +7,7 @@ abstract class HomeItem {
   String get id;
   String get title;
   String get description;
+  PublicationLinks get links => const PublicationLinks();
   String get createdBy;
   String get status;
   FormScope get scope;

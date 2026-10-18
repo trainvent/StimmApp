@@ -1,3 +1,5 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
+import 'package:stimmapp/app/widgets/publication_links.dart';
 import 'package:stimmapp/core/data/services/pdf_form_import.dart';
 
 import 'dart:convert';
@@ -104,6 +106,17 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   final _unionAnchorKey = GlobalKey();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _youtubeController = TextEditingController();
+  final _websiteController = TextEditingController();
+
+  PublicationLinks get publicationLinks => PublicationLinks(
+    youtubeUrl: _youtubeController.text.trim().isEmpty
+        ? null
+        : _youtubeController.text.trim(),
+    websiteUrl: _websiteController.text.trim().isEmpty
+        ? null
+        : _websiteController.text.trim(),
+  );
   List<String> _selectedTags = [];
   FormScopeType _selectedScope = FormScopeType.country;
   CountryUnion? _selectedCountryUnion;
@@ -120,6 +133,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   FormTemplate get templateSettings => FormTemplate(
     id: '',
     name: '',
+    links: publicationLinks,
     tags: List.of(_selectedTags),
     scopeType: _selectedScope.name,
     countryUnion: _selectedCountryUnion?.code,
@@ -157,6 +171,10 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       if (template.title != null) _titleController.text = template.title!;
       if (template.description != null) {
         _descriptionController.text = template.description!;
+      }
+      if (template.links != null) {
+        _youtubeController.text = template.links!.youtubeUrl ?? '';
+        _websiteController.text = template.links!.websiteUrl ?? '';
       }
       if (template.tags != null) _selectedTags = List.of(template.tags!);
       if (scope != null) {
@@ -407,6 +425,8 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     _initializeContent();
     _titleController.addListener(_saveDraft);
     _descriptionController.addListener(_saveDraft);
+    _youtubeController.addListener(_saveDraft);
+    _websiteController.addListener(_saveDraft);
   }
 
   Future<void> _initializeContent() async {
@@ -423,8 +443,12 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
   void dispose() {
     _titleController.removeListener(_saveDraft);
     _descriptionController.removeListener(_saveDraft);
+    _youtubeController.removeListener(_saveDraft);
+    _websiteController.removeListener(_saveDraft);
     _titleController.dispose();
     _descriptionController.dispose();
+    _youtubeController.dispose();
+    _websiteController.dispose();
     super.dispose();
   }
 
@@ -515,6 +539,10 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
         if (draftDescription != null) {
           _descriptionController.text = draftDescription;
         }
+        _youtubeController.text =
+            prefs.getString('${_draftKey}_youtubeUrl') ?? '';
+        _websiteController.text =
+            prefs.getString('${_draftKey}_websiteUrl') ?? '';
         if (draftTags != null) _selectedTags = draftTags;
         if (draftScopeType != null && draftScopeType.isNotEmpty) {
           _selectedScope = parseFormScopeType(draftScopeType);
@@ -553,6 +581,8 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       '${_draftKey}_description',
       _descriptionController.text,
     );
+    await prefs.setString('${_draftKey}_youtubeUrl', _youtubeController.text);
+    await prefs.setString('${_draftKey}_websiteUrl', _websiteController.text);
     await prefs.setStringList('${_draftKey}_tags', _selectedTags);
     await prefs.setString(
       '${_draftKey}_scopeType',
@@ -580,6 +610,8 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('${_draftKey}_title');
     await prefs.remove('${_draftKey}_description');
+    await prefs.remove('${_draftKey}_youtubeUrl');
+    await prefs.remove('${_draftKey}_websiteUrl');
     await prefs.remove('${_draftKey}_tags');
     await prefs.remove('${_draftKey}_scopeType');
     await prefs.remove('${_draftKey}_scopeUnion');
@@ -596,6 +628,8 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
     setState(() {
       _titleController.clear();
       _descriptionController.clear();
+      _youtubeController.clear();
+      _websiteController.clear();
       _selectedTags = [];
       _selectedScope = FormScopeType.country;
       _selectedCountryUnion = _firstAvailableCountryUnion;
@@ -673,6 +707,7 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                 ),
                 const SizedBox(height: 12),
                 Text(_descriptionController.text.trim()),
+                PublicationLinksView(links: publicationLinks),
                 const SizedBox(height: 16),
                 TagWrap(
                   children: [
@@ -1287,7 +1322,9 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
       children: [
         Icon(icon, color: color),
         const SizedBox(width: 12),
-        Expanded(child: Text(title, style: TextStyle(color: color))),
+        Expanded(
+          child: Text(title, style: TextStyle(color: color)),
+        ),
       ],
     );
   }
@@ -1497,6 +1534,46 @@ class BaseCreatorPageState extends State<BaseCreatorPage> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                key: const Key('publicationYoutubeUrl'),
+                controller: _youtubeController,
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                decoration: InputDecoration(
+                  labelText: context.l10n.publicationYoutubeLink,
+                  hintText: 'https://www.youtube.com/watch?v=…',
+                  prefixIcon: const Icon(Icons.play_circle_outline),
+                ),
+                validator: (value) =>
+                    value == null ||
+                        value.trim().isEmpty ||
+                        PublicationLinks.youtubeUri(value) != null
+                    ? null
+                    : context.l10n.publicationInvalidYoutubeLink,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('publicationWebsiteUrl'),
+                controller: _websiteController,
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.done,
+                autocorrect: false,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                decoration: InputDecoration(
+                  labelText: context.l10n.publicationWebsiteLink,
+                  hintText: 'https://example.com',
+                  prefixIcon: const Icon(Icons.language),
+                ),
+                validator: (value) =>
+                    value == null ||
+                        value.trim().isEmpty ||
+                        PublicationLinks.websiteUri(value) != null
+                    ? null
+                    : context.l10n.publicationInvalidWebsiteLink,
               ),
               if (widget.additionalMiddleFields != null)
                 ...widget.additionalMiddleFields!,

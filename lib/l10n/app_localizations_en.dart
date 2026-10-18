@@ -3319,4 +3319,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordResetFailed =>
       'We couldn’t change your password. Please try again.';
+
+  @override
+  String get publicationLinks => 'Supporting links';
+
+  @override
+  String get publicationYoutubeLink => 'YouTube video (optional)';
+
+  @override
+  String get publicationWebsiteLink => 'Website (optional)';
+
+  @override
+  String get publicationInvalidYoutubeLink =>
+      'Please enter a valid HTTPS link to a YouTube video.';
+
+  @override
+  String get publicationInvalidWebsiteLink =>
+      'Please enter a valid website link starting with https://.';
+
+  @override
+  String get publicationWatchVideo => 'Watch video';
+
+  @override
+  String get publicationOpenWebsite => 'Open website';
+
+  @override
+  String get publicationLinkOpenFailed =>
+      'This link could not be opened. Please try again.';
 }

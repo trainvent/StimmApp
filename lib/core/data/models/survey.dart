@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -14,6 +15,8 @@ class Survey extends Questionnaire {
   final String title;
   @override
   final String description;
+  @override
+  final PublicationLinks links;
   @override
   final List<String> tags;
   final List<QuestionnaireQuestion> questions;
@@ -41,6 +44,7 @@ class Survey extends Questionnaire {
     required this.id,
     required this.title,
     required this.description,
+    this.links = const PublicationLinks(),
     required this.tags,
     required this.questions,
     required this.questionVotes,
@@ -67,6 +71,7 @@ class Survey extends Questionnaire {
     String? id,
     String? title,
     String? description,
+    PublicationLinks? links,
     List<String>? tags,
     List<QuestionnaireQuestion>? questions,
     Map<String, Map<String, int>>? questionVotes,
@@ -85,6 +90,7 @@ class Survey extends Questionnaire {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      links: links ?? this.links,
       tags: tags ?? this.tags,
       questions: questions ?? this.questions,
       questionVotes: questionVotes ?? this.questionVotes,
@@ -113,6 +119,7 @@ class Survey extends Questionnaire {
       id: snap.id,
       title: (data['title'] ?? '') as String,
       description: (data['description'] ?? '') as String,
+      links: PublicationLinks.fromJson(data['links']),
       tags: (data['tags'] as List?)?.cast<String>() ?? const [],
       questions:
           (data['questions'] as List?)
@@ -146,6 +153,7 @@ class Survey extends Questionnaire {
     return {
       'title': survey.title,
       'description': survey.description,
+      if (survey.links.toJson().isNotEmpty) 'links': survey.links.toJson(),
       'tags': survey.tags,
       'questions': survey.questions.map((q) => q.toMap()).toList(),
       'questionVotes': survey.questionVotes,

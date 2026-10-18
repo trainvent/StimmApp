@@ -32,6 +32,7 @@ import 'package:uuid/uuid.dart';
 enum _TemplateField {
   title,
   description,
+  links,
   questions,
   tags,
   scope,
@@ -461,6 +462,7 @@ class _QuestionnaireCreatorPageState
           questionTitle: question.title,
           title: title,
           description: description,
+          links: _creatorKey.currentState!.publicationLinks,
           tags: tags,
           options: question.options
               .map((option) => PollOption(id: option.id, label: option.label))
@@ -513,6 +515,7 @@ class _QuestionnaireCreatorPageState
         id: '',
         title: title,
         description: description,
+        links: _creatorKey.currentState!.publicationLinks,
         tags: tags,
         questions: questions,
         questionVotes: {
@@ -629,6 +632,7 @@ class _QuestionnaireCreatorPageState
     final labels = <_TemplateField, String>{
       _TemplateField.title: context.l10n.title,
       _TemplateField.description: context.l10n.description,
+      _TemplateField.links: context.l10n.publicationLinks,
       _TemplateField.questions: context.l10n.formTemplateQuestionsAndAnswers,
       _TemplateField.tags: context.l10n.tags,
       _TemplateField.scope: context.l10n.scope,
@@ -724,6 +728,7 @@ class _QuestionnaireCreatorPageState
       description: included.contains(_TemplateField.description)
           ? description.text
           : null,
+      links: included.contains(_TemplateField.links) ? settings.links : null,
       tags: included.contains(_TemplateField.tags) ? settings.tags : null,
       scopeType: included.contains(_TemplateField.scope)
           ? settings.scopeType
@@ -768,6 +773,7 @@ class _QuestionnaireCreatorPageState
     return [
       if (template.title != null) l.title,
       if (template.description != null) l.description,
+      if (template.links != null) l.publicationLinks,
       if (template.questions != null)
         l.templateQuestionCount(template.questions!.length),
       if (template.tags != null) l.tags,

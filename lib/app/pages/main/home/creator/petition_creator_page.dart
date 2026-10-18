@@ -280,6 +280,7 @@ class _PetitionCreatorPageState extends State<PetitionCreatorPage> {
         id: '',
         title: title,
         description: description,
+        links: _creatorKey.currentState!.publicationLinks,
         tags: tags,
         signatureCount: 0,
         createdBy: currentUser.uid,

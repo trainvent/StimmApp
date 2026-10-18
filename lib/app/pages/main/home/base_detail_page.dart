@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/publication_links.dart';
 import 'package:flag/flag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -874,22 +875,36 @@ class _BaseDetailPageState<T extends HomeItem>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildHeaderCard(context, item),
-                        const SizedBox(height: 12),
-                        Text(item.description),
-                        const SizedBox(height: 12),
-                        _buildDiscoveryStatusBanner(
-                          context: context,
-                          item: item,
-                          isExpired: isExpired,
-                        ),
-                        const SizedBox(height: 16),
                         Expanded(
-                          child: AbsorbPointer(
-                            absorbing:
-                                isExpired &&
-                                !widget.allowExpiredContentInteraction,
-                            child: widget.contentBuilder(context, item),
+                          child: NestedScrollView(
+                            headerSliverBuilder:
+                                (context, innerBoxIsScrolled) => [
+                                  SliverToBoxAdapter(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _buildHeaderCard(context, item),
+                                        const SizedBox(height: 12),
+                                        Text(item.description),
+                                        PublicationLinksView(links: item.links),
+                                        const SizedBox(height: 12),
+                                        _buildDiscoveryStatusBanner(
+                                          context: context,
+                                          item: item,
+                                          isExpired: isExpired,
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                            body: AbsorbPointer(
+                              absorbing:
+                                  isExpired &&
+                                  !widget.allowExpiredContentInteraction,
+                              child: widget.contentBuilder(context, item),
+                            ),
                           ),
                         ),
                         if (!isExpired && widget.bottomAction != null) ...[

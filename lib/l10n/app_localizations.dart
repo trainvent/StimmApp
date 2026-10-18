@@ -6073,6 +6073,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn’t change your password. Please try again.'**
   String get passwordResetFailed;
+
+  /// No description provided for @publicationLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Supporting links'**
+  String get publicationLinks;
+
+  /// No description provided for @publicationYoutubeLink.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube video (optional)'**
+  String get publicationYoutubeLink;
+
+  /// No description provided for @publicationWebsiteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Website (optional)'**
+  String get publicationWebsiteLink;
+
+  /// No description provided for @publicationInvalidYoutubeLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid HTTPS link to a YouTube video.'**
+  String get publicationInvalidYoutubeLink;
+
+  /// No description provided for @publicationInvalidWebsiteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid website link starting with https://.'**
+  String get publicationInvalidWebsiteLink;
+
+  /// No description provided for @publicationWatchVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch video'**
+  String get publicationWatchVideo;
+
+  /// No description provided for @publicationOpenWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open website'**
+  String get publicationOpenWebsite;
+
+  /// No description provided for @publicationLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This link could not be opened. Please try again.'**
+  String get publicationLinkOpenFailed;
 }
 
 class _AppLocalizationsDelegate

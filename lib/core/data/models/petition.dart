@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -11,6 +12,8 @@ class Petition extends HomeItem {
   final String title;
   @override
   final String description;
+  @override
+  final PublicationLinks links;
   @override
   final List<String> tags;
   final int signatureCount;
@@ -31,6 +34,7 @@ class Petition extends HomeItem {
     required this.id,
     required this.title,
     required this.description,
+    this.links = const PublicationLinks(),
     required this.tags,
     required this.signatureCount,
     required this.createdBy,
@@ -49,6 +53,7 @@ class Petition extends HomeItem {
     String? id,
     String? title,
     String? description,
+    PublicationLinks? links,
     List<String>? tags,
     int? signatureCount,
     String? createdBy,
@@ -63,6 +68,7 @@ class Petition extends HomeItem {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      links: links ?? this.links,
       tags: tags ?? this.tags,
       signatureCount: signatureCount ?? this.signatureCount,
       createdBy: createdBy ?? this.createdBy,
@@ -87,6 +93,7 @@ class Petition extends HomeItem {
       id: snap.id,
       title: (data['title'] ?? '') as String,
       description: (data['description'] ?? '') as String,
+      links: PublicationLinks.fromJson(data['links']),
       tags: (data['tags'] as List?)?.cast<String>() ?? const [],
       signatureCount: (data['signatureCount'] ?? 0) as int,
       createdBy: (data['createdBy'] ?? '') as String,
@@ -108,6 +115,7 @@ class Petition extends HomeItem {
     return {
       'title': p.title,
       'description': p.description,
+      if (p.links.toJson().isNotEmpty) 'links': p.links.toJson(),
       'tags': p.tags,
       'signatureCount': p.signatureCount,
       'createdBy': p.createdBy,

@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,51 @@ import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import '../../../../../../test_helper.dart';
 
 void main() {
+  testWidgets(
+    'supporting links and questions stay reachable on a small screen',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final poll = Poll(
+        id: 'with-links',
+        title: 'A questionnaire with supporting information',
+        description: 'Please read the information and watch the video before choosing an answer.',
+        links: const PublicationLinks(
+          youtubeUrl: 'https://youtu.be/dQw4w9WgXcQ',
+          websiteUrl: 'https://example.org/background',
+        ),
+        questionTitle: 'Which approach do you prefer?',
+        tags: const [],
+        options: const [
+          PollOption(id: 'a', label: 'First approach'),
+          PollOption(id: 'b', label: 'Second approach'),
+        ],
+        votes: const {},
+        createdBy: 'author',
+        createdAt: DateTime.now(),
+      );
+      final app = ProviderScope(
+        overrides: [currentUserProvider.overrideWithValue(null)],
+        child: createTestWidget(PollDetailPage(id: poll.id)),
+      );
+      await locator.databaseService.instance
+          .collection('polls')
+          .doc(poll.id)
+          .set(Poll.toFirestore(poll, null));
+      await tester.pumpWidget(app);
+      await tester.pumpAndSettle();
+      expect(find.text('Watch video'), findsOneWidget);
+      expect(find.text('Open website'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.drag(find.byType(NestedScrollView), const Offset(0, -450));
+      await tester.pumpAndSettle();
+      expect(find.text('First approach').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('published poll displays its question above the answer options', (
     tester,
   ) async {

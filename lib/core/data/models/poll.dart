@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/data/models/publication_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/constants/internal_constants.dart';
@@ -25,6 +26,8 @@ class Poll extends Questionnaire {
   @override
   final String description;
   @override
+  final PublicationLinks links;
+  @override
   final List<String> tags;
   final String questionTitle;
   final List<PollOption> options;
@@ -51,6 +54,7 @@ class Poll extends Questionnaire {
     required this.id,
     required this.title,
     required this.description,
+    this.links = const PublicationLinks(),
     required this.tags,
     required this.options,
     this.questionTitle = '',
@@ -75,6 +79,7 @@ class Poll extends Questionnaire {
     String? id,
     String? title,
     String? description,
+    PublicationLinks? links,
     List<String>? tags,
     List<PollOption>? options,
     String? questionTitle,
@@ -93,6 +98,7 @@ class Poll extends Questionnaire {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      links: links ?? this.links,
       tags: tags ?? this.tags,
       options: options ?? this.options,
       questionTitle: questionTitle ?? this.questionTitle,
@@ -121,6 +127,7 @@ class Poll extends Questionnaire {
       id: snap.id,
       title: (data['title'] ?? '') as String,
       description: (data['description'] ?? '') as String,
+      links: PublicationLinks.fromJson(data['links']),
       questionTitle: (data['questionTitle'] ?? '') as String,
       tags: (data['tags'] as List?)?.cast<String>() ?? const [],
       options:
@@ -150,6 +157,7 @@ class Poll extends Questionnaire {
     return {
       'title': p.title,
       'description': p.description,
+      if (p.links.toJson().isNotEmpty) 'links': p.links.toJson(),
       if (p.questionTitle.isNotEmpty) 'questionTitle': p.questionTitle,
       'tags': p.tags,
       'options': p.options.map((o) => o.toMap()).toList(),

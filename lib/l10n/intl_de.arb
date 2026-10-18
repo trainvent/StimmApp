@@ -1263,5 +1263,13 @@
 	"passwordResetConnectionFailed": "Keine Verbindung möglich. Bitte prüfe deine Internetverbindung und versuche es erneut.",
 	"passwordResetTryLater": "Zu viele Versuche. Bitte warte einige Minuten und versuche es erneut.",
 	"passwordResetChooseStronger": "Bitte wähle ein stärkeres Passwort und versuche es erneut.",
-	"passwordResetFailed": "Dein Passwort konnte nicht geändert werden. Bitte versuche es erneut."
+	"passwordResetFailed": "Dein Passwort konnte nicht geändert werden. Bitte versuche es erneut.",
+	"publicationLinks": "Weiterführende Links",
+	"publicationYoutubeLink": "YouTube-Video (optional)",
+	"publicationWebsiteLink": "Webseite (optional)",
+	"publicationInvalidYoutubeLink": "Bitte gib einen gültigen HTTPS-Link zu einem YouTube-Video ein.",
+	"publicationInvalidWebsiteLink": "Bitte gib einen gültigen Webseiten-Link ein, der mit https:// beginnt.",
+	"publicationWatchVideo": "Video ansehen",
+	"publicationOpenWebsite": "Webseite öffnen",
+	"publicationLinkOpenFailed": "Dieser Link konnte nicht geöffnet werden. Bitte versuche es erneut."
 }
