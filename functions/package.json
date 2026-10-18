@@ -1,6 +1,7 @@
 {
 	"name": "functions",
 	"scripts": {
+		"mail:verification-code": "node scripts/check_verification_code.js",
 		"lint": "eslint --ext .js,.ts .",
 		"build": "tsc",
 		"build:watch": "tsc --watch",
@@ -28,6 +29,8 @@
 		"eslint": "^8.57.0",
 		"eslint-config-google": "^0.14.0",
 		"eslint-plugin-import": "^2.29.1",
+		"imapflow": "^2.5.4",
+		"mailparser": "^3.9.42",
 		"typescript": "^5.0.0"
 	},
 	"private": true
