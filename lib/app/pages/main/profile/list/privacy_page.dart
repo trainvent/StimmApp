@@ -149,7 +149,6 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
               ),
               ListTile(
                 key: const ValueKey('public_profile_settings_link'),
-                leading: const Icon(Icons.account_circle_outlined),
                 title: Text(context.l10n.publicProfileSettingsTitle),
                 subtitle: Text(context.l10n.publicProfileSettingsDescription),
                 trailing: const Icon(Icons.chevron_right),
