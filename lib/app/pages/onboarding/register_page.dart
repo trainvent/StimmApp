@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show MethodChannel, PlatformException;
@@ -218,8 +219,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: DConst.padBox),
                   Expanded(
                     child: Center(
-                      child: Image.asset(
-                        "assets/images/Lemm_pen.png",
+                      child: LemmImage(
+                        assetPath: "assets/images/Lemm_pen.png",
                         fit: BoxFit.contain,
                       ),
                     ),

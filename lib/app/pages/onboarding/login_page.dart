@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
@@ -250,8 +251,8 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: DConst.padBox),
                   Expanded(
                     child: Center(
-                      child: Image.asset(
-                        "assets/images/Lemm_login.png",
+                      child: LemmImage(
+                        assetPath: "assets/images/Lemm_login.png",
                         fit: BoxFit.contain,
                       ),
                     ),

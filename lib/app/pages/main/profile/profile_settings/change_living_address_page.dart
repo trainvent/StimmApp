@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
@@ -63,8 +64,8 @@ class _ChangeLivingAddressPageState extends State<ChangeLivingAddressPage>
             child: Column(
               children: [
                 const SizedBox(height: 20.0),
-                Image.asset(
-                  'assets/images/Lemm_pen_location.png',
+                LemmImage(
+                  assetPath: 'assets/images/Lemm_pen_location.png',
                   width: 150,
                   height: 150,
                   fit: BoxFit.contain,

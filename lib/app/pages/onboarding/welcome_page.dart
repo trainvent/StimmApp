@@ -1,3 +1,5 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
+
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -188,7 +190,7 @@ class _WelcomePageState extends State<WelcomePage> {
           children: [
             Expanded(
               flex: 4,
-              child: Image.asset('assets/images/Lemm_waving.png'),
+              child: LemmImage(assetPath: 'assets/images/Lemm_waving.png'),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),

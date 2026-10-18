@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
@@ -145,8 +146,8 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                Image.asset(
-                  'assets/images/Lemm_pen.png',
+                LemmImage(
+                  assetPath: 'assets/images/Lemm_pen.png',
                   width: 150,
                   height: 150,
                   fit: BoxFit.contain,

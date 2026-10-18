@@ -41,7 +41,10 @@ class InfoDialogButton extends StatelessWidget {
                     bottom: -38,
                     left: 0,
                     child: IgnorePointer(
-                      child: LemmImage(assetPath: cornerImagePath),
+                      child: LemmImage(
+                        assetPath: cornerImagePath,
+                        width: MediaQuery.sizeOf(dialogContext).width / 3,
+                      ),
                     ),
                   ),
                   Align(

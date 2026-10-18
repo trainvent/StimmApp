@@ -331,6 +331,7 @@
 	"newMessages": "You have {newMessages, plural, =0{No new messages} =1 {One new message} two{Two new messages} other {{newMessages} new messages}}",
 	"newEmail": "New email",
 	"newPassword": "New password",
+	"pleaseEnterNewPassword": "Please enter a new password.",
 	"newUsername": "New username",
 	"nickname": "Nickname",
 	"no": "No",
@@ -1270,5 +1271,10 @@
   "createQuestionnaire": "Create questionnaire",
   "polls": "Polls",
   "filterQuestionnaireType": "Questionnaire type",
-  "bothQuestionnaireTypes": "Both"
+  "bothQuestionnaireTypes": "Both",
+	"passwordResetSessionExpired": "Your password reset session has expired. Please start again and request a new code.",
+	"passwordResetConnectionFailed": "Could not connect. Please check your internet connection and try again.",
+	"passwordResetTryLater": "Too many attempts. Please wait a few minutes and try again.",
+	"passwordResetChooseStronger": "Please choose a stronger password and try again.",
+	"passwordResetFailed": "We couldn’t change your password. Please try again."
 }

@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/pages/onboarding/set_new_password_page.dart';
 import 'package:stimmapp/app/widgets/buttons/debounced_button_widget.dart';
@@ -109,8 +110,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/Lemm_pen.png',
+                LemmImage(
+                  assetPath: 'assets/images/Lemm_pen.png',
                   height: 240,
                   fit: BoxFit.contain,
                 ),

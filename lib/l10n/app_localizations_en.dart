@@ -897,6 +897,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPassword => 'New password';
 
   @override
+  String get pleaseEnterNewPassword => 'Please enter a new password.';
+
+  @override
   String get newUsername => 'New username';
 
   @override
@@ -3296,4 +3299,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bothQuestionnaireTypes => 'Both';
+
+  @override
+  String get passwordResetSessionExpired =>
+      'Your password reset session has expired. Please start again and request a new code.';
+
+  @override
+  String get passwordResetConnectionFailed =>
+      'Could not connect. Please check your internet connection and try again.';
+
+  @override
+  String get passwordResetTryLater =>
+      'Too many attempts. Please wait a few minutes and try again.';
+
+  @override
+  String get passwordResetChooseStronger =>
+      'Please choose a stronger password and try again.';
+
+  @override
+  String get passwordResetFailed =>
+      'We couldn’t change your password. Please try again.';
 }

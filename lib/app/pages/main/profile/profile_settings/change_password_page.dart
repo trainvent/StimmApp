@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
 import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
@@ -41,8 +42,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         email: authService.currentUser!.email!,
       );
       if (!mounted) return;
-      showSuccessSnackBar(successMessage);
+      final route = ModalRoute.of(context);
+      FocusManager.instance.primaryFocus?.unfocus();
       Navigator.of(context).pop();
+      // Position feedback only after the destination scaffold has taken over.
+      if (route != null) await route.completed;
+      await WidgetsBinding.instance.endOfFrame;
+      showSuccessSnackBar(successMessage);
     } catch (e) {
       if (!mounted) return;
       if (e is DatabaseException) {
@@ -64,8 +70,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               children: [
                 const SizedBox(height: 20.0),
-                Image.asset(
-                  'assets/images/Lemm_login.png',
+                LemmImage(
+                  assetPath: 'assets/images/Lemm_login.png',
                   height: 180,
                   fit: BoxFit.contain,
                   excludeFromSemantics: true,

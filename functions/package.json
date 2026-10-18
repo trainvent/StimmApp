@@ -1,7 +1,7 @@
 {
 	"name": "functions",
 	"scripts": {
-		"mail:verification-code": "node scripts/check_verification_code.js",
+		"mail:verification-code": "node --env-file=../.env scripts/check_verification_code.js",
 		"lint": "eslint --ext .js,.ts .",
 		"build": "tsc",
 		"build:watch": "tsc --watch",

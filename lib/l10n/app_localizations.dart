@@ -1754,6 +1754,12 @@ abstract class AppLocalizations {
   /// **'New password'**
   String get newPassword;
 
+  /// No description provided for @pleaseEnterNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a new password.'**
+  String get pleaseEnterNewPassword;
+
   /// No description provided for @newUsername.
   ///
   /// In en, this message translates to:
@@ -6037,6 +6043,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Both'**
   String get bothQuestionnaireTypes;
+
+  /// No description provided for @passwordResetSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password reset session has expired. Please start again and request a new code.'**
+  String get passwordResetSessionExpired;
+
+  /// No description provided for @passwordResetConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect. Please check your internet connection and try again.'**
+  String get passwordResetConnectionFailed;
+
+  /// No description provided for @passwordResetTryLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a few minutes and try again.'**
+  String get passwordResetTryLater;
+
+  /// No description provided for @passwordResetChooseStronger.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a stronger password and try again.'**
+  String get passwordResetChooseStronger;
+
+  /// No description provided for @passwordResetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t change your password. Please try again.'**
+  String get passwordResetFailed;
 }
 
 class _AppLocalizationsDelegate

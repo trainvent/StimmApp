@@ -324,6 +324,7 @@
 	"newMessages": "Du hast {newMessages, plural, =0{keine neuen Nachrichten} =1 {eine neue Nachricht} two{zwei neue Nachrichten} other {{newMessages} neue Nachrichten}}",
 	"newEmail": "Neue E-Mail",
 	"newPassword": "Neues Passwort",
+	"pleaseEnterNewPassword": "Bitte gib ein neues Passwort ein.",
 	"newUsername": "Neuer Benutzername",
 	"nickname": "Spitzname",
 	"no": "Nein",
@@ -1257,5 +1258,10 @@
   "createQuestionnaire": "Fragen erstellen",
   "polls": "Abstimmungen",
   "filterQuestionnaireType": "Typ",
-  "bothQuestionnaireTypes": "Beide"
+  "bothQuestionnaireTypes": "Beide",
+	"passwordResetSessionExpired": "Die Zeit zum Zurücksetzen deines Passworts ist abgelaufen. Bitte starte erneut und fordere einen neuen Code an.",
+	"passwordResetConnectionFailed": "Keine Verbindung möglich. Bitte prüfe deine Internetverbindung und versuche es erneut.",
+	"passwordResetTryLater": "Zu viele Versuche. Bitte warte einige Minuten und versuche es erneut.",
+	"passwordResetChooseStronger": "Bitte wähle ein stärkeres Passwort und versuche es erneut.",
+	"passwordResetFailed": "Dein Passwort konnte nicht geändert werden. Bitte versuche es erneut."
 }
