@@ -89,7 +89,75 @@ void main() {
       await tester.pumpAndSettle();
       expect(key.currentState!.publicationLinks.toJson(), isEmpty);
       final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('links_test_websiteUrl'), '');
+      expect(prefs.getStringList('links_test_links'), ['', '']);
+      expect(prefs.containsKey('links_test_websiteUrl'), isFalse);
+    },
+  );
+  testWidgets(
+    'one bottom link field detects websites and videos and reveals the second field',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final key = GlobalKey<BaseCreatorPageState>();
+      await tester.pumpWidget(
+        createTestWidget(
+          BaseCreatorPage(
+            key: key,
+            title: 'Create petition',
+            tutorialSteps: const [],
+            profileLoader: () async => null,
+            onSubmit: ({
+              required title,
+              required description,
+              required tags,
+              required scope,
+              required durationDays,
+              required openUntilClosed,
+            }) async => false,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final first = find.byKey(const ValueKey('publicationLink0'));
+      final second = find.byKey(const ValueKey('publicationLink1'));
+      await tester.scrollUntilVisible(
+        first,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      expect(second, findsNothing);
+      await tester.enterText(first, 'https://example.org');
+      await tester.pumpAndSettle();
+      expect(second, findsOneWidget);
+      expect(
+        key.currentState!.publicationLinks.websiteUrl,
+        'https://example.org',
+      );
+      expect(key.currentState!.publicationLinks.youtubeUrl, isNull);
+      await tester.ensureVisible(second);
+      await tester.enterText(second, 'https://youtu.be/dQw4w9WgXcQ');
+      await tester.pumpAndSettle();
+      expect(
+        key.currentState!.publicationLinks.youtubeUrl,
+        'https://youtu.be/dQw4w9WgXcQ',
+      );
+      expect(find.byIcon(Icons.play_circle_outline), findsOneWidget);
+      // Either order works: detection is based on the URL, not the field position.
+      await tester.enterText(second, 'https://second.example.org');
+      await tester.pumpAndSettle();
+      expect(
+        find.text('You can add one YouTube video and one website link.'),
+        findsWidgets,
+      );
+      await tester.enterText(second, '');
+      await tester.ensureVisible(first);
+      await tester.enterText(first, 'https://youtu.be/dQw4w9WgXcQ');
+      await tester.pumpAndSettle();
+      expect(
+        key.currentState!.publicationLinks.youtubeUrl,
+        'https://youtu.be/dQw4w9WgXcQ',
+      );
+      expect(key.currentState!.publicationLinks.websiteUrl, isNull);
     },
   );
 }

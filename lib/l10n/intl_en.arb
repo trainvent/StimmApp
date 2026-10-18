@@ -1278,11 +1278,10 @@
 	"passwordResetChooseStronger": "Please choose a stronger password and try again.",
 	"passwordResetFailed": "We couldn’t change your password. Please try again.",
 	"publicationLinks": "Supporting links",
-	"publicationYoutubeLink": "YouTube video (optional)",
-	"publicationWebsiteLink": "Website (optional)",
-	"publicationInvalidYoutubeLink": "Please enter a valid HTTPS link to a YouTube video.",
 	"publicationInvalidWebsiteLink": "Please enter a valid website link starting with https://.",
 	"publicationWatchVideo": "Watch video",
 	"publicationOpenWebsite": "Open website",
-	"publicationLinkOpenFailed": "This link could not be opened. Please try again."
+	"publicationLinkOpenFailed": "This link could not be opened. Please try again.",
+	"publicationOptionalLink": "Video or website link (optional)",
+	"publicationLinkTypeLimit": "You can add one YouTube video and one website link."
 }

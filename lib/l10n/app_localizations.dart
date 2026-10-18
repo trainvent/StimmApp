@@ -6080,24 +6080,6 @@ abstract class AppLocalizations {
   /// **'Supporting links'**
   String get publicationLinks;
 
-  /// No description provided for @publicationYoutubeLink.
-  ///
-  /// In en, this message translates to:
-  /// **'YouTube video (optional)'**
-  String get publicationYoutubeLink;
-
-  /// No description provided for @publicationWebsiteLink.
-  ///
-  /// In en, this message translates to:
-  /// **'Website (optional)'**
-  String get publicationWebsiteLink;
-
-  /// No description provided for @publicationInvalidYoutubeLink.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid HTTPS link to a YouTube video.'**
-  String get publicationInvalidYoutubeLink;
-
   /// No description provided for @publicationInvalidWebsiteLink.
   ///
   /// In en, this message translates to:
@@ -6121,6 +6103,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This link could not be opened. Please try again.'**
   String get publicationLinkOpenFailed;
+
+  /// No description provided for @publicationOptionalLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Video or website link (optional)'**
+  String get publicationOptionalLink;
+
+  /// No description provided for @publicationLinkTypeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add one YouTube video and one website link.'**
+  String get publicationLinkTypeLimit;
 }
 
 class _AppLocalizationsDelegate

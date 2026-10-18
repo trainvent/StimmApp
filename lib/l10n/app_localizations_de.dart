@@ -3369,16 +3369,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get publicationLinks => 'Weiterführende Links';
 
   @override
-  String get publicationYoutubeLink => 'YouTube-Video (optional)';
-
-  @override
-  String get publicationWebsiteLink => 'Webseite (optional)';
-
-  @override
-  String get publicationInvalidYoutubeLink =>
-      'Bitte gib einen gültigen HTTPS-Link zu einem YouTube-Video ein.';
-
-  @override
   String get publicationInvalidWebsiteLink =>
       'Bitte gib einen gültigen Webseiten-Link ein, der mit https:// beginnt.';
 
@@ -3391,4 +3381,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get publicationLinkOpenFailed =>
       'Dieser Link konnte nicht geöffnet werden. Bitte versuche es erneut.';
+
+  @override
+  String get publicationOptionalLink => 'Video- oder Webseiten-Link (optional)';
+
+  @override
+  String get publicationLinkTypeLimit =>
+      'Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen.';
 }
