@@ -75,6 +75,22 @@ class UserRepository implements UserInterface {
     });
   }
 
+  Future<void> setPublicProfileVisibility(
+    String uid, {
+    required bool showPublications,
+    required bool showFullName,
+    required bool showAddress,
+    required bool showLink,
+  }) async {
+    await _fs.instance.collection(DatabaseCollections.users).doc(uid).update({
+      'hidePublications': !showPublications,
+      'publicProfileShowFullName': showFullName,
+      'publicProfileShowAddress': showAddress,
+      'publicProfileShowLink': showLink,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   Future<bool> isUsernameAvailable(String username, {String? forUserId}) async {
     if (!hasValidUsernameLength(username)) return false;
     final usernameKey = usernameKeyFor(username);

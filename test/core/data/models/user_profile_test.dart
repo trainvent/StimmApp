@@ -21,6 +21,7 @@ void main() {
     final userProfileJson = {
       'displayName': 'Test User',
       'profilePictureUrl': null,
+      'websiteUrl': null,
       'usernameKey': 'test user',
       'email': 'test@example.com',
       'state': 'Hessen',
@@ -49,10 +50,57 @@ void main() {
       'googleSyncLastAt': null,
       'showPetitionReason': null,
       'signAnonymously': false,
+      'hidePublications': false,
+      'publicProfileShowFullName': false,
+      'publicProfileShowAddress': false,
+      'publicProfileShowLink': false,
       'themeMode': null,
       'themeScheme': null,
       'locale': null,
     };
+
+    test('profile links survive edits and can be explicitly removed', () {
+      final linked = userProfile.copyWith(websiteUrl: 'https://example.org/me');
+      expect(
+        UserProfile.fromJson(linked.toJson(), linked.uid).websiteUrl,
+        'https://example.org/me',
+      );
+      expect(
+        linked.copyWith(givenName: 'Updated').websiteUrl,
+        'https://example.org/me',
+      );
+      expect(linked.copyWith(websiteUrl: null).toJson()['websiteUrl'], isNull);
+    });
+
+    test(
+      'publication privacy defaults to visible and survives other edits',
+      () {
+        expect(UserProfile.fromJson({}, 'default').hidePublications, isFalse);
+        final hidden = userProfile.copyWith(
+          hidePublications: true,
+          publicProfileShowFullName: true,
+          publicProfileShowAddress: true,
+          publicProfileShowLink: true,
+        );
+        final restored = UserProfile.fromJson(hidden.toJson(), hidden.uid);
+        expect(restored.publicProfileShowFullName, isTrue);
+        expect(restored.publicProfileShowAddress, isTrue);
+        expect(restored.publicProfileShowLink, isTrue);
+        expect(
+          hidden.copyWith(givenName: 'Changed').publicProfileShowAddress,
+          isTrue,
+        );
+        expect(
+          UserProfile.fromJson(hidden.toJson(), hidden.uid).hidePublications,
+          isTrue,
+        );
+        expect(hidden.copyWith(givenName: 'Changed').hidePublications, isTrue);
+        expect(
+          hidden.copyWith(hidePublications: false).hidePublications,
+          isFalse,
+        );
+      },
+    );
 
     test('anonymous signing defaults off and survives round trips', () {
       expect(UserProfile.fromJson({}, 'legacy').signAnonymously, isFalse);

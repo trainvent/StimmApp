@@ -48,10 +48,18 @@ function id(value) {
     }
     return value;
 }
-function publicProfile(uid, profile) {
+function publicIdentity(uid, profile) {
     var _a, _b;
     return { uid, displayName: (_a = profile.displayName) !== null && _a !== void 0 ? _a : null,
         profilePictureUrl: (_b = profile.profilePictureUrl) !== null && _b !== void 0 ? _b : null };
+}
+function publicProfile(uid, profile) {
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, publicIdentity(uid, profile)), { hidePublications: profile.hidePublications === true }), (profile.publicProfileShowLink === true && typeof profile.websiteUrl === "string" ?
+        { websiteUrl: profile.websiteUrl } : {})), (profile.publicProfileShowFullName === true ? {
+        givenName: typeof profile.givenName === "string" ? profile.givenName : null,
+        surname: typeof profile.surname === "string" ? profile.surname : null,
+    } : {})), (profile.publicProfileShowAddress === true && typeof profile.address === "string" ?
+        { address: profile.address } : {}));
 }
 function publicParticipant(uid, profile, participation) {
     var _a, _b, _c;
@@ -59,7 +67,7 @@ function publicParticipant(uid, profile, participation) {
     if (!profile || (profile.signAnonymously !== undefined && profile.signAnonymously !== false)) {
         return { profile: { uid: "", signAnonymously: true } };
     }
-    return { profile: publicProfile(uid, profile),
+    return { profile: publicIdentity(uid, profile),
         reason: typeof participation.reason === "string" ? participation.reason : null,
         signedAt: (_c = (_b = (_a = participation.signedAt) === null || _a === void 0 ? void 0 : _a.toMillis) === null || _b === void 0 ? void 0 : _b.call(_a)) !== null && _c !== void 0 ? _c : null };
 }

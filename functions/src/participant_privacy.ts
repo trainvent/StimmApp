@@ -12,16 +12,28 @@ function id(value: unknown): string {
   }
   return value;
 }
-export function publicProfile(uid: string, profile: Data): Data {
+function publicIdentity(uid: string, profile: Data): Data {
   return {uid, displayName: profile.displayName ?? null,
     profilePictureUrl: profile.profilePictureUrl ?? null};
+}
+export function publicProfile(uid: string, profile: Data): Data {
+  return {...publicIdentity(uid, profile),
+    hidePublications: profile.hidePublications === true,
+    ...(profile.publicProfileShowLink === true && typeof profile.websiteUrl === "string" ?
+      {websiteUrl: profile.websiteUrl} : {}),
+    ...(profile.publicProfileShowFullName === true ? {
+      givenName: typeof profile.givenName === "string" ? profile.givenName : null,
+      surname: typeof profile.surname === "string" ? profile.surname : null,
+    } : {}),
+    ...(profile.publicProfileShowAddress === true && typeof profile.address === "string" ?
+      {address: profile.address} : {})};
 }
 export function publicParticipant(uid: string, profile: Data | undefined, participation: Data): Data {
   // Missing or malformed preferences must never reveal an identity.
   if (!profile || (profile.signAnonymously !== undefined && profile.signAnonymously !== false)) {
     return {profile: {uid: "", signAnonymously: true}};
   }
-  return {profile: publicProfile(uid, profile),
+  return {profile: publicIdentity(uid, profile),
     reason: typeof participation.reason === "string" ? participation.reason : null,
     signedAt: participation.signedAt?.toMillis?.() ?? null};
 }

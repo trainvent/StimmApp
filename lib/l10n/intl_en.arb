@@ -1283,5 +1283,20 @@
 	"publicationOpenWebsite": "Open website",
 	"publicationLinkOpenFailed": "This link could not be opened. Please try again.",
 	"publicationOptionalLink": "Video or website link (optional)",
-	"publicationLinkTypeLimit": "You can add one YouTube video and one website link."
+	"publicationLinkTypeLimit": "You can add one YouTube video and one website link.",
+	"profileLinkTitle": "Profile link",
+	"profileLinkLabel": "Website or social profile (optional)",
+	"profileLinkHelp": "Choose whether to show this link in your public profile settings. Leave empty to remove it.",
+	"profileLinkOpen": "Open profile link",
+	"profileLinkAdd": "Add link",
+	"profileLinkEdit": "Edit link",
+	"profilePublicationsHidden": "Publications are hidden",
+	"profilePublicationsHiddenDescription": "This person has chosen not to show their publications on their profile.",
+	"publicProfileSettingsTitle": "Public profile",
+	"publicProfileSettingsDescription": "Choose what others can see on your profile.",
+	"publicProfileVisibilityIntro": "Your nickname and profile picture are always visible. Choose which other details to share.",
+	"publicProfilePublicationHistory": "Publication history",
+	"publicProfileHistoryHelp": "Your public petitions and questionnaires can still appear elsewhere in the app.",
+	"publicProfileFullName": "Full name",
+	"publicProfileNotAdded": "Not added yet"
 }

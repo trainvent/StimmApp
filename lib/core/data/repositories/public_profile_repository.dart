@@ -17,10 +17,21 @@ class PublicProfileRepository {
                 uid: uid,
                 nickname: profile.displayName,
                 imageUrl: profile.profilePictureUrl,
+                websiteUrl: profile.websiteUrl,
+                fullName: [profile.givenName, profile.surname]
+                    .whereType<String>()
+                    .map((part) => part.trim())
+                    .where((part) => part.isNotEmpty)
+                    .join(' '),
+                address: profile.address,
+                hidePublications: profile.hidePublications,
               ),
       );
 
   Future<List<PublicProfileForm>> publications(String uid) async {
+    final profile = await participantAccess.publicProfile(uid);
+    if (profile == null || profile.hidePublications) return const [];
+
     final sections = await Future.wait([
       for (final type in ['petition', 'poll', 'survey'])
         _publications(uid, type),

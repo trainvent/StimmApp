@@ -2,16 +2,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Only the fields shown on another person's profile card.
 class PublicProfile {
-  const PublicProfile({required this.uid, this.nickname, this.imageUrl});
+  const PublicProfile({
+    required this.uid,
+    this.nickname,
+    this.imageUrl,
+    this.websiteUrl,
+    this.fullName,
+    this.address,
+    this.hidePublications = false,
+  });
   final String uid;
   final String? nickname;
   final String? imageUrl;
+  final String? websiteUrl;
+  final String? fullName;
+  final String? address;
+  final bool hidePublications;
 
   factory PublicProfile.fromMap(String uid, Map<String, dynamic> data) =>
       PublicProfile(
         uid: uid,
         nickname: data['displayName'] as String?,
         imageUrl: data['profilePictureUrl'] as String?,
+        websiteUrl: data['websiteUrl'] as String?,
+        fullName: [data['givenName'], data['surname']]
+            .whereType<String>()
+            .map((part) => part.trim())
+            .where((part) => part.isNotEmpty)
+            .join(' '),
+        address: data['address'] as String?,
+        hidePublications: data['hidePublications'] == true,
       );
 }
 

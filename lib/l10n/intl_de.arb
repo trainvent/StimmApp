@@ -1270,5 +1270,20 @@
 	"publicationOpenWebsite": "Webseite öffnen",
 	"publicationLinkOpenFailed": "Dieser Link konnte nicht geöffnet werden. Bitte versuche es erneut.",
 	"publicationOptionalLink": "Video- oder Webseiten-Link (optional)",
-	"publicationLinkTypeLimit": "Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen."
+	"publicationLinkTypeLimit": "Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen.",
+	"profileLinkTitle": "Profil-Link",
+	"profileLinkLabel": "Webseite oder Social-Media-Profil (optional)",
+	"profileLinkHelp": "Wähle in den Einstellungen deines öffentlichen Profils, ob dieser Link angezeigt wird. Zum Entfernen leer lassen.",
+	"profileLinkOpen": "Profil-Link öffnen",
+	"profileLinkAdd": "Link hinzufügen",
+	"profileLinkEdit": "Link bearbeiten",
+	"profilePublicationsHidden": "Veröffentlichungen sind verborgen",
+	"profilePublicationsHiddenDescription": "Diese Person möchte ihre Veröffentlichungen nicht auf ihrem Profil anzeigen.",
+	"publicProfileSettingsTitle": "Öffentliches Profil",
+	"publicProfileSettingsDescription": "Wähle, was andere auf deinem Profil sehen können.",
+	"publicProfileVisibilityIntro": "Dein Nickname und dein Profilbild sind immer sichtbar. Wähle, welche weiteren Angaben du teilen möchtest.",
+	"publicProfilePublicationHistory": "Veröffentlichungen",
+	"publicProfileHistoryHelp": "Deine öffentlichen Petitionen und Fragebögen können weiterhin an anderen Stellen in der App erscheinen.",
+	"publicProfileFullName": "Vollständiger Name",
+	"publicProfileNotAdded": "Noch nicht hinzugefügt"
 }

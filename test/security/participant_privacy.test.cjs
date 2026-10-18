@@ -77,7 +77,7 @@ const privacy = require('../../functions/lib/participant_privacy');
       type: 'petition', formId: 'form', offset: -1,
     }}), {code: 'invalid-argument'});
     const profile = await privacy.getPublicProfile.run({data: {uid: 'hidden'}});
-    assert.deepEqual(Object.keys(profile).sort(), ['displayName', 'profilePictureUrl', 'uid']);
+    assert.deepEqual(Object.keys(profile).sort(), ['displayName', 'hidePublications', 'profilePictureUrl', 'uid']);
     await assertSucceeds(updateDoc(doc(owner, 'users/hidden'), {signAnonymously: false}));
     const visible = await privacy.getPublicParticipants.run({data: {type: 'petition', formId: 'form'}});
     assert.equal(visible.entries.some(row => row.profile.uid === 'hidden'), true);

@@ -16,6 +16,15 @@ ParticipantAccessService fakeParticipantAccess(
               'uid': args['uid'],
               'displayName': data['displayName'],
               'profilePictureUrl': data['profilePictureUrl'],
+              if (data['publicProfileShowLink'] == true)
+                'websiteUrl': data['websiteUrl'],
+              if (data['publicProfileShowFullName'] == true) ...{
+                'givenName': data['givenName'],
+                'surname': data['surname'],
+              },
+              if (data['publicProfileShowAddress'] == true)
+                'address': data['address'],
+              'hidePublications': data['hidePublications'] == true,
             };
     }
     final type = args['type'] as String;

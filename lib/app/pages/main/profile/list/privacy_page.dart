@@ -1,3 +1,4 @@
+import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trainvent_general/trainvent_general.dart';
@@ -145,6 +146,21 @@ class _PrivacyPageState extends ConsumerState<PrivacyPage> {
                 onChanged: _savingAnonymousSigning
                     ? null
                     : (value) => _toggleAnonymousSigning(value, profile),
+              ),
+              ListTile(
+                key: const ValueKey('public_profile_settings_link'),
+                leading: const Icon(Icons.account_circle_outlined),
+                title: Text(context.l10n.publicProfileSettingsTitle),
+                subtitle: Text(context.l10n.publicProfileSettingsDescription),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => PublicProfilePage(
+                      userId: profile.uid,
+                      openSettings: true,
+                    ),
+                  ),
+                ),
               ),
               _buildPolicyTile(
                 title: context.l10n.analyticsData,

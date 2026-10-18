@@ -15,6 +15,9 @@ void main() {
         DatabaseService(db),
         access: fakeParticipantAccess(db),
       );
+      await db.collection('users').doc('author').set({
+        'displayName': 'Nickname',
+      });
       final examples = [
         ('petitions', 'petition', 'author', 'public', 'active', 1),
         ('polls', 'poll', 'author', 'public', 'closed', 2),
@@ -41,8 +44,36 @@ void main() {
       await db.collection('users').doc('author').set({
         'displayName': 'Nickname',
         'email': 'private@example.com',
+        'websiteUrl': 'https://example.org/me',
+        'publicProfileShowLink': true,
       });
       expect((await repo.watch('author').first)!.nickname, 'Nickname');
+      expect(
+        (await repo.watch('author').first)!.websiteUrl,
+        'https://example.org/me',
+      );
     },
   );
+  test('hidden publication lists return nothing and become visible when re-enabled', () async {
+    final db = FakeFirebaseFirestore();
+    final repo = PublicProfileRepository(
+      DatabaseService(db),
+      access: fakeParticipantAccess(db),
+    );
+    await db.collection('users').doc('private').set({
+      'displayName': 'Nickname',
+      'hidePublications': true,
+    });
+    await db.collection('petitions').doc('petition').set({
+      'createdBy': 'private',
+      'title': 'A public petition',
+      'status': 'active',
+    });
+    expect((await repo.watch('private').first)!.hidePublications, isTrue);
+    expect(await repo.publications('private'), isEmpty);
+    await db.collection('users').doc('private').update({
+      'hidePublications': false,
+    });
+    expect((await repo.publications('private')).single.id, 'petition');
+  });
 }

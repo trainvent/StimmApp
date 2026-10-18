@@ -496,6 +496,22 @@ class ProfilePage extends ConsumerWidget {
                           ),
 
                           _buildDetailTile(
+                            context,
+                            context.l10n.profileLinkTitle,
+                            userProfile.websiteUrl,
+                            hideWhenEmpty: false,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UpdateProfileFieldPage(
+                                  field: EditableProfileField.websiteUrl,
+                                  initialValue: userProfile.websiteUrl,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          _buildDetailTile(
                             key: keys.profilePage.manageSubscriptionsListTile,
                             context,
                             context.l10n.proMember,

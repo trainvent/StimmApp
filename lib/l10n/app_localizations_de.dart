@@ -3388,4 +3388,54 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get publicationLinkTypeLimit =>
       'Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen.';
+
+  @override
+  String get profileLinkTitle => 'Profil-Link';
+
+  @override
+  String get profileLinkLabel => 'Webseite oder Social-Media-Profil (optional)';
+
+  @override
+  String get profileLinkHelp =>
+      'Wähle in den Einstellungen deines öffentlichen Profils, ob dieser Link angezeigt wird. Zum Entfernen leer lassen.';
+
+  @override
+  String get profileLinkOpen => 'Profil-Link öffnen';
+
+  @override
+  String get profileLinkAdd => 'Link hinzufügen';
+
+  @override
+  String get profileLinkEdit => 'Link bearbeiten';
+
+  @override
+  String get profilePublicationsHidden => 'Veröffentlichungen sind verborgen';
+
+  @override
+  String get profilePublicationsHiddenDescription =>
+      'Diese Person möchte ihre Veröffentlichungen nicht auf ihrem Profil anzeigen.';
+
+  @override
+  String get publicProfileSettingsTitle => 'Öffentliches Profil';
+
+  @override
+  String get publicProfileSettingsDescription =>
+      'Wähle, was andere auf deinem Profil sehen können.';
+
+  @override
+  String get publicProfileVisibilityIntro =>
+      'Dein Nickname und dein Profilbild sind immer sichtbar. Wähle, welche weiteren Angaben du teilen möchtest.';
+
+  @override
+  String get publicProfilePublicationHistory => 'Veröffentlichungen';
+
+  @override
+  String get publicProfileHistoryHelp =>
+      'Deine öffentlichen Petitionen und Fragebögen können weiterhin an anderen Stellen in der App erscheinen.';
+
+  @override
+  String get publicProfileFullName => 'Vollständiger Name';
+
+  @override
+  String get publicProfileNotAdded => 'Noch nicht hinzugefügt';
 }

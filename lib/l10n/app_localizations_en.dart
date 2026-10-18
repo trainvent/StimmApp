@@ -3343,4 +3343,54 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get publicationLinkTypeLimit =>
       'You can add one YouTube video and one website link.';
+
+  @override
+  String get profileLinkTitle => 'Profile link';
+
+  @override
+  String get profileLinkLabel => 'Website or social profile (optional)';
+
+  @override
+  String get profileLinkHelp =>
+      'Choose whether to show this link in your public profile settings. Leave empty to remove it.';
+
+  @override
+  String get profileLinkOpen => 'Open profile link';
+
+  @override
+  String get profileLinkAdd => 'Add link';
+
+  @override
+  String get profileLinkEdit => 'Edit link';
+
+  @override
+  String get profilePublicationsHidden => 'Publications are hidden';
+
+  @override
+  String get profilePublicationsHiddenDescription =>
+      'This person has chosen not to show their publications on their profile.';
+
+  @override
+  String get publicProfileSettingsTitle => 'Public profile';
+
+  @override
+  String get publicProfileSettingsDescription =>
+      'Choose what others can see on your profile.';
+
+  @override
+  String get publicProfileVisibilityIntro =>
+      'Your nickname and profile picture are always visible. Choose which other details to share.';
+
+  @override
+  String get publicProfilePublicationHistory => 'Publication history';
+
+  @override
+  String get publicProfileHistoryHelp =>
+      'Your public petitions and questionnaires can still appear elsewhere in the app.';
+
+  @override
+  String get publicProfileFullName => 'Full name';
+
+  @override
+  String get publicProfileNotAdded => 'Not added yet';
 }

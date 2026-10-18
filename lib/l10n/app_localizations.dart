@@ -6115,6 +6115,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can add one YouTube video and one website link.'**
   String get publicationLinkTypeLimit;
+
+  /// No description provided for @profileLinkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile link'**
+  String get profileLinkTitle;
+
+  /// No description provided for @profileLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Website or social profile (optional)'**
+  String get profileLinkLabel;
+
+  /// No description provided for @profileLinkHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether to show this link in your public profile settings. Leave empty to remove it.'**
+  String get profileLinkHelp;
+
+  /// No description provided for @profileLinkOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open profile link'**
+  String get profileLinkOpen;
+
+  /// No description provided for @profileLinkAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add link'**
+  String get profileLinkAdd;
+
+  /// No description provided for @profileLinkEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit link'**
+  String get profileLinkEdit;
+
+  /// No description provided for @profilePublicationsHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Publications are hidden'**
+  String get profilePublicationsHidden;
+
+  /// No description provided for @profilePublicationsHiddenDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This person has chosen not to show their publications on their profile.'**
+  String get profilePublicationsHiddenDescription;
+
+  /// No description provided for @publicProfileSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public profile'**
+  String get publicProfileSettingsTitle;
+
+  /// No description provided for @publicProfileSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what others can see on your profile.'**
+  String get publicProfileSettingsDescription;
+
+  /// No description provided for @publicProfileVisibilityIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your nickname and profile picture are always visible. Choose which other details to share.'**
+  String get publicProfileVisibilityIntro;
+
+  /// No description provided for @publicProfilePublicationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Publication history'**
+  String get publicProfilePublicationHistory;
+
+  /// No description provided for @publicProfileHistoryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your public petitions and questionnaires can still appear elsewhere in the app.'**
+  String get publicProfileHistoryHelp;
+
+  /// No description provided for @publicProfileFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get publicProfileFullName;
+
+  /// No description provided for @publicProfileNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not added yet'**
+  String get publicProfileNotAdded;
 }
 
 class _AppLocalizationsDelegate

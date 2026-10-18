@@ -7,6 +7,7 @@ class UserProfile {
   final String uid;
   final String? displayName;
   final String? profilePictureUrl;
+  final String? websiteUrl;
   final String? usernameKey;
   final String? email;
   final String? state;
@@ -27,6 +28,10 @@ class UserProfile {
   // Settings
   final bool? showPetitionReason;
   final bool signAnonymously;
+  final bool hidePublications;
+  final bool publicProfileShowLink;
+  final bool publicProfileShowAddress;
+  final bool publicProfileShowFullName;
   final String? themeMode; // 'light', 'dark', or null (system)
   final String? themeScheme; // 'stimm', 'ocean', etc.
   final String? locale; // 'en', 'de', etc.
@@ -71,6 +76,7 @@ class UserProfile {
     required this.uid,
     this.displayName,
     this.profilePictureUrl,
+    this.websiteUrl,
     this.usernameKey,
     this.email,
     this.state,
@@ -99,6 +105,10 @@ class UserProfile {
     this.googleSyncLastAt,
     this.showPetitionReason,
     this.signAnonymously = false,
+    this.hidePublications = false,
+    this.publicProfileShowLink = false,
+    this.publicProfileShowAddress = false,
+    this.publicProfileShowFullName = false,
     this.themeMode,
     this.themeScheme,
     this.locale,
@@ -111,6 +121,7 @@ class UserProfile {
     String? uid,
     String? displayName,
     Object? profilePictureUrl = _unset,
+    Object? websiteUrl = _unset,
     String? usernameKey,
     String? email,
     Object? state = _unset,
@@ -139,6 +150,10 @@ class UserProfile {
     DateTime? googleSyncLastAt,
     bool? showPetitionReason,
     bool? signAnonymously,
+    bool? hidePublications,
+    bool? publicProfileShowLink,
+    bool? publicProfileShowAddress,
+    bool? publicProfileShowFullName,
     String? themeMode,
     String? themeScheme,
     String? locale,
@@ -152,6 +167,9 @@ class UserProfile {
       profilePictureUrl: identical(profilePictureUrl, _unset)
           ? this.profilePictureUrl
           : profilePictureUrl as String?,
+      websiteUrl: identical(websiteUrl, _unset)
+          ? this.websiteUrl
+          : websiteUrl as String?,
       usernameKey: usernameKey ?? this.usernameKey,
       email: resolvedEmail,
       state: identical(state, _unset) ? this.state : state as String?,
@@ -184,6 +202,13 @@ class UserProfile {
       googleSyncLastAt: googleSyncLastAt ?? this.googleSyncLastAt,
       showPetitionReason: showPetitionReason ?? this.showPetitionReason,
       signAnonymously: signAnonymously ?? this.signAnonymously,
+      hidePublications: hidePublications ?? this.hidePublications,
+      publicProfileShowLink:
+          publicProfileShowLink ?? this.publicProfileShowLink,
+      publicProfileShowAddress:
+          publicProfileShowAddress ?? this.publicProfileShowAddress,
+      publicProfileShowFullName:
+          publicProfileShowFullName ?? this.publicProfileShowFullName,
       themeMode: themeMode ?? this.themeMode,
       themeScheme: themeScheme ?? this.themeScheme,
       locale: locale ?? this.locale,
@@ -199,6 +224,7 @@ class UserProfile {
       uid: uid,
       displayName: json['displayName'] as String?,
       profilePictureUrl: json['profilePictureUrl'] as String?,
+      websiteUrl: json['websiteUrl'] as String?,
       usernameKey: json['usernameKey'] as String?,
       email: email,
       state: json['state'] as String?,
@@ -228,6 +254,10 @@ class UserProfile {
       googleSyncLastAt: (json['googleSyncLastAt'] as Timestamp?)?.toDate(),
       showPetitionReason: json['showPetitionReason'] as bool?,
       signAnonymously: json['signAnonymously'] as bool? ?? false,
+      hidePublications: json['hidePublications'] as bool? ?? false,
+      publicProfileShowLink: json['publicProfileShowLink'] == true,
+      publicProfileShowAddress: json['publicProfileShowAddress'] == true,
+      publicProfileShowFullName: json['publicProfileShowFullName'] == true,
       themeMode: json['themeMode'] as String?,
       themeScheme: json['themeScheme'] as String?,
       locale: json['locale'] as String?,
@@ -238,6 +268,7 @@ class UserProfile {
     return <String, Object?>{
       'displayName': displayName,
       'profilePictureUrl': profilePictureUrl,
+      'websiteUrl': websiteUrl,
       'usernameKey': usernameKey,
       'email': email,
       'state': state,
@@ -272,6 +303,10 @@ class UserProfile {
           : null,
       'showPetitionReason': showPetitionReason,
       'signAnonymously': signAnonymously,
+      'hidePublications': hidePublications,
+      'publicProfileShowLink': publicProfileShowLink,
+      'publicProfileShowAddress': publicProfileShowAddress,
+      'publicProfileShowFullName': publicProfileShowFullName,
       'themeMode': themeMode,
       'themeScheme': themeScheme,
       'locale': locale,

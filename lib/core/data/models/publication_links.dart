@@ -1,3 +1,5 @@
+import 'package:stimmapp/core/functions/parse_website_link.dart';
+
 /// Optional supporting material shared by petitions and questionnaires.
 class PublicationLinks {
   const PublicationLinks({this.youtubeUrl, this.websiteUrl});
@@ -5,20 +7,7 @@ class PublicationLinks {
   final String? youtubeUrl;
   final String? websiteUrl;
 
-  static Uri? websiteUri(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    final text = value.trim();
-    if (text.length > 2048 || RegExp(r'\s').hasMatch(text)) return null;
-    final uri = Uri.tryParse(text);
-    if (uri == null ||
-        uri.scheme != 'https' ||
-        uri.host.isEmpty ||
-        !uri.host.contains('.') ||
-        uri.userInfo.isNotEmpty) {
-      return null;
-    }
-    return uri;
-  }
+  static Uri? websiteUri(String? value) => parseWebsiteLink(value);
 
   static Uri? youtubeUri(String? value) {
     final uri = websiteUri(value);

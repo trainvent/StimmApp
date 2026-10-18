@@ -2,7 +2,8 @@ import 'package:stimmapp/app/widgets/lemm_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stimmapp/app/scaffolds/app_bottom_bar_buttons.dart';
-import 'package:stimmapp/app/widgets/buttons/button_widget.dart';
+import 'package:trainvent_general/trainvent_general.dart';
+import 'package:stimmapp/core/functions/parse_website_link.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
 import 'package:stimmapp/core/data/repositories/user_repository.dart';
@@ -12,7 +13,7 @@ import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/functions/normalize_username.dart';
 import 'package:stimmapp/core/functions/update_user_name.dart';
 
-enum EditableProfileField { username, givenName, surname }
+enum EditableProfileField { username, givenName, surname, websiteUrl }
 
 class UpdateProfileFieldPage extends StatefulWidget {
   const UpdateProfileFieldPage({
@@ -50,6 +51,7 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       EditableProfileField.username => context.l10n.updateUsername,
       EditableProfileField.givenName => context.l10n.editGivenName,
       EditableProfileField.surname => context.l10n.editSurname,
+      EditableProfileField.websiteUrl => context.l10n.profileLinkTitle,
     };
   }
 
@@ -58,12 +60,15 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       EditableProfileField.username => context.l10n.newUsername,
       EditableProfileField.givenName => context.l10n.givenName,
       EditableProfileField.surname => context.l10n.surname,
+      EditableProfileField.websiteUrl => context.l10n.profileLinkLabel,
     };
   }
 
-  int get _maxLength => widget.field == EditableProfileField.username
-      ? AppLimits.maxDisplayNameLength
-      : AppLimits.maxPersonNameLength;
+  int get _maxLength => switch (widget.field) {
+    EditableProfileField.username => AppLimits.maxDisplayNameLength,
+    EditableProfileField.websiteUrl => 2048,
+    _ => AppLimits.maxPersonNameLength,
+  };
 
   Future<void> _save() async {
     if (_isSaving) return;
@@ -84,7 +89,8 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
         return;
       }
 
-      if (widget.field != EditableProfileField.username &&
+      if ((widget.field == EditableProfileField.givenName ||
+              widget.field == EditableProfileField.surname) &&
           profile.isGoogleSyncActive == true) {
         showErrorSnackBar(context.l10n.googleSyncLocksPersonalData);
         return;
@@ -110,6 +116,10 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
           await repository.upsert(profile.copyWith(givenName: value));
         case EditableProfileField.surname:
           await repository.upsert(profile.copyWith(surname: value));
+        case EditableProfileField.websiteUrl:
+          await repository.upsert(
+            profile.copyWith(websiteUrl: value.isEmpty ? null : value),
+          );
       }
 
       if (!mounted) return;
@@ -161,8 +171,16 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
                         TextFormField(
                           controller: _controller,
                           maxLength: _maxLength,
+                          keyboardType:
+                              widget.field == EditableProfileField.websiteUrl
+                              ? TextInputType.url
+                              : TextInputType.text,
+                          autocorrect:
+                              widget.field != EditableProfileField.websiteUrl,
                           textCapitalization:
-                              widget.field == EditableProfileField.username
+                              (widget.field == EditableProfileField.username ||
+                                  widget.field ==
+                                      EditableProfileField.websiteUrl)
                               ? TextCapitalization.none
                               : TextCapitalization.words,
                           inputFormatters: [
@@ -170,9 +188,27 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
                           ],
                           decoration: InputDecoration(
                             labelText: _fieldLabel(),
+                            hintText:
+                                widget.field == EditableProfileField.websiteUrl
+                                ? 'https://…'
+                                : null,
+                            helperText:
+                                widget.field == EditableProfileField.websiteUrl
+                                ? context.l10n.profileLinkHelp
+                                : null,
+                            helperMaxLines: 3,
+                            errorMaxLines: 3,
                             counterText: '',
                           ),
                           validator: (String? value) {
+                            if (widget.field ==
+                                EditableProfileField.websiteUrl) {
+                              return value == null ||
+                                      value.trim().isEmpty ||
+                                      parseWebsiteLink(value) != null
+                                  ? null
+                                  : context.l10n.publicationInvalidWebsiteLink;
+                            }
                             if (value == null || value.trim().isEmpty) {
                               return context.l10n.enterSomething;
                             }
@@ -198,14 +234,33 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
         ),
       ),
       buttons: [
-        ButtonWidget(
-          isFilled: true,
-          label: _isSaving ? context.l10n.saving : title,
-          callback: () async {
-            if (_formKey.currentState!.validate()) {
-              await _save();
-            }
-          },
+        ElevatedButton(
+          onPressed: _isSaving
+              ? null
+              : () async {
+                  if (_formKey.currentState!.validate()) await _save();
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Colors.black,
+            minimumSize: const Size(double.infinity, 50),
+          ),
+          child: _isSaving
+              ? const SizedBox.square(
+                  dimension: 24,
+                  child: Center(
+                    child: TriangleLoadingIndicator(
+                      size: 20,
+                      showFill: false,
+                      strokeColor: Colors.black,
+                    ),
+                  ),
+                )
+              : Text(
+                  widget.field == EditableProfileField.websiteUrl
+                      ? context.l10n.save
+                      : title,
+                ),
         ),
       ],
     );
