@@ -40,7 +40,7 @@ https://developers.google.com/android-publisher/getting_started
 1. Set the version in `pubspec.yaml`. The number after `+` must be unused on Play.
 2. Add user-facing release notes in both files, named after that build number:
    - `fastlane/metadata/android/de-DE/changelogs/<buildNumber>.txt`
-   - `fastlane/metadata/android/en-US/changelogs/<buildNumber>.txt`
+   - `fastlane/metadata/android/en-GB/changelogs/<buildNumber>.txt`
    Each must contain 1–500 Unicode characters. The current notes cover the filter
    reset change; expand them if the release contains other changes.
 3. From the repository root run:
