@@ -147,3 +147,10 @@ playwright-report/
 .env
 functions/.env.mail-helper
 mcp.json
+
+# Local Google Play publishing credentials and Fastlane output
+/fastlane/play-service-account.json
+/fastlane/report.xml
+/fastlane/README.md
+/.bundle/
+/vendor/bundle/

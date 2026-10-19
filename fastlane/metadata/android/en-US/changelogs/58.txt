@@ -1,0 +1,1 @@
+You can now restore the default form filters using the reset icon. This hides forms you have already participated in again.

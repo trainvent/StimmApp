@@ -1,0 +1,1 @@
+Die Formularfilter lassen sich jetzt über ein Symbol auf die Standardeinstellungen zurücksetzen. Bereits ausgefüllte Formulare werden dadurch wieder ausgeblendet.

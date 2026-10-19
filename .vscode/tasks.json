@@ -256,6 +256,25 @@
 			],
 			"group": "build",
 			"problemMatcher": []
+		},
+		{
+			"label": "Google Play: Build and Upload Production Draft",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"ci_scripts/upload_play_draft.sh"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true
+			},
+			"detail": "Build the production AAB and upload it with German/English release notes as a Google Play draft."
 		}
 	]
 }

@@ -1,0 +1,2 @@
+# Never store publishing credentials here under alternate names.
+*.json

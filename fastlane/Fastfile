@@ -1,0 +1,45 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build StimmApp production and upload a Google Play production draft with release notes"
+  lane :draft do
+    root = File.expand_path("..", __dir__)
+    version = File.read(File.join(root, "pubspec.yaml"))[/^version:\s*([^\s#]+)/, 1]
+    UI.user_error!("Expected pubspec version name+buildNumber") unless version&.match?(/\A[^+]+\+\d+\z/)
+    version_code = version.split("+").last
+    metadata = File.join(__dir__, "metadata", "android")
+    %w[de-DE en-US].each do |locale|
+      path = File.join(metadata, locale, "changelogs", "#{version_code}.txt")
+      UI.user_error!("Add release notes: #{path}") unless File.file?(path)
+      text = File.read(path).strip
+      UI.user_error!("#{locale} release notes must contain 1–500 Unicode characters") unless (1..500).cover?(text.codepoints.length)
+    end
+    key = ENV["GOOGLE_PLAY_JSON_KEY"]
+    UI.user_error!("Set GOOGLE_PLAY_JSON_KEY to your service account JSON file path") if key.to_s.empty?
+    key = File.expand_path(key)
+    UI.user_error!("Service account JSON file not found") unless File.file?(key)
+
+    Dir.chdir(root) do
+      sh("flutter", "pub", "get", "--enforce-lockfile")
+      args = ["flutter", "build", "appbundle", "--release", "--flavor", "prod", "-t", "lib/main.dart"]
+      args << "--dart-define-from-file=.env" if File.file?(".env")
+      sh(*args)
+    end
+
+    upload_to_play_store(
+      package_name: "de.lemarq.stimmapp",
+      json_key: key,
+      aab: File.join(root, "build/app/outputs/bundle/prodRelease/app-prod-release.aab"),
+      track: "production",
+      release_status: "draft",
+      version_name: version.split("+").first,
+      metadata_path: metadata,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: false,
+      changes_not_sent_for_review: true,
+      rescue_changes_not_sent_for_review: false
+    )
+  end
+end
