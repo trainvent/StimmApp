@@ -37,9 +37,9 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      skip_upload_changelogs: false,
-      changes_not_sent_for_review: true,
-      rescue_changes_not_sent_for_review: false
+      # Draft status keeps this release available for review in Play Console.
+      # This app rejects the optional changesNotSentForReview query flag.
+      skip_upload_changelogs: false
     )
   end
 end
