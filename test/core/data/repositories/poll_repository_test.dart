@@ -24,6 +24,33 @@ void main() {
     locator.setDatabaseForTest(fakeFirebaseFirestore);
   });
 
+  test(
+    'local search finds older non-prefix matches before applying limit',
+    () async {
+      for (final entry in [
+        ('new', 'Unrelated', DateTime(2026)),
+        ('old', 'Zufriedenheitsumfrage Arbeitsplatz', DateTime(2025)),
+      ]) {
+        await fakeFirebaseFirestore.collection('polls').doc(entry.$1).set({
+          'title': entry.$2,
+          'description': 'Bessere Bedingungen',
+          'tags': ['Beruf'],
+          'createdBy': 'author',
+          'createdAt': entry.$3,
+          'status': IConst.active,
+          'signatureCount': 0,
+          'votes': <String, int>{},
+          'options': [],
+          'questions': [],
+        });
+      }
+      final results = await pollRepository
+          .list(query: 'arbeitsplatz beruf', status: IConst.active, limit: 1)
+          .first;
+      expect(results.map((item) => item.id), ['old']);
+    },
+  );
+
   group('PollRepository', () {
     final tPoll = Poll(
       id: '1',

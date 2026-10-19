@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/functions/search_home_items.dart';
 import 'package:stimmapp/core/data/services/participant_access_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stimmapp/core/constants/app_limits.dart';
@@ -27,29 +28,16 @@ class PollRepository {
     int? limit,
     required String? status,
   }) {
-    final q = (query ?? '').trim().toLowerCase();
-    final queryRef = _col();
-
-    Stream<List<Poll>> stream;
-    if (q.isEmpty) {
-      stream = _fs.watchCol<Poll>(
-        queryRef.orderBy('createdAt', descending: true),
-        limit: limit,
-      );
-    } else {
-      stream = queryRef
-          .where('titleLowercase', isGreaterThanOrEqualTo: q)
-          .where('titleLowercase', isLessThan: '$q\uf8ff')
-          .orderBy('titleLowercase')
-          .snapshots()
-          .map((s) => s.docs.map((d) => d.data()).toList());
-    }
-
-    return stream.map((polls) {
-      return status == null
-          ? polls
-          : polls.where((p) => p.status == status).toList();
-    });
+    // Apply the result limit after matching so older matches remain searchable.
+    return _fs
+        .watchCol<Poll>(_col().orderBy('createdAt', descending: true))
+        .map((items) {
+          final eligible = status == null
+              ? items
+              : items.where((item) => item.status == status);
+          final matches = searchHomeItems(eligible, query ?? '');
+          return limit == null ? matches : matches.take(limit).toList();
+        });
   }
 
   Stream<Poll?> watch(String id) {

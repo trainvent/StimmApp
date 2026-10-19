@@ -32,18 +32,33 @@ void main() {
     tester,
   ) async {
     final queries = <String>[];
+    final form = Petition(
+      id: 'searchable',
+      title: 'Zufriedenheitsumfrage Arbeitsplatz',
+      description: 'Description',
+      tags: const [],
+      signatureCount: 0,
+      createdBy: 'creator',
+      createdAt: DateTime(2026),
+    );
     await tester.pumpWidget(
       createTestWidget(
         BaseOverviewPage<Petition>(
           streamProvider: (query, _) {
             queries.add(query);
-            return Stream.value(const <Petition>[]);
+            return Stream.value([form]);
           },
           itemBuilder: (context, item, _) => Text(item.title),
         ),
       ),
     );
     await tester.pumpAndSettle();
+    final initialSubscriptions = queries.length;
+    await tester.enterText(find.byType(TextField), 'Arbeitsplatz');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.text(form.title), findsOneWidget);
+    expect(queries.length, initialSubscriptions);
     await tester.enterText(find.byType(TextField), 'unmatched');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
@@ -55,6 +70,8 @@ void main() {
       isEmpty,
     );
     expect(queries.last, isEmpty);
+    expect(queries.length, initialSubscriptions);
+    expect(find.text(form.title), findsOneWidget);
     expect(find.text('No results matched your search.'), findsNothing);
   });
 

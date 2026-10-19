@@ -1,3 +1,4 @@
+import 'package:stimmapp/core/functions/search_home_items.dart';
 import 'package:flutter/material.dart';
 import 'package:stimmapp/app/widgets/search_text_field.dart';
 import 'package:stimmapp/app/widgets/overview_filter_dialog.dart';
@@ -160,7 +161,6 @@ class _BaseOverviewPageState<T extends HomeItem>
       _query = '';
       _searchResetVersion++;
       _hasLoggedSearchForSession = false;
-      _itemStreams.clear();
     });
   }
 
@@ -216,7 +216,7 @@ class _BaseOverviewPageState<T extends HomeItem>
 
   Stream<List<T>> _itemStream(String status) => _itemStreams.putIfAbsent(
     status,
-    () => _restartableStream(() => widget.streamProvider(_query, status)),
+    () => _restartableStream(() => widget.streamProvider('', status)),
   );
 
   Stream<Set<String>> _blockedIdsStream(String status, String? uid) =>
@@ -386,7 +386,7 @@ class _BaseOverviewPageState<T extends HomeItem>
                             child: TriangleLoadingIndicator(),
                           );
                         }
-                        var items = snap.data ?? const [];
+                        var items = searchHomeItems(snap.data ?? <T>[], _query);
                         items = items
                             .where(
                               (item) => _isAccessibleForCurrentUser(
@@ -561,7 +561,6 @@ class _BaseOverviewPageState<T extends HomeItem>
                       }
                       setState(() {
                         _query = q;
-                        _itemStreams.clear();
                       });
                     },
                   ),
