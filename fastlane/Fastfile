@@ -7,7 +7,7 @@ platform :android do
     version = File.read(File.join(root, "pubspec.yaml"))[/^version:\s*([^\s#]+)/, 1]
     UI.user_error!("Expected pubspec version name+buildNumber") unless version&.match?(/\A[^+]+\+\d+\z/)
     version_code = version.split("+").last
-    metadata = File.join(__dir__, "metadata", "android")
+    metadata = File.join(root, "fastlane", "metadata", "android")
     %w[de-DE en-US].each do |locale|
       path = File.join(metadata, locale, "changelogs", "#{version_code}.txt")
       UI.user_error!("Add release notes: #{path}") unless File.file?(path)
