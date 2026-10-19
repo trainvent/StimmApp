@@ -4,7 +4,7 @@ import 'package:stimmapp/app/pages/onboarding/login_page.dart';
 import 'package:stimmapp/app/pages/onboarding/welcome_page.dart';
 import 'package:stimmapp/app/widgets/snackbar_utils.dart';
 import 'package:stimmapp/core/constants/integration_test_constants.dart';
-import 'package:stimmapp/core/data/services/auth_service.dart';
+import 'package:stimmapp/core/providers/auth_provider.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/providers/app_preferences_provider.dart';
 import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
@@ -33,6 +33,7 @@ class SignActionButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authService = ref.watch(authServiceProvider);
     final showPetitionReason = ref.watch(showPetitionReasonProvider);
     final submissionPhase = ref.watch(
       deferredSubmissionProvider.select((state) => state[submissionId]),
@@ -106,7 +107,7 @@ class SignActionButton extends ConsumerWidget {
     if (!(validate?.call() ?? true)) return;
     String? reason;
     if (askForReason && showPetitionReason) {
-      reason = await showDialog<String>(
+      final result = await showDialog<({String? reason})>(
         context: context,
         builder: (context) {
           String tempReason = '';
@@ -122,17 +123,19 @@ class SignActionButton extends ConsumerWidget {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, null),
+                onPressed: () => Navigator.pop(context, (reason: null)),
                 child: Text('Skip'),
               ),
               FilledButton(
-                onPressed: () => Navigator.pop(context, tempReason),
+                onPressed: () => Navigator.pop(context, (reason: tempReason)),
                 child: Text('Submit'),
               ),
             ],
           );
         },
       );
+      if (result == null) return;
+      reason = result.reason;
     }
 
     if (!context.mounted) return;

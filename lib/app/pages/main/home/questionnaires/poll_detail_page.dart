@@ -11,6 +11,7 @@ import 'package:stimmapp/core/data/services/auth_service.dart';
 import 'package:stimmapp/core/extensions/context_extensions.dart';
 import 'package:stimmapp/core/notifiers/quota_update_notifier.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
+import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
 
 class PollDetailPage extends ConsumerStatefulWidget {
   const PollDetailPage({super.key, required this.id});
@@ -27,6 +28,11 @@ class _PollDetailPageState extends ConsumerState<PollDetailPage> {
   @override
   Widget build(BuildContext context) {
     final currentUid = ref.watch(currentUserProvider)?.uid;
+    final isSubmitting = ref.watch(
+      deferredSubmissionProvider.select(
+        (state) => state.containsKey('poll:${widget.id}'),
+      ),
+    );
     final repo = PollRepository.create();
     final participantIdsStream = repo.watchParticipantIds(
       widget.id,
@@ -103,7 +109,11 @@ class _PollDetailPageState extends ConsumerState<PollDetailPage> {
           final total = poll.totalVotes;
           return RadioGroup<String>(
             groupValue: _selectedOptionId,
-            onChanged: (v) => setState(() => _selectedOptionId = v),
+            onChanged: (v) {
+              if (!isSubmitting && !hasSubmitted) {
+                setState(() => _selectedOptionId = v);
+              }
+            },
             child: ListView(
               children: [
                 if (poll.questionTitle.trim().isNotEmpty)
@@ -125,8 +135,13 @@ class _PollDetailPageState extends ConsumerState<PollDetailPage> {
                         if (hasSubmitted) Text('$count • $pct%'),
                       ],
                     ),
-                    leading: Radio<String>(value: o.id),
-                    onTap: () => setState(() => _selectedOptionId = o.id),
+                    leading: Radio<String>(
+                      value: o.id,
+                      enabled: !isSubmitting && !hasSubmitted,
+                    ),
+                    onTap: isSubmitting || hasSubmitted
+                        ? null
+                        : () => setState(() => _selectedOptionId = o.id),
                   );
                 }),
               ],

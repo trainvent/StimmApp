@@ -7,6 +7,7 @@ import 'package:stimmapp/app/pages/main/home/questionnaires/poll_detail_page.dar
 import 'package:stimmapp/core/data/di/service_locator.dart';
 import 'package:stimmapp/core/data/models/poll.dart';
 import 'package:stimmapp/core/providers/auth_provider.dart';
+import 'package:stimmapp/core/providers/deferred_submission_provider.dart';
 import 'package:stimmapp/app/pages/main/profile/public_profile_page.dart';
 
 import '../../../../../../test_helper.dart';
@@ -118,6 +119,43 @@ void main() {
     expect(
       tester.getTopLeft(question).dy,
       lessThan(tester.getTopLeft(answer).dy),
+    );
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(SignActionButton)),
+    );
+    final controller = container.read(deferredSubmissionProvider.notifier);
+    controller.queue(
+      id: 'poll:published',
+      action: () async {},
+      onSuccess: () {},
+      onError: (_) {},
+    );
+    await tester.pump();
+    expect(
+      tester.widget<Radio<String>>(find.byType(Radio<String>).first).enabled,
+      isFalse,
+    );
+    await tester.tap(find.text('Not satisfied'));
+    await tester.pump();
+    expect(
+      tester
+          .widget<RadioGroup<String>>(find.byType(RadioGroup<String>))
+          .groupValue,
+      'yes',
+    );
+    controller.cancel('poll:published');
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Radio<String>>(find.byType(Radio<String>).first).enabled,
+      isTrue,
+    );
+    await tester.tap(find.text('Not satisfied'));
+    await tester.pump();
+    expect(
+      tester
+          .widget<RadioGroup<String>>(find.byType(RadioGroup<String>))
+          .groupValue,
+      'no',
     );
     expect(find.text('Teilnehmer'), findsNothing);
     await tester.tap(find.text(poll.title));

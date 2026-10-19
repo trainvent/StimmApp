@@ -273,13 +273,26 @@ service cloud.firestore {
 
     // Petitions & Polls
     match /petitions/{petitionId} {
+      // Participation may change only the exact count in the same atomic write.
+      function isOwnSignatureCountUpdate() {
+        let signaturePath = /databases/$(database)/documents/petitions/$(petitionId)/signatures/$(request.auth.uid);
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['signatureCount']) &&
+          ((!exists(signaturePath) && existsAfter(signaturePath) &&
+             request.resource.data.signatureCount == resource.data.signatureCount + 1) ||
+           (exists(signaturePath) && !existsAfter(signaturePath) &&
+             resource.data.signatureCount > 0 &&
+             request.resource.data.signatureCount == resource.data.signatureCount - 1));
+      }
       allow read: if true;
       allow create: if isAdmin() ||
                     (isAuthenticated() && request.resource.data.createdBy == request.auth.uid &&
                      hasValidContentState(request.resource.data));
       allow update: if isAdmin() ||
-                    (isAuthenticated() && request.resource.data.createdBy == resource.data.createdBy &&
-                     hasValidContentState(request.resource.data));
+                    (isAuthenticated() &&
+                     ((resource.data.createdBy == request.auth.uid &&
+                       request.resource.data.createdBy == resource.data.createdBy &&
+                       hasValidContentState(request.resource.data)) ||
+                      isOwnSignatureCountUpdate()));
       allow delete: if isAdmin() ||
                     (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
@@ -293,9 +306,20 @@ service cloud.firestore {
       allow list: if isAdmin() ||
         (isAuthenticated() &&
          get(/databases/$(database)/documents/petitions/$(petitionId)).data.createdBy == request.auth.uid);
-      allow delete: if isAdmin() || isOwner(signerId);
-      allow create, update: if isAdmin() ||
-                    (isOwner(signerId) && hasValidContentState(request.resource.data));
+      function signatureCountChangesBy(delta) {
+        let petitionPath = /databases/$(database)/documents/petitions/$(petitionId);
+        return getAfter(petitionPath).data.signatureCount ==
+                 get(petitionPath).data.signatureCount + delta &&
+               getAfter(petitionPath).data.signatureCount >= 0;
+      }
+      allow delete: if isAdmin() ||
+        (isOwner(signerId) && signatureCountChangesBy(-1));
+      allow create: if isAdmin() ||
+        (isOwner(signerId) && request.resource.data.uid == signerId &&
+         signatureCountChangesBy(1));
+      allow update: if isAdmin() ||
+        (isOwner(signerId) &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reason']));
 
       match /commentLikes/{userId} {
         function hasComment() {
@@ -315,13 +339,33 @@ service cloud.firestore {
     }
 
     match /polls/{pollId} {
+      function changesOnlyOptionCount(optionId, delta) {
+        return optionId is string &&
+          optionId in resource.data.votes &&
+          request.resource.data.votes.diff(resource.data.votes).affectedKeys().hasOnly([optionId]) &&
+          request.resource.data.votes[optionId] == resource.data.votes[optionId] + delta &&
+          request.resource.data.votes[optionId] >= 0;
+      }
+
+      // Bind the changed option and count to this user's new or removed vote.
+      function isOwnVoteCountUpdate() {
+        let votePath = /databases/$(database)/documents/polls/$(pollId)/votes/$(request.auth.uid);
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes']) &&
+          ((!exists(votePath) && existsAfter(votePath) &&
+            changesOnlyOptionCount(getAfter(votePath).data.optionId, 1)) ||
+           (exists(votePath) && !existsAfter(votePath) &&
+            changesOnlyOptionCount(get(votePath).data.optionId, -1)));
+      }
       allow read: if true;
       allow create: if isAdmin() ||
         (isAuthenticated() && request.resource.data.createdBy == request.auth.uid &&
          hasValidContentState(request.resource.data));
       allow update: if isAdmin() ||
-        (isAuthenticated() && request.resource.data.createdBy == resource.data.createdBy &&
-         hasValidContentState(request.resource.data));
+        (isAuthenticated() &&
+         ((resource.data.createdBy == request.auth.uid &&
+           request.resource.data.createdBy == resource.data.createdBy &&
+           hasValidContentState(request.resource.data)) ||
+          isOwnVoteCountUpdate()));
       allow delete: if isAdmin() ||
         (isAuthenticated() && resource.data.createdBy == request.auth.uid);
       match /votes/{uid} {
@@ -329,7 +373,20 @@ service cloud.firestore {
         allow list: if isAdmin() ||
           (isAuthenticated() &&
            get(/databases/$(database)/documents/polls/$(pollId)).data.createdBy == request.auth.uid);
-        allow create, update, delete: if isOwner(uid) || isAdmin();
+        function voteCountChangesBy(optionId, delta) {
+          let pollPath = /databases/$(database)/documents/polls/$(pollId);
+          let before = get(pollPath).data.votes;
+          let after = getAfter(pollPath).data.votes;
+          return optionId is string && optionId in before &&
+            after.diff(before).affectedKeys().hasOnly([optionId]) &&
+            after[optionId] == before[optionId] + delta && after[optionId] >= 0;
+        }
+        allow create: if isAdmin() ||
+          (isOwner(uid) && request.resource.data.uid == uid &&
+           voteCountChangesBy(request.resource.data.optionId, 1));
+        allow update: if isAdmin();
+        allow delete: if isAdmin() ||
+          (isOwner(uid) && voteCountChangesBy(resource.data.optionId, -1));
       }
     }
 
