@@ -68,7 +68,16 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
       // Keep the width stable as filter sections expand; narrow screens
       // still constrain the dialog to the available space.
       constraints: const BoxConstraints.tightFor(width: 560),
-      title: Text(context.l10n.filter),
+      title: Row(
+        children: [
+          Expanded(child: Text(context.l10n.filter)),
+          IconButton(
+            tooltip: context.l10n.resetFiltersToDefaults,
+            icon: const Icon(Icons.settings_backup_restore),
+            onPressed: () => _resetFilters(ParticipationFilter.notParticipated),
+          ),
+        ],
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -198,17 +207,7 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            // Clear filters
-            setState(() {
-              _selectedTags = [];
-              _selectedScopes = {};
-              _selectedCountryUnions = {};
-              _onlyMyPublications = false;
-              _participation = ParticipationFilter.all;
-            });
-            widget.clearExtraFilters?.call();
-          },
+          onPressed: () => _resetFilters(ParticipationFilter.all),
           child: Text(context.l10n.remove),
         ),
         FilledButton(
@@ -228,6 +227,17 @@ class _OverviewFilterDialogState extends State<OverviewFilterDialog> {
         ),
       ],
     );
+  }
+
+  void _resetFilters(ParticipationFilter participation) {
+    setState(() {
+      _selectedTags = [];
+      _selectedScopes = {};
+      _selectedCountryUnions = {};
+      _onlyMyPublications = false;
+      _participation = participation;
+      widget.clearExtraFilters?.call();
+    });
   }
 
   String _participationLabel(ParticipationFilter filter) => switch (filter) {

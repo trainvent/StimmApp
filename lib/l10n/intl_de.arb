@@ -1288,5 +1288,6 @@
 	"publicProfileNotAdded": "Noch nicht hinzugefügt",
   "pleaseSelectAnswer": "Bitte wähle eine Antwort.",
   "noSearchResults": "Keine Ergebnisse für deine Suche.",
-  "resetSearch": "Suche zurücksetzen"
+  "resetSearch": "Suche zurücksetzen",
+  "resetFiltersToDefaults": "Filter auf Standard zurücksetzen"
 }

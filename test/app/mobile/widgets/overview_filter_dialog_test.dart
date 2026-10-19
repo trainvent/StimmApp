@@ -80,7 +80,7 @@ void main() {
       expect(result!.participation, ParticipationFilter.all);
     });
 
-    testWidgets('filter drafts clear and confirm independently ($language)', (
+    testWidgets('filter drafts reset to defaults independently ($language)', (
       tester,
     ) async {
       final initial = OverviewFilterSelection(
@@ -113,10 +113,7 @@ void main() {
       );
       await tester.tap(find.text('Open filter'));
       await tester.pumpAndSettle();
-      expect(
-        find.text(language == 'en' ? 'Other' : 'Andere'),
-        findsOneWidget,
-      );
+      expect(find.text(language == 'en' ? 'Other' : 'Andere'), findsOneWidget);
       expect(find.text('Design'), findsNothing);
       await tester.tap(find.byType(ExpansionTile).first);
       await tester.pumpAndSettle();
@@ -132,12 +129,20 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.tap(
+        find.byTooltip(
+          language == 'en'
+              ? 'Reset filters to defaults'
+              : 'Filter auf Standard zurücksetzen',
+        ),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
-      expect(clearCount, 1);
+      expect(clearCount, 2);
       expect(result!.scopes, isEmpty);
       expect(result!.tags, isEmpty);
-      expect(result!.participation, ParticipationFilter.all);
+      expect(result!.participation, ParticipationFilter.notParticipated);
       expect(initial.scopes, {FormScopeType.country});
     });
   }

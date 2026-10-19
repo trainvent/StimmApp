@@ -6223,6 +6223,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset search'**
   String get resetSearch;
+
+  /// No description provided for @resetFiltersToDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset filters to defaults'**
+  String get resetFiltersToDefaults;
 }
 
 class _AppLocalizationsDelegate

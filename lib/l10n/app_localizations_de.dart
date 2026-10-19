@@ -3447,4 +3447,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get resetSearch => 'Suche zurücksetzen';
+
+  @override
+  String get resetFiltersToDefaults => 'Filter auf Standard zurücksetzen';
 }

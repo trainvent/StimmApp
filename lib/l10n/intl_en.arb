@@ -1301,5 +1301,6 @@
 	"publicProfileNotAdded": "Not added yet",
   "pleaseSelectAnswer": "Please select an answer.",
   "noSearchResults": "No results matched your search.",
-  "resetSearch": "Reset search"
+  "resetSearch": "Reset search",
+  "resetFiltersToDefaults": "Reset filters to defaults"
 }
