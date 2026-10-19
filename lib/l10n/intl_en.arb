@@ -1284,12 +1284,12 @@
 	"publicationLinkOpenFailed": "This link could not be opened. Please try again.",
 	"publicationOptionalLink": "Video or website link (optional)",
 	"publicationLinkTypeLimit": "You can add one YouTube video and one website link.",
-	"profileLinkTitle": "Profile link",
-	"profileLinkLabel": "Website or social profile (optional)",
-	"profileLinkHelp": "Choose whether to show this link in your public profile settings. Leave empty to remove it.",
-	"profileLinkOpen": "Open profile link",
-	"profileLinkAdd": "Add link",
-	"profileLinkEdit": "Edit link",
+	"webLinkTitle": "Web link",
+	"webLinkLabel": "Website or social profile (optional)",
+	"webLinkHelp": "Choose whether to show this link in your public profile settings. Leave empty to remove it.",
+	"webLinkOpen": "Open web link",
+	"webLinkAdd": "Add link",
+	"webLinkEdit": "Edit link",
 	"profilePublicationsHidden": "Publications are hidden",
 	"profilePublicationsHiddenDescription": "This person has chosen not to show their publications on their profile.",
 	"publicProfileSettingsTitle": "Public profile",
@@ -1298,5 +1298,8 @@
 	"publicProfilePublicationHistory": "Publication history",
 	"publicProfileHistoryHelp": "Publications remain visible elsewhere.",
 	"publicProfileFullName": "Full name",
-	"publicProfileNotAdded": "Not added yet"
+	"publicProfileNotAdded": "Not added yet",
+  "pleaseSelectAnswer": "Please select an answer.",
+  "noSearchResults": "No results matched your search.",
+  "resetSearch": "Reset search"
 }

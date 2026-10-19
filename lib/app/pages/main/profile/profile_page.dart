@@ -497,7 +497,7 @@ class ProfilePage extends ConsumerWidget {
 
                           _buildDetailTile(
                             context,
-                            context.l10n.profileLinkTitle,
+                            context.l10n.webLinkTitle,
                             userProfile.websiteUrl,
                             hideWhenEmpty: false,
                             onTap: () => Navigator.push(

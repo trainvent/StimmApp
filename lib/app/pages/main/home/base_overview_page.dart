@@ -153,6 +153,17 @@ class _BaseOverviewPageState<T extends HomeItem>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _query = '';
+  int _searchResetVersion = 0;
+
+  void _resetSearch() {
+    setState(() {
+      _query = '';
+      _searchResetVersion++;
+      _hasLoggedSearchForSession = false;
+      _itemStreams.clear();
+    });
+  }
+
   List<String> _selectedTags = [];
   Set<FormScopeType> _selectedScopes = {};
   Set<CountryUnion> _selectedCountryUnions = {};
@@ -429,7 +440,20 @@ class _BaseOverviewPageState<T extends HomeItem>
                         }
 
                         if (items.isEmpty) {
-                          return Center(child: Text(context.l10n.noData));
+                          return Center(
+                            child: _query.trim().isEmpty
+                                ? Text(context.l10n.noData)
+                                : Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(context.l10n.noSearchResults),
+                                      TextButton(
+                                        onPressed: _resetSearch,
+                                        child: Text(context.l10n.resetSearch),
+                                      ),
+                                    ],
+                                  ),
+                          );
                         }
                         return ListView.builder(
                           itemCount: items.length,
@@ -521,6 +545,7 @@ class _BaseOverviewPageState<T extends HomeItem>
               children: [
                 Expanded(
                   child: SearchTextField(
+                    key: ValueKey(_searchResetVersion),
                     hint: context.l10n.searchTextField,
                     onChanged: (q) {
                       final trimmedQuery = q.trim();

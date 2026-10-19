@@ -170,7 +170,7 @@ class _PublicProfilePageState extends ConsumerState<PublicProfilePage> {
                       ExternalLinkCard(
                         uri: uri,
                         icon: Icons.link,
-                        title: context.l10n.profileLinkOpen,
+                        title: context.l10n.webLinkOpen,
                       ),
                     const SizedBox(height: 24),
                     Text(

@@ -547,7 +547,8 @@ class _BaseDetailPageState<T extends HomeItem>
               context,
               item.expiresAt == null
                   ? context.l10n.openUntilClosed
-                  : DateFormat('dd.MM.yyyy').format(item.expiresAt!),
+                  : DateFormat.yMd(Localizations.localeOf(context).toString())
+                        .format(item.expiresAt!),
               leading: const Icon(Icons.schedule_outlined, size: 20),
             ),
           ),

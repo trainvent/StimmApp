@@ -1,4 +1,5 @@
 import 'package:stimmapp/core/data/models/publication_links.dart';
+import 'package:stimmapp/app/widgets/buttons/sign_action_button.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,6 +99,22 @@ void main() {
     final answer = find.text('Very satisfied');
     expect(question, findsOneWidget);
     expect(answer, findsOneWidget);
+    final voteButton = tester.widget<SignActionButton>(
+      find.byType(SignActionButton),
+    );
+    expect(voteButton.validate!(), isFalse);
+    await expectLater(voteButton.onAction(), throwsStateError);
+    await tester.tap(find.text('Abstimmen'));
+    await tester.pump();
+    expect(find.text('Rückgängig'), findsNothing);
+    await tester.tap(answer);
+    await tester.pump();
+    expect(
+      tester
+          .widget<SignActionButton>(find.byType(SignActionButton))
+          .validate!(),
+      isTrue,
+    );
     expect(
       tester.getTopLeft(question).dy,
       lessThan(tester.getTopLeft(answer).dy),

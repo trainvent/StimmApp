@@ -3345,23 +3345,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can add one YouTube video and one website link.';
 
   @override
-  String get profileLinkTitle => 'Profile link';
+  String get webLinkTitle => 'Web link';
 
   @override
-  String get profileLinkLabel => 'Website or social profile (optional)';
+  String get webLinkLabel => 'Website or social profile (optional)';
 
   @override
-  String get profileLinkHelp =>
+  String get webLinkHelp =>
       'Choose whether to show this link in your public profile settings. Leave empty to remove it.';
 
   @override
-  String get profileLinkOpen => 'Open profile link';
+  String get webLinkOpen => 'Open web link';
 
   @override
-  String get profileLinkAdd => 'Add link';
+  String get webLinkAdd => 'Add link';
 
   @override
-  String get profileLinkEdit => 'Edit link';
+  String get webLinkEdit => 'Edit link';
 
   @override
   String get profilePublicationsHidden => 'Publications are hidden';
@@ -3393,4 +3393,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get publicProfileNotAdded => 'Not added yet';
+
+  @override
+  String get pleaseSelectAnswer => 'Please select an answer.';
+
+  @override
+  String get noSearchResults => 'No results matched your search.';
+
+  @override
+  String get resetSearch => 'Reset search';
 }

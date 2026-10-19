@@ -193,7 +193,7 @@ class _RunningFormsPageState extends State<RunningFormsPage> {
   String _expiryLabel(DateTime? expiresAt) {
     if (expiresAt == null) return context.l10n.openUntilClosed;
     return '${context.l10n.expiresOn}: '
-        '${DateFormat('yyyy-MM-dd').format(expiresAt)}';
+        '${DateFormat.yMd(Localizations.localeOf(context).toString()).format(expiresAt)}';
   }
 
   Widget _actions({required VoidCallback onClose, VoidCallback? onDelete}) {

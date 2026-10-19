@@ -106,7 +106,7 @@ class _PublicProfileSettingsDialogState
               SwitchListTile(
                 key: const ValueKey('public_profile_show_link'),
                 contentPadding: EdgeInsets.zero,
-                title: Text(context.l10n.profileLinkTitle),
+                title: Text(context.l10n.webLinkTitle),
                 subtitle: Text(
                   profile.websiteUrl?.trim().isNotEmpty == true
                       ? profile.websiteUrl!

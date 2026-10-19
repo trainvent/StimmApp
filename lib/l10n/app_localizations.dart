@@ -6116,41 +6116,41 @@ abstract class AppLocalizations {
   /// **'You can add one YouTube video and one website link.'**
   String get publicationLinkTypeLimit;
 
-  /// No description provided for @profileLinkTitle.
+  /// No description provided for @webLinkTitle.
   ///
   /// In en, this message translates to:
-  /// **'Profile link'**
-  String get profileLinkTitle;
+  /// **'Web link'**
+  String get webLinkTitle;
 
-  /// No description provided for @profileLinkLabel.
+  /// No description provided for @webLinkLabel.
   ///
   /// In en, this message translates to:
   /// **'Website or social profile (optional)'**
-  String get profileLinkLabel;
+  String get webLinkLabel;
 
-  /// No description provided for @profileLinkHelp.
+  /// No description provided for @webLinkHelp.
   ///
   /// In en, this message translates to:
   /// **'Choose whether to show this link in your public profile settings. Leave empty to remove it.'**
-  String get profileLinkHelp;
+  String get webLinkHelp;
 
-  /// No description provided for @profileLinkOpen.
+  /// No description provided for @webLinkOpen.
   ///
   /// In en, this message translates to:
-  /// **'Open profile link'**
-  String get profileLinkOpen;
+  /// **'Open web link'**
+  String get webLinkOpen;
 
-  /// No description provided for @profileLinkAdd.
+  /// No description provided for @webLinkAdd.
   ///
   /// In en, this message translates to:
   /// **'Add link'**
-  String get profileLinkAdd;
+  String get webLinkAdd;
 
-  /// No description provided for @profileLinkEdit.
+  /// No description provided for @webLinkEdit.
   ///
   /// In en, this message translates to:
   /// **'Edit link'**
-  String get profileLinkEdit;
+  String get webLinkEdit;
 
   /// No description provided for @profilePublicationsHidden.
   ///
@@ -6205,6 +6205,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not added yet'**
   String get publicProfileNotAdded;
+
+  /// No description provided for @pleaseSelectAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an answer.'**
+  String get pleaseSelectAnswer;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results matched your search.'**
+  String get noSearchResults;
+
+  /// No description provided for @resetSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset search'**
+  String get resetSearch;
 }
 
 class _AppLocalizationsDelegate

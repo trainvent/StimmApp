@@ -89,12 +89,15 @@ class _FormExportPageState extends State<FormExportPage> {
     required DateTime? expiresAt,
   }) {
     if (status == IConst.closing && scheduledCloseAt != null) {
-      final date = DateFormat('yyyy-MM-dd HH:mm').format(scheduledCloseAt);
+      final date = DateFormat.yMd(Localizations.localeOf(context).toString())
+          .add_Hm()
+          .format(scheduledCloseAt);
       return context.l10n.closureFinalizesAt(date);
     }
     return expiresAt == null
         ? context.l10n.closed
-        : DateFormat('yyyy-MM-dd').format(expiresAt);
+        : DateFormat.yMd(Localizations.localeOf(context).toString())
+              .format(expiresAt);
   }
 
   Widget? _resumeButton({

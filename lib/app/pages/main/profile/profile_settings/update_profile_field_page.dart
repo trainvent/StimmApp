@@ -51,7 +51,7 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       EditableProfileField.username => context.l10n.updateUsername,
       EditableProfileField.givenName => context.l10n.editGivenName,
       EditableProfileField.surname => context.l10n.editSurname,
-      EditableProfileField.websiteUrl => context.l10n.profileLinkTitle,
+      EditableProfileField.websiteUrl => context.l10n.webLinkTitle,
     };
   }
 
@@ -60,7 +60,7 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
       EditableProfileField.username => context.l10n.newUsername,
       EditableProfileField.givenName => context.l10n.givenName,
       EditableProfileField.surname => context.l10n.surname,
-      EditableProfileField.websiteUrl => context.l10n.profileLinkLabel,
+      EditableProfileField.websiteUrl => context.l10n.webLinkLabel,
     };
   }
 
@@ -194,7 +194,7 @@ class _UpdateProfileFieldPageState extends State<UpdateProfileFieldPage> {
                                 : null,
                             helperText:
                                 widget.field == EditableProfileField.websiteUrl
-                                ? context.l10n.profileLinkHelp
+                                ? context.l10n.webLinkHelp
                                 : null,
                             helperMaxLines: 3,
                             errorMaxLines: 3,

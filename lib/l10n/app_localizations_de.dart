@@ -3390,23 +3390,23 @@ class AppLocalizationsDe extends AppLocalizations {
       'Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen.';
 
   @override
-  String get profileLinkTitle => 'Profil-Link';
+  String get webLinkTitle => 'Web-Link';
 
   @override
-  String get profileLinkLabel => 'Webseite oder Social-Media-Profil (optional)';
+  String get webLinkLabel => 'Webseite oder Social-Media-Profil (optional)';
 
   @override
-  String get profileLinkHelp =>
+  String get webLinkHelp =>
       'Wähle in den Einstellungen deines öffentlichen Profils, ob dieser Link angezeigt wird. Zum Entfernen leer lassen.';
 
   @override
-  String get profileLinkOpen => 'Profil-Link öffnen';
+  String get webLinkOpen => 'Web-Link öffnen';
 
   @override
-  String get profileLinkAdd => 'Link hinzufügen';
+  String get webLinkAdd => 'Link hinzufügen';
 
   @override
-  String get profileLinkEdit => 'Link bearbeiten';
+  String get webLinkEdit => 'Link bearbeiten';
 
   @override
   String get profilePublicationsHidden => 'Veröffentlichungen sind verborgen';
@@ -3438,4 +3438,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get publicProfileNotAdded => 'Noch nicht hinzugefügt';
+
+  @override
+  String get pleaseSelectAnswer => 'Bitte wähle eine Antwort.';
+
+  @override
+  String get noSearchResults => 'Keine Ergebnisse für deine Suche.';
+
+  @override
+  String get resetSearch => 'Suche zurücksetzen';
 }

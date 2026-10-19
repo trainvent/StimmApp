@@ -20,6 +20,7 @@ class SignActionButton extends ConsumerWidget {
     required this.onAction,
     required this.successMessage,
     this.askForReason = false,
+    this.validate,
   });
 
   final String submissionId;
@@ -28,6 +29,7 @@ class SignActionButton extends ConsumerWidget {
   final Future<void> Function({String? reason}) onAction;
   final String successMessage;
   final bool askForReason;
+  final bool Function()? validate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,6 +58,7 @@ class SignActionButton extends ConsumerWidget {
               : disabled
               ? null
               : () async {
+                  if (!(validate?.call() ?? true)) return;
                   final user = authService.currentUser;
                   if (user == null) {
                     if (!context.mounted) return;
@@ -100,6 +103,7 @@ class SignActionButton extends ConsumerWidget {
     WidgetRef ref,
     bool showPetitionReason,
   ) async {
+    if (!(validate?.call() ?? true)) return;
     String? reason;
     if (askForReason && showPetitionReason) {
       reason = await showDialog<String>(

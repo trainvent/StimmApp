@@ -138,9 +138,16 @@ class _PollDetailPageState extends ConsumerState<PollDetailPage> {
         submissionId: 'poll:${widget.id}',
         label: context.l10n.vote,
         participantIdsStream: participantIdsStream,
+        validate: () {
+          if (_selectedOptionId != null) return true;
+          showUserMistakeSnackBar(context.l10n.pleaseSelectAnswer);
+          return false;
+        },
         onAction: ({String? reason}) async {
           final optionId = _selectedOptionId;
-          if (optionId == null) return;
+          if (optionId == null) {
+            throw StateError(context.l10n.pleaseSelectAnswer);
+          }
           final user = authService.currentUser!;
           await repo.vote(pollId: widget.id, optionId: optionId, uid: user.uid);
           if (context.mounted) Navigator.pop(context);

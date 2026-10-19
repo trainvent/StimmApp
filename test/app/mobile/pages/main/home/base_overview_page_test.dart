@@ -28,6 +28,36 @@ class _RebuildHarnessState extends State<_RebuildHarness> {
 }
 
 void main() {
+  testWidgets('unmatched search can be reset with its text field', (
+    tester,
+  ) async {
+    final queries = <String>[];
+    await tester.pumpWidget(
+      createTestWidget(
+        BaseOverviewPage<Petition>(
+          streamProvider: (query, _) {
+            queries.add(query);
+            return Stream.value(const <Petition>[]);
+          },
+          itemBuilder: (context, item, _) => Text(item.title),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'unmatched');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.text('No results matched your search.'), findsOneWidget);
+    await tester.tap(find.text('Reset search'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      isEmpty,
+    );
+    expect(queries.last, isEmpty);
+    expect(find.text('No results matched your search.'), findsNothing);
+  });
+
   testWidgets('keeps loaded overview streams across parent rebuilds', (
     tester,
   ) async {

@@ -1271,12 +1271,12 @@
 	"publicationLinkOpenFailed": "Dieser Link konnte nicht geöffnet werden. Bitte versuche es erneut.",
 	"publicationOptionalLink": "Video- oder Webseiten-Link (optional)",
 	"publicationLinkTypeLimit": "Du kannst ein YouTube-Video und einen Webseiten-Link hinzufügen.",
-	"profileLinkTitle": "Profil-Link",
-	"profileLinkLabel": "Webseite oder Social-Media-Profil (optional)",
-	"profileLinkHelp": "Wähle in den Einstellungen deines öffentlichen Profils, ob dieser Link angezeigt wird. Zum Entfernen leer lassen.",
-	"profileLinkOpen": "Profil-Link öffnen",
-	"profileLinkAdd": "Link hinzufügen",
-	"profileLinkEdit": "Link bearbeiten",
+	"webLinkTitle": "Web-Link",
+	"webLinkLabel": "Webseite oder Social-Media-Profil (optional)",
+	"webLinkHelp": "Wähle in den Einstellungen deines öffentlichen Profils, ob dieser Link angezeigt wird. Zum Entfernen leer lassen.",
+	"webLinkOpen": "Web-Link öffnen",
+	"webLinkAdd": "Link hinzufügen",
+	"webLinkEdit": "Link bearbeiten",
 	"profilePublicationsHidden": "Veröffentlichungen sind verborgen",
 	"profilePublicationsHiddenDescription": "Diese Person möchte ihre Veröffentlichungen nicht auf ihrem Profil anzeigen.",
 	"publicProfileSettingsTitle": "Öffentliches Profil",
@@ -1285,5 +1285,8 @@
 	"publicProfilePublicationHistory": "Veröffentlichungen",
 	"publicProfileHistoryHelp": "Veröffentlichungen bleiben andernorts sichtbar.",
 	"publicProfileFullName": "Vollständiger Name",
-	"publicProfileNotAdded": "Noch nicht hinzugefügt"
+	"publicProfileNotAdded": "Noch nicht hinzugefügt",
+  "pleaseSelectAnswer": "Bitte wähle eine Antwort.",
+  "noSearchResults": "Keine Ergebnisse für deine Suche.",
+  "resetSearch": "Suche zurücksetzen"
 }
